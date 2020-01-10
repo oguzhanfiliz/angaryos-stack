@@ -1,0 +1,124 @@
+<text-element *ngIf="type == 'text'" 
+(changed)="handleChanged($event)"
+value="{{ value }}"
+name="{{ name }}"
+placeholder="{{ placeholder }}"
+showFilterTypesSelect="{{ showFilterTypesSelect }}"
+filterType="{{ filterType }}"
+class="{{ class }}"></text-element>
+
+<string-element *ngIf="type == 'string'" 
+(changed)="handleChanged($event)"
+value="{{ value }}"
+name="{{ name }}"
+placeholder="{{ placeholder }}"
+showFilterTypesSelect="{{ showFilterTypesSelect }}"
+filterType="{{ filterType }}"
+class="{{ class }}"></string-element>
+
+<password-element *ngIf="type == 'password'" 
+name="{{ name }}"
+placeholder="{{ placeholder }}"
+class="{{ class }}"></password-element>
+
+<number-element *ngIf="type == 'numeric'" 
+(changed)="handleChanged($event)"
+value="{{ value }}"
+name="{{ name }}"
+placeholder="{{ placeholder }}"
+showFilterTypesSelect="{{ showFilterTypesSelect }}"
+filterType="{{ filterType }}"
+class="{{ class }}"></number-element>
+
+<date-time-element *ngIf="type == 'datetime'" 
+(changed)="handleChanged($event)"
+value="{{ value }}"
+name="{{ name }}"
+placeholder="{{ placeholder }}"
+showFilterTypesSelect="{{ showFilterTypesSelect }}"
+filterType="{{ filterType }}"
+class="{{ class }}"></date-time-element>
+
+<boolean-element *ngIf="type == 'boolean'" 
+(changed)="handleChanged($event)"
+value="{{ value }}"
+name="{{ name }}"
+guiType="{{ type }}"
+placeholder="{{ placeholder }}"
+showFilterTypesSelect="{{ showFilterTypesSelect }}"
+filterType="{{ filterType }}"
+class="{{ class }}"></boolean-element>
+
+<select-element *ngIf="type == 'select'" 
+(changed)="handleChanged($event)"
+upColumnName="{{ upColumnName }}"
+upFormId="{{ upFormId }}"
+value="{{ value }}"
+valueJson="{{ valueJson }}"
+name="{{ name }}"
+columnName="{{ columnName }}"
+baseUrl="{{ baseUrl }}" 
+placeholder="{{ placeholder }}"
+showFilterTypesSelect="{{ showFilterTypesSelect }}"
+filterType="{{ filterType }}"
+class="{{ class }}"></select-element>
+
+<multi-select-element *ngIf="type == 'multiselect' || type == 'jsonb'" 
+(changed)="handleChanged($event)"
+upColumnName="{{ upColumnName }}"
+upFormId="{{ upFormId }}"
+value="{{ value }}"
+valueJson="{{ valueJson }}"
+name="{{ name }}"
+columnName="{{ columnName }}"
+baseUrl="{{ baseUrl }}" 
+placeholder="{{ placeholder }}"
+showFilterTypesSelect="{{ showFilterTypesSelect }}"
+filterType="{{ filterType }}"
+class="{{ class }}"></multi-select-element>
+
+<multi-select-drag-drop-element *ngIf="type == 'multiselectdragdrop'" 
+(changed)="handleChanged($event)"
+upColumnName="{{ upColumnName }}"
+upFormId="{{ upFormId }}"
+value="{{ value }}"
+valueJson="{{ valueJson }}"
+name="{{ name }}"
+columnName="{{ columnName }}"
+baseUrl="{{ baseUrl }}" 
+placeholder="{{ placeholder }}"
+showFilterTypesSelect="{{ showFilterTypesSelect }}"
+filterType="{{ filterType }}"
+class="{{ class }}"></multi-select-drag-drop-element>
+
+<files-element *ngIf="type == 'files'" 
+(changed)="handleChanged($event)"
+value="{{ value }}"
+valueJson="{{ valueJson }}"
+name="{{ name }}"
+columnName="{{ columnName }}"
+baseUrl="{{ baseUrl }}" 
+placeholder="{{ placeholder }}"
+showFilterTypesSelect="{{ showFilterTypesSelect }}"
+filterType="{{ filterType }}"
+class="{{ class }}"></files-element>
+
+
+<map-element *ngIf="isGeoType(type)" 
+(changed)="handleChanged($event)"
+upFormId="{{ upFormId }}"
+srid="{{ srid }}"
+type="{{ type }}"
+value="{{ value }}"
+name="{{ name }}"
+columnName="{{ columnName }}"
+multiple="{{ isGeoMultiple(type) ? 'true' : null }}"
+placeholder="{{ placeholder }}"
+showFilterTypesSelect="{{ showFilterTypesSelect }}"
+filterType="{{ filterType }}"></map-element>
+
+<code-editor-element *ngIf="type.split(':')[0] == 'codeeditor'" 
+type="{{ type }}"
+value="{{ value }}"
+name="{{ name }}"
+class="{{ class }}"></code-editor-element>

@@ -1,0 +1,162 @@
+<?php
+
+namespace App\Policies;
+
+use App\BaseModel;
+use App\User;
+
+trait UserPolicyTrait
+{    
+    public function columnIsPermittedForQuery(User $user, $column_name)
+    {
+        $control = $this->columnIsPermittedForList($user, $column_name);
+        if($control) return TRUE;
+        
+        $table = 'column_arrays';
+        return $this->columnIsPermited($user, $column_name, $table, 'queries');
+    }
+    
+    public function columnIsPermittedForList(User $user, $column_name)
+    {
+        $table = 'column_arrays';
+        return $this->columnIsPermited($user, $column_name, $table, 'lists');
+    }
+
+    private function columnIsPermited($user, $columnName, $table, $type)
+    {
+        global $pipe;
+        
+        if(!isset($user->auths["tables"])) return FALSE;
+        if(!isset($user->auths["tables"][$pipe['table']])) return FALSE;
+        if(!isset($user->auths["tables"][$pipe['table']][$type])) return FALSE;
+        
+        foreach($user->auths["tables"][$pipe['table']][$type] as $columnArrayOrSetId)
+        {
+            if($columnArrayOrSetId == 0)
+                $control = $this->columnIsPermitedForAllColumns($columnName);
+            else
+                $control = $this->columnIsPermitedForColumnArrayOrSet($columnName, $table, $columnArrayOrSetId);
+            
+            if($control) return TRUE;
+        }
+        
+        return FALSE;
+    }
+    
+    private function columnIsPermitedForAllColumns($columnName)
+    {
+        global $pipe;
+        
+        $model = new BaseModel($pipe['table']);
+        foreach($model->getAllColumnsFromDB() as $column)
+            if($column['name'] == $columnName)
+                return TRUE;
+            
+        return FALSE;
+    }
+    
+    private function columnIsPermitedForColumnArrayOrSet($columnName, $table, $columnArrayOrSetId)
+    {
+        $model = new BaseModel($table);
+        $model = $model->find($columnArrayOrSetId);
+
+        $arr = helper('divide_select', $model->join_columns);
+        foreach($arr as $c)
+        {
+            if(strlen(trim($c)) == 0) continue;
+            
+            $temp = helper('get_column_data_for_joined_column', $c);
+            if($temp[1] == $columnName)
+                return TRUE;
+        }
+
+        foreach($model->getRelationData('column_ids') as $column)
+            if($column->name == $columnName)
+                return TRUE;
+            
+        return FALSE;
+    }
+    
+    public function treeIsPermittedForRelationTableData(User $user, $tree)
+    {
+        $tree = explode(':', $tree);
+        if(count($tree) != 3) return FALSE;
+        
+        global $pipe;
+        
+        if(!in_array($tree[0], $user->auths['tables'][$pipe['table']]['shows']))
+            return FALSE;
+        
+        $column_set = get_attr_from_cache('column_sets', 'id', $tree[0], '*');
+        $column_set->fillVariables();
+        
+                
+        if(!in_array($tree[1], $column_set->column_group_ids))
+            return FALSE;
+        
+        $column_group = get_attr_from_cache('column_groups', 'id', $tree[1], '*');
+        $column_group->fillVariables();
+        
+        
+        if(!in_array($tree[2], $column_group->column_array_ids))
+            return FALSE;
+        
+        $column_array = get_attr_from_cache('column_arrays', 'id', $tree[2], '*');
+        $column_array->fillVariables();
+        
+        if($column_array->getRelationData('column_array_type_id')->name != 'table_from_data')
+            return FALSE;
+        
+        return TRUE;
+    }
+    
+    public function columnSetOrArrayIsPermitted($user, $columnSetOrArrayId, $type)
+    {
+        if(!is_numeric($columnSetOrArrayId)) return FALSE;
+        
+        global $pipe;
+        
+        if(!isset($user->auths['tables'])) return FALSE;
+        if(!isset($user->auths['tables'][$pipe['table']])) return FALSE;
+        if(!isset($user->auths['tables'][$pipe['table']][$type])) return FALSE;
+        
+        if(!in_array((int)$columnSetOrArrayId, $user->auths['tables'][$pipe['table']][$type]))
+            return FALSE;
+        
+        return TRUE;
+    }
+    
+    public function recordPermitted($record, $type)
+    {
+        switch ($type) 
+        {
+            case 'delete':
+                $permitName = '_is_deletable';
+                break;
+            case 'clone':
+                $permitName = '_is_showable';
+                break;
+            case 'restore':
+                $permitName = '_is_restorable';
+                break;
+            case 'update':
+                $permitName = '_is_editable';
+                break;
+            default: dd('invalid type: ' . $type);
+        }
+        
+        $permissions = $this->getRecordPermissions($record);
+        
+        if(isset($permissions->{$permitName}) && !$permissions->{$permitName}) return FALSE;
+        return TRUE;
+    }
+    
+    private function getRecordPermissions($record)
+    {
+        $model = $record->getQuery();
+        $record->addFilters($model, $record->getTable());
+        $model->where($record->getTable().'.id', $record->id);
+        
+        return $model->first();
+    }
+}

@@ -1,0 +1,44 @@
+version: '3.3'
+
+services:
+  traefik:
+    image: traefik
+    command: -c /etc/traefik.toml
+    ports:
+      - "8080:8080"
+      - "80:80"
+      - "443:443"
+    deploy:
+      placement:
+        constraints:
+          - node.role == manager
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./acme.json:/etc/acme.json
+      - ./traefik.toml:/etc/traefik.toml
+    networks:
+      - "traefik-net"
+      
+      
+  whoami:
+    image: containous/whoami
+    networks:
+      - "traefik-net"
+    deploy:
+      labels:
+        traefik.frontend.rule: "Host:test.ecylmz.com; PathPrefixSplit:/whoami"
+        traefik.port: "80"
+        traefik.enable: "true"
+        traefik.backend: "whoami"
+        traefik.docker.network: "traefik-net"
+        #- "traefik.docker.network=web"
+        #  - "traefik.enable=true"
+        #  - "traefik.basic.frontend.rule=Host:app.my-awesome-app.org"
+        #  - "traefik.basic.port=9000"
+        #  - "traefik.basic.protocol=http"
+        #  - "traefik.admin.frontend.rule=Host:admin-app.my-awesome-app.org"
+        #  - "traefik.admin.protocol=https"
+        #  - "traefik.admin.port=9443"
+
+networks:
+  traefik-net:

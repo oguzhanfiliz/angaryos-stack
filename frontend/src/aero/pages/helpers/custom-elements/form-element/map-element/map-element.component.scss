@@ -1,0 +1,84 @@
+#map-menu
+{
+  position: absolute;
+  right: 10;
+  top: 10;
+  z-index: 999;
+}
+
+.filter-element
+{
+  font-size: 13px;
+  font-weight: bold;
+  margin: 5px 0 0 5px;
+  height: 26px;
+  padding: 4;
+  border: 1px solid #ccc !important;
+  border-radius: 5px !important;
+  cursor: pointer !important;
+}
+
+.filter-element-big
+{
+  font-size: 15px;
+  font-weight: bold;
+  height: 32px;
+  padding: 5px 10px;
+  border: 1px solid #ccc !important;
+  border-radius: 5px !important;
+  cursor: pointer !important; 
+}
+
+.btn-sm
+{
+  padding: 0 3px !important;
+  margin: 1px  !important;
+  height: 25px !important;
+  min-height: 25px !important;
+  font-size: 11px !important;
+}
+
+.light-table
+{
+  width: 100%;
+  padding: 0;
+  margin: 0;
+  border: 0;
+
+  tr
+  {
+    padding: 0;
+    margin: 0;
+    border: 0;
+
+    td.sort-info
+    {
+      text-align: right;
+      font-size: 11px;
+      
+      span
+      {
+        font-size: 11px;
+      }
+    }
+
+    td.clear-filter
+    {
+      padding: 12px 3px 0 3px;
+      text-align: right;
+      
+      span
+      {
+        font-size: 11px;
+        cursor: pointer;
+      }
+    }
+
+    td
+    {
+      padding: 0;
+      margin: 0;
+      border: 0;
+    }
+  }
+}

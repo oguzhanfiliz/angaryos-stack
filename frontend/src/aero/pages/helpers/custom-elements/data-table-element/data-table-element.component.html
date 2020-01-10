@@ -1,0 +1,367 @@
+<div class="block-header" style="margin-bottom: 0; padding-bottom: 0;">
+    <div class="row">
+        <div class="col-12 col-md-6">
+            <table class="light-table">
+                <tr *ngIf="!lightTable">
+                    <td><h2>{{ getData('table_info.display_name') }}</h2>
+                </tr><tr>
+                    <td style="padding:5px 0">
+                        <span *ngFor="let columnName of getObjectKeys(params.filters)"
+                            (click)="openDetailFilterModal(columnName)"
+                            class="badge badge-danger" style="margin:2px;cursor: pointer;">
+                            
+                            <span [innerHTML]="getFilterDescription(columnName)"></span>
+                            &nbsp;
+                            <span style="font-size: 9px;font-weight: bold;" 
+                                (click)="clearColumnFilter(columnName)" class="ti-close">
+                            </span>
+                        </span>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <div class="col-12 col-md-6" style="text-align: right;">
+            <button *ngIf="!lightTable" style="z-index: 999;"
+                class="btn btn-sm btn-secondary btn-icon float-right right_icon_toggle_btn"
+                type="button">
+
+                <i class="zmdi zmdi-arrow-right"></i>
+            </button>
+
+            <button *ngIf="!lightTable" style="z-index: 999;"
+                class="btn btn-sm btn-secondary btn-icon mobile_menu" 
+                type="button">
+
+                <i class="zmdi zmdi-sort-amount-desc"></i>
+            </button>
+
+            <button *ngIf="!lightTable && !archiveTable && can('deleted')"
+                id="create-button" (click)="deleted()"
+                class="btn btn-sm float-right btn-primary btn-icon pull-right"
+                data-toggle="tooltip" title="Silinmiş Kayıtlar" 
+                role="button" > 
+                
+                <span class="ti-trash"></span>
+            </button>
+            
+            <button *ngIf="!lightTable"
+                id="search-button"
+                class="btn btn-sm float-right btn-primary btn-icon pull-right" 
+                data-toggle="dropdown" role="button" aria-haspopup="true" 
+                aria-expanded="false"> 
+                
+                <span class="ti-search" data-toggle="tooltip" title="Detaylı Arama"></span> 
+            </button>
+            <ul class="dropdown-menu">
+                <li *ngFor="let columnName of getObjectKeys(getData('query_columns'))" role="menuitem">
+                    <a class="dropdown-item" (click)="openDetailFilterModal(columnName)">                                                        
+                        {{ getData('query_columns.'+columnName+'.display_name') }}
+                    </a>
+                </li>
+            </ul>
+
+            <button *ngIf="!lightTable && !archiveTable && can('create')"
+                id="create-button" (click)="create()"
+                class="btn btn-sm float-right btn-primary btn-icon pull-right" 
+                data-toggle="tooltip" title="Yeni Ekle"
+                role="button" > 
+                
+                <span class="ti-plus"></span> 
+            </button>
+
+            <div class="checkbox" *ngIf="!lightTable && !archiveTable">
+                <input (click)="toggleEditMode()" id="editMode" type="checkbox" [attr.checked]="getEditMode() ? '' : null">
+                <label  for="editMode" style="margin: 1 0; padding: 0 28 0 0;"></label>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="container-fluid">
+    <div class="row clearfix">
+        <div class="col-lg-12">
+            <div class="card">
+                <div class="row clearfix">
+                    <div class="col-lg-12">
+                        <div class="card">
+                            <div class="body" style="padding: 0;overflow: auto;">
+                                <table class="table table-bordered table-striped table-hover" role="grid" >
+                                    <thead>
+                                        <tr cdkDropList cdkDropListOrientation="horizontal" (cdkDropListDropped)="dropColumn($event)"
+                                            role="row">
+                                            
+                                            <td align="center">
+                                                <button href="javascript:void(0);" class="btn btn-primary btn-icon btn-sm" 
+                                                    data-toggle="dropdown" role="button" aria-haspopup="true" 
+                                                    aria-expanded="false"> 
+                                                    
+                                                    <span class="ti-menu-alt"></span> 
+                                                </button>
+                                                <ul class="dropdown-menu">
+                                                    <li (click)="showAllColumns()" role="menuitem">
+                                                        <a class="dropdown-item">Tümünü Göster</a>
+                                                    </li>
+                                                    <li (click)="hideAllColumns()" role="menuitem">
+                                                        <a class="dropdown-item">Tümünü Gizle</a>
+                                                    </li>
+                                                    <li class="divider dropdown-divider"></li>
+                                                    
+                                                    <li 
+                                                        *ngFor="let columnName of getObjectKeys(getData('columns'))"
+                                                        role="menuitem">
+
+                                                        <a class="dropdown-item" 
+                                                            [ngStyle]="{'color': (getColumnVisibility(columnName) ? 'black' : '#ccc')}"
+                                                            (click)="toggleColumnVisibility(columnName)">
+                                                            
+                                                            {{ getData('columns.'+columnName+'.display_name') }}
+                                                        </a>
+                                                    </li>
+                                                </ul>
+                                            </td>
+                                            <td cdkDrag style="cursor: pointer;"
+                                                *ngFor="let columnName of params.columns"
+                                                (click)="sortByColumn(columnName)">
+                                                <table class="light-table">
+                                                    <tr>
+                                                        <td>
+                                                            <b>
+                                                                {{ getData('columns.'+columnName+'.display_name') }}
+                                                            </b>
+                                                        </td>
+                                                        <td class="sort-info">
+                                                            <span *ngIf="getSortStateForColumn(columnName) > 0">{{ getSortPriorityForColumn(columnName) }} </span>
+                                                            <span class="ti-arrow-up" *ngIf="getSortStateForColumn(columnName) == 2" ></span>
+                                                            <span class="ti-arrow-down" *ngIf="getSortStateForColumn(columnName) == 1" ></span>
+                                                        </td>
+                                                    </tr>
+                                                </table>
+                                            </td>
+                                        </tr>
+                                        <tr id="filter-tr">
+                                            <td></td>
+                                            <td style="padding: 0;" *ngFor="let columnName of params.columns">                            
+                                                <table class="light-table">
+                                                    <tr>
+                                                        <td class="filter-cell" style="width: 99%;">
+                                                            <form-element 
+                                                                (changed)="filterChanged(columnName, $event)" 
+                                                                name="{{ columnName  }}_filter_basic"
+                                                                columnName="{{ columnName  }}"
+                                                                class="form-control column-filter"
+                                                                baseUrl="{{ baseUrl }}"
+                                                                type="{{ getColumnGuiTypeForQuery(getData('columns.'+columnName+'.gui_type_name')) }}"
+                                                                placeholder="{{ getData('columns.'+columnName+'.display_name') }}"
+                                                                value="{{ getParam('filters.'+columnName+'.filter') }}"></form-element>                                                            
+
+                                                                <!-- {{ getColumnGuiTypeForQuery(getData('columns.'+columnName+'.gui_type_name')) }} -->
+                                                        </td>
+                                                        <td>&nbsp;</td>
+                                                        <td class="clear-filter">
+                                                            <span (click)="clearColumnFilter(columnName)" class="ti-close"></span>
+                                                        </td>
+                                                        <td>&nbsp;</td>
+                                                    </tr>
+                                                </table>
+                                            </td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr 
+                                            *ngFor="let record of getData('records'); let i = index"
+                                            role="row" (contextmenu)="selectRecord($event, record, i)"
+                                            [class]="'odd operations ' + getRecordRowClass(i)">
+
+                                            <td>
+                                                <button *ngIf="archiveTable"
+                                                    class="btn btn-sm float-right btn-primary btn-icon pull-right" 
+                                                    (click)="restore(record)"> 
+                                                    
+                                                    <span class="ti-reload"></span>
+                                                </button>
+
+                                                <table class="light-table" *ngIf="!lightTable && !archiveTable">
+                                                    <tr style="background-color: transparent !important;">
+                                                        <td>
+                                                            <button 
+                                                                class="btn btn-sm float-right btn-primary btn-icon pull-right" 
+                                                                data-toggle="dropdown" role="button" aria-haspopup="true" 
+                                                                aria-expanded="false"> 
+                                                                
+                                                                <i class="zmdi zmdi-settings"></i>
+                                                            </button>
+                                                            <ul class="dropdown-menu">
+                                                                <li 
+                                                                    *ngFor="let operation of getRecordOperations()"
+                                                                    [hidden] = "!can(operation.type, record)"
+                                                                    (click)="doOperation(operation.type,record)"
+                                                                    role="menuitem">
+                                                                    
+                                                                    <a class="dropdown-item">                                                        
+                                                                        <span style="margin-right: 5px;" [class]="'ti-' + operation.icon"></span>
+                                                                        {{ operation.display_name }}
+                                                                    </a>
+                                                                </li>
+                                                            </ul>
+                                                        </td>
+                                                    </tr>
+                                                </table>
+                                            </td>
+                                            <td *ngFor="let columnName of params.columns" class="edit-td">
+                                                <table class="light-table-force">
+                                                    <tr>
+                                                        <td>
+                                                            <div *ngIf="!isGeoColumn(columnName)" [innerHTML]="convertDataForGui(record, columnName)"></div> 
+                                                
+                                                            <geo-preview-element 
+                                                                *ngIf="isGeoColumn(columnName)" 
+                                                                name="{{ columnName }}"
+                                                                type="{{ getData('columns.'+columnName+'.gui_type_name') }}"
+                                                                srid="{{ getData('columns.'+columnName+'.srid') }}"
+                                                                wkt="{{ record[columnName] }}">
+                                                            </geo-preview-element>
+                                                        </td><td align="right">
+                                                            <span style="cursor: pointer;visibility: hidden;"
+                                                                    *ngIf="getEditMode()" 
+                                                                    (click)="editRecodData(record, columnName)"
+                                                                    class="ti-pencil-alt2"></span>
+                                                        </td>
+                                                    </tr>
+                                                </table>
+                                            </td>
+                                        </tr>
+                                        <tr *ngIf="getData('records') == null || getData('records').length == 0">
+                                            <td 
+                                                style="text-align: center;font-size: 20px;"
+                                                colspan="300">
+                                                
+                                                Kayıt Yok
+                                            </td>
+                                        </tr>
+                                        <tr role="row" class="odd operations"
+                                            *ngIf="getData('records') != null && getData('records').length > 0"
+                                            >
+
+                                            <td></td>
+                                            <td *ngFor="let columnName of params.columns">
+                                                <b>{{ getCollectiveInfo(columnName) }}</b>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                                <table class="light-table">
+                                    <tr>
+                                        <td>
+                                            <table style="padding: 0; margin: 0;">
+                                                <tr>
+                                                    <td>Sayfada Kayıt:</td>
+                                                    <td>
+                                                        <select class="form-control ms"
+                                                            style="width: 60px; height: 26px; padding: 0 5px; margin: 7px;" 
+                                                            value="{{ getParam('limit') }}"
+                                                            (change)="limitUpdated($event.target.value)" >
+                                                        <option value="{{ p }}" *ngFor="let p of [1, 2, 3, 10, 25, 100]">
+                                                            {{ p }}
+                                                        </option>
+                                                    </select> 
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                        </td>
+                                        <td align="right">
+                                            <table class="pull-right"><tr><td>
+                                                <button *ngIf="getParam('page') > 1" class="btn btn-primary btn-sm" 
+                                                    style="width: 60px !important; height: 26px; padding: 0 5px; white-space: nowrap;" 
+                                                    aria-expanded="true" (click)="prevPage()">
+                                                    Önceki
+                                                </button>
+                                            </td><td style="padding: 0px !important;">
+                                                <select *ngIf="getData('pages') > 1"
+                                                        style="width: 60px; height: 26px; padding: 0 5px; margin: 3px;" 
+                                                        class="form-control ms"
+                                                        [value]="getParam('page')"
+                                                        (change)="pageUpdated($event.target.value)" >
+                                                    <option value="{{ p }}" *ngFor="let p of generalHelper.getRange(getData('pages'))">
+                                                        {{ p }}
+                                                    </option>
+                                                </select>
+                                            </td><td>
+                                                <button *ngIf="getParam('page') < getData('pages') " class="btn btn-primary btn-sm" 
+                                                    style="width: 60px !important; height: 26px; padding: 0 5px; white-space: nowrap;" 
+                                                    aria-expanded="true" (click)="nextPage()">
+                                                    Sonraki
+                                                </button>
+                                            </td></tr></table>
+                                        </td>
+                                    </tr>
+                                </table>
+                                <br>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="{{ inFormElementId }}inFormModal" role="dialog" [attr.aria-labelledby]="inFormTableName+'inFormModalLabel'" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-body" style="padding: 0px !important;">
+                <in-form-element  
+                    *ngIf="inFormTableName.length > 0"
+                    id="{{ inFormElementId }}" 
+                    (inFormSaved)="inFormSavedSuccess($event)"
+                    singleColumn="true"
+                    inFormTableName="{{ inFormTableName }}"
+                    inFormColumnName="{{ inFormColumnName }}" 
+                    inFormRecordId="{{ inFormRecordId }}">
+                
+                </in-form-element>
+                <button class="btn btn-danger btn-block" 
+                    style="position: absolute; margin: -35 20 0 20; width: -webkit-fill-available;"
+                    (click)="closeModal(inFormElementId+'inFormModal')"
+                    type="button">İptal
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="detailFilterModal" tabindex="-1" role="dialog" aria-labelledby="detailFilterModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="detailFilterModalTitle">
+                    {{ getData('columns.' + selectedFilter.columnName + '.display_name') }}
+                </h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <detail-filter-element 
+                displayName="{{ getData('columns.'+selectedFilter.columnName+'.display_name') }}"                                                                
+                filterJson="{{ getFilterJson(selectedFilter) }}"
+                (changed)="detailFilterChanged($event)"
+                baseUrl="{{ baseUrl }}" >
+            </detail-filter-element>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="mapPreviewModal" tabindex="-1" role="dialog" aria-labelledby="mapPreviewModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-body" style="padding: 5px !important;">
+                <div style="width: 100%; min-height: 200px;"  id="mapPreview"></div>
+                <div id="mouse-position-mapPreview" class="mouse-position"></div>
+                
+                <button id="close" data-dismiss="modal"
+                    class="btn btn-primary btn-sm btn-icon" type="button">
+
+                    <i class="zmdi zmdi-close"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

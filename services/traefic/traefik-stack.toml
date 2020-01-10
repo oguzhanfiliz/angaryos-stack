@@ -1,0 +1,33 @@
+# traefik.toml
+
+# defaultEntryPoints must be at the top because it should not be in any table below
+logLevel = "DEBUG"
+graceTimeOut = "5s"
+debug = true
+defaultEntryPoints = ["http", "https"]
+
+[web]
+# Port for the status page
+address = ":8080"
+
+# Entrypoints, http and https
+[entryPoints]
+  [entryPoints.http]
+  address = ":80"
+    [entryPoints.http.redirect]
+    entryPoint = "https"
+  [entryPoints.https]
+  address = ":443"
+  [entryPoints.https.tls]
+    [[entryPoints.https.tls.certificates]]
+    certFile = "/etc/self.crt"
+    keyFile = "/etc/self.key"
+  
+[retry]
+
+[docker]
+endpoint = "unix:///var/run/docker.sock"
+domain = "kubistest.kozid.local"
+swarmmode = true
+watch = true
+exposedbydefault = false

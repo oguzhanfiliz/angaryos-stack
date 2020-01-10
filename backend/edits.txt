@@ -1,0 +1,8 @@
+Ekleme:             .\app\Providers\RouteServiceProvider.php@boot:30
+Açıklama:           Uygulama için gerekli ayarlar db den çekilerek sabitlere dolduruluyor
+Kod:                load_application_variables_from_db();
+
+
+Düzenleme:          .\app\Http\Kernel.php:36
+Açıklama:           GUI den post sorgular yapılabilmesi için token mismatch devre dışı bırakıldı
+Kod:                //\App\Http\Middleware\VerifyCsrfToken::class,

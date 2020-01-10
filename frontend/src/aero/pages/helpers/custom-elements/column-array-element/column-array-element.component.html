@@ -1,0 +1,30 @@
+<h5 *ngIf="getDataFromColumnArray('name') != null && getDataFromColumnArray('name').length != 0" style="margin: 25px 0 10px 0">                            
+    <strong>{{ getDataFromColumnArray('name') }}</strong>
+</h5>
+<table *ngIf="!columnArrayIsRelationTable(columnArray)" width="100%" class="table table-hover">
+    <tbody>
+        <tr *ngFor="let columnName of getColumnNamesFromColumnArray(columnArray)">
+            <th class="title">
+                {{ getDataFromColumnArray('columns.'+columnName+'.display_name') }}
+            </th>
+            <td [innerHTML]="getConvertedDataForGuiByColumnName(columnName)">
+            </td>
+        </tr>
+    </tbody>
+</table>
+
+<div *ngIf="columnArrayIsRelationTable(columnArray)" id="relation-data-{{ getDataFromColumnArray('id') }}">
+    <table [hidden]="relationTableIsLoaded(columnArray)" width="100%">
+        <tr>
+            <td align="center">
+                <img src="assets/img/loading.gif">
+            </td>
+        </tr>
+    </table>
+    <data-table-element [hidden]="!relationTableIsLoaded(columnArray)"
+        (dataChanged)="relationTableDataChanged(columnArray, $event)" 
+        baseUrl="{{ getBaseUrlByColumnArray(columnArray) }}"
+        lightTable = "true" tableName="tree:{{ columnArray.tree }}"
+        defaultLimit="{{ defaultLimit }}">
+    </data-table-element>
+</div>

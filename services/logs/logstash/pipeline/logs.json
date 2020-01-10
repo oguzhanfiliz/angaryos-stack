@@ -1,0 +1,18 @@
+{
+  "template" : "logstash-*",
+  "version" : 60001,
+  "settings" : {
+    "index.refresh_interval" : "5s",
+	"index": {
+      "mapping": {
+        "total_fields": {
+          "limit": "12000"
+        }
+      }
+	}
+  },
+  "mappings" : {
+    "_default_" : {
+    }
+  }
+}

@@ -1,0 +1,30 @@
+<input 
+    type="hidden"
+    name="{{ name }}_old" 
+    id="{{ name }}_old"
+    value="{{ getJson(val) }}">
+
+<input multiple
+style="height: 40px;"
+type="file" 
+(change)="handleChange($event)" 
+class="{{ class }}"        
+placeholder="{{ placeholder }}"        
+name="{{ name }}" id="{{ name }}"
+>
+
+<div class="row">
+    <div
+        *ngFor="let file of getData('')"
+        class="col-lg-2 col-md-2 col-sm-3 m-0">
+
+        <a data-fancybox="gallery" href="{{ file.destination_path + 'b_' + file.file_name  }}">
+            <img  
+            class="img-fluid img-thumbnail" 
+            src="{{ file.destination_path + 's_' + file.file_name  }}"> 
+        </a>        
+        <button class="btn btn-sm btn-danger" (click)="delete(file)">
+            <i class="zmdi zmdi-delete"></i>
+        </button>
+    </div>
+</div>

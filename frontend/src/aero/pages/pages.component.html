@@ -1,0 +1,153 @@
+<body class="theme-blush">
+        
+        <!-- Page Loader -->
+        <div class="page-loader-wrapper">
+            <div class="loader">
+                <div class="m-t-30"><img class="zmdi-hc-spin" src="assets/themes/aero/assets/images/loader.svg" width="48" height="48" alt="Aero"></div>
+                <p>Please wait...</p>
+            </div>
+        </div>
+        
+        <!-- Overlay For Sidebars -->
+        <div class="overlay"></div>
+        
+        <!-- Main Search -->
+        <div id="search">
+            <button id="close" type="button" class="close btn btn-primary btn-icon btn-icon-mini btn-round">x</button>
+            <form>
+                <input type="search" value="" placeholder="Nasıl yardımcı olabilirim?" />
+                <button type="submit" class="btn btn-primary">Arama</button>
+            </form>
+        </div>
+        
+        <!-- Right Icon menu Sidebar -->
+        <div class="navbar-right">
+            <ul class="navbar-nav">
+                <li>
+                    <a style="padding: 10px !important; margin-bottom: 10px !important;" href="#search" class="main_search" title="Search...">
+                        <i class="zmdi zmdi-search"></i>
+                    </a>
+                </li>
+                <li class="dropdown">
+                    <a style="padding: 10px !important; margin-bottom: 10px !important;" 
+                        href="javascript:void(0);" class="dropdown-toggle" title="App" data-toggle="dropdown" role="button">
+                        
+                        <i class="zmdi zmdi-apps"></i>
+                    </a>
+                    <ul class="dropdown-menu slideUp2">
+                        <li class="header">Kısayollar</li>
+                        <li class="body">
+                            <ul class="menu app_sortcut list-unstyled">
+                                <li>
+                                    <a (click)="yetkiTemizle()">
+                                        <div class="icon-circle mb-2 bg-blue">
+                                            <i class="zmdi zmdi-account"></i>
+                                        </div>
+                                        <p style="font-size: 11px" class="mb-0">Yetki<br>Yenile</p>
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
+                    </ul>
+                </li>
+                <li>
+                    <a style="padding: 10px !important; margin-bottom: 10px !important;" 
+                        href="javascript:void(0);" class="js-right-sidebar" title="Setting">
+                        
+                        <i class="zmdi zmdi-settings zmdi-hc-spin"></i>
+                    </a>
+                </li>
+                <li>
+                    <a (click)="logout()" style="padding: 10px !important; margin-bottom: 10px !important;"  class="mega-menu" title="Çıkış Yap">
+                        <i class="zmdi zmdi-power"></i>
+                    </a>
+                </li>
+            </ul>
+        </div>
+        
+        <!-- Left Sidebar -->
+        <aside id="leftsidebar" class="sidebar">
+            <div class="navbar-brand">
+                <button class="btn-menu ls-toggle-btn" type="button"><i class="zmdi zmdi-menu"></i></button>
+                <a href="/"><img src="assets/themes/aero/assets/images/logo.svg" width="25" alt="Aero"><span class="m-l-10">Angaryos</span></a>
+            </div>
+            <div class="menu">
+                <ul class="list">
+                    <li [hidden]="user == {}">
+                        <div class="user-info">
+                            <a class="image" href="profile.html"><img src="assets/themes/aero/assets/images/profile_av.jpg" alt="User"></a>
+                            <div class="detail">
+                                <h4>{{ user["name_basic"] + " " + user["surname"] }}</h4>
+                                <small>{{ user["email"] }}</small>                        
+                            </div>
+                        </div>
+                    </li>
+
+                    <li>
+                        <input placeholder="Filtrele" (input)="searchInMenuInputChanged($event)" class="form-control">
+                    </li>
+                    
+                    <li *ngFor="let menuItem of aeroThemeHelper.baseMenu">
+                            <a [hidden]="menuItem.link == null"
+                                href="#{{ menuItem.link }}">
+
+                                <i [class]="'zmdi ' + menuItem.icon"></i>
+                                <span>{{ menuItem.title }}</span>
+                            </a>
+                            
+                            <a [hidden]="menuItem.link != null"  
+                                [class] = "'menu-toggle ' + (menuItem.toggled ? 'toggled' : '')">
+                                <i class="zmdi zmdi-grid"></i><span>{{ menuItem.title }}</span>
+                            </a>
+                            <ul class="ml-menu">
+                                <li *ngFor="let childMenuItem of menuItem.children">
+                                    <a href="#{{ childMenuItem.link }}">{{ childMenuItem.title }}</a>
+                                </li>
+                            </ul>
+                    </li>
+                </ul>
+            </div>
+        </aside>
+        
+        <!-- Right Sidebar -->
+        <aside id="rightsidebar" class="right-sidebar">
+            <div class="slim_scroll">
+                <div class="card">
+                    <h6>Tema</h6>
+                    <div class="light_dark">
+                        <div class="radio">
+                            <input type="radio" name="radio1" id="lighttheme" value="light" checked="">
+                            <label for="lighttheme">Açık Mod</label>
+                        </div>
+                        <div class="radio mb-0">
+                            <input type="radio" name="radio1" id="darktheme" value="dark">
+                            <label for="darktheme">Koyu Mod</label>
+                        </div>
+                    </div>
+                    <br>
+                    <ul class="choose-skin list-unstyled">
+                        <li data-theme="purple"><div class="purple"></div></li>                   
+                        <li data-theme="blue"><div class="blue"></div></li>
+                        <li data-theme="cyan"><div class="cyan"></div></li>
+                        <li data-theme="green"><div class="green"></div></li>
+                        <li data-theme="orange"><div class="orange"></div></li>
+                        <li data-theme="blush" class="active"><div class="blush"></div></li>
+                    </ul>   
+                </div>
+                <div class="card">
+                    <h6>Ayarlar</h6>
+                    <ul class="setting-list list-unstyled">
+                        <li>
+                            <div class="checkbox">
+                                <input id="checkbox1" type="checkbox">
+                                <label for="checkbox1">Report Panel Usage</label>
+                            </div>
+                        </li>                        
+                    </ul>
+                </div>                
+            </div> 
+        </aside>
+        
+        <router-outlet></router-outlet>
+
+</body>

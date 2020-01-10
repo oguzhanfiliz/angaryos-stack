@@ -1,0 +1,52 @@
+body
+{
+    font-size: 13px !important;
+}
+table
+{
+    font-size: 13px !important;
+}
+a
+{
+    cursor: pointer;
+}
+
+.selected-option
+{
+    background-color: #9aeef1 !important;
+}
+
+.mouse-position
+{
+    color: #847d7d; 
+    padding: 0 5; 
+    bottom: 5px;
+    z-index: 999999; 
+    position: absolute; 
+    background-color: #ccc; 
+    font-weight: bold;
+}
+
+#close
+{
+    position: absolute !important;
+    top: 5px;
+    right: 5px;
+    z-index: 9999;
+}
+
+input::placeholder, .select2-selection__placeholder, textarea::placeholder
+{
+    color:#ccc !important;
+}
+
+/*@media only screen and (max-width: 640px) 
+{
+	#close
+    {
+        position: absolute !important;
+        top: 5px;
+        right: 50%;
+        z-index: 9999;
+    }
+}*/

@@ -1,0 +1,281 @@
+import { BaseHelper } from './base';
+import { Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+
+import { MessageHelper } from './message';
+import { GeneralHelper } from './general';
+
+import Swal from 'sweetalert2'
+import 'sweetalert2/dist/sweetalert2.min.css'
+
+@Injectable()
+export class SessionHelper 
+{     
+    constructor(
+      private httpClient: HttpClient,
+      private messageHelper: MessageHelper,
+      private generalHelper: GeneralHelper) 
+    {
+      this.preLoad();
+    }
+
+    private preLoad()
+    {
+      if(BaseHelper.backendServiceControl == null)
+        this.backendServiceControl();
+    }
+
+    private backendServiceControl()
+    {
+      setTimeout(() => 
+      {
+        this.doHttpRequest("GET", BaseHelper.backendUrl, null)
+        .then((data) => BaseHelper.backendServiceControl = true)
+        .catch((errorMessage) => this.messageHelper.sweetAlert("Sunucu servisleri şuan çalışmıyor olabilir. Sorun yaşarsanız bir süre sonra tekrar deneyin.", "Sunucuya erişilemedi"));
+      }, 100);
+    }
+
+    public getBackendUrlWithToken()
+    {
+      if(BaseHelper.token.length == 0) this.generalHelper.navigate("/login");
+
+      return BaseHelper.backendUrl + BaseHelper.token + "/";
+    }
+
+    private getHttpObject(type:string, url:string, data:object)
+    {
+      switch (type) 
+      {
+        case "GET": 
+          url = this.dataInjectionInUrl(url, data);
+          return this.httpClient.get(url);
+        case "POST": return this.httpClient.post(url, data);
+        case "PUT": return this.httpClient.put(url, data);
+        case "DELETE": return this.httpClient.delete(url, data);
+      }
+    }
+
+    private dataInjectionInUrl(url, data)
+    {
+      if(data == null) return url;
+
+      url += "?";
+
+      var keys = Object.keys(data);
+      for(var i = 0; i < keys.length; i++)
+        url += keys[i] + "=" + data[keys[i]] + "&";
+
+      return encodeURI(url);
+    }
+
+    private redirectLoginPageIfTokenIsFail(error)
+    {
+      if(typeof error.error != "undefined")
+        if(typeof error.error.data != "undefined")
+          if(typeof error.error.data.message != "undefined")
+            if(error.error.data.message == "fail.token")
+            {
+              BaseHelper.clearUserData();
+              this.generalHelper.navigate("/login");
+              return true;
+            }
+
+      return false;
+    }
+
+    private initializeDBConfirmation()
+    {
+      Swal.fire(
+      {
+        title: 'İlk kurulum',
+        text: "Veritabanı daha önce kurulmamış. Şimdi ilk kurulumu yapmak ister misiniz?",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Evet şimdi yapacağım!'
+      })
+      .then((result) => 
+      {
+        if (result.value) 
+        {
+          this.messageHelper.toastMessage('Bu işlem zaman alabilir tamamlandığında size bildirilecek...');
+
+          this.doHttpRequest("GET", BaseHelper.backendUrl + "initialize-db")
+          .then((data) =>
+          {
+            var message = "Tebrikler kurulum başarılı. Bu sayfayı yeniden ";
+            message += " başlatarak giriş yapabilirsiniz."
+              
+            Swal.fire("Başarılı!", message, "success");
+          })
+          .catch((errorMessage) =>
+          {
+            var message = "Malesef veritabanı başlatılamadı! Tarayıcınızın geliştirici araçlarından ";
+            message += " network geçmişinize bakabilir yada destek sayfamızı ziyaret edebilirsiniz.";
+              
+            Swal.fire("Yapılamadı!", message, "warning");
+          });
+        }
+      });
+    }
+
+    private redirectInitializeIfDbNotInitialized(error)
+    {
+      if(typeof error.error != "undefined")
+        if(typeof error.error.data != "undefined")
+          if(typeof error.error.data.message != "undefined")
+            if(error.error.data.message == "db.is.not.initialized")
+            {
+              this.initializeDBConfirmation();
+              return true;
+            }
+
+      return false;
+    }
+
+    private convertFromHumanMessage(message)
+    {
+      var messages = 
+      {
+        "mail.or.password.incorrect": "Mail yada şifre hatalı",
+        'no.auth': "Yetkiniz Yok!",
+      }
+
+      if(typeof messages[message] == "undefined") return message;
+
+      return messages[message];
+    }
+
+    private alertIfErrorHaveServerMessage(error)
+    {
+      if(typeof error.error != "undefined")
+        if(typeof error.error.data != "undefined")
+          if(typeof error.error.data.message != "undefined")
+          {
+            this.messageHelper.sweetAlert(this.convertFromHumanMessage(error.error.data.message), 'Hata', 'warning')
+            return true;
+          }
+
+      return false;
+    }
+
+    public doHttpRequest(type: string, url: string, data: object = {})
+    {
+      return new Promise((resolve, reject) =>
+      {
+        this.getHttpObject(type, url, data)
+        .subscribe( response => resolve(response["data"]),
+        error =>
+        {
+          if(url.indexOf('initialize-db') > -1) reject(error.message);
+
+          if(this.redirectInitializeIfDbNotInitialized(error)) return;          
+          else if(this.redirectLoginPageIfTokenIsFail(error)) return;          
+          else if(this.alertIfErrorHaveServerMessage(error)) return;     
+
+          this.messageHelper.sweetAlert("Sunucuyla iletişimde bir hata oldu: " + error.message);
+          reject(error.message);
+        });
+      });
+    }
+
+    public login(email:string, password:string)
+    {
+      return this.doHttpRequest("POST", BaseHelper.backendUrl+"login", {email: email, password: password});
+    }
+
+    public logout()
+    {
+      BaseHelper.clearUserData()
+      this.generalHelper.navigate('/login');
+    }
+
+    public fillLoggedInUserInfo()
+    {
+      var url = this.getBackendUrlWithToken() + "getLoggedInUserInfo";
+
+      return this.doHttpRequest("GET", url, null) 
+      .then((data) =>  
+      {
+        BaseHelper.setLoggedInUserInfo(data);
+        return data;
+      });
+    }
+
+    public tokenControl()
+    {
+      return this.doHttpRequest("GET", this.getBackendUrlWithToken(), null);  
+    }
+
+    public getLoggedInUserInfo()
+    {
+      if(BaseHelper.loggedInUserInfo == null) 
+        return this.fillLoggedInUserInfo();
+
+      return this.tokenControl()
+      .then((data) =>
+      {
+        return BaseHelper.loggedInUserInfo;
+      });
+    }
+
+    public toSeo(str) 
+    {
+      str = str.replace(/ /g, "_");
+      str = str.replace(/</g, "");
+      str = str.replace(/>/g, "");
+      str = str.replace(/"/g, "");
+      str = str.replace(/é/g, "");
+      str = str.replace(/!/g, "");
+      str = str.replace(/’/, "");
+      str = str.replace(/£/, "");
+      str = str.replace(/^/, "");
+      str = str.replace(/#/, "");
+      str = str.replace(/$/, "");
+      str = str.replace(/\+/g, "");
+      str = str.replace(/%/g, "");
+      str = str.replace(/½/g, "");
+      str = str.replace(/&/g, "");
+      str = str.replace(/\//g, "");
+      str = str.replace(/{/g, "");
+      str = str.replace(/\(/g, "");
+      str = str.replace(/\[/g, "");
+      str = str.replace(/\)/g, "");
+      str = str.replace(/]/g, "");
+      str = str.replace(/=/g, "");
+      str = str.replace(/}/g, "");
+      str = str.replace(/\?/g, "");
+      str = str.replace(/\*/g, "");
+      str = str.replace(/@/g, "");
+      str = str.replace(/€/g, "");
+      str = str.replace(/~/g, "");
+      str = str.replace(/æ/g, "");
+      str = str.replace(/ß/g, "");
+      str = str.replace(/;/g, "");
+      str = str.replace(/,/g, "");
+      str = str.replace(/`/g, "");
+      str = str.replace(/|/g, "");
+      str = str.replace(/\./g, "");
+      str = str.replace(/:/g, "");
+      str = str.replace(/İ/g, "i");
+      str = str.replace(/I/g, "i");
+      str = str.replace(/ı/g, "i");
+      str = str.replace(/ğ/g, "g");
+      str = str.replace(/Ğ/g, "g");
+      str = str.replace(/ü/g, "u");
+      str = str.replace(/Ü/g, "u");
+      str = str.replace(/ş/g, "s");
+      str = str.replace(/Ş/g, "s");
+      str = str.replace(/ö/g, "o");
+      str = str.replace(/Ö/g, "o");
+      str = str.replace(/ç/g, "c");
+      str = str.replace(/Ç/g, "c");
+      str = str.replace(/–/g, "_");
+      str = str.replace(/—/g, "_");
+      str = str.replace(/—-/g, "_");
+      str = str.replace(/—-/g, "_");
+
+      return str.toLowerCase();
+    }
+}

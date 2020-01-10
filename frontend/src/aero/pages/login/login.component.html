@@ -1,0 +1,43 @@
+<div class="authentication">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-4 col-sm-12">
+                <form class="card auth_form">
+                    <div class="header">
+                        <img class="logo" src="assets/themes/aero/assets/images/logo.svg" alt="">
+                        <h5>Kullanıcı Girişi</h5>
+                    </div>
+                    <div class="body">
+                        <div class="input-group mb-3">
+                            <input name="email" type="text" [(ngModel)]="user.email" placeholder="E-mail">
+                            <div class="input-group-append">
+                                <span class="input-group-text"><i class="zmdi zmdi-account-circle"></i></span>
+                            </div>
+                        </div>
+                        <div class="input-group mb-3">
+                            <input name="password" type="password" [(ngModel)]="user.password" placeholder="Şifre">
+                            <div class="input-group-append">                                
+                                <span class="input-group-text"><a href="forgot-password.html" class="forgot" title="Forgot Password"><i class="zmdi zmdi-lock"></i></a></span>
+                            </div>                            
+                        </div>
+                        
+                        <button (click)="doLogin()" class="btn btn-primary btn-block waves-effect waves-light">
+                            Giriş Yap
+                        </button>                        
+                        
+                    </div>
+                </form>
+                <div class="copyright text-center">
+                    &copy;
+                    <script>document.write(new Date().getFullYear())</script> 2020,
+                    <span><a href="https://omersavas.com">omersavas.com</a></span>
+                </div>
+            </div>
+            <div class="col-lg-8 col-sm-12">
+                <div class="card">
+                    <img src="assets/themes/aero/assets/images/signin.svg" alt="Sign In"/>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

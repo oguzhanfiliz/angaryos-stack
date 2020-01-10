@@ -1,0 +1,106 @@
+<?php
+
+use App\BaseModel;
+
+$column_arrays = [];
+$column_groups = [];
+$column_sets = [];
+$join_tables = [];
+
+require 'FillVariables.php';
+
+$tables = [];
+$columns = [];
+
+$writed_columns = [];
+
+$tableDBOperationHelper = new \App\Libraries\TableDBOperationsLibrary();
+
+$tempColumn = 
+[
+    'name' => 'all',
+    'display_name' => 'Tümü',
+    'column_db_type_id' => get_attr_from_cache('column_db_types', 'name', 'string', 'id'),
+    'column_gui_type_id' => get_attr_from_cache('column_gui_types', 'name', 'string', 'id')
+];
+$temp = $this->get_base_record();
+$temp = array_merge($tempColumn, $temp);
+
+$columns['all'] = new BaseModel('columns', $temp);
+$columns['all']->save();
+
+$tempColumn = 
+[
+    'name' => 'own',
+    'display_name' => 'Kendisi',
+    'column_db_type_id' => get_attr_from_cache('column_db_types', 'name', 'string', 'id'),
+    'column_gui_type_id' => get_attr_from_cache('column_gui_types', 'name', 'string', 'id')
+];
+$temp = $this->get_base_record();
+$temp = array_merge($tempColumn, $temp);
+$columns['own'] = new BaseModel('columns', $temp);
+$columns['own']->save();
+
+$tempColumn = 
+[
+    'name' => 'record_id',
+    'display_name' => 'Kayıt No',
+    'column_db_type_id' => 5,
+    'column_gui_type_id' => 3,
+    
+];
+$temp = $this->get_base_record();
+$temp = array_merge($tempColumn, $temp);
+$columns['record_id'] = new BaseModel('columns', $temp);
+$columns['record_id']->save();
+
+
+
+$requiredColumns = 
+[
+    'name' => 
+    [
+        'name' => 'name',
+        'type' => 'character varying',
+        'srid' => NULL
+    ]
+];
+
+foreach(array_keys($table_name_display_name_map) as $table)
+{
+    $table_columns = helper('get_all_columns_from_db', $table);
+    $table_columns = array_merge($table_columns, $requiredColumns);
+    
+    foreach($table_columns as $columnName => $column)
+    {
+        $column = (Object)$column;
+        
+        if(in_array($column->name, $writed_columns)) continue;
+        array_push($writed_columns, $column->name);
+        
+        echo "\tColumn insert started: " . $column->name."\n";
+        
+        if(isset($column_table_relations[$column->name]))
+            require 'ColumnTableRelation.php';
+        
+        if(isset($column_data_sources[$column->name]))
+            require 'ColumnDataSource.php';
+        
+        if(isset($up_columns[$column->name]))
+            require 'UpColumn.php';
+        
+        
+        
+        require 'Column.php';
+    }
+    
+    require 'Table.php';
+}
+
+foreach(array_keys($table_name_display_name_map) as $table)
+{
+    $tableDBOperationHelper->CreateArchiveTableOnDB($table, $table.'_archive');
+    //helper('clone_table_on_db', [$table, $table.'_archive']);
+    
+    echo "Archive Table OK: " . $table ."\n\n\n";
+}

@@ -1,0 +1,158 @@
+<?php
+use App\BaseModel;
+
+unset($this->user->id);
+
+$this->user->tc = '11111111111';
+$this->user->name_basic = 'Ana';
+$this->user->surname = 'Yönetici';
+$this->user->email = 'iletisim@omersavas.com';
+$this->user->password = \Hash::make('1234Aa.');
+$this->user->location = 'POINT(498781.6902 4365044.2955)';
+$this->user->srid = 4326;
+$this->user->user_id = 1;
+$this->user->own_id = 1;
+$this->user->department_id = $departments['Bilgi İşlem Müdürlüğü']->id;
+$this->user->fillVariables();
+$this->user->save();
+
+
+$adminAuth = $this->get_base_record();
+$adminAuth['name'] = 'Yönetici yetkisi';
+$adminAuth['auths'] = [];
+
+$adminAuth = new BaseModel('auth_groups', $adminAuth);
+$adminAuth->fillVariables();
+$adminAuth->save();
+
+
+$createExcept = [];//['data_filter_types'];
+$hideMenuLink = [];
+/*[
+    'data_filter_types', 
+    'join_tables', 
+    'column_gui_triggers', 
+    'column_array_types', 
+    'column_validations', 
+    'column_set_types', 
+    'column_table_relations', 
+    'column_collective_infos', 
+    'color_classes', 
+    'subscriber_types', 
+    'subscribers'
+];*/
+
+$adminAuths = [];
+foreach($tables as $table)
+{
+    $tableAuths = [];
+    
+    if(in_array($table->name, $hideMenuLink))
+        array_push($tableAuths, 'tables:'.$table->name.':option:0');
+    
+    $temp = 'tables:'.$table->name.':';
+    
+    if(isset($column_arrays[$table->name]))
+    {
+        foreach($column_arrays[$table->name] as $column_array)
+        {
+            array_push($tableAuths, $temp.'lists:'.$column_array->id);
+            array_push($tableAuths, $temp.'queries:'.$column_array->id);
+        }
+    }
+    
+    array_push($tableAuths, $temp.'lists:0');
+    array_push($tableAuths, $temp.'queries:0');
+        
+        
+    
+    if(isset($column_sets[$table->name]))
+    {
+        foreach($column_sets[$table->name] as $column_set)
+        {
+            array_push($tableAuths, $temp.'shows:'.$column_set->id);
+            array_push($tableAuths, $temp.'edits:'.$column_set->id);
+            
+            if(!in_array($table->name, $createExcept))
+                array_push($tableAuths, $temp.'creates:'.$column_set->id);
+            
+            array_push($tableAuths, $temp.'deleteds:'.$column_set->id);
+        }
+    }
+    
+    array_push($tableAuths, $temp.'shows:0');
+    array_push($tableAuths, $temp.'edits:0');
+    if(!in_array($table->name, $createExcept)) array_push($tableAuths, $temp.'creates:0');
+    array_push($tableAuths, $temp.'deleteds:0');
+    
+    
+    
+    $temp = 'filters:'.$table->name.':';
+    
+    if(isset($data_filters[$table->name]))
+    {
+        foreach($data_filters[$table->name] as $filter)
+        {
+            $type = $filter->getRelationData('data_filter_type_id')->name;
+            array_push($tableAuths, $temp.$type.':'.$filter->id);
+        }
+    }
+    
+    $temp = $this->get_base_record();
+    $temp['name'] = $table_name_display_name_map[$table->name].' tüm yetki';
+    $temp['auths'] = $tableAuths;
+    
+    $tableAuths = new BaseModel('auth_groups', $temp);
+    $tableAuths->fillVariables();
+    $tableAuths->save();
+    
+    array_push($adminAuths, $tableAuths->id);
+}
+
+$adminAuth->auths = $adminAuths;
+$adminAuth->save();
+
+$this->user->auths = [$adminAuth->id];
+$this->user->save();
+
+$tokens = [];
+$tokens[0] = 
+[
+    'token' => '1111111111111111d'.$this->user->id,
+    'time' => strtotime(date('Y-m-d H:i:s'))
+];
+$this->user->tokens = $tokens;
+$this->user->save();
+
+$departments['Bilgi İşlem Müdürlüğü']->manager_id = $this->user->id;
+$departments['Bilgi İşlem Müdürlüğü']->save();
+
+
+unset($this->publicUser->id);
+$this->publicUser->tc = '11111111112';
+$this->publicUser->name_basic = 'Serbets';
+$this->publicUser->surname = 'Kullanıcı';
+$this->publicUser->email = 'info@omersavas.com';
+$this->publicUser->password = \Hash::make('1234Aa.');
+$this->publicUser->location = 'POINT(498781.6902 4365044.2955)';
+$this->publicUser->srid = 4326;
+$this->publicUser->user_id = 1;
+$this->publicUser->own_id = 1;
+$this->publicUser->department_id = $departments['Bilgi İşlem Müdürlüğü']->id;
+$this->publicUser->fillVariables();
+$this->publicUser->save();
+
+
+unset($this->robotUser->id);
+$this->robotUser->tc = '11111111113';
+$this->robotUser->name_basic = 'Robot';
+$this->robotUser->surname = 'Kullanıcı';
+$this->robotUser->email = 'robot@omersavas.com';
+$this->robotUser->password = \Hash::make('1234Aa.');
+$this->robotUser->location = 'POINT(498781.6902 4365044.2955)';
+$this->robotUser->srid = 4326;
+$this->robotUser->user_id = 1;
+$this->robotUser->own_id = 1;
+$this->robotUser->department_id = $departments['Bilgi İşlem Müdürlüğü']->id;
+$this->robotUser->fillVariables();
+$this->robotUser->save();

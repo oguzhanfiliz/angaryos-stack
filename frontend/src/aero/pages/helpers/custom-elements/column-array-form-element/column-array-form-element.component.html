@@ -1,0 +1,58 @@
+<h5 *ngIf="getDataFromColumnArray('name') != null && getDataFromColumnArray('name').length != 0" style="margin: 25px 0 10px 0">                            
+    <strong>{{ getDataFromColumnArray('name') }}</strong>
+</h5>
+<div class="form-group" id="{{ columnName }}-group" *ngFor="let columnName of getColumnNamesFromColumnArray(columnArray)">  
+    <table class="light-table">
+        <tbody>
+            <tr class="{{ getDataFromColumnArray('columns.'+columnName+'.relation.table_name') ? 'tr-hover' : '' }}">
+                <td>
+                    {{ getDataFromColumnArray('columns.'+columnName+'.display_name') }}
+                </td>
+                <td *ngIf="getDataFromColumnArray('columns.'+columnName+'.relation.table_name')" align="right">
+                    <button (click)="addRelationRecord(columnName)"  class="btn btn-sm btn-primary">Ekle</button>
+                    <button (click)="editRelationRecord(columnName)"  class="btn btn-sm btn-primary">Düzenle</button>
+                </td>
+            </tr><tr>
+                <td colspan="2">
+                    <form-element 
+                        style="display: inline-table;"
+                        (changed)="changed(columnName, $event)" 
+                        name="{{ columnName  }}"
+                        columnName="{{ columnName  }}"
+                        class="form-control"
+                        upFormId="{{ upFormId }}"
+                        baseUrl="{{ 'tables/' + tableName }}"
+                        upColumnName="{{ getDataFromColumnArray('columns.'+columnName+'.up_column_name') }}"
+                        srid="{{ getDataFromColumnArray('columns.'+columnName+'.srid') }}"
+                        type="{{ getDataFromColumnArray('columns.'+columnName+'.gui_type_name') }}"
+                        placeholder="{{ getDataFromColumnArray('columns.'+columnName+'.display_name') }}"
+                        value="{{ getValue(columnName) }}" valueJson="{{ getJson(getValue(columnName)) }}">
+                    </form-element> 
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<div class="modal fade" id="{{ inFormElementId }}inFormModal" role="dialog" [attr.aria-labelledby]="inFormTableName+'inFormModalLabel'" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-body" style="padding: 0px !important;">
+                <in-form-element  
+                    *ngIf="inFormTableName.length > 0"
+                    id="{{ inFormElementId }}" 
+                    (inFormSaved)="inFormSavedSuccess($event)"
+                    inFormTableName="{{ inFormTableName }}"
+                    inFormColumnName="{{ inFormColumnName }}" 
+                    inFormRecordId="{{ inFormRecordId }}">
+                
+                </in-form-element>
+                <button class="btn btn-danger btn-block" 
+                    style="position: absolute; margin: -35 20 0 20; width: -webkit-fill-available;"
+                    (click)="closeModal(inFormElementId+'inFormModal')"
+                    type="button">İptal
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

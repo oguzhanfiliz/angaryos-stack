@@ -1,0 +1,56 @@
+<input type="hidden"
+(change)="handleChange($event)" 
+name="{{ name }}" id="{{ name }}"
+value="{{ value }}">
+
+<div (click)="openMapElement()"  
+    [class]="showFilterTypesSelect ? 'filter-element-big' : 'filter-element'">
+    
+    <a [ngStyle]="getStyle()">
+        {{ getDescription() }}
+    </a>
+</div>
+
+<div class="modal fade" id="{{ name }}ElementModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-body" style="padding: 5px !important;">
+                <button href="javascript:void(0);" class="btn btn-primary btn-icon btn-sm"
+                    id="map-menu" 
+                    data-toggle="dropdown" role="button" aria-haspopup="true" 
+                    aria-expanded="false"> 
+                    
+                    <span class="ti-menu-alt"></span> 
+                </button>
+                <ul class="dropdown-menu">
+                    <li (click)="emitChangedEvent()" role="menuitem">
+                        <a class="dropdown-item">Kaydet</a>
+                    </li>
+                    <li (click)="close()" role="menuitem">
+                        <a class="dropdown-item">İptal</a>
+                    </li>
+                </ul>
+
+                <div class="row" style="margin: 0px !important">
+                    <div style="width: 100%; min-height:200px"  id="{{ name }}MapElement"></div>
+                    <div style="min-height: 25px;" class="mouse-position" id="mouse-position-{{ name }}MapElement"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<select *ngIf="showFilterTypesSelect"
+        id="{{ name }}_filter_type" name="{{ name }}_filter_type" style="margin-top: 10px;"
+        value="{{ filterType }}"
+        class="show-tick ms form-control">
+    
+        <option value="1">
+            Herhangi bir alanla kesişen
+        </option>
+        <option value="2">
+            Tüm alanlarda aynı anda kesişen
+        </option>
+</select>
+
+
