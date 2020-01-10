@@ -241,7 +241,6 @@ services:
 networks:
     frontend-nw:
     backend-nw:
-        driver: bridge
     db-nw:
     elk-nw:
     mq-nw:
