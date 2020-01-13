@@ -22,9 +22,9 @@ export class FormComponent
     @Input() id: string = "";
     @Input() inFormTableName: string = "";
     @Input() inFormColumnName: string = "";
-    @Input() inFormRecordId: numeric = 0;
+    @Input() inFormRecordId: number = 0;
     
-    @Input() singleColumn: bool = false;
+    @Input() singleColumn: boolean = false;
 
     @Output() inFormSaved = new EventEmitter();
 

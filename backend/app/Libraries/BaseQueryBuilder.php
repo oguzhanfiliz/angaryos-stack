@@ -115,15 +115,18 @@ class BaseQueryBuilder extends Builder
     private function addSelectsWithGeoInjectionForAddedColumns()
     {
         $geos = ['point', 'linestring', 'polygon', 'multipoint', 'multilinestring', 'multipolygon'];
+        
         foreach($this->columns as $key => $value)
         {
             if(is_object($value)) continue;
             if(strstr($value, ' ')) continue;
             
             $name = last(explode('.', $value));
-            $tempColumn = get_attr_from_cache('columns', 'name', $name, '*');
-            if(!isset($tempColumn->column_db_type_id)) dd($tempColumn);
-            $type = $tempColumn->getRelationData('column_db_type_id')->name;
+            
+            $dbTypeId = get_attr_from_cache('columns', 'name', $name, 'column_db_type_id');
+            if(strlen($dbTypeId) == 0) dd('addSelectsWithGeoInjectionForAddedColumns');
+            
+            $type = get_attr_from_cache('column_db_types', 'id', $dbTypeId, 'name');
 
             if(in_array($type, $geos))
             {

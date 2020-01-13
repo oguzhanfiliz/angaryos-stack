@@ -160,7 +160,7 @@ $column_table_relations =
     'department_id' => $department_id_relation,
     'manager_id' => $user_id_relation,
     'column_array_type_id' => $column_array_type_id_relation,
-    'data_source_id' => 'column_data_sources',
+    'column_data_source_id' => 'column_data_sources',
     'column_gui_trigger_ids' => $column_gui_trigger_ids_relation,
     'column_collective_info_id' => $column_collective_info_id_relation
 ];

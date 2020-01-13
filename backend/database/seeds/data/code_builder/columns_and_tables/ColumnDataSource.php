@@ -11,7 +11,7 @@ $column_data_sources[$column->name]->save();
 
 $temp = $this->get_base_record();
 $temp['name_basic'] = $column->name . ' varsayilan';
-$temp['data_source_id'] = $column_data_sources[$column->name]->id;
+$temp['column_data_source_id'] = $column_data_sources[$column->name]->id;
 
 $column_table_relations[$column->name] = new BaseModel('column_table_relations', $temp);
 $column_table_relations[$column->name]->save();

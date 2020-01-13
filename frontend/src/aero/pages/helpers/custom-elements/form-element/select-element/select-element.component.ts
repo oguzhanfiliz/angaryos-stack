@@ -58,8 +58,10 @@ export class SelectElementComponent
 
     elementOperations()
     {
-        this.addSelect2()
-        this.addStyle(); 
+        setTimeout(() => {
+            this.addSelect2()
+            this.addStyle(); 
+        }, 300);        
     }
 
     handleChange(event)

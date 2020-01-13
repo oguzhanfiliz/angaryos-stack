@@ -246,9 +246,9 @@ trait TableTrait
     private function getValidatedParamsForSelectColumnDataInRelationTableData($tree, $column) 
     {
         $tree = explode(':', $tree);
-        $column_array = get_attr_from_cache('column_arrays', 'id', $tree[2], '*');
-        $column_array->fillVariables();
-        if(!in_array($column->id, $column_array->column_ids))
+        $columnIds = get_attr_from_cache('column_arrays', 'id', $tree[2], 'column_ids');
+        $columnIds = json_decode($columnIds);
+        if(!in_array($column->id, $columnIds))
             return $this->abort('column.not.in.table');
         
         $search = read_from_response_data('get', 'search');

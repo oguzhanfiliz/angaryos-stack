@@ -373,22 +373,24 @@ class TableDBOperationsLibrary
             foreach($addedColumnIds as $columnId)
             {
                 $column = get_attr_from_cache('columns', 'id', $columnId, '*');
-                $dbType = $column->getRelationData('column_db_type_id'); 
+                $dbType = get_attr_from_cache('column_db_types', 'id', $column->column_db_type_id, '*');
                 if(in_array($dbType->name, $geoColumns)) continue;
+                
                 $table->{$dbType->schema_code}($column->name)->nullable();
             }
             
             foreach($deletedColumnIds as $columnId)
             {
-                $column = get_attr_from_cache('columns', 'id', $columnId, '*');
-                $table->renameColumn($column->name, 'deleted_'.$column->name);
+                $columnName = get_attr_from_cache('columns', 'id', $columnId, 'name');
+                $table->renameColumn($columnName, 'deleted_'.$columnName);
             }
         });
 
         foreach($addedColumnIds as $columnId)
         {
             $column = get_attr_from_cache('columns', 'id', $columnId, '*');
-            $dbType = $column->getRelationData('column_db_type_id'); 
+            $dbType = get_attr_from_cache('column_db_types', 'id', $column->column_db_type_id, '*');
+            
             if(in_array($dbType->name, $geoColumns))
             {
                 $srid = $column->srid;
@@ -464,20 +466,18 @@ class TableDBOperationsLibrary
         {
             foreach($addedColumnIds as $columnId)
             {
-                $column = get_attr_from_cache('columns', 'id', $columnId, '*');
-                
-                if(substr($column->name, 0, 8) == 'deleted_') continue;
-                
-                $table->renameColumn('deleted_'.$column->name, $column->name);
+                $columnName = get_attr_from_cache('columns', 'id', $columnId, 'name');                
+                if(substr($columnName, 0, 8) == 'deleted_') continue;                
+                $table->renameColumn('deleted_'.$columnName, $columnName);
             }
             
             foreach($deletedColumnIds as $columnId)
             {
-                $column = get_attr_from_cache('columns', 'id', $columnId, '*');
+                $columnName = get_attr_from_cache('columns', 'id', $columnId, 'name');
                 
-                if(substr($column->name, 0, 8) == 'deleted_') continue;
+                if(substr($columnName, 0, 8) == 'deleted_') continue;
                 
-                $table->renameColumn($column->name, 'deleted_'.$column->name);
+                $table->renameColumn($columnName, 'deleted_'.$columnName);
             }
         });
     }

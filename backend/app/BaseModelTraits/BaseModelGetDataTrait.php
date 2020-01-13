@@ -108,8 +108,8 @@ trait BaseModelGetDataTrait
         
         foreach($columns as $column)
         {
-            $guiType = $column->getRelationData('column_gui_type_id');
-            if($guiType->name == 'password')
+            $guiTypeName = get_attr_from_cache('column_gui_types', 'id', $column->column_gui_type_id, 'name');
+            if($guiTypeName == 'password')
             {
                 if(get_class($records) == 'stdClass')
                 {
@@ -124,12 +124,12 @@ trait BaseModelGetDataTrait
                 
             
             if(strlen($column->column_table_relation_id) == 0) continue;
-            $relation = $column->getRelationData('column_table_relation_id');
-            if(strlen($relation->data_source_id) == 0) continue;
+            
+            $relation = get_attr_from_cache('column_table_relations', 'id', $column->column_table_relation_id, '*');
+            if(strlen($relation->column_data_source_id) == 0) continue;
             
             
-            $dataSource = $relation->getRelationData('data_source_id');
-            
+            $dataSource = get_attr_from_cache('column_data_sources', 'id', $relation->column_data_source_id, '*');
             $repository = NULL;
             eval(helper('clear_php_code', $dataSource->php_code));
             

@@ -13,15 +13,17 @@ trait BaseModelGetDataGuiTriggersTrait
         foreach($columns as $i => $column)
             if(strlen($column->column_gui_trigger_ids) > 0)
             {
-                $column->fillVariables();
                 $tempTriggers = [];
-                foreach($column->getRelationData('column_gui_trigger_ids') as $guiTrigger)
+                
+                $ids = json_decode($column->column_gui_trigger_ids);
+                foreach($ids as $guiTriggerId)
                 {
-                    $guiTrigger->fillVariables();
-                    $controlColumns = $guiTrigger->getRelationData('control_column_ids');
-                    foreach($controlColumns as $control)
+                    $guiTrigger = get_attr_from_cache('column_gui_triggers', 'id', $guiTriggerId, '*');
+                    
+                    $controlColumnIds = json_decode($guiTrigger->control_column_ids);
+                    foreach($controlColumnIds as $controlId)
                     {
-                        $controlName = $control->name;
+                        $controlName = get_attr_from_cache('columns', 'id', $controlId, 'name');
                         if($controlName == 'own')
                             $controlName = $column->name;
                         

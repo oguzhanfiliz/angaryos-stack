@@ -22,14 +22,14 @@ class ColumnClassificationLibrary
                 else abort(helper('response_error', 'not.be.null.relation_source_column_id.and.join_table_ids'));
             }
             else if(strlen($relation->relation_sql) > 0) $id = 3;
-            else if(strlen($relation->data_source_id) > 0) $id = 5;
+            else if(strlen($relation->column_data_source_id) > 0) $id = 5;
             else abort(helper('response_error', 'not.be.null.relation_table_id.and.relation_sql'));
             
             $params->data_array = self::getDataArray($controller, $column);
         }
         else
         {
-            if(strlen($column->select_raw) == 0) $id = 0;
+            if(strlen(@$column->select_raw) == 0) $id = 0;
             else $id = 1;
         }
         
@@ -83,7 +83,7 @@ class ColumnClassificationLibrary
             $targetColumn = get_attr_from_cache('columns', 'id', $relation->relation_source_column_id, '*');
         else if(strlen($relation->relation_source_column) > 0)
             $targetColumn = get_attr_from_cache('columns', 'name', $relation->relation_source_column, '*');
-        else if($relation->data_source_id > 0)
+        else if($relation->column_data_source_id > 0)
             $targetColumn = null;
         else
             dd('kolon datası yanlış1');

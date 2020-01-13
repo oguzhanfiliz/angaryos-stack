@@ -112,6 +112,9 @@ class CacheSubscriber
             $cacheKey = 'tableName:'.$tableName.'|columnName:'.$columnName.'|columnData:'.$value.'|returnData:BaseModel';
             Cache::forget($cacheKey);
             
+            $cacheKey = 'tableName:'.$tableName.'|columnName:'.$columnName.'|columnData:'.$value.'|returnData:*';
+            Cache::forget($cacheKey);
+            
             $cacheKey = 'tableName:'.$tableName.'|id:'.$record->id.'|columnName:'.$columnName.'|columnData:'.$value.'.relationData';
             Cache::forget($cacheKey);
             
@@ -143,7 +146,7 @@ class CacheSubscriber
     {
         Cache::forget('tableName:'.$table->name.'|fillableColumns');
         Cache::forget('tableName:'.$table->name.'|castsColumns');
-        Cache::forget('tableName:'.$table->name.'|allColumsDromDb');
+        Cache::forget('tableName:'.$table->name.'|allColumsFromDb');
         Cache::forget('tableName:'.$table->name.'|allColumsFromDbWithTableAliasAndGuiType');
         
         dd('clearTablesAndColumnCommonCache');

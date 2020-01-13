@@ -31,9 +31,9 @@ trait BaseModelGetDataColumnTrait
     private function getAllColumnsFromColumnArray($model, $id, $form = FALSE)
     {
         $columnArray = get_attr_from_cache('column_arrays', 'id', $id, '*');
-        $columnArray->fillVariables();
+        //$columnArray->fillVariables();
         
-        $type = $columnArray->getRelationData('column_array_type_id')->name;
+        $type = get_attr_from_cache('column_array_types', 'id', $columnArray->column_array_type_id, 'name');
         switch($type)
         {
             case 'direct_data': return $this->getAllColumnsFromColumnArrayDirectData($model, $columnArray, $form);
@@ -45,17 +45,25 @@ trait BaseModelGetDataColumnTrait
     private function getAllColumnsFromColumnArrayDirectData($model, $columnArray, $form = FALSE)
     {
         $columns = helper('get_null_object');
-        foreach($columnArray->getRelationData('column_ids') as $column)
+        
+        foreach(json_decode($columnArray->column_ids) as $columnId)
         {
+            $column = get_attr_from_cache('columns', 'id', $columnId, '*');
+            
             $column->gui_type_name = get_attr_from_cache('column_gui_types', 'id', $column->column_gui_type_id, 'name');
             $column->db_type_name = get_attr_from_cache('column_db_types', 'id', $column->column_db_type_id, 'name');
             $column->table_alias = $this->getTable();
             
             $columns->{$column->name} = $column;
         }
-        if($columnArray->getRelationData('column_array_type_id')->name == 'direct_data')
-            foreach($columnArray->getRelationData('join_table_ids') as $join)
+        
+        $type = get_attr_from_cache('column_array_types', 'id', $columnArray->column_array_type_id, 'name');
+        if($type == 'direct_data')
+            foreach(json_decode($columnArray->join_table_ids) as $joinId)
+            {
+                $join = get_attr_from_cache('join_tables', 'id', $joinId, '*');
                 $this->addJoinForColumnArray($model, $join);
+            }
         
         if($form) return $columns;
         
@@ -219,7 +227,7 @@ trait BaseModelGetDataColumnTrait
                                         'column' => $column->name
                                     ]);
                 
-                $columns->{$column['name']} = $column;
+                $columns->{$column->name} = $column;
             }
 
             return $columns;
@@ -288,15 +296,15 @@ trait BaseModelGetDataColumnTrait
     
     public function getRelationTableNameForTableIdAndColumnIds($params)
     {
-        $table = $params->relation->getRelationData('relation_table_id');
-        $sourceColumn = $params->relation->getRelationData('relation_source_column_id');
-        $displayColumn = $params->relation->getRelationData('relation_display_column_id');
+        $tableName = get_attr_from_cache('tables', 'id', $params->relation->relation_table_id, 'name');
+        $sourceColumnName = get_attr_from_cache('columns', 'id', $params->relation->relation_source_column_id, 'name');
+        $displayColumnName = get_attr_from_cache('columns', 'id', $params->relation->relation_display_column_id, 'name');
         
         return 
         [
-            'table_name' => $table->name,
-            'source_column_name' => $sourceColumn->name,
-            'display_column_name' => $displayColumn->name,
+            'table_name' => $tableName,
+            'source_column_name' => $sourceColumnName,
+            'display_column_name' => $displayColumnName,
         ];
     }
     
@@ -317,7 +325,7 @@ trait BaseModelGetDataColumnTrait
     
     public function getRelationTableNameForDataSource($params)
     {
-        $dataSource = $params->relation->getRelationData('data_source_id');
+        $dataSource = $params->relation->getRelationData('column_data_source_id');
         
         return 
         [

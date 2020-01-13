@@ -24,7 +24,7 @@ trait BaseModelGetRelationDataTrait
     
     public function fillRelationDataForDataSource($params)
     {
-        $dataSource = $params->relation->getRelationData('data_source_id');
+        $dataSource = $params->relation->getRelationData('column_data_source_id');
         
         $repository = NULL;
         eval(helper('clear_php_code', $dataSource->php_code));

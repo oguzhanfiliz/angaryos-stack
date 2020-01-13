@@ -14,18 +14,28 @@ class TableAfterTriggerSubscriber
         return $return == NULL ? [] : $return;
     }
     
+    private function getSubscribers($ids)
+    {
+        if(!is_array($ids)) $ids = json_decode ($ids);
+        
+        $subscribers = [];
+        foreach($ids as $id)
+            array_push ($subscribers, get_attr_from_cache ('subscribers', 'id', $id, '*'));
+        
+        return $subscribers;
+    }
+
     private function controlSubscribers($record, $table, $columns, $type)
     {
         $returned = [];
         
-        if(is_array($table->subscriber_ids) || strlen($table->subscriber_ids) > 0)
+        if(strlen($table->subscriber_ids) > 0)
         {
-            $table->fillVariables();
-            $subscribers = $table->getRelationData('subscriber_ids');
+            $subscribers = $this->getSubscribers($table->subscriber_ids);
             foreach($subscribers as $subscriber)
             {
-                $subscriberType = $subscriber->getRelationData('subscriber_type_id');
-                if($subscriberType->name != 'after') continue;
+                $subscriberTypeName = get_attr_from_cache('subscriber_type', 'id', $subscriber->subscriber_type_id, 'name');
+                if($subscriberTypeName != 'after') continue;
 
                 $temp = $this->triggerSubscriber($record, $table, NULL, $subscriber, $type);
                 $returned = array_merge($returned, $temp);
@@ -34,14 +44,13 @@ class TableAfterTriggerSubscriber
         
         foreach($columns as $column)
         {
-            if(is_array($column->subscriber_ids) || strlen($column->subscriber_ids) > 0)
+            if(strlen($column->subscriber_ids) > 0)
             {
-                $column->fillVariables();
-                $subscribers = $column->getRelationData('subscriber_ids');
+                $subscribers = $subscribers = $this->getSubscribers($column->subscriber_ids);
                 foreach($subscribers as $subscriber)
                 {
-                    $subscriberType = $subscriber->getRelationData('subscriber_type_id');
-                    if($subscriberType->name != 'after') continue;
+                    $subscriberTypeName = get_attr_from_cache('subscriber_type', 'id', $subscriber->subscriber_type_id, 'name');
+                    if($subscriberTypeName != 'after') continue;
                     
                     $temp = $this->triggerSubscriber($record, $table, $column, $subscriber, $type);
                     $returned = array_merge($returned, $temp);

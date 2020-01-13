@@ -8,4 +8,4 @@ error_reporting(E_ALL);
 if(!@is_numeric(LARAVEL_START)) exit(1);
 
 define('BASE_PATH', '/var/www/backend/');
-$pipe['log_random'] = date('dymHis').rand(100, 500);
+$pipe['logRandom'] = date('dymHis').rand(100, 500);

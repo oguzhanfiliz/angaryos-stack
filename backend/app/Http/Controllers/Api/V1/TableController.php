@@ -23,10 +23,11 @@ class TableController extends Controller
     
     public function __construct()
     {
+        //\Cache::flush();
         global $pipe;
         $pipe['table'] = helper('get_table_name_from_url');
         
-        $this->fillAuthFunctions();
+        $this->fillAuthFunctions();        
     }
     
     
@@ -35,10 +36,8 @@ class TableController extends Controller
         
     public function index(User $user, BaseModel $model)
     {   
-        phpinfo();exit;
-        $a = helper('get_wait_time');
         send_log('info', 'Request List');
-        dd(helper('get_wait_time') - $a);
+        
         $params = $this->getValidatedParamsForList();       
         if(Gate::denies('viewAny', $params)) $this->abort();
         

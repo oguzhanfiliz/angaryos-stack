@@ -3,7 +3,7 @@
 use Spatie\Async\Pool;
 
 global $pipe;
-$pipe['asyncPool'] = Pool::create();
+$pipe['asyncWorkPool'] = Pool::create()->concurrency(10)->timeout(10);
 
 $settings = \Cache::rememberForever('settings', function()
 { 

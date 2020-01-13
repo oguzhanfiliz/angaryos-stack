@@ -1,3 +1,5 @@
+declare var $: any;
+
 export abstract class BaseHelper 
 {     
   public static angaryosUrlPath:string = "angaryos";
@@ -245,6 +247,7 @@ export abstract class BaseHelper
 
   public static readFromPipe(key, debug = false)
   {
+    console.log("asd2");
       if(debug) console.log('Read From Pipe: ' + key);
 
       if(typeof this.pipe[key] == "undefined") return null;

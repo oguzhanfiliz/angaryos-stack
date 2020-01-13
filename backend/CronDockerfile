@@ -10,6 +10,7 @@ RUN apt-get update && apt-get install -y \
     zlib1g-dev \
     curl \
     git \
+    cron \
     nano
 
 RUN curl -L -o /tmp/memcached.tar.gz "https://github.com/php-memcached-dev/php-memcached/archive/php7.tar.gz" \
@@ -37,6 +38,12 @@ RUN apt-get clean && rm -rf /var/lib/apt/lists/*
 
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
+RUN touch /var/log/cron.log
+
+COPY cron /etc/cron.d/laravel-cron
+RUN chmod 0644 /etc/cron.d/laravel-cron
+RUN crontab /etc/cron.d/laravel-cron
+
 RUN groupadd -g 1000 www
 RUN useradd -u 1000 -ms /bin/bash -g www www
 
@@ -44,7 +51,6 @@ COPY . /var/www
 
 COPY --chown=www:www . /var/www
 
-USER www
+#USER www
 
-EXPOSE 9000
-CMD ["php-fpm"]
+CMD cron -f 

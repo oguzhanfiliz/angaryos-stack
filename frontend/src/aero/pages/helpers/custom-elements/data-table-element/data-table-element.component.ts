@@ -537,11 +537,6 @@ export class DataTableElementComponent
 
     editRecodData(record, columnName)
     {
-        /*this.editData['columnName'] = columnName;
-        this.editData['record'] = record;
-
-        $('#editDataModal').modal('show');*/
-
         this.inFormTableName = this.tableName;
         this.inFormColumnName = columnName;
         
@@ -560,7 +555,7 @@ export class DataTableElementComponent
     clearSelectionText()
     {
         if (window.getSelection) {window.getSelection().removeAllRanges();}
-        else if (document.selection) {document.selection.empty();}
+        else if (document['selection']) {document['selection'].empty();}
     }
 
     selectRecord(event, record, i)

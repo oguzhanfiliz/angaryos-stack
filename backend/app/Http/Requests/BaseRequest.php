@@ -84,11 +84,12 @@ class BaseRequest extends FormRequest
             
             if(strlen($column->column_validation_ids) == 0) continue;
             
-            $column->fillVariables();
-            $validations = $column->getRelationData('column_validation_ids');
+            $validationIds = json_decode($column->column_validation_ids);
             
-            foreach($validations as $validation)
+            foreach($validationIds as $validationId)
             {
+                $validation = get_attr_from_cache('column_validations', 'id', $validationId, '*');
+                
                 $validator = explode(':', $validation->validation_with_params)[0];
                 
                 $validator = get_attr_from_cache('validations', 'name', $validator, '*');

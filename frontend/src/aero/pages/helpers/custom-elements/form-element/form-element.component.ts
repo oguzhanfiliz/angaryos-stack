@@ -21,7 +21,7 @@ export class FormElementComponent
     @Input() placeholder: string;
     @Input() showFilterTypesSelect: boolean;
     @Input() filterType: string;
-    @Input() upColumnName: numeric;
+    @Input() upColumnName: number;
     @Input() upFormId: string;    
     @Input() srid: string = "";
     

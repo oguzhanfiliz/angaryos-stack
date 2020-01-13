@@ -18,7 +18,7 @@ class ColumnGuiTriggerController extends Controller
         
         $params = $this->getValidatedParams($column); 
         
-        $trigger = get_attr_from_cache('column_gui_triggers', 'name', $triggerName, '*');
+        //$trigger = get_attr_from_cache('column_gui_triggers', 'name', $triggerName, '*');
         
         $data = $this->{$triggerName}($table, $column, $params);
         

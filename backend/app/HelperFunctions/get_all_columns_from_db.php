@@ -1,6 +1,6 @@
 <?php
 
-$cache_name = 'tableName:'.$params.'|allColumsDromDb';
+$cache_name = 'tableName:'.$params.'|allColumsFromDb';
 
 $columns = Cache::rememberForever($cache_name, function() use($params)
 {   

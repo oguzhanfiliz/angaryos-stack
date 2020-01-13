@@ -20,6 +20,11 @@ function get_attr_from_cache($tableName, $requestColumn, $requestData, $response
     return require 'HelperFunctions/'.__FUNCTION__.'.php';
 }
 
+function get_model_from_cache($tableName, $requestColumn, $requestData)
+{
+    return require 'HelperFunctions/'.__FUNCTION__.'.php';
+}
+
 function param_is_have($params, $name)
 {
     return require 'HelperFunctions/'.__FUNCTION__.'.php';
@@ -32,7 +37,21 @@ function param_value_is_correct($params, $name, $validation = '*auto*')
 
 function send_log($level, $message, $object = NULL)
 {    
-    return require 'HelperFunctions/'.__FUNCTION__.'.php';
+    global $pipe;
+    
+    if($object == NULL) $object = [];
+    if(!is_array($object)) $object = (array)$object;
+    
+    $user = \Auth::user();
+    if($user) $object['user'] = $user->id.'-'.$user->name_basic.' '.$user->surname;
+    
+    $object['waitTime'] = helper('get_wait_time');    
+    $object['logRandom'] = $pipe['logRandom'];    
+    $object['host'] = @$_SERVER['HOSTNAME'];
+    $object['uri'] = @$_SERVER['REQUEST_URI'];
+    $object['logTime'] = date("Y-m-d h:i:sa");
+    
+    \App\Jobs\SendLog::dispatch($level, $message, $object);
 }
 
 function custom_abort($response)

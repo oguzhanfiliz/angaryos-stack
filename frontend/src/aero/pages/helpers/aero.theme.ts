@@ -53,8 +53,6 @@ export class AeroThemeHelper
             case 'leftSideBar': return this.addLeftSideBarEvents();
             case 'mobileMenuButton': return this.addMobileMenuButtonEvents();
             case 'rightIconToggleButton': return this.addRightIconToggleButtonEvents();
-            //case 'queryElementEvents': return this.addQueryElementEvents();
-            //case 'dateTimeElementEvents': return this.addDateTimeElementEvents();
             case 'standartElementEvents': return this.addStandartElementEvents();
 
             case 'layoutCommonEvents': 
@@ -71,115 +69,6 @@ export class AeroThemeHelper
       $('.tooltip-inner').remove();
       $('[data-toggle="tooltip"]').tooltip();
     }
-
-    /* Bu element içine alıondı çümkü temanın elemanı değil elemana münhasır js
-    public addDateTimeElementEvents(addEvents = true) 
-    {
-      
-      var config = getBaseData();
-      config.placeholder = '__/__/____';
-      config.alias = "date";
-      $('.date').inputmask('d/m/y', config);
-
-      var config = getBaseData();
-      config.placeholder = '__:__:__';
-      config.alias = "time";
-      $('.time').inputmask('h:s:s',config);
-    }
-
-    public addQuerySelect2ElementEventWithParams(tableName, elementId, columnName, addChangeEvents = true)
-    {
-      var url = BaseHelper.backendUrl + BaseHelper.token;
-      url += "/tables/"+tableName;
-      url += "/getSelectColumnData/"
-
-      var temp = $('#'+elementId).select2(
-      {
-        ajax: 
-        {
-          url: url+columnName,
-          dataType: 'json',
-          delay: 1000,
-          cache: false,
-          data: function (params) 
-          {
-            var r = new Object();
-            
-            r['search'] = params['term'];
-            r['page'] = params['page'];
-
-            return r;
-          }
-        },
-
-        minimumInputLength: 3,
-        placeholder: $('#' + elementId + ' span').html(),
-        sorter: function(data) 
-        {
-          return data.sort(function(a, b) 
-          {
-            return a.text < b.text ? -1 : a.text > b.text ? 1 : 0;
-          });
-        }
-      })
-      
-      if(addChangeEvents)
-      {
-        const changeEvent = document.createEvent('Event');  
-        changeEvent.initEvent('change', true, true);
-
-        temp.on('select2:select',function(e)
-        {
-          $('#'+e.target.name)[0].dispatchEvent(changeEvent);
-        })
-        .on('select2:unselect',function(e)
-        {
-          $('#'+e.target.name)[0].dispatchEvent(changeEvent);
-        }); 
-      }
-    }
-
-    public addQuerySelect2ElementEvents()
-    {
-      var th = this;
-      $('.select-column-filter').each(function(i, e) 
-      { 
-        var elementId = $(e).attr('id');
-        var columnName = elementId.replace('_query_element_basic', '');
-        var tableName = window.location.hash.split('/')[3];
-
-        var userId = BaseHelper.loggedInUserInfo.user.id;
-        var filters = BaseHelper.readFromLocal("user:"+userId+"."+tableName+".filters");
-        if(typeof filters != "undefined" && filters != null)
-          if(typeof filters[columnName] != "undefined")
-            $('#'+elementId).val(filters[columnName]['filter']);
-      
-        th.addQuerySelect2ElementEventWithParams(tableName, elementId, columnName);
-
-      }).promise().done(() =>
-      {
-        $('.select2-results__options').css('font-size', '12px');
-
-        $(".select2").css('font-size', '12px');
-        $(".select2").css('margin', '4px');
-        $(".select2").css('width', '100%');
-        $(".select2 input").css('width', '100%');
-        $(".select2-selection").css('border-color', '#ccc');
-      });
-
-      /*$(".search-select").select2();
-      
-      $("select.search-select").on('changed.bs.select', function (e, clickedIndex, isSelected, previousValue) {
-        console.log(e);
-        alert(e);
-      });
-    }
-
-    public addQueryElementEvents()
-    {
-      this.addQuerySelect2ElementEvents();
-      this.addDateTimeElementEvents();
-    }*/
 
     public addMobileMenuButtonEvents()
     {

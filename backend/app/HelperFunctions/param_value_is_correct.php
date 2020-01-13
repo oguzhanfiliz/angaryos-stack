@@ -25,13 +25,13 @@ if(in_array('*auto*', $validation))
         foreach($column->getRelationData('column_validation_ids') as $v)
         {
             $temp = explode(':', $v->validation_with_params)[0];
-            $temp = get_attr_from_cache('validations', 'name', $temp, '*');
-            if($temp != null)
+            $phpCode = get_attr_from_cache('validations', 'name', $temp, 'php_code');
+            if($phpCode != null)
             {
-                Illuminate\Support\Facades\Validator::extend($temp->name, function($attribute, $value, $parameters) use($temp)
+                Illuminate\Support\Facades\Validator::extend($temp, function($attribute, $value, $parameters) use($phpCode)
                 {
                     $return = FALSE;
-                    eval(helper('clear_php_code', $temp->php_code));            
+                    eval(helper('clear_php_code', $phpCode));            
                     return $return;
                 });
             }

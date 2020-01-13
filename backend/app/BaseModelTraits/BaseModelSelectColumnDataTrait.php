@@ -94,7 +94,7 @@ trait BaseModelSelectColumnDataTrait
         if($sourceSpace) dd('upColumn ı aramaya dahil et');
         
         $relation = $params->column->getRelationData('column_table_relation_id');
-        $dataSource = $relation->getRelationData('data_source_id');
+        $dataSource = $relation->getRelationData('column_data_source_id');
             
         $repository = NULL;
         eval(helper('clear_php_code', $dataSource->php_code));
@@ -194,12 +194,12 @@ trait BaseModelSelectColumnDataTrait
         if(strlen($params->upColumnName) == 0) return FALSE;
         if(strlen($params->upColumnData) > 0) return FALSE;
         
-        $table = get_attr_from_cache('tables', 'name', $params->table->getTable(), '*');
+        $tableId = get_attr_from_cache('tables', 'name', $params->table->getTable(), 'id');
         
         $relation = $this->getRelationData('up_column_id');
         $relation->fillVariables();
         
-        if(!in_array($table->id, $relation->table_ids)) return FALSE;
+        if(!in_array($tableId, $relation->table_ids)) return FALSE;
               
         $columnDisplayName = get_attr_from_cache('columns', 'name', $params->upColumnName, 'display_name');
         

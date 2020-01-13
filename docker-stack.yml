@@ -78,11 +78,27 @@ services:
     #######       BACKEND       #######
                 
     laravel:
-        image: karapazar/laravel-php-fpm:0.21
-        tty: true
+        image: karapazar/laravel-php-fpm:0.39
         volumes:
             - ./backend:/var/www 
             - ./backend/php.ini:/usr/local/etc/php/conf.d/local.ini
+        environment:
+            SERVICE_NAME: app
+            SERVICE_TAGS: dev
+        deploy:
+            mode: replicated
+            replicas: 1
+        networks:
+            - backend-nw
+            - db-nw
+            - mq-nw
+            
+    laravelcron:
+        image: karapazar/laravel-cron:0.7
+        volumes:
+            - ./backend:/var/www 
+            - ./backend/php.ini:/usr/local/etc/php/conf.d/local.ini
+        #    - ./backend/cron:/etc/cron.d/laravel-cron
         environment:
             SERVICE_NAME: app
             SERVICE_TAGS: dev

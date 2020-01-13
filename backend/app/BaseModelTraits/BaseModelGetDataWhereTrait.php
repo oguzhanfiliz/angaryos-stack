@@ -186,7 +186,7 @@ trait BaseModelGetDataWhereTrait
     private function addWhereForDataSourceJsonb($params)
     {
         $relation = $params->column->getRelationData('column_table_relation_id');
-        $dataSource = $relation->getRelationData('data_source_id');
+        $dataSource = $relation->getRelationData('column_data_source_id');
             
         $repository = NULL;
         eval(helper('clear_php_code', $dataSource->php_code));

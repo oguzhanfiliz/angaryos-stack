@@ -34,16 +34,19 @@ class RabbitMQLogHandler extends AbstractProcessingHandler
             $return->log_level = $record['level_name'];
         }
         
-        $user = \Auth::user();
-        if($user) $return->user = $user->id.'-'.$user->name_basic.' '.$user->surname;
-        
-        global $pipe;
-        $return->log_random = $pipe['log_random'];
-        
-        $return->host = @$_SERVER['HOSTNAME'];
-        $return->uri = @$_SERVER['REQUEST_URI'];
-        
-        $return->wait_time = helper('get_wait_time');
+        if(isset($return->obj))
+        {
+            $infos = ['user', 'waitTime', 'host', 'logRandom', 'uri', 'logTime'];
+            $temp = json_decode($return->obj);
+            foreach($infos as $info)
+                if(isset($temp->{$info}))
+                {
+                    $return->{$info} = $temp->{$info};
+                    unset($temp->{$info});
+                }
+            
+            $return->obj = json_encode($temp); 
+        }
         
         return json_encode($return);
     }

@@ -21,14 +21,13 @@ class TableBeforeTriggerSubscriber
     private function controlSubscribers($table, $columns, $type, $record = NULL)
     {
         $returned = [];
-        if(is_array($table->subscriber_ids) || strlen($table->subscriber_ids) > 0)
+        if(strlen($table->subscriber_ids) > 0)
         {
-            $table->fillVariables();
-            $subscribers = $table->getRelationData('subscriber_ids');
+            $subscribers = $this->getSubscribers($table->subscriber_ids);
             foreach($subscribers as $subscriber)
             {
-                $subscriberType = $subscriber->getRelationData('subscriber_type_id');
-                if($subscriberType->name != 'before') continue;
+                $subscriberTypeName = get_attr_from_cache('subscriber_type', 'id', $subscriber->subscriber_type_id, 'name');
+                if($subscriberTypeName != 'before') continue;
 
                 $temp = $this->triggerSubscriber($table, NULL, $subscriber, $type, $record);
                 $returned = array_merge($returned, $temp);
@@ -38,12 +37,11 @@ class TableBeforeTriggerSubscriber
         foreach($columns as $column)
             if(is_array($column->subscriber_ids) || strlen($column->subscriber_ids) > 0)
             {
-                $column->fillVariables();
-                $subscribers = $column->getRelationData('subscriber_ids');
+                $subscribers = $this->getSubscribers($column->subscriber_ids);
                 foreach($subscribers as $subscriber)
                 {
-                    $subscriberType = $subscriber->getRelationData('subscriber_type_id');
-                    if($subscriberType->name != 'before') continue;
+                    $subscriberTypeName = get_attr_from_cache('subscriber_type', 'id', $subscriber->subscriber_type_id, 'name');
+                    if($subscriberTypeName != 'before') continue;
                     
                     $temp = $this->triggerSubscriber($table, $column, $subscriber, $type, $record);
                     $returned = array_merge($returned, $temp);

@@ -12,7 +12,7 @@ $data =
     'middleware' => ['api']
 ];
 
-Route::any('/', '\App\Http\Controllers\GeneralController@service_ok');//Tested
+Route::any('/', '\App\Http\Controllers\GeneralController@serviceOk');//Tested
     
 
 

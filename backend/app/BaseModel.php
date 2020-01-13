@@ -194,24 +194,30 @@ class BaseModel extends Model
     
      public function getRelationData($columnName)
     {
-        $column = get_attr_from_cache('columns', 'name', $columnName, '*');
-        if(strlen($column->column_table_relation_id) == 0)
-            return $this->{$columnName};
-        
         if(isset($this->{$columnName . '__relation_data'}))
-            return $this->{$columnName . '__relation_data'};
-            
+                return $this->{$columnName . '__relation_data'};
+                
         $json = $this->{$columnName};
-        if(is_array($this->{$columnName}))
-            $json = json_encode($this->{$columnName});
-            
+            if(is_array($this->{$columnName}))
+                $json = json_encode($this->{$columnName});
+                
         $cacheName = 'tableName:'.$this->getTable().'|id:'.$this->id.'|columnName:'.$columnName.'|columnData:'.$json.'|relationData';
         $th = $this;
         
-        return Cache::rememberForever($cacheName, function() use($th, $column)
+        return Cache::rememberForever($cacheName, function() use($th, $columnName)
         {      
-            $th->fillRelationData($column);
-            return $this->{$columnName . '__relation_data'};
+            $relationId = get_attr_from_cache('columns', 'name', $columnName, 'column_table_relation_id');
+            if(strlen($relationId) == 0)
+            {
+                $this->{$column->name . '__relation_data'} = $this->{$columnName};
+            }
+            else
+            {
+                $column = get_attr_from_cache('columns', 'name', $columnName, '*');
+                $th->fillRelationData($column);
+            }
+            
+            return $this->{$column->name . '__relation_data'};
         });
     }
 }

@@ -27,7 +27,9 @@ export class DateTimeElementComponent
 
     ngAfterViewInit()
     {
-        this.addInputMask();
+        setTimeout(() => {
+            this.addInputMask();
+        }, 300);        
     }
 
     ngOnChanges()
