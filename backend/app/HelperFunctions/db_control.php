@@ -6,10 +6,7 @@ $data =
 [
     'status' => 'error',
     'code' => 400,
-    'data' => ['message' => 'undefined.db.error']
-];
-
-if(strstr($exc->getMessage(), 'Undefined table')) 
-    $data['data']['message'] = 'db.is.not.initialized';            
+    'data' => ['message' => 'db.is.not.initialized']
+];            
 
 abort(response()->json($data, $data['code']));
