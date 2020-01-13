@@ -39,7 +39,7 @@ services:
         networks:
             - frontend-nw
             - backend-nw
-            
+
     test:
         image: containous/whoami:latest
         networks:
@@ -53,8 +53,8 @@ services:
                 traefik.enable: "true"
                 traefik.backend: "test"
                 traefik.docker.network: "angaryos_frontend-nw"
-            
-            
+
+
     #######       FRONTEND       #######
 
     frontend: 
@@ -73,10 +73,10 @@ services:
                 traefik.backend: "frontend"
                 traefik.docker.network: "angaryos_frontend-nw"
 
-               
-                
+
+
     #######       BACKEND       #######
-                
+ 
     laravel:
         image: karapazar/laravel-php-fpm:0.39
         volumes:
@@ -92,7 +92,7 @@ services:
             - backend-nw
             - db-nw
             - mq-nw
-            
+
     laravelcron:
         image: karapazar/laravel-cron:0.7
         volumes:
@@ -129,7 +129,7 @@ services:
                 traefik.docker.network: "angaryos_backend-nw"
         networks:
             - backend-nw
-            
+
     memcached:
         image: memcached
         networks:
@@ -138,7 +138,7 @@ services:
 
 
     #######       DB       #######
-    
+
     postgresql:
         image: geographica/postgis:dev_diplodocus
         networks:
@@ -149,11 +149,11 @@ services:
             - ./services/postgresql/data:/data
         environment:
           - POSTGRES_PASSWD=1234Aa.
-          
-          
-          
+
+
+
     #######       QUEUE FOR LOG       #######  
-          
+
     rabbitmq:
         hostname: 'rabbitmq'
         image: rabbitmq:3-management
@@ -169,11 +169,11 @@ services:
             - RABBITMQ_DEFAULT_USER=${RABBITMQ_DEFAULT_USER}
             - RABBITMQ_DEFAULT_PASS=${RABBITMQ_DEFAULT_PASS}
             - RABBITMQ_DEFAULT_VHOST=${RABBITMQ_DEFAULT_VHOST}
-          
-          
-          
+
+
+
     #######       LOG       #######  
-    
+
     elasticsearch:
         hostname: 'elasticsearch'
         image: docker.elastic.co/elasticsearch/elasticsearch-oss:6.5.4
@@ -187,7 +187,7 @@ services:
         volumes:
             - ./services/logs/elasticsearch/data:/usr/share/elasticsearch/data
             - ./services/logs/elasticsearch/config/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
-      
+
     logstash:
         hostname: 'logstash'
         image: docker.elastic.co/logstash/logstash-oss:6.5.4
@@ -217,11 +217,11 @@ services:
         deploy:
             mode: replicated
             replicas: 1
-            
-    
-    
+
+
+
     #######       GEOSERVER CLUSTER       #######
-    
+
     geoserver:
         image: thinkwhere/geoserver:2.14
         logging:
