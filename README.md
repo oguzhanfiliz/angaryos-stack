@@ -8,17 +8,17 @@ Bu uygulama içerisinde bir çok servisi barındırır. Bu sebeple önerilen san
 
 [1] Testler UbuntuServer19.20 işletim sistemi üzerinde yapıldığı için önerilmektedir.
 
-###Linux
-```sh
-chmod +x start.sh
+### Linux
+```
 wget https://raw.githubusercontent.com/karapazar/Angaryos/master/start.sh
+chmod +x start.sh
 ./start.sh
 ```
 
-###Windows
+### Windows
 
 
-###Mac
+### Mac
 
 ## Kullanım 
 
