@@ -15,10 +15,14 @@ chmod +x start.sh
 ./start.sh
 ```
 
+ardından  "Angaryos/frontend/src/aero/pages/helpers/base.ts" dosyası içerisindeki ip bilgilerini güncelleyiniz.
+
+
 ### Windows
 
 
 ### Mac
+
 
 ## Kullanım 
 

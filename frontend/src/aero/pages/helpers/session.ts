@@ -101,11 +101,10 @@ export class SessionHelper
         {
           this.messageHelper.toastMessage('Bu işlem zaman alabilir tamamlandığında size bildirilecek...');
 
-          this.doHttpRequest("GET", BaseHelper.backendUrl + "initialize-db")
+          this.doHttpRequest("GET", BaseHelper.backendUrl + "initializeDb")
           .then((data) =>
           {
-            var message = "Tebrikler kurulum başarılı. Bu sayfayı yeniden ";
-            message += " başlatarak giriş yapabilirsiniz."
+            var message = "Tebrikler kurulum başarılı!"
               
             Swal.fire("Başarılı!", message, "success");
           })
