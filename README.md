@@ -4,7 +4,10 @@ Merhaba. Bu, yazılımcıları yazılımın angarya kısmından kurtarıp esas i
 
 ## Kurulum
 
-Kurulum dökümanları için [tıklayınız](https://github.com/karapazar/AngaryosLight).
+chmod +x start.sh
+wget https://raw.githubusercontent.com/karapazar/Angaryos/master/start.sh
+./start
+
 
 ## Kullanım 
 
