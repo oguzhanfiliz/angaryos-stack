@@ -98,7 +98,6 @@ services:
         volumes:
             - ./backend:/var/www 
             - ./backend/php.ini:/usr/local/etc/php/conf.d/local.ini
-        #    - ./backend/cron:/etc/cron.d/laravel-cron
         environment:
             SERVICE_NAME: app
             SERVICE_TAGS: dev
