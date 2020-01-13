@@ -1,6 +1,6 @@
 # Angaryos
 
-Yazılımcıları, yazılımın angarya kısmından kurtarıp esas işe odaklanmalarını sağlacyaak olan  tamamen açık kaynak bir yazılım geliştirme altyapısıdır. 
+Merhaba. Bu, yazılımcıları yazılımın angarya kısmından kurtarıp esas işe odaklanmalarını sağlacyaak olan tamamen açık kaynak bir yazılım geliştirme altyapısıdır. 
 
 ## Kurulum
 
