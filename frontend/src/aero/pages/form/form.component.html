@@ -24,18 +24,16 @@
 
                         <!-- None -->
                         <div *ngIf="getData('column_set.column_set_type') == 'none'">
-                            <div *ngFor="let columnGroup of getData('column_set.column_groups')">
-                                <div *ngFor="let columnArray of columnGroup.column_arrays;">
-                                    <column-array-form-element 
-                                        *ngIf="getKeys(columnArray.columns).length > 0"
-                                        upFormId="{{ id }}"
-                                        tableName="{{ tableName }}"
-                                        (dataChanged)="change($event)"
-                                        (inFormSaved)="inFormSavedSuccess($event)"
-                                        columnArrayJson="{{ getJson(columnArray) }}"
-                                        recordJson="{{ getJson(getData('record')) }}">
-                                    </column-array-form-element>
-                                </div>
+                            <div *ngFor="let columnArray of column_set.column_arrays;">
+                                <column-array-form-element 
+                                    *ngIf="getKeys(columnArray.columns).length > 0"
+                                    upFormId="{{ id }}"
+                                    tableName="{{ tableName }}"
+                                    (dataChanged)="change($event)"
+                                    (inFormSaved)="inFormSavedSuccess($event)"
+                                    columnArrayJson="{{ getJson(columnArray) }}"
+                                    recordJson="{{ getJson(getData('record')) }}">
+                                </column-array-form-element>
                             </div>
                         </div>
                         <!-- /None -->

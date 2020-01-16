@@ -35,7 +35,7 @@ $table_name_display_name_map =
     'column_array_types' => 'Kolon Dizi Tipleri',    
     'column_arrays' => 'Kolon Dizileri', 
         
-    'column_groups' => 'Kolon Grupları',
+    //'column_groups' => 'Kolon Grupları',
     
     'column_set_types' => 'Kolon Set Tipleri',
     'column_sets' => 'Kolon Setleri',

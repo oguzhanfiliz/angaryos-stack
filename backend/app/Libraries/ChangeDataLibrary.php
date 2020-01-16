@@ -28,11 +28,11 @@ class ChangeDataLibrary
 
     public function ForTableIdAndColumnIds($params)
     {
-        $sourceColumn = $params->relation->getRelationData('relation_source_column_id');
-        $type = $sourceColumn->getRelationData('column_db_type_id');
-        
+        $sourceColumnDbTypeId = get_attr_from_cache('columns', 'id', $params->relation->relation_source_column_id, 'column_db_type_id');
+                
+        $typeName = get_attr_from_cache('column_db_types', 'id', $sourceColumnDbTypeId, 'name');
         $value = [];
-        switch($type->name)
+        switch($typeName)
         {
             case 'integer':
                 foreach($params->value as $item)

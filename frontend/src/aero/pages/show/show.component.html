@@ -18,16 +18,15 @@
                     <div class="card">
 
                         <!-- None -->
-                        <div *ngIf="getData('column_set.column_set_type') == 'none'">
-                            <div *ngFor="let columnGroup of getData('column_set.column_groups')">
-                                <div *ngFor="let columnArray of columnGroup.column_arrays;">
-                                    <column-array-element 
-                                        defaultLimit = "{{ defaultLimit }}" 
-                                        tableName = "{{ tableName }}" 
-                                        columnArrayJson="{{ getJson(columnArray) }}"
-                                        recordJson="{{ getJson(getData('record')) }}">
-                                    </column-array-element>
-                                </div>
+                        <div *ngIf="getData('column_set.column_set_type') == 'none'">                           
+                            <div *ngFor="let columnArray of getData('column_set.column_arrays');">
+                                <h4 *ngIf="columnArray.name_basic.substr(0,1) != ' '"> {{ columnArray.name_basic }}</h4>
+                                <column-array-element 
+                                    defaultLimit = "{{ defaultLimit }}" 
+                                    tableName = "{{ tableName }}" 
+                                    columnArrayJson="{{ getJson(columnArray) }}"
+                                    recordJson="{{ getJson(getData('record')) }}">
+                                </column-array-element>
                             </div>
                         </div>
                         <!-- /None -->
@@ -37,34 +36,34 @@
                         <!--- Accordion -->
                         <div class="body" *ngIf="getData('column_set.column_set_type') == 'accordion'">
                             <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
-                                <div *ngFor="let columnGroup of getData('column_set.column_groups')" class="panel panel-primary">
+                                <div *ngFor="let columnArray of getData('column_set.column_arrays')" class="panel panel-primary">
                         
-                                    <div class="panel-heading" role="tab" id="heading{{ columnGroup.id }}">
+                                    <div class="panel-heading" role="tab" id="heading{{ columnArray.id }}">
                                         <h4 class="panel-title">
                                             <a role="button" data-toggle="collapse" 
-                                                data-parent="#accordion" href="#collapse{{ columnGroup.id }}"
-                                                aria-expanded="false" [attr.aria-controls]="'collapse' + columnGroup.id " 
+                                                data-parent="#accordion" href="#collapse{{ columnArray.id }}"
+                                                aria-expanded="false" [attr.aria-controls]="'collapse' + columnArray.id " 
                                                 class="collapsed"> 
 
-                                                {{ columnGroup.name }}
+                                                {{ columnArray.name_basic }}
                                             </a> 
                                         </h4>
                                     </div>
-                                    <div id="collapse{{ columnGroup.id }}" class="panel-collapse collapse in" role="tabpanel" [attr.aria-labelledby]="'heading' + columnGroup.id ">
+                                    <div id="collapse{{ columnArray.id }}" class="panel-collapse collapse in" role="tabpanel" [attr.aria-labelledby]="'heading' + columnArray.id ">
                         
                                         <div class="panel-body">
-                                            <div *ngFor="let columnArray of columnGroup.column_arrays;">
                         <!--- /Accordion -->
 
                         <!--- Common -->
                         <column-array-element 
+                            defaultLimit = "{{ defaultLimit }}" 
+                            tableName = "{{ tableName }}" 
                             columnArrayJson="{{ getJson(columnArray) }}"
                             recordJson="{{ getJson(getData('record')) }}">
                         </column-array-element>
                         <!--- /Common -->
 
                         <!--- Accordion -->
-                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -75,30 +74,29 @@
                         <!--- Tabs -->
                         <div class="body" *ngIf="getData('column_set.column_set_type') == 'tabs'">
                             <ul class="nav nav-tabs p-0 mb-3 nav-tabs-primary">
-                                <li *ngFor="let columnGroup of getData('column_set.column_groups'); let i = index" class="nav-item">
+                                <li *ngFor="let columnArray of getData('column_set.column_arrays'); let i = index" class="nav-item">
                         
-                                    <a [class]="'nav-link '+(i == 0 ? 'active' : '')" data-toggle="tab" href="#tab{{ columnGroup.id }}">                            
-                                        {{ columnGroup.name }}
+                                    <a [class]="'nav-link '+(i == 0 ? 'active' : '')" data-toggle="tab" href="#tab{{ columnArray.id }}">                            
+                                        {{ columnArray.name_basic }}
                                     </a>
                                 </li>
                             </ul>
                         
                             <div class="tab-content">
                         
-                                <div *ngFor="let columnGroup of getData('column_set.column_groups'); let i = index" [class]="'tab-pane '+(i == 0 ? 'active' : '')" role="tabpanel" id="tab{{ columnGroup.id }}">
-                        
-                                    <div *ngFor="let columnArray of columnGroup.column_arrays;">
+                                <div *ngFor="let columnArray of getData('column_set.column_arrays'); let i = index" [class]="'tab-pane '+(i == 0 ? 'active' : '')" role="tabpanel" id="tab{{ columnArray.id }}">
                         <!--- /Tabs -->
 
                         <!--- Common -->
                         <column-array-element 
+                            defaultLimit = "{{ defaultLimit }}" 
+                            tableName = "{{ tableName }}" 
                             columnArrayJson="{{ getJson(columnArray) }}"
                             recordJson="{{ getJson(getData('record')) }}">
                         </column-array-element>
                         <!--- /Common -->
 
                         <!--- Tabs -->
-                                    </div>
                                 </div>            
                             </div>
                         </div>
@@ -108,21 +106,20 @@
 
                         <!--- Group Box -->
                         <div class="body" *ngIf="getData('column_set.column_set_type') == 'group_box'">
-                            <div *ngFor="let columnGroup of getData('column_set.column_groups')" class="box box-{{ columnGroup.color_class }}">
-                                <h5 style="margin: 5px 0 15px 0">{{ columnGroup.name }}</h5>
-                    
-                                <div *ngFor="let columnArray of columnGroup.column_arrays;">
+                            <div *ngFor="let columnArray of getData('column_set.column_arrays')" class="box box-primary">
+                                <h5 style="margin: 5px 0 15px 0">{{ columnArray.name_basic }}</h5>                    
                         <!--- /Group Box -->
 
                         <!--- Common -->
                         <column-array-element 
+                            defaultLimit = "{{ defaultLimit }}" 
+                            tableName = "{{ tableName }}" 
                             columnArrayJson="{{ getJson(columnArray) }}"
                             recordJson="{{ getJson(getData('record')) }}">
                         </column-array-element>
                         <!--- /Common -->
 
                         <!--- Group Box -->
-                                </div>
                             </div>
                         </div>
                         <!--- /Group Box -->

@@ -60,7 +60,7 @@ class TableDBOperationsLibrary
         $auth->user_id = $robotUserId;
         $auth->save();
 
-        $adminAuth = get_attr_from_cache('auth_groups', 'id', 1, '*');
+        $adminAuth = get_model_from_cache('auth_groups', 'id', 1);
         $adminAuth->fillVariables();
 
         $temp = $adminAuth->auths;
@@ -197,6 +197,7 @@ class TableDBOperationsLibrary
     
     private function ColumnEventForRestore($params)
     {
+        dd(22);
         $new = $params['record']->toArray();
         $old = (array)DB::table('columns')->find($new['record_id']);
         
@@ -207,6 +208,18 @@ class TableDBOperationsLibrary
     
     /****    Column Delete    ****/
     
+    private function DeleteColumnInColumnIds($columnIds, $id)
+    {
+        $key = array_search($id, $columnIds);
+        unset($columnIds[$key]);
+
+        $temp = [];
+        foreach($columnIds as $id)
+            array_push ($temp, $id);
+
+        return $temp;
+    }
+    
     private function ColumnEventForDelete($params)
     {
         $model = new BaseModel('tables');
@@ -216,19 +229,23 @@ class TableDBOperationsLibrary
             $t->fillVariables();
             copy_record_to_archive($t);
             
-            $temp = $t->column_ids;
-            $key = array_search($params['record']->id, $temp);
-            unset($temp[$key]);
-            
-            $columnIds = [];
-            foreach($temp as $id)
-                array_push ($columnIds, $id);
-            
-            $t->column_ids = $columnIds;
+            $t->column_ids = $this->DeleteColumnInColumnIds($t->column_ids, $params['record']->id);
             $t->save();
             
             $this->RenameColumn($t->name, $params['record']->name, 'deleted_'.$params['record']->name);
             $this->RenameColumn($t->name.'_archive', $params['record']->name, 'deleted_'.$params['record']->name);
+        }
+        
+        $model = new BaseModel('column_arrays');
+        $columnArrays = $model->where('column_ids', '@>', $params['record']->id)->get();
+        foreach($columnArrays as $columnArray)
+        {
+            $columnArray->fillVariables();
+            copy_record_to_archive($columnArray);
+            
+            $columnArray->column_ids = $this->DeleteColumnInColumnIds($columnArray->column_ids, $params['record']->id);
+            
+            $columnArray->save();
         }
     }
     
@@ -295,7 +312,7 @@ class TableDBOperationsLibrary
 
             foreach($columns as $column)
             {
-                $dbType = $column->getRelationData('column_db_type_id'); 
+                $dbType = get_attr_from_cache('column_db_types', 'id', $column->column_db_type_id, '*');
                 if(in_array($dbType->name, $geoColumns)) continue;
                 
                 if(strlen($column->default) > 0)
@@ -312,13 +329,13 @@ class TableDBOperationsLibrary
 
         foreach($columns as $column)
         {
-            $dbType = $column->getRelationData('column_db_type_id'); 
-            if(in_array($dbType->name, $geoColumns))
+            $dbTypeName = get_attr_from_cache('column_db_types', 'id', $column->column_db_type_id, 'name');
+            if(in_array($dbTypeName, $geoColumns))
             {
                 $srid = $column->srid;
                 if(strlen($srid) == 0) $srid = DB_PROJECTION;
 
-                DB::statement('ALTER TABLE '.$requests['name'].' ADD COLUMN '.$column->name.' geometry('. ucfirst($dbType->name).', '.$srid.')');
+                DB::statement('ALTER TABLE '.$requests['name'].' ADD COLUMN '.$column->name.' geometry('. ucfirst($dbTypeName).', '.$srid.')');
             }
         }
     }
@@ -429,6 +446,7 @@ class TableDBOperationsLibrary
     
     private function RestoreTableOnDB($params)
     {
+        $params['record']->fillVariables();
         $columns = $params['record']->getRelationData('column_ids');
         $this->ReturnErrorIFTableHasDeletedRecord($columns);
         

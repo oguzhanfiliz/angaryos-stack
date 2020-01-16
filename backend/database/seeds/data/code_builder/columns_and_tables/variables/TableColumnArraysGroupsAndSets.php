@@ -35,14 +35,14 @@ $column_arrays['departments'] =
     ],
 ];
 
-$column_groups['departments'] =
+/*$column_groups['departments'] =
 [
     [
         'name_basic' => '',
         'column_array_ids' => [0, 1],
         'color_class_id' => 'primary'
     ]
-];
+];*/
 
 $column_sets['departments'] =
 [
@@ -50,7 +50,7 @@ $column_sets['departments'] =
         'name_basic' => 'Müdürlükler Bilgi Kartı',
         'table_id' => 'departments',
         'column_set_type_id' => 'none',
-        'column_group_ids' => [0]
+        'column_array_ids' => [0, 1]
     ]
 ];
 
@@ -74,7 +74,7 @@ $join_tables['columns'] =
 $column_arrays['columns'] =
 [
     [
-        'name_basic' => '-Direk Data',
+        'name_basic' => ' Genel Bilgiler',
         'column_array_type_id' => $column_array_types['direct_data']->id,
         'table_id' => 'columns',
         'column_ids' => 
@@ -97,14 +97,14 @@ $column_arrays['columns'] =
     ],
 ];
 
-$column_groups['columns'] =
+/*$column_groups['columns'] =
 [
     [
         'name_basic' => '-Bilgi kartı için grup',
         'column_array_ids' => [0, 1],
         'color_class_id' => 'primary'
     ]
-];
+];*/
 
 $column_sets['columns'] =
 [
@@ -112,6 +112,6 @@ $column_sets['columns'] =
         'name_basic' => 'Kolonlar Bilgi Kartı',
         'table_id' => 'columns',
         'column_set_type_id' => 'none',
-        'column_group_ids' => [0]
+        'column_array_ids' => [0, 1]
     ]
 ];

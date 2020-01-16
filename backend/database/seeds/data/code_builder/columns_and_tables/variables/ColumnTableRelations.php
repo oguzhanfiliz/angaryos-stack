@@ -91,12 +91,12 @@ $column_array_ids_relation =
     'relation_display_column' => 'name_basic',
 ];
 
-$column_group_ids_relation = 
+/*$column_group_ids_relation = 
 [
     'relation_sql' => 'select id, name_basic from column_groups',
     'relation_source_column' => 'id',
     'relation_display_column' => 'name_basic',
-];
+];*/
 
 $department_id_relation = 
 [
@@ -153,7 +153,7 @@ $column_table_relations =
     'column_array_ids' => $column_array_ids_relation,
     'column_set_type_id' => $column_set_type_id_relation,
     'color_class_id' => 'color_classes',
-    'column_group_ids' => $column_group_ids_relation,
+    //'column_group_ids' => $column_group_ids_relation,
     'join_table_ids' => $join_table_ids_relation,
     'join_table_id' => $table_id_relation,
     'join_column_id' => $column_id_relation,

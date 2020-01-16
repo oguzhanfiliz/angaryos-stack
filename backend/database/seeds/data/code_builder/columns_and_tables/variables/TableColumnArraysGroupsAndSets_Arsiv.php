@@ -97,7 +97,7 @@ $column_arrays['columns'] =
     ]
 ];
 
-$column_groups['columns'] =
+/*$column_groups['columns'] =
 [
     [
         //'name' => 'test_icin_kolonlar_tablosu_birinci_grup',
@@ -113,7 +113,7 @@ $column_groups['columns'] =
         'column_array_ids' => [3],
         'color_class_id' => 'secondary'
     ]
-];
+];*/
 
 $column_sets['columns'] =
 [
@@ -123,6 +123,6 @@ $column_sets['columns'] =
         'name' => 'Yeni Kolon Seti',
         'table_id' => 'columns',
         'column_set_type_id' => 'none',
-        'column_group_ids' => [0, 1]
+        'column_array_ids' => [0, 1, 2, 3]
     ]
 ];

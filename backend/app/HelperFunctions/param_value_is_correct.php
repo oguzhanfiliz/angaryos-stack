@@ -19,41 +19,44 @@ if(in_array('*auto*', $validation))
     }
     else
     {
-        $column->fillVariables();
+        $columnValidationIds = json_decode($column->column_validation_ids);
 
         $arr = [];
-        foreach($column->getRelationData('column_validation_ids') as $v)
-        {
-            $temp = explode(':', $v->validation_with_params)[0];
-            $phpCode = get_attr_from_cache('validations', 'name', $temp, 'php_code');
-            if($phpCode != null)
+        if($columnValidationIds != NULL)
+            foreach($columnValidationIds as $vId)
             {
-                Illuminate\Support\Facades\Validator::extend($temp, function($attribute, $value, $parameters) use($phpCode)
-                {
-                    $return = FALSE;
-                    eval(helper('clear_php_code', $phpCode));            
-                    return $return;
-                });
-            }
-                
-            if($v->validation_with_params == 'unique')
-            {
-                $v->validation_with_params = 'unique:'.$pipe['table'];
-                
-                if(\Request::segment(5) == $pipe['table'] && \Request::segment(6) == NULL)
-                    $v->validation_with_params = '';
-                if(\Request::segment(7) == 'update')
-                {
-                    $old = get_attr_from_cache($pipe['table'], 'id', $this->segment(6), $column->name);
-                    $new = \Request::input($column->name);
+                $v = get_attr_from_cache('column_validations', 'id', $vId, '*');
 
-                    if($old == $new)
-                        $v->validation_with_params = '';
+                $temp = explode(':', $v->validation_with_params)[0];
+                $phpCode = get_attr_from_cache('validations', 'name', $temp, 'php_code');
+                if($phpCode != null)
+                {
+                    Illuminate\Support\Facades\Validator::extend($temp, function($attribute, $value, $parameters) use($phpCode)
+                    {
+                        $return = FALSE;
+                        eval(helper('clear_php_code', $phpCode));            
+                        return $return;
+                    });
                 }
+
+                if($v->validation_with_params == 'unique')
+                {
+                    $v->validation_with_params = 'unique:'.$pipe['table'];
+
+                    if(\Request::segment(5) == $pipe['table'] && \Request::segment(6) == NULL)
+                        $v->validation_with_params = '';
+                    if(\Request::segment(7) == 'update')
+                    {
+                        $old = get_attr_from_cache($pipe['table'], 'id', $this->segment(6), $column->name);
+                        $new = \Request::input($column->name);
+
+                        if($old == $new)
+                            $v->validation_with_params = '';
+                    }
+                }
+
+                array_push ($arr, $v->validation_with_params);
             }
-            
-            array_push ($arr, $v->validation_with_params);
-        }
     }
     
     $key = array_search('*auto*', $validation);

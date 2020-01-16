@@ -10,7 +10,8 @@ RUN apt-get update && apt-get install -y \
     zlib1g-dev \
     curl \
     git \
-    nano
+    nano \ 
+    libxml2-dev
 
 RUN curl -L -o /tmp/memcached.tar.gz "https://github.com/php-memcached-dev/php-memcached/archive/php7.tar.gz" \
     && mkdir -p /usr/src/php/ext/memcached \
@@ -32,6 +33,8 @@ RUN docker-php-ext-install pgsql
 RUN docker-php-ext-install pdo pdo_pgsql
 RUN docker-php-ext-install sockets
 RUN docker-php-ext-install opcache
+RUN docker-php-ext-install zip
+RUN docker-php-ext-install xml
 
 RUN apt-get clean && rm -rf /var/lib/apt/lists/*
 

@@ -40,9 +40,9 @@ trait BaseModelGetDataWhereTrait
     {
         if($params->filter->type < 100)
         {
-            $dbType = $params->column->getRelationData('column_db_type_id');
+            $dbTypeName = get_attr_from_cache('column_db_types', 'id', $params->column->column_db_type_id, 'name');
         
-            switch($dbType->name)
+            switch($dbTypeName)
             {
                 case 'string':
                 case 'text':
@@ -53,7 +53,7 @@ trait BaseModelGetDataWhereTrait
                 case 'point': 
                 case 'multipoint': 
                     return $this->addWhereForGeo($params);
-                default: dd($dbType->name.' için where yap');
+                default: dd($dbTypeName.' için where yap');
             } 
         }
         

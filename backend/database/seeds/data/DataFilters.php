@@ -14,7 +14,6 @@ $defaultCounts =
     'column_arrays' => 5,
     'column_validations' => 20,
     'column_gui_types' => 28,
-    'column_groups' => 5,
     'column_gui_triggers' => 1,
     'column_set_types' => 6,
     'column_sets' => 1,

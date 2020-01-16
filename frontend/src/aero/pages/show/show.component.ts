@@ -87,6 +87,8 @@ export class ShowComponent
         this.sessionHelper.doHttpRequest("GET", url, {'params': BaseHelper.objectToJsonStr(params)})
         .then((data) => 
         {
+            //data.column_set.column_set_type = 'group_box';
+
             BaseHelper.writeToPipe(this.getLocalKey(), data);
 
             this.generalHelper.stopLoading();

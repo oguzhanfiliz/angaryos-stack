@@ -3,7 +3,7 @@
 use App\BaseModel;
 
 $column_arrays = [];
-$column_groups = [];
+//$column_groups = [];
 $column_sets = [];
 $join_tables = [];
 

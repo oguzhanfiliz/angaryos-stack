@@ -4,8 +4,6 @@ use \App\BaseModel;
 if($requestData == NULL) return NULL;
 if($requestData == 0 && $requestColumn == 'id') return NULL;
 
-if($requestColumn == $responseColumn) return $requestData;
-
 if(is_array($requestData)) $requestData = json_encode($requestData);
 
 $cacheKey = 'tableName:'.$tableName.'|columnName:'.$requestColumn.'|columnData:'.$requestData.'|returnData:BaseModel';

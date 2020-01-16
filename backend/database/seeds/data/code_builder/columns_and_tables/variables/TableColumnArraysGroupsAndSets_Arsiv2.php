@@ -94,7 +94,7 @@ $column_arrays['departments'] =
     ]
 ];
 
-$column_groups['departments'] =
+/*$column_groups['departments'] =
 [
     [
         //'name' => 'test_icin_kolonlar_tablosu_birinci_grup',
@@ -124,7 +124,7 @@ $column_groups['departments'] =
         'column_array_ids' => [4],
         'color_class_id' => 'secondary'
     ]
-];
+];*/
 
 $column_sets['departments'] =
 [
@@ -134,7 +134,7 @@ $column_sets['departments'] =
         'name' => 'Yeni Kolon Seti',
         'table_id' => 'departments',
         'column_set_type_id' => 'none',
-        'column_group_ids' => [0, 1]
+        'column_group_ids' => [0, 1, 2]
     ],
     [
         //'name' => 'test_icin_kolonlar_tablosu_kolon_seti',
@@ -142,6 +142,6 @@ $column_sets['departments'] =
         'name' => 'Form için adım kolon seti',
         'table_id' => 'departments',
         'column_set_type_id' => 'seteps',
-        'column_group_ids' => [2, 3]
+        'column_group_ids' => [3, 4]
     ]
 ];

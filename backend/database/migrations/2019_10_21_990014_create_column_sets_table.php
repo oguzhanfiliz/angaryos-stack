@@ -20,7 +20,7 @@ class CreateColumnSetsTable extends Migration
             //$table->string('display_name')->nullable();
             $table->integer('table_id');
             $table->integer('column_set_type_id')->nullable();
-            $table->jsonb('column_group_ids')->nullable();
+            $table->jsonb('column_array_ids')->nullable();
             $table->text('description')->nullable();
             
             $table->boolean('state')->default(TRUE)->nullable();

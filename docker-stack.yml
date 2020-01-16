@@ -78,7 +78,7 @@ services:
     #######       BACKEND       #######
  
     laravel:
-        image: karapazar/laravel-php-fpm:0.39
+        image: karapazar/laravel-php-fpm:0.40
         volumes:
             - ./backend:/var/www 
             - ./backend/php.ini:/usr/local/etc/php/conf.d/local.ini
@@ -144,8 +144,8 @@ services:
             - db-nw
         ports:
             - "5432:5432"
-        volumes:
-            - ./services/postgresql/data:/data
+        #volumes:
+        #    - ./services/postgresql/data:/data
         environment:
           - POSTGRES_PASSWD=1234Aa.
 

@@ -102,7 +102,7 @@ $update_data =
         'relation_source_column' => NULL,
         'relation_display_column' => NULL
     ],    
-    $column_group_ids_relation['relation_sql'] =>
+    /*$column_group_ids_relation['relation_sql'] =>
     [
         'relation_table_id' => $tables['column_groups']->id,
         'relation_source_column_id' => $columns['id']->id,
@@ -110,7 +110,7 @@ $update_data =
         'relation_sql' => NULL,
         'relation_source_column' => NULL,
         'relation_display_column' => NULL
-    ],    
+    ],  */  
     $department_id_relation['relation_sql'] =>
     [
         'relation_table_id' => $tables['departments']->id,

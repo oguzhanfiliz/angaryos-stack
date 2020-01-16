@@ -10,9 +10,9 @@ Bu uygulama içerisinde bir çok servisi barındırır. Bu sebeple önerilen san
 
 ### Linux
 ```
-wget https://raw.githubusercontent.com/karapazar/Angaryos/master/start.sh
-chmod +x start.sh
-./start.sh
+sudo wget https://raw.githubusercontent.com/karapazar/Angaryos/master/start.sh
+sudo chmod +x start.sh
+sudo ./start.sh
 ```
 
 ardından  "Angaryos/frontend/src/aero/pages/helpers/base.ts" dosyası içerisindeki ip bilgilerini güncelleyiniz.

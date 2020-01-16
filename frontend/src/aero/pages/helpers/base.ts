@@ -65,6 +65,30 @@ export abstract class BaseHelper
     });
   }
 
+  public static async waitForOperationTest(resolve, func)
+  {
+      var control = true;
+      while (control) 
+      {
+          try 
+          {
+              func(); 
+              control = false;  
+          } 
+          catch (error) 
+          {
+              await BaseHelper.sleep(100); 
+          }    
+      }
+
+      resolve();
+  }
+
+  public static async waitForOperation(func)
+  {
+      return new Promise(resolve => this.waitForOperationTest(resolve, func));
+  } 
+
 
 
   /****    User Operation Functions    ****/
@@ -247,7 +271,6 @@ export abstract class BaseHelper
 
   public static readFromPipe(key, debug = false)
   {
-    console.log("asd2");
       if(debug) console.log('Read From Pipe: ' + key);
 
       if(typeof this.pipe[key] == "undefined") return null;

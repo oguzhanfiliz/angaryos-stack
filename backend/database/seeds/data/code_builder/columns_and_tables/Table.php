@@ -64,7 +64,7 @@ if(isset($column_arrays[$table]))
         $column_arrays[$table][$iii]->save();
     }
     
-if(isset($column_groups[$table]))
+/*if(isset($column_groups[$table]))
    foreach($column_groups[$table] as $jj => $column_group)
     {
         foreach($column_group['column_array_ids'] as $jjj => $cai)
@@ -77,7 +77,7 @@ if(isset($column_groups[$table]))
 
         $column_groups[$table][$jj] = new BaseModel('column_groups', $temp);
         $column_groups[$table][$jj]->save();
-    }
+    }*/
     
 if(isset($column_sets[$table]))
     foreach($column_sets[$table] as $jjj => $column_set)
@@ -87,8 +87,8 @@ if(isset($column_sets[$table]))
         
         $column_set['column_set_type_id'] = $column_set_types[$column_set['column_set_type_id']]->id;
         
-        foreach($column_set['column_group_ids'] as $jjjj => $cgi)
-            $column_set['column_group_ids'][$jjjj] = $column_groups[$table][$cgi]->id;
+        foreach($column_set['column_array_ids'] as $jjjj => $cgi)
+            $column_set['column_array_ids'][$jjjj] = $column_arrays[$table][$cgi]->id;
         
         $temp = $this->get_base_record();
         $temp = array_merge($column_set, $temp);

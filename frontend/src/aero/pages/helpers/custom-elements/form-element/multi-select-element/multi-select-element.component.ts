@@ -61,12 +61,16 @@ export class MultiSelectElementComponent
             this.val = this.value.split(",");
     }
 
-    elementOperations()
+    async waitForSelect2Library()
     {
-        setTimeout(() => {            
-            this.addSelect2()
-            this.addStyle();
-        }, 300); 
+        await BaseHelper.waitForOperation(() => $("test").select2('open') );
+    }
+
+    async elementOperations()
+    {      
+        await this.waitForSelect2Library();
+        this.addSelect2()
+        this.addStyle();
     }
 
     handleChange(event)

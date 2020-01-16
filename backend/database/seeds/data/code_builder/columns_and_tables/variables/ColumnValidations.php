@@ -52,7 +52,7 @@ $columns_validations =
     'column_set_type_id' => [ $column_validations['required']->id, $column_validations['numeric']->id ],
     'column_array_type_id' => [ $column_validations['required']->id, $column_validations['numeric']->id ],
     'color_id' => [ $column_validations['required']->id, $column_validations['numeric']->id ],
-    'column_group_ids' => [$column_validations['required']->id ],
+    //'column_group_ids' => [$column_validations['required']->id ],
     'join_table_alias' => [$column_validations['required']->id, $column_validations['unique']->id ],
     'profile_picture' => [ $column_validations['files_type:image']->id, $column_validations['files_count:1']->id ],
 ];

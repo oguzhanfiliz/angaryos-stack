@@ -164,9 +164,8 @@ trait TableTrait
         
         $tree = explode(':', $tree);
         
-        $params->column_array_id = $tree[2];
-        $params->column_array = get_attr_from_cache('column_arrays', 'id', $tree[2], '*');
-        $params->column_array->fillVariables();
+        $params->column_array_id = $tree[1];
+        $params->column_array = get_attr_from_cache('column_arrays', 'id', $tree[1], '*');
         
         global $pipe;
         $pipe['relation_table_data_request'] = TRUE;

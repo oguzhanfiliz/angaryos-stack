@@ -530,6 +530,20 @@ export class DataTableElementComponent
 
     /****   Gui Action Functions   ****/
 
+    downloadStandartReport()
+    {
+        var types = ['excel', 'pdf', 'csv'];
+        var format = prompt("Hangi formatta indirmek istersiniz? (excel, csv yada pdf)", "excel");
+        if(!types.includes(format)) format = 'excel';
+        
+        var url = this.sessionHelper.getBackendUrlWithToken()+this.baseUrl;
+        var temp = BaseHelper.getCloneFromObject(this.params);
+        temp['report_type'] = format;
+        url += "/report?params="+BaseHelper.objectToJsonStr(temp);
+
+        window.open(url, "_blank");
+    }
+
     closeModal(id)
     {
         BaseHelper.closeModal(id);
@@ -679,8 +693,8 @@ export class DataTableElementComponent
         else
         {
             var temp:any = this.tableName.replace('tree:', '').split(':');
-            this.params.column_array_id = temp[2];
-            this.params.column_array_id_query = temp[2];
+            this.params.column_array_id = temp[1];
+            this.params.column_array_id_query = temp[1];
         }
 
         if(this.params.columns == null || this.params.columns.length == 0)

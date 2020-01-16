@@ -60,7 +60,7 @@ trait TableSubscriberTrait
         $model->addJoinsWithColumns($params->model, $params->columns);
         $model->addSorts($params->model, $params->columns, $params->sorts);
         $model->addWheres($params->model, $params->columns, $params->filters);
-        $model->addSelects($params->model, $params->columns);
+        $model->addSelects($params->model, $params->columns);//
         $model->addFilters($params->model, $params->table_name);
         
         $params->model->addSelect($params->table_name.'.id');
@@ -264,8 +264,8 @@ trait TableSubscriberTrait
     
     public function getDataForSelectElementForTableIdAndColumnIds($params)
     {
-        $sourceColumnName = $params->relation->getRelationData('relation_source_column_id')->name;
-        $displayColumnName = $params->relation->getRelationData('relation_display_column_id')->name;
+        $sourceColumnName = get_attr_from_cache('columns', 'id', $params->relation->relation_source_column_id, 'name');
+        $displayColumnName = get_attr_from_cache('columns', 'id', $params->relation->relation_display_column_id, 'name');
         
         return
         [
@@ -392,14 +392,16 @@ trait TableSubscriberTrait
         $clone = helper('clone_object_as_array', $columnSet);
         
         $control = FALSE;
-        foreach($columnSet->column_groups as $columnGroupId => $columnGroup)
+        /*foreach($columnSet->column_groups as $columnGroupId => $columnGroup)
             foreach($columnGroup->column_arrays as $columnArrayId => $columnArray)
+        */
+            foreach($columnSet->column_arrays as $columnArrayId => $columnArray)
                 foreach($columnArray->columns as $columnId => $column) 
                 {
                     if($column->name == $singleColumnName)
                         $control = TRUE;
                     else
-                        unset($clone['column_groups'][$columnGroupId]['column_arrays'][$columnArrayId]['columns'][$columnId]);
+                        unset($clone['column_arrays'][$columnArrayId]['columns'][$columnId]);
                 }
                 
         if(!$control) custom_abort ('no.auth.for.column.'.$singleColumnName);
@@ -439,8 +441,10 @@ trait TableSubscriberTrait
     private function replaceDataForForm($model, $record, $columnSet)
     {
         $data = (array)$record;
-        foreach($columnSet->column_groups as $columnGroup)
+        /*foreach($columnSet->column_groups as $columnGroup)
             foreach($columnGroup->column_arrays as $columnArray)
+        */
+            foreach($columnSet->column_arrays as $columnArray)
                 foreach($columnArray->columns as $column) 
                     if(strlen($column->column_table_relation_id) == 0)
                         $data[$column->name] = $model->{$column->name};
@@ -539,11 +543,12 @@ trait TableSubscriberTrait
     
     public function restoreRecord($archiveRecord, $record = NULL)
     {
-        //$columns = $archiveRecord->getAllColumnsFromDB();
+        $tableName = substr($archiveRecord->getTable(), 0, -8);
         
         if($record != NULL)
         {
-            $record->fillVAriables();
+            $temp = new BaseModel($tableName);
+            $record = $temp->find($record->id);
             
             $control = copy_record_to_archive($record);
             if(!$control) return FALSE;
@@ -586,7 +591,6 @@ trait TableSubscriberTrait
                     ->first()->created_at;
             $data['created_at'] = $createdAt;
             
-            $tableName = substr($archiveRecord->getTable(), 0, -8);
             $record = new BaseModel($tableName, $data);
         }
         

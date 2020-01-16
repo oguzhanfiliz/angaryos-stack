@@ -27,9 +27,19 @@ export class DateTimeElementComponent
 
     ngAfterViewInit()
     {
-        setTimeout(() => {
-            this.addInputMask();
-        }, 300);        
+        this.elementOperations();
+    }
+
+    async waitForInputmaskLibrary()
+    {
+        await BaseHelper.waitForOperation(() => $('test').inputmask() );
+    }
+
+    async elementOperations()
+    {      
+        await this.waitForInputmaskLibrary();
+
+        this.addInputMask();
     }
 
     ngOnChanges()

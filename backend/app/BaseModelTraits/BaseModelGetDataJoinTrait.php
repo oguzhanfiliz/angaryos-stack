@@ -96,10 +96,7 @@ trait BaseModelGetDataJoinTrait
                 $params->join_table_alias.'.'.$params->join_source->name);
     }
     
-    public function addJoinWithColumnForDataSource($params)
-    {
-        
-    }
+    public function addJoinWithColumnForDataSource($params) { }
     
     
     

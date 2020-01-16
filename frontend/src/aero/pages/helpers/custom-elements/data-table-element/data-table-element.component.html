@@ -35,8 +35,24 @@
                 <i class="zmdi zmdi-sort-amount-desc"></i>
             </button>
 
+            <button *ngIf="!lightTable"
+                id="report-button"
+                class="btn btn-sm float-right btn-primary btn-icon pull-right" 
+                data-toggle="dropdown" role="button" aria-haspopup="true" 
+                aria-expanded="false"> 
+                
+                <span class="ti-arrow-down" data-toggle="tooltip" title="Raporlar"></span> 
+            </button>
+            <ul class="dropdown-menu">
+                <li role="menuitem">
+                    <a class="dropdown-item" (click)="downloadStandartReport()">                                                        
+                        Tabloyu İndir
+                    </a>
+                </li>
+            </ul>
+
             <button *ngIf="!lightTable && !archiveTable && can('deleted')"
-                id="create-button" (click)="deleted()"
+                id="delete-button" (click)="deleted()"
                 class="btn btn-sm float-right btn-primary btn-icon pull-right"
                 data-toggle="tooltip" title="Silinmiş Kayıtlar" 
                 role="button" > 

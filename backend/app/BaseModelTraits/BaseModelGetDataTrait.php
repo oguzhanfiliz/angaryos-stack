@@ -51,9 +51,13 @@ trait BaseModelGetDataTrait
     
     public function getModelForRelationData($params)
     {
-        $params->joins = $params->column_array->getRelationData('join_table_ids');                
-        $params->target_table = $params->joins[0]->getRelationData('join_table_id');//users t
-        $params->target_column = $params->joins[0]->getRelationData('join_column_id');//department_id c
+        $temp = json_decode($params->column_array->join_table_ids);
+        $params->joins = [];
+        foreach($temp as $joinId)
+            array_push ($params->joins, get_attr_from_cache('join_tables', 'id', $joinId, '*'));
+                      
+        $params->target_table = get_attr_from_cache('tables', 'id', $params->joins[0]->join_table_id, '*');//users t
+        $params->target_column = get_attr_from_cache('columns', 'id', $params->joins[0]->join_column_id, '*');//department_id c
         $params->target_column->table_alias = $params->target_table->name;
         
         $params->record = new BaseModel($params->target_table->name);

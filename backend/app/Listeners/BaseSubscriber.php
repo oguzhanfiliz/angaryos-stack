@@ -6,6 +6,8 @@ class BaseSubscriber
 {
     public function subscribe($events) 
     {
+        /****    Data Subscribers    ****/
+        
         $events->listen('record.list.requested', 'App\Listeners\TableSubscriber@listRequested');        
         
         $events->listen('record.show.requested', 'App\Listeners\TableSubscriber@showRequested');        
@@ -49,6 +51,12 @@ class BaseSubscriber
         $events->listen('record.selectColummnData.requested', 'App\Listeners\TableSubscriber@selectColumnDataRequested');
         $events->listen('record.realtionTableData.requested', 'App\Listeners\TableSubscriber@realtionTableDataRequested');
         
+        
+        
+        /****    Report Subscribers    ****/
+        
+        $events->listen('standart.list.report.requested', 'App\Listeners\ReportSubscriber@standartListReportRequested');
+        $events->listen('standart.list.report.data.responsed', 'App\Listeners\ReportSubscriber@responseListReport');
         
     }
 }

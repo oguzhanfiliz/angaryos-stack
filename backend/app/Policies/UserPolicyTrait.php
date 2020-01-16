@@ -80,7 +80,7 @@ trait UserPolicyTrait
     public function treeIsPermittedForRelationTableData(User $user, $tree)
     {
         $tree = explode(':', $tree);
-        if(count($tree) != 3) return FALSE;
+        if(count($tree) != 2) return FALSE;
         
         global $pipe;
         
@@ -88,23 +88,27 @@ trait UserPolicyTrait
             return FALSE;
         
         $column_set = get_attr_from_cache('column_sets', 'id', $tree[0], '*');
-        $column_set->fillVariables();
-        
-                
-        if(!in_array($tree[1], $column_set->column_group_ids))
+                        
+        /*if(!in_array($tree[1], $column_set->column_group_ids))
             return FALSE;
         
         $column_group = get_attr_from_cache('column_groups', 'id', $tree[1], '*');
         $column_group->fillVariables();
-        
-        
+
         if(!in_array($tree[2], $column_group->column_array_ids))
             return FALSE;
         
         $column_array = get_attr_from_cache('column_arrays', 'id', $tree[2], '*');
-        $column_array->fillVariables();
+        $column_array->fillVariables();         */
         
-        if($column_array->getRelationData('column_array_type_id')->name != 'table_from_data')
+        $ids = json_decode($column_set->column_array_ids);
+        if(!in_array($tree[1], $ids))
+            return FALSE;
+        
+        $column_array = get_attr_from_cache('column_arrays', 'id', $tree[1], '*');
+        $typeName = get_attr_from_cache('column_array_types', 'id', $column_array->column_array_type_id, 'name');
+        
+        if($typeName != 'table_from_data')
             return FALSE;
         
         return TRUE;
@@ -153,6 +157,13 @@ trait UserPolicyTrait
     
     private function getRecordPermissions($record)
     {
+        if(get_class($record) == 'stdClass')
+        {
+            global $pipe;
+            $model = new BaseModel($pipe['table']);
+            $record = $model->find($record->id);
+        }
+        
         $model = $record->getQuery();
         $record->addFilters($model, $record->getTable());
         $model->where($record->getTable().'.id', $record->id);

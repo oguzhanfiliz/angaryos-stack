@@ -15,7 +15,19 @@ class TableBeforeTriggerSubscriber
         
         $return = NULL;
         eval(helper('clear_php_code', $subscriber->php_code));  
+        
         return $return == NULL ? [] : $return;
+    }
+    
+    private function getSubscribers($ids)
+    {
+        if(!is_array($ids)) $ids = json_decode ($ids);
+        
+        $subscribers = [];
+        foreach($ids as $id)
+            array_push ($subscribers, get_attr_from_cache ('subscribers', 'id', $id, '*'));
+        
+        return $subscribers;
     }
 
     private function controlSubscribers($table, $columns, $type, $record = NULL)
@@ -26,9 +38,10 @@ class TableBeforeTriggerSubscriber
             $subscribers = $this->getSubscribers($table->subscriber_ids);
             foreach($subscribers as $subscriber)
             {
-                $subscriberTypeName = get_attr_from_cache('subscriber_type', 'id', $subscriber->subscriber_type_id, 'name');
+                $subscriberTypeName = get_attr_from_cache('subscriber_types', 'id', $subscriber->subscriber_type_id, 'name');
+                
                 if($subscriberTypeName != 'before') continue;
-
+                
                 $temp = $this->triggerSubscriber($table, NULL, $subscriber, $type, $record);
                 $returned = array_merge($returned, $temp);
             }
@@ -112,6 +125,4 @@ class TableBeforeTriggerSubscriber
         
         return $this->controlSubscribers($table, $columns, 'restore', $archiveRecord);
     }
-    
-    
 }

@@ -12,12 +12,16 @@ trait BaseModelGetDataColumnTrait
     
     public function getColumns($model, $tableName, $columnArrayOrSetId)
     {
-        switch($tableName)
+        $cacheName = 'table:'.$this->getTable().'|type:'.$tableName.'|id:'.$columnArrayOrSetId;        
+        return Cache::rememberForever($cacheName, function() use($model, $tableName, $columnArrayOrSetId)
         {
-            case 'column_arrays': return $this->getColumnsByColumnArrayId($model, $columnArrayOrSetId);
-            case 'column_sets': return $this->getColumnsByColumnSetId($model, $columnArrayOrSetId);
-            default: abort(helper('response_error', 'undefined.type:'.$tableName));  
-        }
+            switch($tableName)
+            {
+                case 'column_arrays': return $this->getColumnsByColumnArrayId($model, $columnArrayOrSetId);
+                case 'column_sets': return $this->getColumnsByColumnSetId($model, $columnArrayOrSetId);
+                default: abort(helper('response_error', 'undefined.type:'.$tableName));  
+            }
+        });
     }
         
     private function getColumnsByColumnArrayId($model, $id, $form = FALSE)
@@ -112,6 +116,17 @@ trait BaseModelGetDataColumnTrait
         $set = (Object)[];
         $set->name = '';
         $set->column_set_type = 'none';
+        $set->column_arrays = [];
+        
+        $set->column_arrays[0] = (Object)[];
+        $set->column_arrays[0]->id = 0;
+        $set->column_arrays[0]->name_basic = '';
+        $set->column_arrays[0]->column_array_type = 'direct_data';
+        $set->column_arrays[0]->columns = $this->getAllColumnsFromTable();
+        
+        /*$set = (Object)[];
+        $set->name = '';
+        $set->column_set_type = 'none';
         $set->column_groups = [];
         
         $set->column_groups[0] = (Object)[];        
@@ -125,7 +140,7 @@ trait BaseModelGetDataColumnTrait
         $set->column_groups[0]->column_arrays[0]->id = 0;
         $set->column_groups[0]->column_arrays[0]->name = '';
         $set->column_groups[0]->column_arrays[0]->column_array_type = 'direct_data';
-        $set->column_groups[0]->column_arrays[0]->columns = $this->getAllColumnsFromTable();
+        $set->column_groups[0]->column_arrays[0]->columns = $this->getAllColumnsFromTable();*/
         
         return $set;
     }
@@ -133,6 +148,36 @@ trait BaseModelGetDataColumnTrait
     private function getColumnSetByColumnSetId($model, $columnSetId, $form)
     {
         $columnSet = new BaseModel('column_sets');
+        $columnSet = $columnSet->find($columnSetId);
+        
+        $temp = $columnSet->getRelationData('column_array_ids');
+        
+        $set = (Object)[];
+        $set->name = $columnSet->name;
+        $set->column_set_type = $columnSet->getRelationData('column_set_type_id')->name;
+        $set->column_arrays = [];
+            
+        foreach($temp as $j => $columnArray)
+        {
+            $columnArray->fillVariables();
+
+            $temp2 = (Object)[];
+            $temp2->id = $columnArray->id;
+            $temp2->name_basic = $columnArray->name_basic;
+            $temp2->column_array_type = $columnArray->getRelationData('column_array_type_id')->name;
+            $temp2->columns = (Object)[];
+
+            $temp3 = $this->getAllColumnsFromColumnArray($model, $columnArray->id, $form);
+            if($temp3 == NULL) 
+                $temp2->tree =  $columnSetId.':'
+                                    .$columnArray->id;
+            else $temp2->columns = $temp3;
+
+            $set->column_arrays[$j] = $temp2;
+        }
+        
+        return $set;
+        /*$columnSet = new BaseModel('column_sets');
         $columnSet = $columnSet->find($columnSetId);
         
         $temp = $columnSet->getRelationData('column_group_ids');
@@ -174,30 +219,44 @@ trait BaseModelGetDataColumnTrait
             }
         }
         
-        return $set;
+        return $set;*/
     }
     
     public function getColumnsFromColumnSet($columnSet)
     {
         $columns = helper('get_null_object');
+        foreach($columnSet->column_arrays as $columnArray)
+            foreach(array_keys(get_object_vars($columnArray->columns)) as $columnName)
+                $columns->{$columnName} = $columnArray->columns->{$columnName};
+                
+        return $columns;
+        
+        /*$columns = helper('get_null_object');
         foreach($columnSet->column_groups as $columnGroup)
             foreach($columnGroup->column_arrays as $columnArray)
                 foreach(array_keys(get_object_vars($columnArray->columns)) as $columnName)
                     $columns->{$columnName} = $columnArray->columns->{$columnName};
                 
-        return $columns;
+        return $columns;*/
     }
     
     public function getFilteredColumnSet($columnSet, $form = FALSE)
     {
-        foreach($columnSet->column_groups as $columnGroupId => $columnGroup)
+        foreach($columnSet->column_arrays as $columnArrayId => $columnArray)
+        {
+            $columns = $this->getFilteredColumns($columnArray->columns, $form);
+            $columnSet->column_arrays[$columnArrayId]->columns = $columns;
+        }
+                
+        return $columnSet;
+        /*foreach($columnSet->column_groups as $columnGroupId => $columnGroup)
             foreach($columnGroup->column_arrays as $columnArrayId => $columnArray)
             {
                 $columns = $this->getFilteredColumns($columnArray->columns, $form);
                 $columnSet->column_groups[$columnGroupId]->column_arrays[$columnArrayId]->columns = $columns;
             }
                 
-        return $columnSet;
+        return $columnSet;*/
     }
         
         
@@ -273,8 +332,10 @@ trait BaseModelGetDataColumnTrait
                 
                 if(strlen($column->up_column_id) > 0)
                 {
-                    $upColumn = $column->getRelationData('up_column_id');
-                    $return->{$name}->up_column_name = $upColumn->getRelationData('column_id')->name;
+                    $upColumnId = get_attr_from_cache('up_columns', 'id', $column->up_column_id, 'column_id');
+                    $upColumnName = get_attr_from_cache('columns', 'id', $upColumnId, 'name');
+                    
+                    $return->{$name}->up_column_name = $upColumnName;
                 }
                 
                 if(strlen($column->column_table_relation_id) > 0)

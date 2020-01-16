@@ -13,6 +13,9 @@ Route::group(['prefix' => '{token}'], function ()
     Route::any('/', '\App\Http\Controllers\GeneralController@serviceOk');//Tested
     Route::get('getLoggedInUserInfo', 'AuthController@getLoggedInUserInfo');//Tested
 
+    
+    Route::get('tables/{table_name}/report', 'ReportController@index');
+    
     Route::get('tables/{table_name}', 'TableController@index');
     Route::get('tables/{table_name}/deleted', 'TableController@deleted');
     Route::get('tables/{table_name}/create', 'TableController@create');
