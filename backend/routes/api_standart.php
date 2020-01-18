@@ -12,6 +12,7 @@ Route::group(['prefix' => '{token}'], function ()
 
     Route::any('/', '\App\Http\Controllers\GeneralController@serviceOk');//Tested
     Route::get('getLoggedInUserInfo', 'AuthController@getLoggedInUserInfo');//Tested
+    Route::get('getUserToken/{user_id}', 'AuthController@getUserToken');
 
     
     Route::get('tables/{table_name}/report', 'ReportController@index');

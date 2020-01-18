@@ -39,7 +39,7 @@
                         <li class="body">
                             <ul class="menu app_sortcut list-unstyled">
                                 <li>
-                                    <a (click)="yetkiTemizle()">
+                                    <a>
                                         <div class="icon-circle mb-2 bg-blue">
                                             <i class="zmdi zmdi-account"></i>
                                         </div>
@@ -58,7 +58,12 @@
                     </a>
                 </li>
                 <li>
-                    <a (click)="logout()" style="padding: 10px !important; margin-bottom: 10px !important;"  class="mega-menu" title="Çıkış Yap">
+                    <a 
+                        (click)="logout()"
+                        style="padding: 10px !important; margin-bottom: 10px !important;"  
+                        [class]="getLogoutButtonClass()" 
+                        title="Çıkış Yap">
+
                         <i class="zmdi zmdi-power"></i>
                     </a>
                 </li>

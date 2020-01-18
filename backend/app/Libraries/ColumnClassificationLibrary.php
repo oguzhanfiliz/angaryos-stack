@@ -96,7 +96,12 @@ class ColumnClassificationLibrary
         if(@$record->{$column->name} == NULL) return [];
         
         $dataArray = $record->{$column->name};
-        if(!is_array($dataArray)) $dataArray = [$dataArray];
+        
+        if(!is_array($dataArray))
+            $dataArray = json_decode($dataArray);
+        
+        if(!is_array($dataArray)) 
+            $dataArray = [$dataArray];
         
         return $dataArray;
     }

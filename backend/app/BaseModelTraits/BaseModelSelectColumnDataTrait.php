@@ -89,7 +89,6 @@ trait BaseModelSelectColumnDataTrait
     
     public function getSelectColumnDataForDataSource($params)
     {
-        dd('tables and columns deleted_ ile başlayanı getirme2');
         $sourceSpace = $this->getSourceSpaceFromUpColumn($params);
         if($sourceSpace) dd('upColumn ı aramaya dahil et');
         

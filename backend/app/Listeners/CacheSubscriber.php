@@ -33,11 +33,14 @@ class CacheSubscriber
                 $this->clearUserCache($record);
                 break;
             
+            case 'auth_groups':
+                $this->clearAuthGroupsCache($record);
+                break;
+            
             case 'data_filters':
             case 'data_filter_types':
             case 'column_arrays':
             case 'column_sets':
-            case 'auth_groups':
                 Cache::forget('allAuths');
                 break;
         }
@@ -73,6 +76,19 @@ class CacheSubscriber
     
     
     /****     Common Functions    ****/
+    
+    private function clearAuthGroupsCache($record)
+    {
+        Cache::forget('allAuths');
+        
+        $users = \DB::table('users')->where('auths', '@>', $record->id)->get();
+        foreach($users as $user)
+            $this->clearUserCache($user);
+        
+        $groups = \DB::table('auth_groups')->where('auths', '@>', $record->id)->get();
+        foreach($groups as $group)
+            $this->clearAuthGroupsCache($group);
+    }
     
     private function clearRelationDataCache($tableName, $record, $type)
     {
@@ -121,7 +137,7 @@ class CacheSubscriber
             
             foreach($data as $returnColumnName => $v)
             {
-                $cacheKey = 'tableName:'.$tableName.'|columnName:'.$columnName.'|columnData'.$value.'|returnData:'.$returnColumnName;
+                $cacheKey = 'tableName:'.$tableName.'|columnName:'.$columnName.'|columnData:'.$value.'|returnData:'.$returnColumnName;
                 Cache::forget($cacheKey);
             }
         }

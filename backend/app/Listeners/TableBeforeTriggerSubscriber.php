@@ -53,7 +53,7 @@ class TableBeforeTriggerSubscriber
                 $subscribers = $this->getSubscribers($column->subscriber_ids);
                 foreach($subscribers as $subscriber)
                 {
-                    $subscriberTypeName = get_attr_from_cache('subscriber_type', 'id', $subscriber->subscriber_type_id, 'name');
+                    $subscriberTypeName = get_attr_from_cache('subscriber_types', 'id', $subscriber->subscriber_type_id, 'name');
                     if($subscriberTypeName != 'before') continue;
                     
                     $temp = $this->triggerSubscriber($table, $column, $subscriber, $type, $record);

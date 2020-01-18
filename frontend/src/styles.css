@@ -27,6 +27,11 @@ a
     font-weight: bold;
 }
 
+.imitation-user-logout-button
+{
+    color: red !important;
+}
+
 #close
 {
     position: absolute !important;

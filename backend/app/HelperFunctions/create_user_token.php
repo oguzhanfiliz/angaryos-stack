@@ -7,6 +7,8 @@ $temp =
     'token' => $token,
     'time' => strtotime(date('Y-m-d H:i:s'))
 ];
+
+if($tokens == NULL) $tokens = [];
 array_push($tokens, $temp);
 
 $params->tokens = $tokens;

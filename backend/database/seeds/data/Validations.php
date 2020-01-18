@@ -51,7 +51,16 @@ else
 ?>';
 
 $validations['no_self']['php_code'] = '<?php
-$return = FALSE;
+if(\Request::segment(7) != \'update\')
+{
+    $return = TRUE;
+    return;
+}
+
+$id = (int)\Request::segment(6);
+$value = json_decode($value);
+
+$return = !in_array($id, $value);
 ?>';
 
 
@@ -91,7 +100,7 @@ $return = ($temp != NULL);
 $validations['numeric_min']['error_message'] = 'Değer en az :parameters[0] olmalıdır';
 $validations['files_type']['error_message'] = 'Dosya tipi yalnızca :parameters[0] olabilir.';
 $validations['files_count']['error_message'] = 'Dosya sayısı yalnızca :parameters[0] olabilir.';
-$validations['no_self']['error_message'] = 'Yetkiye kendisini ekleyemezsiniz! (:value)';
+$validations['no_self']['error_message'] = 'Yetkiye kendisini ekleyemezsiniz!';
 $validations['name_not_start_deleted']['error_message'] = 'İsim "deleted_" ile başlayamaz';
 $validations['no_change']['error_message'] = 'Bu veri değiştirilemez.';
 $validations['valid_validations']['error_message'] = 'Böyle bir doğrulama kuralı yok!';

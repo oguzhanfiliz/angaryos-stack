@@ -24,11 +24,10 @@ trait BaseModelGetRelationDataTrait
     
     public function fillRelationDataForDataSource($params)
     {
-        $dataSource = $params->relation->getRelationData('column_data_source_id');
-        
+        $dataSourceCode = get_attr_from_cache('column_data_sources', 'id', $params->relation->column_data_source_id, 'php_code');
+                
         $repository = NULL;
-        eval(helper('clear_php_code', $dataSource->php_code));
-        dd('repository3');
+        eval(helper('clear_php_code', $dataSourceCode));
         
         $params->record->{$params->column->name . '__relation_data'} = $repository->getRecordsBySourceData(json_encode($params->data_array));
         

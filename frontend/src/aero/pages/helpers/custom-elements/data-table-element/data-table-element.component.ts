@@ -92,7 +92,7 @@ export class DataTableElementComponent
                 return BaseHelper.loggedInUserInfo.auths.tables[this.tableName]['deleteds'].length > 0
                 break;
             case 'clone': columnName = '_is_showable'; break;
-            case 'userImitation': return this.canUserImitation();
+            case 'userImitation': return this.canUserImitation(record);
             default: alert(policyType + ': not have can function'); return true;
         }
 
@@ -101,16 +101,21 @@ export class DataTableElementComponent
         return false;
     }
 
-    canUserImitation()
+    canUserImitation(user)
     {
         if(this.tableName != 'users') return false;
+
+        if(BaseHelper['loggedInUserInfo']['user']['id'] == user['id']) return false;
+
+        if(typeof BaseHelper['loggedInUserInfo']['auths']['admin'] == 'undefined') return false;
+        if(typeof BaseHelper['loggedInUserInfo']['auths']['admin']['userImitation'] == 'undefined') return false;
         
         return true;
     }
 
     userImitation(user)
     {
-        console.log(user);
+        this.sessionHelper.userImitation(user);
     }
 
     doOperation(policyType, record)

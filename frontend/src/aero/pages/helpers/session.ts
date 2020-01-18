@@ -184,6 +184,61 @@ export class SessionHelper
       return this.doHttpRequest("POST", BaseHelper.backendUrl+"login", {email: email, password: password});
     }
 
+    public userImitation(user)
+    {
+      var url = this.getBackendUrlWithToken()+"getUserToken/"+user.id;
+        
+        this.generalHelper.startLoading();
+
+        this.doHttpRequest("GET", url)
+        .then((data) => 
+        {
+            this.generalHelper.stopLoading();
+
+            if(typeof data['token'] == "undefined")
+                this.messageHelper.sweetAlert("Beklenmedik cevap geldi!", "Hata", "warning");
+            else
+                this.loginWithImitationUser(data['token']);
+        })
+        .catch((e) => { this.generalHelper.stopLoading(); });
+    }
+
+    private navigateToPage(page)
+    {
+      if(window.location.href.indexOf(page) == -1)
+        this.generalHelper.navigate(page);
+
+      setTimeout(() => {
+        window.location.reload();
+      }, 100);
+    }
+
+    public loginWithImitationUser(token)
+    {
+      BaseHelper.writeToLocal("realUserToken", BaseHelper.token);
+
+      BaseHelper.setToken(token);
+      this.fillLoggedInUserInfo();
+
+      this.messageHelper.toastMessage("Kullanıcı taklit ediliyor");
+
+      this.navigateToPage('dashboard');
+    }
+
+    public logoutForImitationUser()
+    {
+      var token = BaseHelper.readFromLocal("realUserToken");
+
+      BaseHelper.setToken(token);
+      this.fillLoggedInUserInfo();
+
+      BaseHelper.removeFromLocal("realUserToken");
+
+      this.messageHelper.toastMessage("Gerçek kullanıcıya dönüldü");
+
+      this.navigateToPage('table/users');
+    }
+
     public logout()
     {
       BaseHelper.clearUserData()

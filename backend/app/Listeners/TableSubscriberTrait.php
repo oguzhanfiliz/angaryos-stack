@@ -329,6 +329,8 @@ trait TableSubscriberTrait
     
     public function updateRecord($record, $dataArray)
     {
+        $record->fillVariables();
+        
         global $pipe;
         if(isset($pipe['overrideRequestDatas']))
             foreach($pipe['overrideRequestDatas'] as $columnName => $columnData)
@@ -347,6 +349,7 @@ trait TableSubscriberTrait
         }
         
         $record->user_id = \Auth::user()->id;
+        
         $record->save();
         
         return $record;

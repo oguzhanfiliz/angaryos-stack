@@ -48,11 +48,6 @@ export class PagesComponent
     })
   }
 
-  yetkiTemizle()
-  {
-    localStorage.removeItem('loggedInUserInfo');
-  }
-
   searchInMenuInputChanged(event) 
   {
     var params =
@@ -69,9 +64,20 @@ export class PagesComponent
     return BaseHelper.doInterval('searchInBaseMenu', func, params, 1000);
   }
 
-  public logout()
+  logout()
   {
-    this.sessionHelper.logout()
+    var token = BaseHelper.readFromLocal('realUserToken');
+    if(token != null) this.sessionHelper.logoutForImitationUser();
+    else this.sessionHelper.logout();
+  }
+
+  getLogoutButtonClass ()
+  {
+    var cls = 'mega-menu';
+    var token = BaseHelper.readFromLocal('realUserToken');
+    if(token != null) cls += " imitation-user-logout-button";
+
+    return cls;
   }
 
   ngAfterViewInit() 

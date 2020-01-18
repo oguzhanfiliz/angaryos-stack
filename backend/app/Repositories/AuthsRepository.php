@@ -6,11 +6,14 @@ use DB;
 
 class AuthsRepository 
 {
-    //dataFor_fillRelationDataForDataSource
     public function getRecordsBySourceData($data)
     {
         $allAuths = helper('get_all_auths');
-        $list = json_decode($data);
+        
+        if(is_array($data))
+            $list = $data;
+        else
+            $list = json_decode($data);
         
         if(!is_array($list)) return [];
         

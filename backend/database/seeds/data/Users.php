@@ -109,6 +109,8 @@ foreach($tables as $table)
     array_push($adminAuths, $tableAuths->id);
 }
 
+array_push($tableAuths, 'admin:userImitation:0:0');
+
 $adminAuth->auths = $adminAuths;
 $adminAuth->save();
 

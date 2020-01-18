@@ -49,7 +49,7 @@ class TableAfterTriggerSubscriber
                 $subscribers = $subscribers = $this->getSubscribers($column->subscriber_ids);
                 foreach($subscribers as $subscriber)
                 {
-                    $subscriberTypeName = get_attr_from_cache('subscriber_type', 'id', $subscriber->subscriber_type_id, 'name');
+                    $subscriberTypeName = get_attr_from_cache('subscriber_types', 'id', $subscriber->subscriber_type_id, 'name');
                     if($subscriberTypeName != 'after') continue;
                     
                     $temp = $this->triggerSubscriber($record, $table, $column, $subscriber, $type);

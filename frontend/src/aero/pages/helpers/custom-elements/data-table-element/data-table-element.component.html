@@ -196,10 +196,11 @@
                                                 </button>
 
                                                 <button *ngIf="can('userImitation', record)"
+                                                    data-toggle="tooltip" title="Kullanıcıyı taklit et"
                                                     class="btn btn-sm float-right btn-primary btn-icon pull-right" 
                                                     (click)="userImitation(record)"> 
                                                     
-                                                    <span class="ti-reload"></span>
+                                                    <span class="ti-user"></span>
                                                 </button>
 
                                                 <table class="light-table" *ngIf="!lightTable && !archiveTable">

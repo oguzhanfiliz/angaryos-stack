@@ -174,7 +174,7 @@ export class MultiSelectElementComponent
         $('.select2-selection__choice').css('margin', '2px 2px 2px 0');
         $('.select2-selection--multiple').css('display', 'table');
         $('.select2-selection--multiple').css('width', '100%');
-        $('.select2-selection__rendered').css('display', 'inline-flex');
+        //$('.select2-selection__rendered').css('display', 'inline-flex');
     }
 
     getDisplayName(value)

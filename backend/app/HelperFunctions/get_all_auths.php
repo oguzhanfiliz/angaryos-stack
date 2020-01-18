@@ -1,9 +1,8 @@
 <?php
 $key = 'allAuths';
+
 return Cache::rememberForever($key, function()
 {      
-    $auths = [];
-
     $displays =
     [
         'creates' => 'Ekleme',
@@ -23,8 +22,19 @@ return Cache::rememberForever($key, function()
         'show' => 'Bilgi Kartı', 
         'export' => 'Dışa Aktarma'
     ];
+    
+    $auths = [];
 
+    
+    
+    /****        ****/
+    
+    $auths['admin:userImitation:0:0'] = 'Kullanıcı taklit';
 
+    
+    
+    /****        ****/
+    
     $dataFilters = \DB::table('data_filters')->where('state', TRUE)->get();
     foreach($dataFilters as $i => $dataFilter)
         $dataFilters[$i]->type = get_attr_from_cache('data_filter_types', 'id', $dataFilter->data_filter_type_id, 'name');
@@ -68,6 +78,6 @@ return Cache::rememberForever($key, function()
     
     foreach(\DB::table('auth_groups')->where('state', TRUE)->get() as $auth)
         $auths[$auth->id] = $auth->name;
-    
+
     return $auths;        
 });

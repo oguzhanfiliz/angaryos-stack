@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Api\V1;
 use App\Http\Controllers\Controller;
 use App\Libraries\SessionLibrary;
 
+use \App\User;
+
 use DB;
 use Hash;
 
@@ -41,5 +43,20 @@ class AuthController extends Controller
         send_log('info', 'Response Logged In User Info', $data);
         
         return helper('response_success', $data);
+    }
+    
+    public function getUserToken($user, $requestUserId)
+    {
+        send_log('info', 'Request For Get User Token', [$user->toArray(), $requestUserId]);
+        
+        if(!isset($user->auths['admin']['userImitation']))
+            custom_abort('no.auth');
+        
+        $requestUser = User::find($requestUserId);
+        $token = helper('create_user_token', $requestUser);
+        
+        send_log('info', 'Response For Get User Token', [$token]);
+        
+        return helper('response_success', ['token' => $token]);
     }
 }

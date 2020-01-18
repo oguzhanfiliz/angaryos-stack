@@ -13,7 +13,7 @@ export class GeneralHelper
   {
     if(page.substr(0, 1) != '/') 
       page = BaseHelper.angaryosUrlPath+"/"+page;
-
+  console.log(page)
     this.router.navigate([page]);
   }
 
