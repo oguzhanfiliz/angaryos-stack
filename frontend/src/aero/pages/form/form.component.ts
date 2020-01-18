@@ -32,7 +32,7 @@ export class FormComponent
     public recordId = null;
 
     private loading = true;
-    private intervalId = -1;
+    //private intervalId = -1;
     
     constructor(
         public route: ActivatedRoute,
@@ -136,43 +136,48 @@ export class FormComponent
 
     change(event)
     {
-        if(this.intervalId > -1) clearInterval(this.intervalId);
-
-        this.intervalId = setInterval(() =>
+        var params =
         {
-            clearInterval(this.intervalId);
+            event: event,
+            th: this
+        };
 
-            var data = this.getElementsData();
+        function func(params)
+        {
+            var data = params.th.getElementsData();
 
-            var forAllColumns = this.getData('gui_triggers.all');
+            params.th.guiTriggerHelper.changeColumnVisibility(params.th.tableName, params.event.columnName, params.th.getElementId(params.event.columnName), data);            
+
+            var forAllColumns = params.th.getData('gui_triggers.all');
             if(forAllColumns != null)
                 for(var i = 0; i < forAllColumns.length; i++)
                 {
-                    if(typeof this.guiTriggerHelper[forAllColumns[i]] == "undefined")
+                    if(typeof params.th.guiTriggerHelper[forAllColumns[i]] == "undefined")
                     {
-                        this.messageHelper.toastMessage("Tetikleme fonksiyonu yok: " + forCurrentColumns[i], "error", 6000);
+                        params.th.messageHelper.toastMessage("Tetikleme fonksiyonu yok: " + forCurrentColumns[i], "error", 6000);
                         continue;
                     }
     
-                    this.guiTriggerHelper[forAllColumns[i]](this.tableName, event.columnName, this.getElementId(event.columnName), data)
-                    .then((data) => this.guiTriggered(event.columnName, data));
+                    params.th.guiTriggerHelper[forAllColumns[i]](params.th.tableName, params.event.columnName, params.th.getElementId(params.event.columnName), data)
+                    .then((data) => params.th.guiTriggered(params.event.columnName, data));
                 }
 
-            var forCurrentColumns = this.getData('gui_triggers.'+event.columnName);
+            var forCurrentColumns = params.th.getData('gui_triggers.'+params.event.columnName);
             if(forCurrentColumns != null)
                 for(var i = 0; i < forCurrentColumns.length; i++)
                 {
-                    if(typeof this.guiTriggerHelper[forCurrentColumns[i]] == "undefined")
+                    if(typeof params.th.guiTriggerHelper[forCurrentColumns[i]] == "undefined")
                     {
-                        this.messageHelper.toastMessage("Tetikleme fonksiyonu yok: " + forCurrentColumns[i], "error", 6000);
+                        params.th.messageHelper.toastMessage("Tetikleme fonksiyonu yok: " + forCurrentColumns[i], "error", 6000);
                         continue;
                     }
 
-                    this.guiTriggerHelper[forCurrentColumns[i]](this.tableName, event.columnName, this.getElementId(event.columnName), data)
-                    .then((data) => this.guiTriggered(event.columnName, data));
+                    params.th.guiTriggerHelper[forCurrentColumns[i]](params.th.tableName, params.event.columnName, params.th.getElementId(params.event.columnName), data)
+                    .then((data) => params.th.guiTriggered(params.event.columnName, data));
                 }
+        }
 
-        }, 100);
+        return BaseHelper.doInterval('formElementChanged', func, params, 100);
     }
 
     getParamsForForm()
@@ -204,7 +209,7 @@ export class FormComponent
     {
         var data = BaseHelper.readFromPipe(this.getLocalKey());
         if(data == null) return null;
-
+        
         return DataHelper.getData(data, path);
     }
 
@@ -340,11 +345,11 @@ export class FormComponent
     {
         var data = {};
 
-        var columnsArrays = this.getData('column_set.column_arrays')
+        var columnArrays = this.getData('column_set.column_arrays')
 
-        for(var j = 0; j < columnsArrays.length; j++)
+        for(var i = 0; i < columnArrays.length; i++)
         {
-            var columnArray = columnsArrays[i];
+            var columnArray = columnArrays[i];
             var columnNames = this.getKeys(columnArray.columns);
             
             for(var k = 0; k < columnNames.length; k++)
@@ -371,11 +376,11 @@ export class FormComponent
     {
         var data = new FormData();
 
-        var columnsArrays = this.getData('column_set.column_arrays')
+        var columnArrays = this.getData('column_set.column_arrays')
 
-        for(var j = 0; j < columnsArrays.length; j++)
+        for(var i = 0; i < columnArrays.length; i++)
         {
-            var columnArray = columnsArrays[i];
+            var columnArray = columnArrays[i];
             var columnNames = this.getKeys(columnArray.columns);
             
             for(var k = 0; k < columnNames.length; k++)
@@ -429,6 +434,10 @@ export class FormComponent
         .then((data) => 
         {
             BaseHelper.writeToPipe(this.getLocalKey(), data);
+            setTimeout(() => {
+                this.changeColumnVisibilityGuiTrigger();
+            }, 100);
+            
          
             this.loading = false;
             this.generalHelper.stopLoading();
@@ -441,6 +450,14 @@ export class FormComponent
         });
     }
 
+    changeColumnVisibilityGuiTrigger()
+    {
+        var data = this.getElementsData();
+        var columnNames = Object.keys(data);
+        for(var i = 0; i < columnNames.length; i++)
+            this.guiTriggerHelper.changeColumnVisibility(this.tableName, columnNames[i], this.getElementId(columnNames[i]), data);
+    }
+     
 
 
     /****    Events Functions    ****/

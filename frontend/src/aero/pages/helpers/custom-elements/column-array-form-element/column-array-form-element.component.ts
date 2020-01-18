@@ -178,6 +178,16 @@ export class ColumnArrayFormElementComponent
 
     /****    Gui Functions     *****/
 
+    columnIsVisible(columnName)
+    {
+        var key = "formElementVisibility." + this.upFormId + "." + columnName;
+        var temp = BaseHelper.readFromPipe(key);
+
+        if(temp == null) return true;
+        
+        return temp;
+    }
+
     getDataFromColumnArray(path = '')
     {
         return DataHelper.getData(this.columnArray, path);

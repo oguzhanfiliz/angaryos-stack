@@ -34,7 +34,7 @@ export class DataTableElementComponent
     selectedFilter = {};
     selectedRecord = null;
     selectedRecordList = [];
-    loadDataIntervalId = -1;
+    //loadDataIntervalId = -1;
     loadDataTimeout = 2000;
     //editData = {};
 
@@ -92,12 +92,25 @@ export class DataTableElementComponent
                 return BaseHelper.loggedInUserInfo.auths.tables[this.tableName]['deleteds'].length > 0
                 break;
             case 'clone': columnName = '_is_showable'; break;
+            case 'userImitation': return this.canUserImitation();
             default: alert(policyType + ': not have can function'); return true;
         }
 
         if(typeof record[columnName] == "undefined" || record[columnName]) return true;
         
         return false;
+    }
+
+    canUserImitation()
+    {
+        if(this.tableName != 'users') return false;
+        
+        return true;
+    }
+
+    userImitation(user)
+    {
+        console.log(user);
     }
 
     doOperation(policyType, record)
@@ -360,18 +373,20 @@ export class DataTableElementComponent
     loadDataInterval(timeout = null, del = false)
     {
         if(timeout == null) timeout = this.loadDataTimeout;
-
-        if(this.loadDataIntervalId > -1)
-            clearInterval(this.loadDataIntervalId);
-
-        this.loadDataIntervalId = setInterval(() => 
+        
+        var params =
         {
-            if(del) BaseHelper.deleteFromPipe(this.getLocalKey("data"));
-            this.loadData();     
+            del: del,
+            th: this
+        };
 
-            clearInterval(this.loadDataIntervalId);
-            this.loadDataIntervalId = null;
-        }, timeout);
+        function func(params)
+        {
+            if(params.del) BaseHelper.deleteFromPipe(params.th.getLocalKey("data"));
+            params.th.loadData(); 
+        }
+
+        return BaseHelper.doInterval('dataTableLoadData', func, params, timeout);
     }
 
     loadData()
@@ -412,6 +427,16 @@ export class DataTableElementComponent
 
 
     /****    Gui Helper Functions     ****/
+
+    getEditTdClass(record, columnName)
+    {
+        var notEditableColumns = ['id', 'created_at', 'updated_at', 'own_id', 'user_id'];
+        if(notEditableColumns.includes(columnName)) return "";
+
+        if(!this.can('edit', record)) return "";
+        
+        return 'edit-td';
+    }
 
     isGeoColumn(columnName)
     {
@@ -848,6 +873,7 @@ export class DataTableElementComponent
 
     inFormSavedSuccess(event)
     {
+        console.log("ad");
         var temp = BaseHelper.readFromPipe(this.getLocalKey("data"));
 
         var len = temp[this.params.page]['records'].length;

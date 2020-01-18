@@ -16,7 +16,7 @@ declare var $: any;
 export class PagesComponent 
 {
   user = {};
-  searchIntervalId = -1;
+  //searchIntervalId = -1;
 
   constructor(
         public sessionHelper: SessionHelper,
@@ -55,12 +55,18 @@ export class PagesComponent
 
   searchInMenuInputChanged(event) 
   {
-    if(this.searchIntervalId > -1) clearInterval(this.searchIntervalId);
-    this.searchIntervalId = setInterval(() => 
+    var params =
     {
-      clearInterval(this.searchIntervalId);
-      this.aeroThemeHelper.updateBaseMenu(event.target.value);
-    }, 1000);
+        event: event,
+        th: this
+    };
+
+    function func(params)
+    {
+        params.th.aeroThemeHelper.updateBaseMenu(params.event.target.value);
+    }
+
+    return BaseHelper.doInterval('searchInBaseMenu', func, params, 1000);
   }
 
   public logout()

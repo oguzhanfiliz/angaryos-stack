@@ -66,8 +66,26 @@ if($pipe["table"] != "tables" && $pipe["table"] != "columns")
 $return = (substr($value, 0, 8) != "deleted_");
 ?>';
 
-$validations['no_change']['php_code'] = '<?php dd("degistirilemez kontrol") ?>';
-$validations['valid_validations']['php_code'] = '<?php dd("valid_validations kontrol") ?>';
+$validations['no_change']['php_code'] = '<?php 
+if(\Request::segment(7) != \'update\') 
+{
+    $return = TRUE;
+    return;
+}
+
+$id = (int)\Request::segment(6);
+
+global $pipe;
+
+$temp = get_attr_from_cache($pipe[\'table\'], \'id\', $id, \'data_filter_type_id\');
+$return = ($temp == $value);
+?>';
+
+$validations['valid_validations']['php_code'] = '<?php 
+$temp = explode(\':\', $value)[0];
+$temp = get_attr_from_cache(\'validations\', \'name\', $temp, \'id\');
+$return = ($temp != NULL);
+?>';
 
 
 $validations['numeric_min']['error_message'] = 'Değer en az :parameters[0] olmalıdır';

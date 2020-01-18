@@ -2,7 +2,7 @@
     <strong>{{ getDataFromColumnArray('name') }}</strong>
 </h5>
 <div class="form-group" id="{{ columnName }}-group" *ngFor="let columnName of getColumnNamesFromColumnArray(columnArray)">  
-    <table class="light-table">
+    <table *ngIf="columnIsVisible(columnName)" class="light-table">
         <tbody>
             <tr class="{{ getDataFromColumnArray('columns.'+columnName+'.relation.table_name') ? 'tr-hover' : '' }}">
                 <td>

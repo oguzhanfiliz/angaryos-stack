@@ -32,7 +32,7 @@ export class MultiSelectDragDropElementComponent
 
     @Output() changed = new EventEmitter();
 
-    intervalId = -1;
+    //intervalId = -1;
     baseElementSelector = "";
     val = [];
     list = [];
@@ -76,16 +76,20 @@ export class MultiSelectDragDropElementComponent
 
     searchChanged(event)
     {
-        if(this.intervalId > -1) 
-            clearInterval(this.intervalId);
-
-        if(event.target.value.length == 0) return;
-
-        this.intervalId = setInterval(() =>
+        var params =
         {
-            this.fillListElements(event.target.value);
-            clearInterval(this.intervalId);
-        }, 1000);
+            event: event,
+            th: this
+        };
+
+        function func(params)
+        {
+            if(params.event.target.value.length == 0) return;
+
+            params.th.fillListElements(params.event.target.value);
+        }
+
+        return BaseHelper.doInterval('multiSelectDragDropElementSearched', func, params, 1000);
     }
 
     drop(event: CdkDragDrop<string[]>) 

@@ -2,15 +2,13 @@ import { Injectable } from '@angular/core';
 import { MessageHelper } from './message';
 import { SessionHelper } from './session';
 import { BaseHelper } from './base';
-
+import { columnVisibilityRules } from './column.visibility.rules';
 
 declare var $: any;
 
 @Injectable()
 export class GuiTriggerHelper 
 {   
-    intervalIds = {};
-
     constructor(
       public messageHelper: MessageHelper,
       public sessionHelper: SessionHelper
@@ -18,10 +16,39 @@ export class GuiTriggerHelper
     
 
 
+    /****    Common Functions    ****/
+
+    public getFormGroupElement(elementId)
+    {
+      var temp = $(elementId);
+
+      for(var i = 0; i < 10; i++)
+      {
+        temp = temp.parent();
+
+        var clss = temp.attr('class');
+        if(typeof clss == "undefined") continue;
+        if(clss == "") continue;
+
+        clss = clss.split(" ");
+        for(var j = 0; j < clss.length; j++)
+          if(clss[j] == 'form-group') return (temp);
+      }
+    }
+
+    public changeColumnVisibility(tableName, columnName, elementId, data)
+    {
+      if(typeof columnVisibilityRules[columnName] != "undefined")
+        columnVisibilityRules[columnName](tableName, columnName, elementId, data);
+    }
+
+
     /****   Triggers  *****/
 
     public autoFillNameColumnFromDisplayNameColumn(tableName, columnName, elementId, data) 
     {
+      var group = this.getFormGroupElement(elementId);
+
       var params =
       {
         elementId: elementId,

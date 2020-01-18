@@ -50,10 +50,7 @@ export abstract class BaseHelper
       id = "intervalId"+id;
 
       if(typeof this.pipe[id] != "undefined") 
-      {
         clearInterval(this.pipe[id]);
-        delete this.pipe[id];
-      }
 
       this.pipe[id] = setInterval(() =>
       {

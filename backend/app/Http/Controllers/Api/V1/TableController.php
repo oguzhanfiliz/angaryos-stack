@@ -121,7 +121,7 @@ class TableController extends Controller
         
         $params = $this->getValidatedParamsForEdit();
         
-        if(Gate::denies('update', [$record, $params->column_set_id])) $this->abort();
+        if(Gate::denies('update', [$record, $params->column_set_id, @$params->single_column_name])) $this->abort();
         
         $data = Event::dispatch('record.edit.requested', [$record, $params])[0];
           
@@ -136,7 +136,7 @@ class TableController extends Controller
         
         $params = $this->getValidatedParamsForUpdate($request);
         
-        if(Gate::denies('update', [$record, $params->request->column_set_id])) $this->abort();
+        if(Gate::denies('update', [$record, $params->request->column_set_id, @$params->request->single_column_name])) $this->abort();
         
         $errors = $this->getValidationErrors($request->validator);
         if($errors != NULL) 

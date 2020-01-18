@@ -7,9 +7,11 @@ class ChangeDataLibrary
     public function UpdateData($columns, $data, $record) 
     {
         $geoColumns = ['point', 'multipoint', 'linestring', 'multilinestring', 'polygon', 'multipolygon'];
-                
+
         foreach($data as $key => $value)
         {
+            if($key == 'single_column_name') continue;
+            
             if($columns[$key]['type'] == 'jsonb')
             {
                 $params = helper('get_null_object');

@@ -195,6 +195,13 @@
                                                     <span class="ti-reload"></span>
                                                 </button>
 
+                                                <button *ngIf="can('userImitation', record)"
+                                                    class="btn btn-sm float-right btn-primary btn-icon pull-right" 
+                                                    (click)="userImitation(record)"> 
+                                                    
+                                                    <span class="ti-reload"></span>
+                                                </button>
+
                                                 <table class="light-table" *ngIf="!lightTable && !archiveTable">
                                                     <tr style="background-color: transparent !important;">
                                                         <td>
@@ -222,7 +229,7 @@
                                                     </tr>
                                                 </table>
                                             </td>
-                                            <td *ngFor="let columnName of params.columns" class="edit-td">
+                                            <td *ngFor="let columnName of params.columns" [class]="getEditTdClass(record, columnName)">
                                                 <table class="light-table-force">
                                                     <tr>
                                                         <td>

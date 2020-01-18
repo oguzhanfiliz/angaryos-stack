@@ -153,7 +153,7 @@ trait BaseModelGetDataColumnTrait
         $temp = $columnSet->getRelationData('column_array_ids');
         
         $set = (Object)[];
-        $set->name = $columnSet->name;
+        $set->name_basic = $columnSet->name_basic;
         $set->column_set_type = $columnSet->getRelationData('column_set_type_id')->name;
         $set->column_arrays = [];
             
@@ -386,13 +386,13 @@ trait BaseModelGetDataColumnTrait
     
     public function getRelationTableNameForDataSource($params)
     {
-        $dataSource = $params->relation->getRelationData('column_data_source_id');
+        $dataSource = get_attr_from_cache('column_data_sources', 'id', $params->relation->column_data_source_id, '*');
         
         return 
         [
             'table_name' => 'data_source',
-            'source_column_name' => $dataSource->_source_column,
-            'display_column_name' => $dataSource->_display_column
+            'source_column_name' => $dataSource->id,
+            'display_column_name' => $dataSource->name
         ];
     }
 }

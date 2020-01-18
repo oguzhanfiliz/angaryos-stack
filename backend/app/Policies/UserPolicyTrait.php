@@ -7,6 +7,37 @@ use App\User;
 
 trait UserPolicyTrait
 {    
+    private function columnSetIsHaveSingleColumn($tableName, $columnSetId, $singleColumnName)
+    {
+        if($columnSetId == 0)
+        {
+            $columnIds = get_attr_from_cache('tables', 'name', $tableName, 'column_ids');
+            if($columnIds == NULL) return FALSE;
+            $columnIds = json_decode($columnIds);
+        }
+        else
+        {
+            $columnArrayIds = get_attr_from_cache('column_sets', 'id', $columnSetId, 'column_array_ids');
+            $columnArrayIds = json_decode($columnArrayIds);
+            
+            $columnIds = [];
+            foreach($columnArrayIds as $columnArrayId)
+            {
+                $columnArray = get_attr_from_cache('column_arrays', 'id', $columnArrayId, '*');
+                if($columnArray == NULL) return FALSE;
+                
+                $columnArrayTypeName = get_attr_from_cache('column_array_types', 'id', $columnArray->column_array_type_id, 'name');
+                if($columnArrayTypeName != 'direct_data') continue;
+                
+                $temp = json_decode($columnArray->column_ids);
+                $columnIds = array_merge($columnIds, $temp);
+            }
+        }
+        
+        $singleColumnId = get_attr_from_cache('columns', 'name', $singleColumnName, 'id');
+        return in_array($singleColumnId, $columnIds);
+    }
+    
     public function columnIsPermittedForQuery(User $user, $column_name)
     {
         $control = $this->columnIsPermittedForList($user, $column_name);

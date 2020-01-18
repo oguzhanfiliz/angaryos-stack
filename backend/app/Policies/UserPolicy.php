@@ -36,10 +36,16 @@ class UserPolicy
         return $this->columnSetOrArrayIsPermitted($user, $columnSetId, 'creates');
     }
 
-    public function update($user, $record, $columnSetId)
+    public function update($user, $record, $columnSetId, $singleColumnName = NULL)
     {
         $control = $this->columnSetOrArrayIsPermitted($user, $columnSetId, 'edits');
         if(!$control) return FALSE;
+        
+        if($singleColumnName != NULL)
+        {
+            $control = $this->columnSetIsHaveSingleColumn($record->getTable(), $columnSetId, $singleColumnName);
+            if(!$control) return FALSE;
+        }
         
         return $this->recordPermitted($record, __FUNCTION__);
     }

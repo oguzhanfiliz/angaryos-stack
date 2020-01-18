@@ -276,10 +276,21 @@ trait TableSubscriberTrait
     
     public function getDataForSelectElementForBasicColumn($params)
     {
+        $data = $params->record{$params->column->name};
+        
+        $dbTypeName = get_attr_from_cache('column_db_types', 'id', $params->column->column_db_type_id, 'name');
+        switch($dbTypeName)
+        {
+            case 'boolean': 
+                $data = ($data == '1');
+                break;
+            default: break;
+        } 
+        
         return
         [
             'source' => $params->record{$params->column->name},
-            'display' => $params->record{$params->column->name}
+            'display' => $data
         ];
     }
     

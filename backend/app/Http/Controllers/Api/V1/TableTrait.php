@@ -227,8 +227,10 @@ trait TableTrait
             if(in_array($key, $temp))
                 $arr[$key] = $value;
         
-        $params->request = (Object)$arr;
+        if(isset($params->request->single_column))
+            $arr['single_column_name'] = $params->request->single_column;
         
+        $params->request = (Object)$arr;
         
         $params->table = new BaseModel('tables');
         $params->table = $params->table->where('name', $pipe['table'])->first();
