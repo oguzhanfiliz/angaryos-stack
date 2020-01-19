@@ -257,16 +257,20 @@ export class FormComponent
             url += this.recordId + "/update";
 
         var params = this.getElementsDataForUpload(); 
+        //var params = this.getElementsData();
 
         if(this.inFormColumnName.length > 0)
             params.append('in_form_column_name', this.inFormColumnName);
+            //params['in_form_column_name'] = this.inFormColumnName;
 
         if(this.singleColumn)
             params.append('single_column', this.inFormColumnName);
+            //params['single_column'] = this.inFormColumnName;
 
         this.startLoading();
-
-        this.sessionHelper.doHttpRequest("POST", url, params)
+        
+        this.sessionHelper.doHttpRequest("POST", url, params) 
+        //this.sessionHelper.doHttpRequest("GET", url, params) 
         .then((data) => 
         {
             this.stopLoading();
@@ -313,10 +317,9 @@ export class FormComponent
 
     getElementId(columnName)
     {
-        var id = '[name="'+columnName+'"]';//  '#'+columnName;
+        var id = '[name="'+columnName+'"]';
         if(this.id.length > 0)
             id = '[ng-reflect-id="'+this.id+'"] ' + id;
-            //id = 'in-form-element [ng-reflect-id="'+this.id+'"] ' + id;
 
         if(columnName == "name")
             id += ":last-child";
@@ -330,7 +333,7 @@ export class FormComponent
 
         for(var j = 0; j < columnsArrays.length; j++)
         {
-            var columnArray = columnsArrays[i];
+            var columnArray = columnsArrays[j];
             var columnNames = this.getKeys(columnArray.columns);
             
             for(var k = 0; k < columnNames.length; k++)
@@ -350,6 +353,9 @@ export class FormComponent
         for(var i = 0; i < columnArrays.length; i++)
         {
             var columnArray = columnArrays[i];
+
+            if(columnArray.column_array_type != 'direct_data') continue;
+
             var columnNames = this.getKeys(columnArray.columns);
             
             for(var k = 0; k < columnNames.length; k++)
@@ -358,6 +364,9 @@ export class FormComponent
                 var guiType = columnArray.columns[columnName]['gui_type_name'];
 
                 var val = $(this.getElementId(columnName)).val();
+                
+                if(typeof val == "undefined") continue;
+
                 data[columnName] = DataHelper.changeDataForFormByGuiType(guiType, val);
             }
                 
@@ -381,6 +390,9 @@ export class FormComponent
         for(var i = 0; i < columnArrays.length; i++)
         {
             var columnArray = columnArrays[i];
+
+            if(columnArray.column_array_type != 'direct_data') continue;
+
             var columnNames = this.getKeys(columnArray.columns);
             
             for(var k = 0; k < columnNames.length; k++)
@@ -395,11 +407,17 @@ export class FormComponent
                         data.append(columnName+"[]", files[l]);
 
                     var val = $(this.getElementId(columnName+"_old")).val();
+
+                    if(typeof val == "undefined") continue;
+
                     data.append(columnName+"_old", val);
                 }
                 else
                 {
                     var val = $(this.getElementId(columnName)).val();
+
+                    if(typeof val == "undefined") continue;
+
                     var temp = DataHelper.changeDataForFormByGuiType(guiType, val);
                     data.append(columnName, temp);
                 }

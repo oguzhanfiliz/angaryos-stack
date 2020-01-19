@@ -17,7 +17,7 @@ function columnDbTypeIdTrigger(tableName, columnName, elementId, data)
     var formElementVisibilityBaseKey = getFormElementVisibilityBaseKey(elementId);
 
     var visible = geoColumnIds.includes(parseInt(data[columnName]));
-    console.log(formElementVisibilityBaseKey+"srid");
+    
     BaseHelper.writeToPipe(formElementVisibilityBaseKey+"srid", visible);
 }
 

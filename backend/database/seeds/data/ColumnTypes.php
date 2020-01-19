@@ -18,8 +18,8 @@ $column_db_types['point'] = 'Coğrafi Nokta';
 $column_db_types['multipoint'] = 'Coğrafi Nokta (Çoklu)';
 $column_db_types['linestring'] = 'Coğrafi Çizgi';
 $column_db_types['multilinestring'] = 'Coğrafi Çizgi (Çoklu)';
-$column_db_types['polygon'] = 'Coğrafi Poligon';
-$column_db_types['multipolygon'] = 'Coğrafi Poligon (Çoklu)';
+$column_db_types['polygon'] = 'Coğrafi Alan';
+$column_db_types['multipolygon'] = 'Coğrafi Alan (Çoklu)';
 
 $temp = $this->get_base_record();
 
