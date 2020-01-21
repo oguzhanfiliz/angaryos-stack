@@ -203,6 +203,14 @@
                                                     <span class="ti-user"></span>
                                                 </button>
 
+                                                <button *ngIf="can('authWizard', record)"
+                                                    data-toggle="tooltip" title="Yetki oluşturma yardımcısı"
+                                                    class="btn btn-sm float-right btn-primary btn-icon pull-right" 
+                                                    (click)="authWizard(record)"> 
+                                                    
+                                                    <span class="ti-direction-alt"></span>
+                                                </button>
+
                                                 <table class="light-table" *ngIf="!lightTable && !archiveTable">
                                                     <tr style="background-color: transparent !important;">
                                                         <td>

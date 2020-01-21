@@ -1,0 +1,132 @@
+<section class="content">   
+    <div class="block-header">
+        <div class="row">
+            <div class="col-lg-7 col-md-6 col-sm-12">
+                <h4>Yetki Oluşturma Yardımcısı</h4>
+                <button class="btn btn-secondary btn-sm btn-icon mobile_menu" type="button"><i class="zmdi zmdi-sort-amount-desc"></i></button>
+            </div>
+            <div class="col-lg-5 col-md-6 col-sm-12">                
+                <button class="btn btn-sm btn-secondary btn-icon float-right right_icon_toggle_btn" type="button"><i class="zmdi zmdi-arrow-right"></i></button>
+            </div>
+        </div>
+    </div>
+    <div class="container-fluid">
+        <div class="form-group" id="name-group">
+            <table class="light-table">
+                <tbody>
+                    <tr>
+                        <td>Ad</td>
+                    </tr>
+                    <tr>
+                        <td colspan="2">
+                            <form-element 
+                                type="string" name="name" 
+                                value="" value-json="" 
+                                class="form-control" column-name="name" placeholder="Ad" 
+                                up-column-name="" up-form-id="" srid="">
+                            
+                            </form-element>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="form-group" id="description-group">
+            <table class="light-table">
+                <tbody>
+                    <tr>
+                        <td>Açıklama</td>
+                    </tr>
+                    <tr>
+                        <td colspan="2">
+                            <form-element
+                                type="text" name="description" 
+                                value="" value-json="" 
+                                class="form-control" column-name="description" placeholder="Açıklama" 
+                                up-column-name="" up-form-id="" srid="">
+                            
+                            </form-element>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <br>
+        <div class="form-group" id="auths-group">
+            <div cdkDropListGroup>            
+                <div class="form-group" id="name-group">
+                    <table style="width: 100%;">
+                        <tr>
+                            <td *ngFor="let type of types" [width]="(100/types.length)+'%'">
+                                <table class="light-table" style="margin-bottom: 25px;width: 100%;">
+                                    <tr class="tr-hover">
+                                        <td>
+                                            <a (click)="searchWithWord(tableName+':'+type['source'])">
+                                                {{ type['display'] }}
+                                            </a>
+                                        </td><td align="right">
+                                            <button  (click)="createAuth(type['source'])" class="btn btn-sm btn-primary float-right">Ekle</button>
+                                        </td>
+                                    </tr><tr>
+                                        <td colspan="2">
+                                            <div
+                                                cdkDropList
+                                                [cdkDropListData]="auths[type['source']]"
+                                                class="dragdrop-list"
+                                                (cdkDropListDropped)="drop($event, type['source'])">
+    
+                                                <div
+                                                    [attr.source]="item.source"                                                        
+                                                    class="dragdrop-box" 
+                                                    *ngFor="let item of auths[type['source']]" 
+                                                    cdkDrag>
+                                                    
+                                                    {{ item.display }}                                                        
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </td>    
+                        </tr><tr>
+                            <td colspan="20" align="center">
+                                <div class="dragdrop-container">
+                                    <table class="light-table">
+                                        <tr>
+                                            <td>
+                                                <input style="font-size: 12px;margin: 0 0 10px 0;height: 30;background-color: white;"
+                                                    class="form-control" 
+                                                    placeholder="Yetki Arama" 
+                                                    (input)="searchChanged($event)"
+                                                    name="auth_search" 
+                                                    id="auth_search" />
+                                            </td>
+                                        </tr><tr>
+                                            <td>
+                                                <div
+                                                    cdkDropList
+                                                    [cdkDropListData]="auths['search']"
+                                                    class="dragdrop-list"
+                                                    (cdkDropListDropped)="drop($event, 'search')">
+    
+                                                    <div 
+                                                            [attr.source]="item.source"
+                                                            class="dragdrop-box" 
+                                                            *ngFor="let item of auths['search']" 
+                                                            cdkDrag>
+                                                            
+                                                            {{item.display}}
+                                                    </div>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>        
+    </div>
+</section>

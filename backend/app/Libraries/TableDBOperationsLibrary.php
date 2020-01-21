@@ -291,6 +291,17 @@ class TableDBOperationsLibrary
         return $columnIds;
     }
     
+    public function TableEventForClone($params)
+    {
+        $temp = helper('clone_object_as_array', $params['record']);
+        $temp['name'] = $temp['name'].'klon';
+        
+        $columnIds = $this->CreateTableOnDB($temp);
+        $this->CreateArchiveTableOnDB($temp['name'], $temp['name'].'_archive');
+        
+        return $columnIds;
+    }
+    
     public function CreateTableOnDB($requests)
     {
         $columnIds = json_decode($requests['column_ids']);

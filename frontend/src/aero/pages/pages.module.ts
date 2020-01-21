@@ -19,6 +19,8 @@ import { ArchiveComponent } from './archive/archive.component';
 import { DeletedComponent } from './deleted/deleted.component';
 import { ShowComponent } from './show/show.component';
 import { FormComponent } from './form/form.component';
+import { AuthWizardComponent } from './auth-wizard/auth-wizard.component';
+
 
 
 import { FormElementComponent } from './helpers/custom-elements/form-element/form-element.component';
@@ -54,6 +56,7 @@ import { GeoPreviewElementComponent } from './helpers/custom-elements/geo-previe
     DeletedComponent,
     ShowComponent,
     FormComponent,
+    AuthWizardComponent,
 
     NotFoundComponent,
 

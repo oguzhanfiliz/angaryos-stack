@@ -15,6 +15,6 @@ $record = Cache::rememberForever($cacheKey, function() use($tableName, $requestC
 
 if($record == NULL) return NULL;
 
-App\Jobs\CreateRecordModelCaches::dispatch($record, $tableName);
+App\Jobs\CreateRecordModelCaches::dispatch($record->id, $tableName);
 
 return $record;

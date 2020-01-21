@@ -1,3 +1,3 @@
 <?php
-
-return microtime(TRUE) - LARAVEL_START;
+global $pipe;
+return microtime(TRUE) - $pipe['laravelStart'];

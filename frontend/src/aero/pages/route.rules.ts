@@ -8,6 +8,7 @@ import { DeletedComponent } from './deleted/deleted.component';
 import { FormComponent } from './form/form.component';
 import { ShowComponent } from './show/show.component';
 import { NotFoundComponent } from './not-found/not-found.component';
+import { AuthWizardComponent } from './auth-wizard/auth-wizard.component';
 
 export const routeRules = 
 [{
@@ -51,6 +52,10 @@ export const routeRules =
         {
             path: 'table/:tableName/:recordId/edit',
             component: FormComponent 
+        },          
+        {
+            path: 'authWizard/:tableName',
+            component: AuthWizardComponent 
         },
         {
             path: '**',

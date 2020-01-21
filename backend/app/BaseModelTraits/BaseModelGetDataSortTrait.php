@@ -54,6 +54,11 @@ trait BaseModelGetDataSortTrait
         $this->addSortForBasicColumn($params);
     }
     
+    public function addSortForTableIdAndColumnIds($params)
+    {
+        dd('addSortForTableIdAndColumnIds');
+        dd($params);
+    }
     
     
     

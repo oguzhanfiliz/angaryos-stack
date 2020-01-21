@@ -32,7 +32,6 @@ export class FormComponent
     public recordId = null;
 
     private loading = true;
-    //private intervalId = -1;
     
     constructor(
         public route: ActivatedRoute,
@@ -256,21 +255,21 @@ export class FormComponent
         else
             url += this.recordId + "/update";
 
-        var params = this.getElementsDataForUpload(); 
-        //var params = this.getElementsData();
+        //var params = this.getElementsDataForUpload(); 
+        var params = this.getElementsData();
 
         if(this.inFormColumnName.length > 0)
-            params.append('in_form_column_name', this.inFormColumnName);
-            //params['in_form_column_name'] = this.inFormColumnName;
+            //params.append('in_form_column_name', this.inFormColumnName);
+            params['in_form_column_name'] = this.inFormColumnName;
 
         if(this.singleColumn)
-            params.append('single_column', this.inFormColumnName);
-            //params['single_column'] = this.inFormColumnName;
+            //params.append('single_column', this.inFormColumnName);
+            params['single_column'] = this.inFormColumnName;
 
         this.startLoading();
         
-        this.sessionHelper.doHttpRequest("POST", url, params) 
-        //this.sessionHelper.doHttpRequest("GET", url, params) 
+        //this.sessionHelper.doHttpRequest("POST", url, params) 
+        this.sessionHelper.doHttpRequest("GET", url, params) 
         .then((data) => 
         {
             this.stopLoading();

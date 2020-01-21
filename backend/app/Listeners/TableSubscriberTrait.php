@@ -305,6 +305,7 @@ trait TableSubscriberTrait
             global $pipe;
             $tableName = $pipe['table'];
         }
+        $dataArray = (Object)$dataArray;
         
         global $pipe;
         if(isset($pipe['overrideRequestDatas']))

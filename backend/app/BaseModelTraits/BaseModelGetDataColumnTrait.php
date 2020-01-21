@@ -84,9 +84,12 @@ trait BaseModelGetDataColumnTrait
             $column->display_name = 'display '.$temp[1];
             $column->column_table_relation_id = NULL;
             $column->gui_type_name = 'string';
-            $column->db_type = 'string?';
+            $column->column_gui_type_id = get_attr_from_cache('column_gui_types', 'name', 'string', 'id');
+            $column->db_type_name = 'string';
+            $column->column_db_type_id = get_attr_from_cache('column_db_types', 'name', 'string', 'id');
             $column->table_alias = '';
             $column->table_name = '';
+            $column->up_column_id = NULL;
             $column->select_raw = $c;
             
             $columns->{$temp[1]} = $column;

@@ -30,6 +30,7 @@ return Cache::rememberForever($key, function()
     /****        ****/
     
     $auths['admin:userImitation:0:0'] = 'Kullanıcı taklit';
+    $auths['admin:authWizard:0:0'] = 'Yetki oluşturma yardımcısı';
 
     
     

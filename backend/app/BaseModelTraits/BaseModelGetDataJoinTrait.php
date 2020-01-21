@@ -109,12 +109,13 @@ trait BaseModelGetDataJoinTrait
         $params->join = $join;
         $params->model = $model;
         
-        $params->realtion_table = $join->getRelationData('join_table_id');
+        $params->realtion_table = get_attr_from_cache('tables', 'id', $join->join_table_id, '*');
+                
         $params->realtion_table_name = $params->realtion_table->name;
         if(strlen($join->join_table_alias) > 0)
             $params->realtion_table_name .= ' as ' . $join->join_table_alias;
 
-        $params->realtion_column = $join->getRelationData('join_column_id');
+        $params->realtion_column = get_attr_from_cache('columns', 'id', $join->join_column_id, '*');
         $params->realtion_column_name = $params->realtion_column->name;
         if(strlen($join->join_table_alias) > 0)
             $params->realtion_column_name = $join->join_table_alias.'.'.$params->realtion_column_name;
@@ -123,7 +124,7 @@ trait BaseModelGetDataJoinTrait
         $columnName = last($columnName);
         $params->column = get_attr_from_cache('columns', 'name', $columnName, '*');
         
-        $params->relation = $join->getRelationData('join_column_id');
+        $params->relation = get_attr_from_cache('columns', 'id', $join->join_column_id, '*');
         
         return ColumnClassificationLibrary::relationDbTypes(   $this, 
                                                                 __FUNCTION__, 

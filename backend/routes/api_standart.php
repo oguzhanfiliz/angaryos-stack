@@ -20,9 +20,9 @@ Route::group(['prefix' => '{token}'], function ()
     Route::get('tables/{table_name}', 'TableController@index');
     Route::get('tables/{table_name}/deleted', 'TableController@deleted');
     Route::get('tables/{table_name}/create', 'TableController@create');
-    Route::get('tables/{table_name}/store', 'TableController@store');    
+    Route::any('tables/{table_name}/store', 'TableController@store');    
     Route::get('tables/{table_name}/{id}/edit', 'TableController@edit');
-    Route::get('tables/{table_name}/{id}/update', 'TableController@update');
+    Route::any('tables/{table_name}/{id}/update', 'TableController@update');
     Route::get('tables/{table_name}/{id}/delete', 'TableController@destroy');
     Route::get('tables/{table_name}/{id}/clone', 'TableController@cloneRecord');
     Route::get('tables/{table_name}/{id}/archive', 'TableController@archive');

@@ -93,6 +93,7 @@ export class DataTableElementComponent
                 break;
             case 'clone': columnName = '_is_showable'; break;
             case 'userImitation': return this.canUserImitation(record);
+            case 'authWizard': return this.canAuthWizard(record);
             default: alert(policyType + ': not have can function'); return true;
         }
 
@@ -101,14 +102,26 @@ export class DataTableElementComponent
         return false;
     }
 
+    canAuthWizard(table)
+    {
+        if(this.tableName != 'tables') return false;
+
+        return this.canAdminAuth('authWizard'); 
+    }
+
     canUserImitation(user)
     {
         if(this.tableName != 'users') return false;
 
         if(BaseHelper['loggedInUserInfo']['user']['id'] == user['id']) return false;
 
+        return this.canAdminAuth('userImitation');
+    }
+
+    canAdminAuth(auth)
+    {
         if(typeof BaseHelper['loggedInUserInfo']['auths']['admin'] == 'undefined') return false;
-        if(typeof BaseHelper['loggedInUserInfo']['auths']['admin']['userImitation'] == 'undefined') return false;
+        if(typeof BaseHelper['loggedInUserInfo']['auths']['admin'][auth] == 'undefined') return false;
         
         return true;
     }
@@ -116,6 +129,11 @@ export class DataTableElementComponent
     userImitation(user)
     {
         this.sessionHelper.userImitation(user);
+    }
+
+    authWizard(table)
+    {
+        this.generalHelper.navigate('authWizard/'+table['name']);
     }
 
     doOperation(policyType, record)

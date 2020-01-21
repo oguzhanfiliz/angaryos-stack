@@ -45,8 +45,8 @@ function send_log($level, $message, $object = NULL)
     $user = \Auth::user();
     if($user) $object['user'] = $user->id.'-'.$user->name_basic.' '.$user->surname;
     
-    $object['waitTime'] = helper('get_wait_time');    
-    $object['logRandom'] = $pipe['logRandom'];    
+    $object['waitTime'] = @helper('get_wait_time');    
+    $object['logRandom'] = @$pipe['logRandom'];    
     $object['host'] = @$_SERVER['HOSTNAME'];
     $object['uri'] = @$_SERVER['REQUEST_URI'];
     $object['logTime'] = date("Y-m-d h:i:sa");

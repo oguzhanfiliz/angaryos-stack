@@ -11,7 +11,8 @@ class ChangeDataLibrary
         foreach($data as $key => $value)
         {
             if($key == 'single_column_name') continue;
-            
+            if(!isset($columns[$key])) continue;
+                
             if($columns[$key]['type'] == 'jsonb')
             {
                 $params = helper('get_null_object');
@@ -37,8 +38,16 @@ class ChangeDataLibrary
         switch($typeName)
         {
             case 'integer':
-                foreach($params->value as $item)
-                    array_push($value, (int)$item);
+                if(is_array($params))
+                    $temp = $params['value'];
+                else
+                    $temp = $params->value;
+                
+                //if(!is_array($temp))dd($params);
+                
+                if($temp != NULL)
+                    foreach($temp as $item)
+                        array_push($value, (int)$item);
                 
                 if($value == []) $value = NULL;
                 

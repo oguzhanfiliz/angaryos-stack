@@ -112,6 +112,7 @@ trait BaseModelGetDataTrait
         
         foreach($columns as $column)
         {
+            if(!isset($column->column_gui_type_id)) dd($column);
             $guiTypeName = get_attr_from_cache('column_gui_types', 'id', $column->column_gui_type_id, 'name');
             if($guiTypeName == 'password')
             {
