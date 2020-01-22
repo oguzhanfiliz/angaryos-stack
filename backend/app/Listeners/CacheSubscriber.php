@@ -92,13 +92,9 @@ class CacheSubscriber
     
     private function clearRelationDataCache($tableName, $record, $type)
     {
-        return;
+        //return;
         //mesela column_db_type değiştirğinde columns->column_db_type_id__relation_data silinmeli
-        dd('clearRelationDataCache');
-        
-        $json = $this->{$columnName};
-        if(is_array($this->{$columnName})) $json = json_encode($this->{$columnName});
-        $cacheKey = 'tableName:'.$this->getTable().'|id:'.$this->id.'|columnName:'.$columnName.'|columnData:'.$json.'.relationData';
+        //dd('clearRelationDataCache');
     }
     
     private function clearUserCache($record)
@@ -113,8 +109,8 @@ class CacheSubscriber
     
     private function clearColumnSetsCache($record)
     {
-        dd('clearColumnSetsCache');
-        dd($record);
+        //dd('clearColumnSetsCache');
+        //dd($record);
     }
     
     private function clearRecordCache($record)

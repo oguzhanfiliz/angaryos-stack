@@ -2,7 +2,7 @@
 
 $up_columns['column_ids'] =
 [
-    'name_basic' => 'Sadece seçili tablonun kolonları gelsin',
+    'name_basic' => 'sadece seçili tablonun kolonları gelsin',
     'column_id' => 60,//'table_id',//Tablo yada kolon eklenme sırası değişirse güncellenmesi gerekir
     
     

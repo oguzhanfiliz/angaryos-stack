@@ -343,7 +343,7 @@
                 <in-form-element  
                     *ngIf="inFormTableName.length > 0"
                     id="{{ inFormElementId }}" 
-                    (inFormSaved)="inFormSavedSuccess($event)"
+                    (formSaved)="inFormSavedSuccess($event)"
                     singleColumn="true"
                     inFormTableName="{{ inFormTableName }}"
                     inFormColumnName="{{ inFormColumnName }}" 

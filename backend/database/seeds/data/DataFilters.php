@@ -52,7 +52,8 @@ foreach($defaultCounts as $tableName => $count)
     ];
 
 if(!isset($data_filters['data_filters'])) $data_filters['data_filters'] = [];
-$temp =
+
+/*$temp =
 [
     [
         'name_basic' => 'Varsayılan filtreler görülemesin',
@@ -60,7 +61,32 @@ $temp =
         'sql_code' => 'TABLE.id > 5'
     ],
 ];
-$data_filters['data_filters'] = array_merge($temp, $data_filters['data_filters']);
+$data_filters['data_filters'] = array_merge($temp, $data_filters['data_filters']);*/
+
+$i = 0;
+$data_filters['bos'] =
+[
+    [
+        'name_basic' => 'Silme engelleme',
+        'data_filter_type_id' => $data_filter_types['delete']->id,
+        'sql_code' => 'FALSE'
+    ],
+    [
+        'name_basic' => 'Düzenleme engelleme',
+        'data_filter_type_id' => $data_filter_types['update']->id,
+        'sql_code' => 'FALSE'
+    ],
+    [
+        'name_basic' => 'Geri yükleme engelleme',
+        'data_filter_type_id' => $data_filter_types['restore']->id,
+        'sql_code' => 'FALSE'
+    ],
+    [
+        'name_basic' => 'Dışa aktarma engelleme',
+        'data_filter_type_id' => $data_filter_types['export']->id,
+        'sql_code' => 'FALSE'
+    ],
+];
 
 /*$data_filters['departments'] = 
 [

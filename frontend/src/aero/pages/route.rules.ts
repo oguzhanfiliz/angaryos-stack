@@ -54,7 +54,7 @@ export const routeRules =
             component: FormComponent 
         },          
         {
-            path: 'authWizard/:tableName',
+            path: 'authWizard/:tableName/:tableId',
             component: AuthWizardComponent 
         },
         {

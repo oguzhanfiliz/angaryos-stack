@@ -6,9 +6,15 @@ table
 {
     font-size: 13px !important;
 }
+
 a
 {
     cursor: pointer;
+}
+
+input::placeholder, .select2-selection__placeholder, textarea::placeholder
+{
+    color:#ccc !important;
 }
 
 .selected-option
@@ -32,6 +38,15 @@ a
     color: red !important;
 }
 
+.cdk-drag-preview {
+    z-index: 99999999999999 !important;
+}
+
+.wizard.vertical > .content
+{
+    width: 70% !important;
+}
+
 #close
 {
     position: absolute !important;
@@ -39,19 +54,3 @@ a
     right: 5px;
     z-index: 9999;
 }
-
-input::placeholder, .select2-selection__placeholder, textarea::placeholder
-{
-    color:#ccc !important;
-}
-
-/*@media only screen and (max-width: 640px) 
-{
-	#close
-    {
-        position: absolute !important;
-        top: 5px;
-        right: 50%;
-        z-index: 9999;
-    }
-}*/

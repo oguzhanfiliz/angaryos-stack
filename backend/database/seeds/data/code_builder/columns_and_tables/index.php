@@ -56,7 +56,7 @@ $columns['record_id']->save();
 
 
 
-$requiredColumns = 
+/*$requiredColumns = 
 [
     'name' => 
     [
@@ -64,12 +64,12 @@ $requiredColumns =
         'type' => 'character varying',
         'srid' => NULL
     ]
-];
+];*/
 
 foreach(array_keys($table_name_display_name_map) as $table)
 {
     $table_columns = helper('get_all_columns_from_db', $table);
-    $table_columns = array_merge($table_columns, $requiredColumns);
+    //$table_columns = array_merge($table_columns, $requiredColumns);
     
     foreach($table_columns as $columnName => $column)
     {
@@ -104,3 +104,60 @@ foreach(array_keys($table_name_display_name_map) as $table)
     
     echo "Archive Table OK: " . $table ."\n\n\n";
 }
+
+$tempRelationTable = 
+[
+    'name_basic' => 'Filtreler kolonu varsayılan tablo ilişkisi',
+    'relation_table_id' => get_attr_from_cache('tables', 'name', 'data_filters', 'id'),
+    'relation_source_column_id' => get_attr_from_cache('columns', 'name', 'id', 'id'),
+    'relation_display_column_id' => get_attr_from_cache('columns', 'name', 'name', 'id')
+];
+$temp = $this->get_base_record();
+$temp = array_merge($tempRelationTable, $temp);
+
+$tempRelationTable = new BaseModel('column_table_relations', $temp);
+$tempRelationTable->save();
+
+$tempColumn = 
+[
+    'name' => 'data_filter_ids',
+    'display_name' => 'Data Filtre(ler)i',
+    'column_db_type_id' => get_attr_from_cache('column_db_types', 'name', 'jsonb', 'id'),
+    'column_gui_type_id' => get_attr_from_cache('column_gui_types', 'name', 'multiselect', 'id'),
+    'column_table_relation_id' => $tempRelationTable->id
+];
+$temp = $this->get_base_record();
+$temp = array_merge($tempColumn, $temp);
+
+$columns['data_filter_ids'] = new BaseModel('columns', $temp);
+$columns['data_filter_ids']->save();
+
+
+
+
+$tempRelationTable = 
+[
+    'name_basic' => 'Kolon setleri kolonu varsayılan tablo ilişkisi',
+    'relation_table_id' => get_attr_from_cache('tables', 'name', 'column_sets', 'id'),
+    'relation_source_column_id' => get_attr_from_cache('columns', 'name', 'id', 'id'),
+    'relation_display_column_id' => get_attr_from_cache('columns', 'name', 'name_basic', 'id')
+];
+$temp = $this->get_base_record();
+$temp = array_merge($tempRelationTable, $temp);
+
+$tempRelationTable = new BaseModel('column_table_relations', $temp);
+$tempRelationTable->save();
+
+$tempColumn = 
+[
+    'name' => 'column_set_ids',
+    'display_name' => 'Kolon Set(ler)i',
+    'column_db_type_id' => get_attr_from_cache('column_db_types', 'name', 'jsonb', 'id'),
+    'column_gui_type_id' => get_attr_from_cache('column_gui_types', 'name', 'multiselect', 'id'),
+    'column_table_relation_id' => $tempRelationTable->id
+];
+$temp = $this->get_base_record();
+$temp = array_merge($tempColumn, $temp);
+
+$columns['column_set_ids'] = new BaseModel('columns', $temp);
+$columns['column_set_ids']->save();

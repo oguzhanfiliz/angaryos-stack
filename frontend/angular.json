@@ -27,6 +27,7 @@
               "src/styles.css",
               "node_modules/bootstrap/dist/css/bootstrap.min.css",
               "src/assets/themes/aero/assets/css/style.min.css",
+              "src/assets/themes/aero/assets/plugins/jquery-steps/jquery.steps.css",
               "src/assets/ext_modules/select2/select2.min.css"          
             ],
             "scripts": [

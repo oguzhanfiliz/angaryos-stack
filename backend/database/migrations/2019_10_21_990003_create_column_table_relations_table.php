@@ -31,7 +31,7 @@ class CreateColumnTableRelationsTable extends Migration
             
             $table->integer('column_data_source_id')->nullable();
             
-            $table->integer('up_column_id')->nullable();
+            //$table->integer('up_column_id')->nullable();
             $table->text('description')->nullable();
             
             $table->boolean('state')->default(TRUE)->nullable();

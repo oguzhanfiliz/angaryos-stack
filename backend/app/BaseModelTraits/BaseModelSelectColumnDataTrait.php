@@ -31,14 +31,21 @@ trait BaseModelSelectColumnDataTrait
     
     public function getSelectColumnDataForRelationSql ($params)
     {
-        dd('tables and columns deleted_ ile başlayanı getirme');
         $sql = ' from ('.$params->relation->relation_sql.') as main_table where ';
         $sql .= ' ('. $params->relation->relation_display_column.'::text ilike \'%'.$params->search.'%\' ';
         $sql .= ' or '.$params->relation->relation_source_column.'::text ilike \'%'.$params->search.'%\' )';
         
+        global $pipe;
+        if($pipe['table'] == 'tables' || $pipe['table'] == 'columns')
+            $sql .= ' and name::text not like \'deleted\_%\' )';
+        
         $sourceSpace = $this->getSourceSpaceFromUpColumn($params);
-        dd('stop1');
-        dd($sourceSpace);
+        if($sourceSpace != FALSE)
+        {
+            dd('up column kontrol getSelectColumnDataForRelationSql');
+            //$model->whereIn($sourceColumn->name, $sourceSpace);
+        }
+        
         
         $params->count = DB::select('select count(*) '.$sql)[0]->count;
         

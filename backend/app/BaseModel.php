@@ -209,7 +209,7 @@ class BaseModel extends Model
             $relationId = get_attr_from_cache('columns', 'name', $columnName, 'column_table_relation_id');
             if(strlen($relationId) == 0)
             {
-                $this->{$column->name . '__relation_data'} = $this->{$columnName};
+                $this->{$columnName . '__relation_data'} = $this->{$columnName};
             }
             else
             {
@@ -217,7 +217,7 @@ class BaseModel extends Model
                 $th->fillRelationData($column);
             }
             
-            return $this->{$column->name . '__relation_data'};
+            return $this->{$columnName . '__relation_data'};
         });
     }
 }

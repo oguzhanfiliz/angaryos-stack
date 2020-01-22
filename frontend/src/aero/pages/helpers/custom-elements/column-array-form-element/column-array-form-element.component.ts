@@ -20,7 +20,8 @@ export class ColumnArrayFormElementComponent
     @Input() upFormId: string = "";
 
     @Output() dataChanged = new EventEmitter();
-    @Output() inFormSaved = new EventEmitter();
+    @Output() formSaved = new EventEmitter();
+    @Output() inFormOpened = new EventEmitter();
 
     inFormColumnName = "";
     inFormTableName = "";
@@ -55,8 +56,14 @@ export class ColumnArrayFormElementComponent
 
     inFormSavedSuccess(data)
     {
-        this.inFormSaved.emit(data);
+        this.formSaved.emit(data);
         this.closeModal(this.inFormElementId+'inFormModal');
+    }
+
+    inFormload(data)
+    {
+        data['ife'] = this.inFormElementId;
+        this.inFormOpened.emit(data);
     }
 
     addRelationRecord(columnName)

@@ -1,6 +1,8 @@
 import { ActivatedRoute} from '@angular/router';
 import { Component } from '@angular/core';
 
+import { types as typeList } from './types';
+
 import { SessionHelper } from './../helpers/session';
 import { BaseHelper } from './../helpers/base';
 import { GeneralHelper } from './../helpers/general';
@@ -8,6 +10,8 @@ import { MessageHelper } from './../helpers/message';
 import { AeroThemeHelper } from './../helpers/aero.theme';
 
 import {CdkDragDrop, moveItemInArray, transferArrayItem} from '@angular/cdk/drag-drop';
+
+declare var $: any; 
 
 @Component(
 {
@@ -18,33 +22,17 @@ import {CdkDragDrop, moveItemInArray, transferArrayItem} from '@angular/cdk/drag
 export class AuthWizardComponent 
 {
     public tableName:string = "";
-    public types = [
-        {
-            source: 'list',
-            display: 'Liste',
-        },
-        {
-            source: 'show',
-            display: 'Bilgi Kartı',
-        },
-        {
-            source: 'create',
-            display: 'Ekleme',
-        },
-        {
-            source: 'update',
-            display: 'Güncelleme',
-        },
-        {
-            source: 'querie',
-            display: 'Sorgu',
-        },
-        {
-            source: 'deleted',
-            display: 'Silinmiş Kayıtlar',
-        }
-    ]
+    public tableId:number = 0;
     public auths = [];
+
+    public inFormColumnName = "";
+    public inFormTableName = "";
+    public inFormRecordId = 0;
+    public inFormElementId = "";
+    public inFormType = {};
+    public currentListIndex = 0;
+
+    public types = [];
 
     constructor(
         private route: ActivatedRoute,
@@ -54,6 +42,8 @@ export class AuthWizardComponent
         private messageHelper: MessageHelper
         )
     {
+        this.types = typeList;
+
         this.auths['search'] = [];
         for(var i = 0; i < this.types.length; i++)
             this.auths[this.types[i]['source']] = [];
@@ -63,14 +53,43 @@ export class AuthWizardComponent
             route.params.subscribe(val => 
             {
                 th.tableName = val.tableName;
-                this.searchWithWord(th.tableName);
+                th.tableId = val.tableId;
+                //this.searchWithWord(th.tableName);
             });
+
+            th.showCurrentList();
         }, 100);
+    }
+
+    prevList()
+    {
+        this.currentListIndex--;
+        if(this.currentListIndex < 0)
+            this.currentListIndex = this.types.length -1;
+
+        this.showCurrentList();
+    }
+
+    nextList()
+    {
+        this.currentListIndex++;
+        if(this.currentListIndex >= this.types.length)
+            this.currentListIndex = 0;
+
+        this.showCurrentList();
+    }
+
+    showCurrentList()
+    {
+        $('.auth-list').css('display', 'none');        
+        $('#list'+this.currentListIndex).css('display', 'unset');
+
+        this.searchAuth(this.types[this.currentListIndex]['search']);
     }
 
     drop(event: CdkDragDrop<string[]>, target) 
     {
-        var source = event.previousContainer.data[event.previousIndex].source;
+        var source = event.previousContainer.data[event.previousIndex]['source'];
         if(target != 'search' && source.indexOf(this.tableName+":"+target) == -1)
         {
             this.messageHelper.toastMessage("Bu gruba ekleyemezsiniz! ("+target+")");
@@ -84,6 +103,119 @@ export class AuthWizardComponent
                                 event.container.data,
                                 event.previousIndex,
                                 event.currentIndex);
+    }
+
+    createAuth(type)
+    {
+        this.inFormType = type;
+        this.inFormTableName = type['table'];
+        this.inFormColumnName = type['in_form_column'];
+
+        this.inFormRecordId = 0;
+
+        var rand = Math.floor(Math.random() * 10000) + 1;
+        this.inFormElementId = "ife-"+rand;
+        
+        setTimeout(() => 
+        {
+            var modalId = '#'+this.inFormElementId+'inFormModal';
+            $(modalId).modal('show');
+        }, 100);
+    }
+
+    formChanged(event)
+    {
+        this.setElementDefaultDataAndHide(this.inFormElementId);
+    }
+
+    formLoad(event)
+    {
+        this.setElementDefaultDataAndHide(this.inFormElementId);       
+    }
+
+    setElementDefaultDataAndHide(inFormElementId)
+    {
+        var modalId = '#'+inFormElementId+'inFormModal';
+        var tableIdElement = modalId+' [name="table_id"]';
+        var nameElement = modalId+' [name="name_basic"]';
+        var columnArrayTypeElement = modalId+' [name="column_array_type_id"]';
+
+        $(tableIdElement).append("<option value='"+this.tableId+"'></option>")
+        $(tableIdElement).val(this.tableId);
+        $(modalId+' #table_id-group').css('display', 'none');
+
+        $(columnArrayTypeElement).append("<option value='1'></option>")
+        $(columnArrayTypeElement).val("1");
+        $(modalId+' #column_array_type_id-group').css('display', 'none');
+
+        var val = $("input[name='name']").val();
+        $(nameElement).val(val+" ("+this.inFormType['display']+")");
+
+
+
+        var filterTypeIds = {
+            'restore': 4,
+            'delete': 3,
+            'export': 6
+        }
+
+        var filterTypeElement = modalId+' [name="data_filter_type_id"]';
+        var filterId = filterTypeIds[this.inFormType['source']];
+
+        $(filterTypeElement).append("<option value='"+filterId+"'></option>")
+        $(filterTypeElement).val(filterId);
+        $(modalId+' #data_filter_type_id-group').css('display', 'none');
+        
+        console.log(filterTypeElement);
+    }
+
+    getAuthItemForList(event)
+    {
+        var item;
+
+        if(this.inFormType['search'].indexOf('filters:') > -1)
+        {
+            item = 
+            {
+                source: 'filters:'+this.tableName+':'+this.inFormType['source']+':'+event.in_form_data['source'],
+                display: ' Tablolar '+this.tableName+' '+this.inFormType['display']+' Filtresi '+event.in_form_data['display']+' (id: '+event.in_form_data['source']+')'
+            };
+        }
+        else
+        {
+            item = 
+            {
+                source: 'tables:'+this.tableName+':'+this.inFormType['source']+'s:'+event.in_form_data['source'],
+                display: ' Tablolar '+this.tableName+' '+this.inFormType['display']+' '+event.in_form_data['display']+' (id: '+event.in_form_data['source']+')'
+            };
+        }
+
+        return item;
+    }
+
+    inFormSavedSuccess(event)
+    {
+        $('#'+this.inFormElementId+'inFormModal').modal('hide');
+
+        var item = this.getAuthItemForList(event);
+        this.auths[this.inFormType['source']].push(item);
+    }
+
+    inFormOpened(data)
+    {
+        this.setElementDefaultDataAndHide(this.inFormElementId);
+        this.setElementDefaultDataAndHide(data['ife']);
+    }
+
+    closeModal(id)
+    {
+        BaseHelper.closeModal(id);
+    }
+
+    searchAuth(search)
+    {
+        search = search.replace('tableName:', this.tableName+":");
+        this.searchWithWord(search)
     }
 
     searchWithWord(word)

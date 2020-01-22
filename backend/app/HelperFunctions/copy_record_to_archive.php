@@ -1,5 +1,8 @@
 <?php
 
+try { $record->fillVariables(); }
+catch(\Exception $e) {}
+
 if($tableName == NULL)
 {
     $tableName = $record->getTable();

@@ -56,8 +56,15 @@ trait BaseModelGetDataSortTrait
     
     public function addSortForTableIdAndColumnIds($params)
     {
-        dd('addSortForTableIdAndColumnIds');
-        dd($params);
+        //dd($params->model->toSql());
+        $tableName = get_attr_from_cache('tables', 'id', $params->relation->relation_table_id, 'name');
+        $displayName = get_attr_from_cache('columns', 'id', $params->relation->relation_display_column_id, 'name');
+        //$display = get_attr_from_cache('columns', 'id', $params->relation->relation_display_column_id, '*');
+        
+        //up_column_id___up_columns16.name_basic
+        
+        $columnWithAlias = $params->column->name . '___' . $tableName.$params->relation->id.'.'.$displayName;
+        $params->model->orderBy(DB::raw("string_agg($columnWithAlias, ' ')"), $params->direction);
     }
     
     

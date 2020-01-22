@@ -2,7 +2,7 @@
 use App\BaseModel;
 
 $temp = $this->get_base_record();
-$temp['name_basic'] = $up_columns[$column->name]['name_basic'];
+$temp['name_basic'] = $column_name_display_name_map[$column->name] . ' kolonu için '.$up_columns[$column->name]['name_basic'];
 
 if(is_numeric($up_columns[$column->name]['column_id']))
     $temp['column_id'] = $up_columns[$column->name]['column_id'];

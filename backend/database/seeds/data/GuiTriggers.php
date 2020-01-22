@@ -8,7 +8,7 @@ $column_gui_triggers['name'] =
     [
         'name' => 'autoFillNameColumnFromDisplayNameColumn',
         'display_name' => 'Ad kolonu otomatik doldur',
-        'control_column_ids' => [26],//'display_name, Tablo yada kolon eklenme sıralaması değişirse yeni id yazılması gerekir
+        'control_column_ids' => [25],//'display_name, Tablo yada kolon eklenme sıralaması değişirse yeni id yazılması gerekir
     ]
 ];
 

@@ -30,7 +30,8 @@
                                     upFormId="{{ id }}"
                                     tableName="{{ tableName }}"
                                     (dataChanged)="change($event)"
-                                    (inFormSaved)="inFormSavedSuccess($event)"
+                                    (formSaved)="inFormSavedSuccess($event)"
+                                    (inFormOpened)="inFormload($event)"
                                     columnArrayJson="{{ getJson(columnArray) }}"
                                     recordJson="{{ getJson(getData('record')) }}">
                                 </column-array-form-element>

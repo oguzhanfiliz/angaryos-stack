@@ -490,6 +490,7 @@ trait TableSubscriberTrait
     
     public function deleteRecord($record)
     {
+        $record->fillVariables();
         $except = ['tables', 'columns'];
         
         if(copy_record_to_archive($record))
@@ -558,6 +559,7 @@ trait TableSubscriberTrait
     
     public function restoreRecord($archiveRecord, $record = NULL)
     {
+        $archiveRecord->fillVariables();
         $tableName = substr($archiveRecord->getTable(), 0, -8);
         
         if($record != NULL)
@@ -580,12 +582,7 @@ trait TableSubscriberTrait
             
             foreach($data as $key => $value)
             {
-                if(substr($key, -15, 15) == '__relation_data') continue;
-                
-                /*if($columns[$key]['type'] == 'jsonb')
-                    if($value != NULL)
-                        $value = json_encode($value);*/
-                
+                if(substr($key, -15, 15) == '__relation_data') continue;                
                 $record->{$key} = $value;
             }
         }

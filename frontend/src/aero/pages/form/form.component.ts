@@ -26,7 +26,10 @@ export class FormComponent
     
     @Input() singleColumn: boolean = false;
 
-    @Output() inFormSaved = new EventEmitter();
+    @Output() formSaved = new EventEmitter();
+    @Output() formChanged = new EventEmitter();
+    @Output() formLoad = new EventEmitter();
+    @Output() inFormOpened = new EventEmitter();
 
     public tableName = "";
     public recordId = null;
@@ -140,7 +143,7 @@ export class FormComponent
             event: event,
             th: this
         };
-
+        
         function func(params)
         {
             var data = params.th.getElementsData();
@@ -298,7 +301,7 @@ export class FormComponent
 
         if(this.singleColumn)
         {
-            this.inFormSaved.emit(data);
+            this.formSaved.emit(data);
         }
         else if(this.id.length == 0)
         {
@@ -310,7 +313,7 @@ export class FormComponent
             data['inFormColumnName'] = this.inFormColumnName;
             data['inelementId'] = this.id;
             data['inFormRecordId'] = this.inFormRecordId;
-            this.inFormSaved.emit(data);
+            this.formSaved.emit(data);
         }
     }
 
@@ -453,6 +456,7 @@ export class FormComponent
             BaseHelper.writeToPipe(this.getLocalKey(), data);
             setTimeout(() => {
                 this.changeColumnVisibilityGuiTrigger();
+                this.formLoad.emit(data);
             }, 100);
             
          
@@ -479,6 +483,11 @@ export class FormComponent
 
     /****    Events Functions    ****/
 
+    inFormload(data)
+    {
+        this.inFormOpened.emit(data);
+    }
+
     inFormSavedSuccess(data)
     {
         var elementId = this.getElementId(data['inFormColumnName']);
@@ -498,6 +507,8 @@ export class FormComponent
             default:
                 alert("inForm başarılı elemente bir eleman ekle: " + guiType);
         }
+
+        this.formChanged.emit(data);
     }
 
     inFormSavedSuccessSelect(elementId, data)

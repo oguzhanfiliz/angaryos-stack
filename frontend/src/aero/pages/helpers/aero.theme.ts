@@ -31,6 +31,10 @@ export class AeroThemeHelper
             $.getScript('assets/themes/aero/assets/bundles/c3.bundle.js');
 
             $.getScript('assets/ext_modules/select2/select2.min.js');
+
+            
+            $.getScript('assets/themes/aero/assets/plugins/jquery-validation/jquery.validate.js');
+            $.getScript('assets/themes/aero/assets/plugins/jquery-steps/jquery.steps.js');
           });     
 
           $.getScript('assets/ext_modules/ace-builds/src-min/ace.js', function()

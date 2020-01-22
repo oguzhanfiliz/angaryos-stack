@@ -41,7 +41,8 @@
                 <in-form-element  
                     *ngIf="inFormTableName.length > 0"
                     id="{{ inFormElementId }}" 
-                    (inFormSaved)="inFormSavedSuccess($event)"
+                    (formSaved)="inFormSavedSuccess($event)"
+                    (formLoad)="inFormload($event)"
                     inFormTableName="{{ inFormTableName }}"
                     inFormColumnName="{{ inFormColumnName }}" 
                     inFormRecordId="{{ inFormRecordId }}">

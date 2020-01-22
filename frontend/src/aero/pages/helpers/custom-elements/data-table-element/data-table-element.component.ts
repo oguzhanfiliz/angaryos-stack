@@ -133,7 +133,7 @@ export class DataTableElementComponent
 
     authWizard(table)
     {
-        this.generalHelper.navigate('authWizard/'+table['name']);
+        this.generalHelper.navigate('authWizard/'+table['name']+"/"+table['id']);
     }
 
     doOperation(policyType, record)
