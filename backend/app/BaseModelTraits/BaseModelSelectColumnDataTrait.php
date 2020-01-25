@@ -36,7 +36,7 @@ trait BaseModelSelectColumnDataTrait
         $sql .= ' or '.$params->relation->relation_source_column.'::text ilike \'%'.$params->search.'%\' )';
         
         global $pipe;
-        if($pipe['table'] == 'tables' || $pipe['table'] == 'columns')
+        if(($pipe['table'] == 'tables' || $pipe['table'] == 'columns') && SHOW_DELETED_TABLES_AND_COLUMNS != '1')
             $sql .= ' and name::text not like \'deleted\_%\' )';
         
         $sourceSpace = $this->getSourceSpaceFromUpColumn($params);

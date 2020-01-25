@@ -110,7 +110,7 @@ $tempRelationTable =
     'name_basic' => 'Filtreler kolonu varsayılan tablo ilişkisi',
     'relation_table_id' => get_attr_from_cache('tables', 'name', 'data_filters', 'id'),
     'relation_source_column_id' => get_attr_from_cache('columns', 'name', 'id', 'id'),
-    'relation_display_column_id' => get_attr_from_cache('columns', 'name', 'name', 'id')
+    'relation_display_column_id' => get_attr_from_cache('columns', 'name', 'name_basic', 'id')
 ];
 $temp = $this->get_base_record();
 $temp = array_merge($tempRelationTable, $temp);

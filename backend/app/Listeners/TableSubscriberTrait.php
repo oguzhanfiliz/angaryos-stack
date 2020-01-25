@@ -294,6 +294,17 @@ trait TableSubscriberTrait
         ];
     }
     
+    public function getDataForSelectElementForDataSource($params)
+    {
+        //test auths
+        //https://192.168.10.185/api/v1/c8n1zcgR1Uet6D4md1/tables/auth_groups/store?name_basic=ccc&in_form_column_name=auths&state=1&column_set_id=0&auths=%5B%22tables:departments:lists:2%22,%22tables:departments:lists:0%22%5D&#
+        
+        $dataSource = get_attr_from_cache('column_data_sources', 'id', $params->relation->column_data_source_id, '*');
+        $repository = NULL;
+        eval(helper('clear_php_code', $dataSource->php_code));
+        return $repository->getDataForSelectElement($params->record);
+    }
+    
     
     
     /****    Store    ****/
@@ -609,4 +620,55 @@ trait TableSubscriberTrait
         $record->save();
         return $record;
     }   
+    
+    
+    
+    /****    Auth Assign    ****/
+    
+    private function authAssign($params)
+    {
+        if($params['all_user']) 
+            return $this->addAuthWithUserList('*', $params['auth_id']);
+        
+        
+        $userIds = $params['user_ids'];
+
+        $temp = DB::table('users')->whereIn('department_id', $params['department_ids'])->get();
+        $userIds = $this->mergeUserIdsList($userIds, $temp);
+
+        foreach($params['auths'] as $auth)
+        {
+            $temp = DB::table('users')->whereRaw('auths @> \''.$auth.'\'::jsonb or auths @> \'"'.$auth.'"\'::jsonb')->get();
+            $userIds = $this->mergeUserIdsList($userIds, $temp);
+        }
+
+        $this->addAuthWithUserList($userIds, $params['auth_id']);
+    }
+    
+    private function mergeUserIdsList($base, $new)
+    {
+        foreach($new as $u)
+            if(!in_array($u->id, $base))
+                array_push($base, $u->id);
+            
+        return $base;
+    }
+    
+    private function addAuthWithUserList($userIds, $authId)
+    {
+        $inSql = 'select id from users where auths @> \'"'.$authId.'"\'::jsonb or auths @> \''.$authId.'\'::jsonb';
+        
+        $sql = 'UPDATE users SET auths  = auths || \'["'.$authId.'"]\'::jsonb ';
+        $sql .= ' where id not in ('.$inSql.') ';
+        
+        if($userIds != '*') $sql .= ' and id in ('.implode(',', $userIds).')';
+        
+        DB::select($sql);
+        
+        
+        $sql = 'UPDATE users SET auths  = \'["'.$authId.'"]\'::jsonb where (auths::text = \'\') IS NOT FALSE';
+        if($userIds != '*') $sql .= ' and id in ('.implode(',', $userIds).')';  
+        
+        DB::select($sql);        
+    }
 }

@@ -71,5 +71,21 @@ export const types = [
             in_form_column: 'data_filter_ids',
             description: 'Kaydı dışa aktarma varsayılan olarak izinlidir. İsterseniz kaldırılabilir.',
             search: 'filters:tableName:export:'
+        },
+        {
+            source: 'filters',
+            display: 'Diğer Filtreler',
+            table: 'data_filters',
+            in_form_column: 'data_filter_ids',
+            description: 'İsterseniz diğer işlemler için filtreler oluşturabilirsiniz',
+            search: 'filters:tableName:'
+        },
+        {
+            source: 'other',
+            display: 'Diğer Yetkiler',
+            table: '',
+            in_form_column: '',
+            description: 'İsterseniz diğer yetkileri de ekleyebilirsiniz',
+            search: 'tableName:'
         }
 ];

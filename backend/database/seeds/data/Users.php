@@ -18,7 +18,7 @@ $this->user->save();
 
 
 $adminAuth = $this->get_base_record();
-$adminAuth['name'] = 'Yönetici yetkisi';
+$adminAuth['name_basic'] = 'Yönetici yetkisi';
 $adminAuth['auths'] = [];
 
 $adminAuth = new BaseModel('auth_groups', $adminAuth);
@@ -99,7 +99,7 @@ foreach($tables as $table)
     }
     
     $temp = $this->get_base_record();
-    $temp['name'] = $table_name_display_name_map[$table->name].' tüm yetki';
+    $temp['name_basic'] = $table_name_display_name_map[$table->name].' tüm yetki';
     $temp['auths'] = $tableAuths;
     
     $tableAuths = new BaseModel('auth_groups', $temp);

@@ -106,4 +106,9 @@ class TableSubscriber
     {
         return $this->getDataForSelectElement($params, $record);
     }
+    
+    public function authAssignRequested($params)
+    {
+        $this->authAssign($params);
+    }
 }

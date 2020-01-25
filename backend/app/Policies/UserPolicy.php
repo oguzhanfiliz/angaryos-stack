@@ -106,4 +106,9 @@ class UserPolicy
     {
         dd(1111111116);
     }
+    
+    public function assignAuth($user)
+    {
+        return isset($user->auths['admin']['authWizard']);
+    }
 }

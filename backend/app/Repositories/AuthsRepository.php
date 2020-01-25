@@ -6,6 +6,15 @@ use DB;
 
 class AuthsRepository 
 {
+    public function getDataForSelectElement($record)
+    {
+        return
+        [
+            'source' => $record->id,
+            'display' => $record->name_basic
+        ];
+    }
+    
     public function getRecordsBySourceData($data)
     {
         $allAuths = helper('get_all_auths');
@@ -28,7 +37,7 @@ class AuthsRepository
             else
             {
                 $ag = \DB::table('auth_groups')->find($item);
-                $temp->_display_column = $ag->name;
+                $temp->_display_column = $ag->name_basic;
             }
             
             $temp->_source_column_name = '_source_column';

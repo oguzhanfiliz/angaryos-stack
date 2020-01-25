@@ -32,6 +32,10 @@ export class AuthWizardComponent
     public inFormType = {};
     public currentListIndex = 0;
 
+    public loading = false;
+
+    public lastSelectedFilterType = "";
+
     public types = [];
 
     constructor(
@@ -42,6 +46,9 @@ export class AuthWizardComponent
         private messageHelper: MessageHelper
         )
     {
+        this.aeroThemeHelper.addEventForFeature("standartElementEvents"); 
+        this.aeroThemeHelper.addEventForFeature("layoutCommonEvents"); 
+
         this.types = typeList;
 
         this.auths['search'] = [];
@@ -90,7 +97,12 @@ export class AuthWizardComponent
     drop(event: CdkDragDrop<string[]>, target) 
     {
         var source = event.previousContainer.data[event.previousIndex]['source'];
-        if(target != 'search' && source.indexOf(this.tableName+":"+target) == -1)
+
+        var want = this.tableName+":"+target;
+        if(target == 'filters')
+            want = 'filters:'+this.tableName;
+
+        if(target != 'other' && target != 'search' && source.indexOf(want) == -1)
         {
             this.messageHelper.toastMessage("Bu gruba ekleyemezsiniz! ("+target+")");
             return;
@@ -103,6 +115,135 @@ export class AuthWizardComponent
                                 event.container.data,
                                 event.previousIndex,
                                 event.currentIndex);
+    }
+
+    startLoading()
+    {
+        this.loading = true;
+        this.generalHelper.startLoading();
+    }
+
+    stopLoading()
+    {
+        this.loading = false;
+        this.generalHelper.stopLoading(); 
+    }
+
+    getValidatedParamsForAuthSave()
+    {
+        var nameBasic = $('[name="name_basic"]').val();
+        if(nameBasic == "")
+        {
+            this.messageHelper.toastMessage("Ad boş geçilemez!");
+            return false;
+        }
+
+        var description = $('textarea[name="description"]').val()
+
+        var params = 
+        {
+            description: description,
+            name_basic: nameBasic,
+            state: 1,
+            in_form_column_name: 'auths',
+            column_set_id: BaseHelper.loggedInUserInfo.auths.tables['auth_groups']['creates'][0]
+        }
+
+        var temp = [];
+        for(var i = 0; i < this.types.length; i++)
+        {
+            var t = this.auths[this.types[i]['source']];
+            for(var j = 0; j < t.length; j++)
+                temp.push(t[j]['source']);
+        }
+        
+        params['auths'] = BaseHelper.objectToJsonStr(temp);
+
+        return params;
+    }
+
+    save()
+    {
+        var params = this.getValidatedParamsForAuthSave();
+        if(params == false) return;
+
+        var url = this.sessionHelper.getBackendUrlWithToken()+"tables/auth_groups/store";
+        
+        this.startLoading();
+        
+        //this.sessionHelper.doHttpRequest("POST", url, params) 
+        this.sessionHelper.doHttpRequest("GET", url, params) 
+        .then((data) => 
+        {
+            this.stopLoading();
+            
+            if(typeof data['message'] == "undefined")
+                this.messageHelper.sweetAlert("Beklenmedik cevap geldi!", "Hata", "warning");
+            else if(data['message'] == 'error')
+                this.writeErrors(data['errors']);
+            else if(data['message'] == 'success')
+                this.authSaveSuccess(data);
+            else
+                this.messageHelper.sweetAlert("Beklenmedik cevap geldi!", "Hata", "warning");
+        })
+        .catch((e) => { this.stopLoading(); });
+    }
+
+    getJsonStrFromMultiSelectElement(elementName)
+    {
+        var temp = $('[name="'+elementName+'"]').val();
+        var ids = [];
+        for(var i = 0; i < temp.length; i++)
+            if(temp[i].length > 0)
+                ids.push(temp[i]);
+
+        return BaseHelper.objectToJsonStr(ids);
+    }
+
+    authSaveSuccess(data)
+    {
+        var params = this.getValidatedParamsForAuthAssign(data['in_form_data']);
+
+        var url = this.sessionHelper.getBackendUrlWithToken()+"assignAuth";
+        
+        this.startLoading();
+        
+        //this.sessionHelper.doHttpRequest("POST", url, params) 
+        this.sessionHelper.doHttpRequest("GET", url, params) 
+        .then((data) => 
+        {
+            this.stopLoading();
+            
+            if(typeof data['message'] == "undefined")
+                this.messageHelper.sweetAlert("Beklenmedik cevap geldi!", "Hata", "warning");
+            else if(data['message'] == 'error')
+                this.writeErrors(data['errors']);
+            else if(data['message'] == 'success')
+                this.messageHelper.sweetAlert("Yetkiler başarı ile atandı!", "Başarılı", "success"); 
+            else
+                this.messageHelper.sweetAlert("Beklenmedik cevap geldi!", "Hata", "warning");
+        })
+        .catch((e) => { this.stopLoading(); });
+    }
+
+    isAllUserChecked()
+    {
+        return $('[name="all_user"]').prop('checked');
+    }
+
+    getValidatedParamsForAuthAssign(data)
+    {
+        var userIds = this.getJsonStrFromMultiSelectElement('user_id');
+        var departmentIds = this.getJsonStrFromMultiSelectElement('department_id');
+        var auths = this.getJsonStrFromMultiSelectElement('auths');
+
+        return {
+            auth_id: data['source'],
+            all_user: ($('[name="all_user"]').prop('checked') ? '1':'0'),
+            user_ids: userIds,
+            department_ids: departmentIds,
+            auths: auths
+        }
     }
 
     createAuth(type)
@@ -136,6 +277,52 @@ export class AuthWizardComponent
     setElementDefaultDataAndHide(inFormElementId)
     {
         var modalId = '#'+inFormElementId+'inFormModal';
+        
+        this.setColumnsElementDefaultDataAndHide(modalId);
+        this.setFilterssElementDefaultDataAndHide(modalId);
+    }
+
+    setFilterssElementDefaultDataAndHide(modalId)
+    {
+        var filterTypeIds = {
+            'list': 1,
+            'update': 2,
+            'delete': 3,
+            'restore': 4,
+            'show': 5,
+            'export': 6,
+
+            'filters': 0
+        }
+
+        var filterTypeElement = modalId+' [name="data_filter_type_id"]';
+        var filterId = filterTypeIds[this.inFormType['source']];
+
+        if(filterId == 0)
+        {
+            $(filterTypeElement).change(() => 
+            {
+                var filterTypeId = $(filterTypeElement).val();
+
+                var keys = Object.keys(filterTypeIds);
+                for (var i = 0; i < keys.length; i++) 
+                    if(filterTypeIds[keys[i]] == filterTypeId)
+                    {
+                        this.lastSelectedFilterType = keys[i];
+                        break;
+                    }
+            });
+        }
+        else
+        {
+            $(filterTypeElement).append("<option value='"+filterId+"'></option>")
+            $(filterTypeElement).val(filterId);
+            $(modalId+' #data_filter_type_id-group').css('display', 'none');
+        }
+    }
+
+    setColumnsElementDefaultDataAndHide(modalId)
+    {
         var tableIdElement = modalId+' [name="table_id"]';
         var nameElement = modalId+' [name="name_basic"]';
         var columnArrayTypeElement = modalId+' [name="column_array_type_id"]';
@@ -150,47 +337,25 @@ export class AuthWizardComponent
 
         var val = $("input[name='name']").val();
         $(nameElement).val(val+" ("+this.inFormType['display']+")");
-
-
-
-        var filterTypeIds = {
-            'restore': 4,
-            'delete': 3,
-            'export': 6
-        }
-
-        var filterTypeElement = modalId+' [name="data_filter_type_id"]';
-        var filterId = filterTypeIds[this.inFormType['source']];
-
-        $(filterTypeElement).append("<option value='"+filterId+"'></option>")
-        $(filterTypeElement).val(filterId);
-        $(modalId+' #data_filter_type_id-group').css('display', 'none');
-        
-        console.log(filterTypeElement);
     }
 
     getAuthItemForList(event)
     {
-        var item;
-
-        if(this.inFormType['search'].indexOf('filters:') > -1)
-        {
-            item = 
-            {
+        if(this.inFormType['source'] == 'filters')
+            return {
+                source: 'filters:'+this.tableName+':'+this.lastSelectedFilterType+':'+event.in_form_data['source'],
+                display: ' Tablolar '+this.tableName+' '+this.lastSelectedFilterType+' Filtresi '+event.in_form_data['display']+' (id: '+event.in_form_data['source']+')'
+            };
+        else if(this.inFormType['search'].indexOf('filters:') > -1)
+            return {
                 source: 'filters:'+this.tableName+':'+this.inFormType['source']+':'+event.in_form_data['source'],
                 display: ' Tablolar '+this.tableName+' '+this.inFormType['display']+' Filtresi '+event.in_form_data['display']+' (id: '+event.in_form_data['source']+')'
             };
-        }
         else
-        {
-            item = 
-            {
+            return {
                 source: 'tables:'+this.tableName+':'+this.inFormType['source']+'s:'+event.in_form_data['source'],
                 display: ' Tablolar '+this.tableName+' '+this.inFormType['display']+' '+event.in_form_data['display']+' (id: '+event.in_form_data['source']+')'
             };
-        }
-
-        return item;
     }
 
     inFormSavedSuccess(event)
@@ -295,21 +460,15 @@ export class AuthWizardComponent
         }
 
         this.auths['search'] = [];
-        var control = false;
         for(var i = 0; i < list.length; i++)
         {
             var item = list[i];
 
             if(this.itemIsSelected(item['id']))
-            {
-                control = true;
                 continue;
-            } 
 
             this.auths['search'].push({source: item['id'], display: item['text']});
         }
-
-        if(control) this.messageHelper.toastMessage("Bulunan bazı sonuçlar zaten listenizde", "info");
     }
 
     itemIsSelected(source)

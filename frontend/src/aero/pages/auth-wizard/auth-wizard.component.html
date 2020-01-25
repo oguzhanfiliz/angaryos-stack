@@ -20,9 +20,9 @@
                     <tr>
                         <td colspan="2">
                             <form-element 
-                                type="string" name="name" 
+                                type="string" [name]="'name_basic'" 
                                 value="" value-json="" 
-                                class="form-control" columnName="name" 
+                                class="form-control" [columnName]="'name_basic'" 
                                 placeholder="Ad" 
                                 up-column-name="" up-form-id="" srid="">
                             
@@ -41,9 +41,9 @@
                     <tr>
                         <td colspan="2">
                             <form-element
-                                type="text" name="description" 
+                                type="text" [name]="'description'" 
                                 value="" value-json="" 
-                                class="form-control" columnName="description"
+                                class="form-control" [columnName]="'description'"
                                 placeholder="Açıklama" 
                                 up-column-name="" up-form-id="" srid="">
                             
@@ -84,7 +84,7 @@
                                             </button>
                                         </td>
                                         <td 
-                                            style="width:50%; padding: 15 30 30 30;"
+                                            style="width:50%; padding: 15 30 30 30; font-size: 15;text-align: justify;"
                                             [innerHTML]="types[currentListIndex]['description']">
                                         
                                         </td>
@@ -109,7 +109,13 @@
                                                                 {{ type['display'] }}
                                                             </a>
                                                         </td><td align="right">
-                                                            <button  (click)="createAuth(type)" class="btn btn-sm btn-primary float-right">Ekle</button>
+                                                            <button  
+                                                                *ngIf="type['table'].length > 0"
+                                                                (click)="createAuth(type)" 
+                                                                class="btn btn-sm btn-primary float-right">
+                                                                
+                                                                Ekle
+                                                            </button>
                                                         </td>
                                                     </tr><tr>
                                                         <td colspan="2">
@@ -185,7 +191,7 @@
         <div class="box box-primary">
             <h5>Yetki Atanacak</h5>
             
-            <div class="form-group" id="all_user-group">
+            <div class="form-group" id="all_user-group" style="margin: 20 0;">
                 <table class="light-table">
                     <tbody>
                         <tr>
@@ -198,7 +204,7 @@
                 </table>
             </div>
 
-            <div class="form-group" id="user_id-group">
+            <div class="form-group" id="user_id-group" [hidden]="isAllUserChecked()">
                 <table class="light-table">
                     <tbody>
                         <tr>
@@ -207,21 +213,22 @@
                         <tr>
                             <td colspan="2">
                                 <form-element 
-                                    type="multiselect" name="user_id" 
+                                    type="multiselect" [name]="'user_id'" 
                                     value="" value-json="" 
                                     baseUrl="tables/users"
-                                    class="form-control" columnName="user_id" 
+                                    class="form-control" [columnName]="'user_id'" 
                                     placeholder="Kullanıcılar" 
                                     up-column-name="" up-form-id="" srid="">
                                 
                                 </form-element>
+
                             </td>
                         </tr>
                     </tbody>
                 </table>
             </div>
 
-            <div class="form-group" id="department_ids-group">
+            <div class="form-group" id="department_id-group" [hidden]="isAllUserChecked()">
                 <table class="light-table">
                     <tbody>
                         <tr>
@@ -230,10 +237,10 @@
                         <tr>
                             <td colspan="2">
                                 <form-element 
-                                    type="multiselect" name="department_id" 
+                                    type="multiselect" [name]="'department_id'" 
                                     value="" value-json="" 
                                     baseUrl="tables/users"
-                                    class="form-control" columnName="department_id" 
+                                    class="form-control" [columnName]="'department_id'" 
                                     placeholder="Müdürlükler" 
                                     up-column-name="" up-form-id="" srid="">
                                 
@@ -244,7 +251,7 @@
                 </table>
             </div>
 
-            <div class="form-group" id="auths-group">
+            <div class="form-group" id="auths-group" [hidden]="isAllUserChecked()">
                 <table class="light-table">
                     <tbody>
                         <tr>
@@ -253,10 +260,10 @@
                         <tr>
                             <td colspan="2">
                                 <form-element 
-                                    type="multiselect" name="auths" 
+                                    type="multiselect" [name]="'auths'" 
                                     value="" value-json="" 
                                     baseUrl="tables/users"
-                                    class="form-control" columnName="auths" 
+                                    class="form-control" [columnName]="'auths'" 
                                     placeholder="Yetkiler" 
                                     up-column-name="" up-form-id="" srid="">
                                 

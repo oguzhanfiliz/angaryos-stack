@@ -185,13 +185,101 @@ class TableTest extends TestCase
     
     public function testCreateColumnSqlRelationOneToOne()
     {
-        $url = 'tables/columns/store?display_name=Test%20Sql%20Relation%20One%20To%20One&name=test_sql_relation_one_to_one&column_db_type_id=5&column_gui_type_id=6&up_column_id=&column_table_relation_id=33&subscriber_ids=%5B%5D&column_validation_ids=%5B%5D&column_gui_trigger_ids=%5B%5D&column_collective_info_id=&default=&description=&state=1&column_set_id=2&';
+        $url = 'tables/columns/store?display_name=Test%20Sql%20Relation%20One%20To%20One&name=test_sql_relation_one_to_one&column_db_type_id=5&column_gui_type_id=6&up_column_id=&column_table_relation_id=35&subscriber_ids=%5B%5D&column_validation_ids=%5B%5D&column_gui_trigger_ids=%5B%5D&column_collective_info_id=&default=&description=&state=1&column_set_id=2&';
         $this->createColumnAndTest($url);
     }
     
     public function testCreateColumnSqlRelationOneToMany()
     {
-        $url = 'tables/columns/store?display_name=Test%20Sql%20Relation%20One%20To%20Many&name=test_sql_relation_one_to_many&column_db_type_id=3&column_gui_type_id=7&up_column_id=&column_table_relation_id=33&subscriber_ids=%5B%5D&column_validation_ids=%5B%5D&column_gui_trigger_ids=%5B%5D&column_collective_info_id=&default=&description=&state=1&column_set_id=2&';
+        $url = 'tables/columns/store?display_name=Test%20Sql%20Relation%20One%20To%20Many&name=test_sql_relation_one_to_many&column_db_type_id=3&column_gui_type_id=7&up_column_id=&column_table_relation_id=35&subscriber_ids=%5B%5D&column_validation_ids=%5B%5D&column_gui_trigger_ids=%5B%5D&column_collective_info_id=&default=&description=&state=1&column_set_id=2&';
+        $this->createColumnAndTest($url);
+    }
+    
+    
+    
+    public function testCreateJoinTableForRelation()
+    {
+        $url = 'tables/join_tables/store?name_basic=Users%20department%20relation&join_table_id=1&join_table_alias=users_department&connection_column_with_alias=users.department_id&join_connection_type==&join_column_id=5&description=&state=1&column_set_id=0&in_form_column_name=join_table_ids&';
+        $response = $this->standartTest($url);
+        $data = $response->getData();
+        $this->assertEquals($data->data->message, 'success');
+    }
+    
+    public function testCreateColumnRelationForJoinTableForRelation()
+    {
+        $url = 'tables/column_table_relations/store?name_basic=Test%20relation%20table%20column%20default%20relation&relation_table_id=2&relation_source_column_id=&relation_display_column_id=&join_table_ids=%5B%223%22%5D&relation_sql=&relation_source_column=users.id&relation_display_column=users_department.name_basic&column_data_source_id=&description=&state=1&column_set_id=0&in_form_column_name=column_table_relation_id';
+        $response = $this->standartTest($url);
+        $data = $response->getData();
+        $this->assertEquals($data->data->message, 'success');
+    }
+    
+    public function testCreateJoinedTableColumn()
+    {
+        $url = 'tables/columns/store?display_name=Test%20relation%20data%20column&name=test_relation_table_column&column_db_type_id=3&column_gui_type_id=7&up_column_id=&column_table_relation_id=36&subscriber_ids=%5B%5D&column_validation_ids=%5B%5D&column_gui_trigger_ids=%5B%5D&column_collective_info_id=&default=&description=&state=1&column_set_id=2&';
+        $this->createColumnAndTest($url);
+    }
+    
+    
+    
+    public function testCreateDataSource()
+    {
+        $url = 'tables/column_data_sources/store?name=Test%20data%20source&php_code=%3C?php%0A$repository%20=%20new%20App%5CRepositories%5CTestRepository();%0A?%3E&state=1&column_set_id=0&in_form_column_name=column_data_source_id&';
+        $response = $this->standartTest($url);
+        $data = $response->getData();
+        $this->assertEquals($data->data->message, 'success');
+    }
+    
+    public function testCreateRelationForDataSource()
+    {
+        $url = 'tables/column_table_relations/store?name_basic=Test%20data%20source%20relation&relation_table_id=&relation_source_column_id=&relation_display_column_id=&join_table_ids=%5B%5D&relation_sql=&relation_source_column=&relation_display_column=&column_data_source_id=2&description=&state=1&column_set_id=0&in_form_column_name=column_table_relation_id&';
+        $response = $this->standartTest($url);
+        $data = $response->getData();
+        $this->assertEquals($data->data->message, 'success');
+    }
+    
+    public function testCreateDataSourceColumn()
+    {
+        $url = 'tables/columns/store?display_name=Test%20data%20source%20column&name=test_data_source&column_db_type_id=1&column_gui_type_id=6&up_column_id=&column_table_relation_id=37&subscriber_ids=%5B%5D&column_validation_ids=%5B%5D&column_gui_trigger_ids=%5B%5D&column_collective_info_id=&default=&description=&state=1&column_set_id=2&';
+        $this->createColumnAndTest($url);
+    }
+    
+    
+    
+    public function testCreateSubscriber()
+    {
+        $url = 'tables/subscribers/store?name_basic=Test%20Subscriber&subscriber_type_id=2&php_code=%3C?php%0A%5CDB::table(%27settings%27)-%3Ewhere(%27name%27,%20%27REC_COUNT_PER_PAGE%27)-%3Eupdate(%5B%27value%27%20=%3E%20%2712%27%5D);%0A?%3E&description=&state=1&column_set_id=0&in_form_column_name=subscriber_ids&';
+        $response = $this->standartTest($url);
+        $data = $response->getData();
+        $this->assertEquals($data->data->message, 'success');
+    }
+    
+    public function testCreateSubscriberColumn()
+    {
+        $url = 'tables/columns/store?display_name=Test%20Subscriber&name=test_subscriber&column_db_type_id=1&column_gui_type_id=1&up_column_id=&column_table_relation_id=&subscriber_ids=%5B%228%22%5D&column_validation_ids=%5B%5D&column_gui_trigger_ids=%5B%5D&column_collective_info_id=&default=&description=&state=1&column_set_id=2&';
+        $this->createColumnAndTest($url);
+    }
+    
+    
+    
+    public function testCreateValidationRule()
+    {
+        $url = 'tables/validations/store?display_name=Test%20Validation%20Rule&name=test_validation_rule&php_code=%3C?php%0A$return%20=%20($value%20==%202);%0A?%3E&error_message=&description=&state=1&column_set_id=0&';
+        $response = $this->standartTest($url);
+        $data = $response->getData();
+        $this->assertEquals($data->data->message, 'success');
+    }
+    
+    public function testCreateColumnValidation()
+    {
+        $url = 'tables/column_validations/store?validation_with_params=test_validation_rule&description=&state=1&column_set_id=0&in_form_column_name=column_validation_ids&';
+        $response = $this->standartTest($url);
+        $data = $response->getData();
+        $this->assertEquals($data->data->message, 'success');
+    }
+    
+    public function testValidationColumn()
+    {
+        $url = 'tables/columns/store?display_name=Test%20Validation&name=test_validation&column_db_type_id=5&column_gui_type_id=3&up_column_id=&column_table_relation_id=&subscriber_ids=%5B%5D&column_validation_ids=%5B%2223%22%5D&column_gui_trigger_ids=%5B%5D&column_collective_info_id=&default=&description=&state=1&column_set_id=2&';
         $this->createColumnAndTest($url);
     }
 }

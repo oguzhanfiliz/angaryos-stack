@@ -58,5 +58,9 @@ class BaseSubscriber
         $events->listen('standart.list.report.requested', 'App\Listeners\ReportSubscriber@standartListReportRequested');
         $events->listen('standart.list.report.data.responsed', 'App\Listeners\ReportSubscriber@responseListReport');
         
+        
+        
+        /****    Auth Subscribers    ****/
+        $events->listen('auth.assign.requested', 'App\Listeners\TableSubscriber@authAssignRequested');
     }
 }

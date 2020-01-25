@@ -9,9 +9,12 @@ use \App\User;
 
 use DB;
 use Hash;
+use Event;
 
 class AuthController extends Controller
 {
+    use AuthTrait;
+    
     public function login()
     {
         send_log('info', 'Request For Login');
@@ -59,4 +62,20 @@ class AuthController extends Controller
         
         return helper('response_success', ['token' => $token]);
     }
+    
+    public function assignAuth($user)
+    {
+        send_log('info', 'Request For Auth Assign', $user);
+        
+        $this->authControlForAssignAuth();
+        
+        $params = $this->getValidatedParamsForAssignAuth();
+        
+        Event::dispatch('auth.assign.requested', [$params]);
+        
+        send_log('info', 'Response For Auth Assign');
+        
+        return helper('response_success', 'success');
+    }
+    
 }

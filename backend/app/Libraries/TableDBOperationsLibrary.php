@@ -53,7 +53,7 @@ class TableDBOperationsLibrary
         $robotUserId = ROBOT_USER_ID;
 
         $auth = new \App\BaseModel('auth_groups');
-        $auth->name = $table['display_name'] . ' Tam Yetki';
+        $auth->name_basic = $table['display_name'] . ' Tam Yetki';
         $auth->auths = $auths;
         $auth->state = TRUE;
         $auth->own_id = $robotUserId;

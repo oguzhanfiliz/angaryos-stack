@@ -16,7 +16,7 @@ class CreateAuthGroupsTable extends Migration
         Schema::create('auth_groups', function (Blueprint $table) {
             $table->bigIncrements('id');
             
-            $table->string('name')->nullable();
+            $table->string('name_basic')->nullable();
             $table->jsonb('auths')->nullable();
             $table->text('description')->nullable();
             

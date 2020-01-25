@@ -78,7 +78,7 @@ return Cache::rememberForever($key, function()
     }
     
     foreach(\DB::table('auth_groups')->where('state', TRUE)->get() as $auth)
-        $auths[$auth->id] = $auth->name;
+        $auths[$auth->id] = $auth->name_basic;
 
     return $auths;        
 });

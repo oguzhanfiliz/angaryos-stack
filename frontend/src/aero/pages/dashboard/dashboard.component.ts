@@ -20,6 +20,7 @@ export class DashboardComponent
 
   ngAfterViewInit() 
   {   
-    this.aeroThemeHelper.addEventForFeature("layoutCommonEvents"); 
+    this.aeroThemeHelper.addEventForFeature("layoutCommonEvents");
+    this.aeroThemeHelper.addEventForFeature("standartElementEvents"); 
   }
 }
