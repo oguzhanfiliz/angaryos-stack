@@ -7,6 +7,7 @@
                 </tr><tr>
                     <td style="padding:5px 0">
                         <span *ngFor="let columnName of getObjectKeys(params.filters)"
+                            [hidden]="getFilterDescription(columnName) == ''"
                             (click)="openDetailFilterModal(columnName)"
                             class="badge badge-danger" style="margin:2px;cursor: pointer;">
                             

@@ -18,6 +18,9 @@ $files =
     'Users',
     
     'IdDependentRecordsUpdate',
+    
+    'DataEntagratorDatas',
+    'CustomLayerDatas'
 ];
 
 foreach($files as $file)

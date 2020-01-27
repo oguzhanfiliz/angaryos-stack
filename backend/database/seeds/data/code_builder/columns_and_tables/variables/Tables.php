@@ -43,4 +43,31 @@ $table_name_display_name_map =
     'auth_groups' => 'Yetki Grupları',
     
     'up_columns' => 'Üst Kolonlar',
+    
+    
+    
+    'sub_tables' => 'Alt Tablolar',
+    'sub_point_types' => 'Alt Nokta Tipleri',
+    'sub_linestring_types' => 'Alt Çizgi Tipleri',
+    'sub_polygon_types' => 'Alt Poligon Tipleri',
+    'sub_points' => 'Alt Noktalar',
+    'sub_linestrings' => 'Alt Çizgiler',
+    'sub_polygons' => 'Alt Poligonlar',
+    
+    'layer_styles' => 'Katman Stilleri',
+    'custom_layer_types' => 'Revize Katman Tipleri',
+    'custom_layers' => 'Revize Katmanlar',
+    'external_layers' => 'Ek Katmanlar',
+    
+    'data_source_types' => 'Veri Kaynağı Tipleri',
+    'data_source_directions' => 'Veri Kaynaği Akış Yönleri',
+    'data_sources' => 'Veri Kaynaklari',
+    'data_source_remote_tables' => 'Veri Kaynağı Uzak Tablolar',
+    'data_source_remote_columns' => 'Veri Kaynağı Uzak Kolonlar',
+    'data_source_column_relations' => 'Veri Kaynağı Kolon İlişkisi',
+    'data_source_table_relations' => 'Veri Kaynağı Tablo İlişkisi',
+    
+    'data_entegrator_errors' => 'Veri Kaynağı Hataları',
+    
+    'table_groups' => 'Tablo Grupları',
 ];

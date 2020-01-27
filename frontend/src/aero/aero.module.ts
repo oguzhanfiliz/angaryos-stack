@@ -12,6 +12,7 @@ import { AeroRoutingModule } from './aero-routing.module';
 import { AeroComponent } from './aero.component';
 
 import { LoginComponent } from './pages/login/login.component';
+import { LinkPageComponent } from './pages/link-page/link-page.component';
 
 import { GuiTriggerHelper } from './pages/helpers/gui-trigger';
 import { MessageHelper } from './pages/helpers/message';
@@ -23,6 +24,7 @@ import { AeroThemeHelper } from './pages/helpers/aero.theme';
   declarations: 
   [
     AeroComponent,
+    LinkPageComponent,
     LoginComponent
   ],
   imports: 

@@ -43,6 +43,7 @@ export class GuiTriggerHelper
     }
 
 
+
     /****   Triggers  *****/
 
     public autoFillNameColumnFromDisplayNameColumn(tableName, columnName, elementId, data) 
@@ -73,10 +74,4 @@ export class GuiTriggerHelper
 
       return BaseHelper.doInterval('autoFillNameColumnFromDisplayNameColumn', func, params);
     }
-
-
-
-    /****    Functions    ****/
-
-    
 }

@@ -96,10 +96,12 @@ class FileLibrary
         $column = $params['columnName'];
 
         $old = @\Request::input($column.'_old');
-
+        
         if($old == NULL) $old = [];
         else $old = json_decode($old, TRUE);
-
+        
+        if($old == '') $old = []; 
+        
         $oldReturn = [ $column => json_encode($old) ];
 
         if($params['type'] == 'delete') return $oldReturn;

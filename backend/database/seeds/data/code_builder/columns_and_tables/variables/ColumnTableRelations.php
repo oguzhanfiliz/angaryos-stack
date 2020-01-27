@@ -162,5 +162,24 @@ $column_table_relations =
     'column_array_type_id' => $column_array_type_id_relation,
     'column_data_source_id' => 'column_data_sources',
     'column_gui_trigger_ids' => $column_gui_trigger_ids_relation,
-    'column_collective_info_id' => $column_collective_info_id_relation
+    'column_collective_info_id' => $column_collective_info_id_relation,
+    
+    'sub_table_id' => $table_id_relation,
+    
+    'sub_point_type_id' => 'sub_point_types',
+    'sub_linestring_type_id' => 'sub_linestring_types',
+    'sub_polygon_type_id' => 'sub_polygon_types',
+    
+    'custom_layer_type_id' => 'custom_layer_types',
+    'layer_style_id' => 'layer_styles',
+    
+    'data_source_type_id' => 'data_source_types',
+    'data_source_id' => 'data_sources',
+    
+    'data_source_remote_table_id' => 'data_source_remote_tables',
+    'data_source_remote_column_id' => 'data_source_remote_columns',
+    
+    'data_source_direction_id' => 'data_source_directions',
+    
+    'data_source_column_relation_ids' => 'data_source_column_relations',
 ];

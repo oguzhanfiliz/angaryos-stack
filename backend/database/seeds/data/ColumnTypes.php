@@ -66,6 +66,7 @@ $column_gui_types['multipolygon'] = 'Coğrafi Alan (Çoklu)';
 //$column_gui_types['tl'] = 'TL';
 $column_gui_types['codeeditor:php'] = 'Kod Editörü (PHP)';
 $column_gui_types['codeeditor:sql'] = 'Kod Editörü (SQL)';
+$column_gui_types['codeeditor:html'] = 'Kod Editörü (HTML)';
 $column_gui_types['multiselectdragdrop'] = 'Liste (Taşı Bırak)';
 
 $temp = $this->get_base_record();

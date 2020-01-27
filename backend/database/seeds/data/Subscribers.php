@@ -80,7 +80,8 @@ $helper = new App\Libraries\TableDBOperationsLibrary();
 $return = $helper->AddTableFullAuthToAdminUser($record);
 ?>'
 ];
-$subscribers['table']['columns'][4] =
+
+$subscribers['table']['columns'][0] =
 [
     'name_basic' => 'Veritabanı kolon işlemleri için trigger',
     'subscriber_type_id' => $subscriber_types['before']->id,
@@ -97,6 +98,26 @@ $params =
 ];
 $helper = new App\Libraries\TableDBOperationsLibrary();
 $return = $helper->ColumnEvent($params);
+?>'
+];
+
+$subscribers['table']['sub_point_types'][0] =
+[
+    'name_basic' => 'Revize katman işlemleri için trigger',
+    'subscriber_type_id' => $subscriber_types['before']->id,
+    'php_code' => '<?php
+$params = 
+[
+    "type" => $type,
+    "table" => $table,
+    "column" => $column,
+    "subscriber" => $subscriber,
+    "requests" => $requests,
+    "user" => $user,
+    "record" => $record    
+];
+$helper = new App\Libraries\CustomLayerOperationsLibrary();
+$return = $helper->TableEvent($params);
 ?>'
 ];
 
@@ -155,3 +176,9 @@ foreach($subscribers as $type => $set)
         }   
     }
 }
+
+$subscribers['column']['image'][0] = $subscribers['column']['profile_picture'][0];
+
+$subscribers['table']['sub_linestring_types'][0] = $subscribers['table']['sub_point_types'][0];
+$subscribers['table']['sub_polygon_types'][0] = $subscribers['table']['sub_point_types'][0];
+$subscribers['table']['sub_tables'][0] = $subscribers['table']['sub_point_types'][0];

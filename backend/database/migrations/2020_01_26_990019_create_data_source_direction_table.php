@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateColumnSetsTable extends Migration
+class CreateDataSourceDirectionTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,14 +13,10 @@ class CreateColumnSetsTable extends Migration
      */
     public function up()
     {
-        Schema::create('column_sets', function (Blueprint $table) {
+        Schema::create('data_source_directions', function (Blueprint $table) {
             $table->bigIncrements('id');
             
-            $table->string('name_basic')->nullable();
-            //$table->string('display_name')->nullable();
-            $table->integer('table_id')->nullable();
-            $table->integer('column_set_type_id')->nullable();
-            $table->jsonb('column_array_ids')->nullable();
+            $table->string('name')->nullable();
             $table->text('description')->nullable();
             
             $table->boolean('state')->default(TRUE)->nullable();
@@ -37,6 +33,6 @@ class CreateColumnSetsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('column_sets');
+        Schema::dropIfExists('data_source_directions');
     }
 }

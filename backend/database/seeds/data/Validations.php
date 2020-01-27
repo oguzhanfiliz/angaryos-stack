@@ -11,6 +11,7 @@ $validations['no_self']['display_name'] = 'Yetki grubuna kendini ekleyemesin';
 $validations['name_not_start_deleted']['display_name'] = 'İsim "deleted_" ile başlayamasın';
 $validations['no_change']['display_name'] = 'Data değiştirilemez';
 $validations['valid_validations']['display_name'] = 'Olmayan doğrulama kuralı yazılamaz!';
+$validations['column_table_relation_control']['display_name'] = 'İlişkili kolon ilişki kontrolü';
 
 
 
@@ -96,6 +97,20 @@ $temp = get_attr_from_cache(\'validations\', \'name\', $temp, \'id\');
 $return = ($temp != NULL);
 ?>';
 
+$validations['column_table_relation_control']['php_code'] = '<?php
+$relationGuiTypeIds = [6, 7, 20];
+
+$guiTypeId = \Request::input(\'column_gui_type_id\');
+if(!in_array($guiTypeId, $relationGuiTypeIds)) 
+{
+    $return = TRUE;
+    return;
+}
+
+$return  = (strlen($value) > 0);
+
+?>';
+
 
 $validations['numeric_min']['error_message'] = 'Değer en az :parameters[0] olmalıdır';
 $validations['files_type']['error_message'] = 'Dosya tipi yalnızca :parameters[0] olabilir.';
@@ -104,7 +119,8 @@ $validations['no_self']['error_message'] = 'Yetkiye kendisini ekleyemezsiniz!';
 $validations['name_not_start_deleted']['error_message'] = 'İsim "deleted_" ile başlayamaz';
 $validations['no_change']['error_message'] = 'Bu veri değiştirilemez.';
 $validations['valid_validations']['error_message'] = 'Böyle bir doğrulama kuralı yok!';
-
+$validations['column_table_relation_control']['error_message'] = 'İlişkili kolon için bir data ilişkisi seçmelisiniz!';
+        
 $temp = $this->get_base_record();
 
 foreach($validations as $name => $array)
@@ -145,6 +161,7 @@ $column_validations['no_self'] = NULL;
 $column_validations['name_not_start_deleted'] = NULL;
 $column_validations['no_change'] = NULL;
 $column_validations['valid_validations'] = NULL;
+$column_validations['column_table_relation_control'] = NULL;
 
 $temp = $this->get_base_record();
 

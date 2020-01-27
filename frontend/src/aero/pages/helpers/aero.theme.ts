@@ -174,6 +174,17 @@ export class AeroThemeHelper
       {
         title: 'Anasayfa',
         icon: 'zmdi-home',
+        link: '/',
+      };
+      return homePage;
+    }
+
+    public getDashboardPageMenuItem()
+    {
+      var homePage =
+      {
+        title: 'Göstergeler',
+        icon: 'zmdi-copy',
         link: '/'+BaseHelper.angaryosUrlPath+'/dashboard',
       };
       return homePage;
@@ -184,6 +195,7 @@ export class AeroThemeHelper
       this.baseMenu =  [ ];
 
       this.baseMenu.push(this.getHomePageMenuItem());
+      this.baseMenu.push(this.getDashboardPageMenuItem());
       this.baseMenu.push(this.getTablesMenuItem(search));
       
       setTimeout(() => 

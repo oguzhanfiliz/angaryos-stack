@@ -51,7 +51,7 @@ function send_log($level, $message, $object = NULL)
     $object['uri'] = @$_SERVER['REQUEST_URI'];
     $object['logTime'] = date("Y-m-d h:i:sa");
     
-    \App\Jobs\SendLog::dispatch($level, $message, $object);
+    \App\Jobs\SendLog::dispatch($level, $message, json_encode($object));
 }
 
 function custom_abort($response)

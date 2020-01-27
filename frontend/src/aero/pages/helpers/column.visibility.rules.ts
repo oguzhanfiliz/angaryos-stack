@@ -1,5 +1,7 @@
 import { BaseHelper } from './base';
 
+/****    Common Functions     *****/
+
 function getFormElementVisibilityBaseKey(elementId)
 {
     var formElementVisibilityBaseKey = "formElementVisibility.";
@@ -10,31 +12,101 @@ function getFormElementVisibilityBaseKey(elementId)
     return formElementVisibilityBaseKey + ".";
 }
 
+function setElementVisibility(elementId, column, visible)
+{
+    var formElementVisibilityBaseKey = getFormElementVisibilityBaseKey(elementId);
+    BaseHelper.writeToPipe(formElementVisibilityBaseKey+column, visible);
+}
+
+function elementIsNull(data, columnName)
+{
+    if(typeof data[columnName] == "undefined") return true;
+    if(data[columnName] == "") return true;
+    if(data[columnName] == "[]") return true;
+
+    return false;
+}
+
+
+/****    Trigger Rules Functions     ****/
+
 function columnDbTypeIdTrigger(tableName, columnName, elementId, data)
 {
     var geoColumnIds= [11, 12, 13, 14, 15, 16];
-
-    var formElementVisibilityBaseKey = getFormElementVisibilityBaseKey(elementId);
-
     var visible = geoColumnIds.includes(parseInt(data[columnName]));
-    
-    BaseHelper.writeToPipe(formElementVisibilityBaseKey+"srid", visible);
+    setElementVisibility(elementId, "srid", visible);
 }
 
 function joinTableIdsTrigger(tableName, columnName, elementId, data)
 {
-    var visible = false;
-    if(typeof data[columnName] != "undefined" && data[columnName] != "" && data[columnName] != "[]")
-        visible = true;
-    
-    var formElementVisibilityBaseKey = getFormElementVisibilityBaseKey(elementId);
-    BaseHelper.writeToPipe(formElementVisibilityBaseKey+"join_columns", visible);
+    var visible = !elementIsNull(data, columnName);
+    setElementVisibility(elementId, "join_columns", visible);
 }
 
+function relationTableIdTrigger(tableName, columnName, elementId, data)
+{
+    var visible = elementIsNull(data, columnName);
+    
+    setElementVisibility(elementId, "relation_sql", visible);
+    setElementVisibility(elementId, "column_data_source_id", visible);
+}
+
+function relationSqlTrigger(tableName, columnName, elementId, data)
+{
+    var visible = elementIsNull(data, columnName);
+    
+    setElementVisibility(elementId, "relation_table_id", visible);
+    setElementVisibility(elementId, "column_data_source_id", visible);
+}
+
+function relationSourceColumnIdTrigger(tableName, columnName, elementId, data)
+{
+    var visible = elementIsNull(data, columnName);    
+    setElementVisibility(elementId, "relation_source_column", visible);
+}
+
+function relationDisplayColumnIdTrigger(tableName, columnName, elementId, data)
+{
+    var visible = elementIsNull(data, columnName);    
+    setElementVisibility(elementId, "relation_display_column", visible);
+}
+
+function relationSourceColumnTrigger(tableName, columnName, elementId, data)
+{
+    var visible = elementIsNull(data, columnName);    
+    setElementVisibility(elementId, "relation_source_column_id", visible);
+}
+
+function relationDisplayColumnTrigger(tableName, columnName, elementId, data)
+{
+    var visible = elementIsNull(data, columnName);    
+    setElementVisibility(elementId, "relation_display_column_id", visible);
+}
+
+function columnDataSourceIdTrigger(tableName, columnName, elementId, data)
+{
+    var visible = elementIsNull(data, columnName); 
+       
+    setElementVisibility(elementId, "relation_table_id", visible);
+    setElementVisibility(elementId, "relation_source_column_id", visible);
+    setElementVisibility(elementId, "relation_display_column_id", visible);
+    setElementVisibility(elementId, "relation_source_column", visible);
+    setElementVisibility(elementId, "relation_display_column", visible);
+    setElementVisibility(elementId, "join_table_ids", visible);
+    setElementVisibility(elementId, "relation_sql", visible);
+}
 
 
 export const columnVisibilityRules = 
 {
     "column_db_type_id": columnDbTypeIdTrigger,
-    "join_table_ids": joinTableIdsTrigger
+    "join_table_ids": joinTableIdsTrigger,
+
+    "relation_table_id": relationTableIdTrigger,
+    "relation_sql": relationSqlTrigger,
+    "relation_source_column_id": relationSourceColumnIdTrigger,
+    "relation_display_column_id": relationDisplayColumnIdTrigger,
+    "relation_source_column": relationSourceColumnTrigger,
+    "relation_display_column": relationDisplayColumnTrigger,
+    "column_data_source_id": columnDataSourceIdTrigger
 };

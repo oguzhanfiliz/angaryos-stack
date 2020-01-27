@@ -20,7 +20,7 @@ class SendLog implements ShouldQueue
     {
         $this->level = $level;
         $this->message = $message;
-        $this->object = $object;
+        $this->object = json_decode($object);
     }
 
     public function handle()

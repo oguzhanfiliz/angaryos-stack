@@ -512,6 +512,8 @@ export class DataTableElementComponent
         if(typeof this.params.filters[columnName] == "undefined") return "";
 
         var displayName = this.getData('columns.'+columnName+'.display_name');
+        if(displayName == null) return "";
+        
         var guiType = this.getData('columns.'+columnName+'.gui_type_name');
         guiType = this.getColumnGuiTypeForQuery(guiType);
 

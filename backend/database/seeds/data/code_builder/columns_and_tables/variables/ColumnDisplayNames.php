@@ -66,7 +66,53 @@ $column_name_display_name_map =
     'column_collective_info_id' => 'Toplu Bilgi',
     'column_gui_trigger_ids' => 'Kolon Arayüz Tetiklemeleri',
     'error_message' => 'Hata Mesajı',
-    'profile_picture' => 'Profil Fotoğrafı'
+    'profile_picture' => 'Profil Fotoğrafı',
+    
+    'log' => 'Log',
+    
+    'sub_table_id' => 'Alt Tablo',
+    'source_record_id' => 'Kayıt ID',
+    
+    'sub_point_type_id' => 'Alt Nokta Tipi',
+    'sub_polygon_type_id' => 'Alt Poligon Tipi',
+    'sub_linestring_type_id' => 'Alt Çizgi Tipi',
+    
+    
+    'point' => 'Nokta',
+    'linestring' => 'Çizgi',
+    'polygon' => 'Poligon',
+    
+    
+    'custom_layer_type_id' => 'Katman Tipi',
+    'layer_style_id' => 'Sitil',
+    'style_code' => 'Kod (sitil)',
+    'cql_filter' => 'Filtre (CQL)',
+    'period' => 'Tekrar',
+    'layer_base_url' => 'Katman URL',
+    'layer_name' => 'Katman Adı (Namespace ile birlikte)',
+    
+    
+    'data_source_type_id' => 'Veri Kaynağı Tipi',
+    'data_source_direction_id' => 'Veri Akış Yönü',
+    'data_source_id' => 'Veri Kaynağı',
+    
+    'data_source_remote_table_id' => 'Uzak Tablo',
+    'data_source_remote_column_id' => 'Uzak Kolon',
+    
+    
+    
+    'host' => 'Host',
+    'user_name' => 'Kullanıcı Adı',
+    'passw' => 'Şifre',
+    'params' => 'Parametre(ler)',
+    'cron' => 'Tekrar (cron)',
+    
+    'data_source_column_relation_ids' => 'Kolon(lar)',
+    
+    'image' => 'Resim',
+    'icon' => 'İkon',
+    'order' => 'Sıra',
+    
 ];
 
 

@@ -1,0 +1,29 @@
+.widget_2
+{
+    background: #fff !important;
+}     
+
+.big_icon.storage::before{
+    content:"\f297"
+}
+.big_icon.documents::before{
+    content:"\f222"
+}
+.big_icon.images::before{
+    content:"\f17f"
+}
+.big_icon.media_w::before{
+    content:"\f3ab"
+}
+.big_icon.traffic::before{
+    content:"\f1e2"
+}
+.big_icon.sales::before{
+    content:"\f1cb"
+}
+.big_icon.email::before{
+    content:"\f15a"
+}
+.big_icon.domains::before{
+    content:"\f173"
+}
