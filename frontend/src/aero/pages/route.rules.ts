@@ -10,6 +10,7 @@ import { FormComponent } from './form/form.component';
 import { ShowComponent } from './show/show.component';
 import { NotFoundComponent } from './not-found/not-found.component';
 import { AuthWizardComponent } from './auth-wizard/auth-wizard.component';
+import { DataEntegratorComponent } from './data-entegrator/data-entegrator.component';
 
 export const routeRules = 
 [{
@@ -52,6 +53,10 @@ export const routeRules =
         {
             path: 'authWizard/:tableName/:tableId',
             component: AuthWizardComponent 
+        },       
+        {
+            path: 'dataEntegrator/:tableName/:tableId',
+            component: DataEntegratorComponent 
         },
         {
             path: '**',

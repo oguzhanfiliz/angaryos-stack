@@ -94,12 +94,20 @@ export class DataTableElementComponent
             case 'clone': columnName = '_is_showable'; break;
             case 'userImitation': return this.canUserImitation(record);
             case 'authWizard': return this.canAuthWizard(record);
+            case 'dataEntegrator': return this.canDataEntegrator(record);
             default: alert(policyType + ': not have can function'); return true;
         }
 
         if(typeof record[columnName] == "undefined" || record[columnName]) return true;
         
         return false;
+    }
+
+    canDataEntegrator(record)
+    {
+        if(this.tableName != 'tables') return false;
+
+        return this.canAdminAuth('dataEntegrator'); 
     }
 
     canAuthWizard(table)
@@ -134,6 +142,11 @@ export class DataTableElementComponent
     authWizard(table)
     {
         this.generalHelper.navigate('authWizard/'+table['name']+"/"+table['id']);
+    }
+
+    dataEntegrator(table)
+    {
+        this.generalHelper.navigate('dataEntegrator/'+table['name']+"/"+table['id']);
     }
 
     doOperation(policyType, record)

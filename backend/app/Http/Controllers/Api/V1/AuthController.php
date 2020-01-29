@@ -15,6 +15,11 @@ class AuthController extends Controller
 {
     use AuthTrait;
     
+    public function __construct()
+    {
+        \Cache::flush();
+    }
+    
     public function login()
     {
         send_log('info', 'Request For Login');

@@ -88,9 +88,11 @@ trait UserPolicyTrait
     
     private function columnIsPermitedForColumnArrayOrSet($columnName, $table, $columnArrayOrSetId)
     {
-        $model = new BaseModel($table);
-        $model = $model->find($columnArrayOrSetId);
+        //$model = new BaseModel($table);
+        //$model = $model->find($columnArrayOrSetId);
 
+        $model = get_attr_from_cache($table, 'id', $columnArrayOrSetId, '*');
+        
         $arr = helper('divide_select', $model->join_columns);
         foreach($arr as $c)
         {
@@ -101,9 +103,14 @@ trait UserPolicyTrait
                 return TRUE;
         }
 
-        foreach($model->getRelationData('column_ids') as $column)
-            if($column->name == $columnName)
-                return TRUE;
+        $columnIds = json_decode($model->column_ids);
+        //foreach($model->getRelationData('column_ids') as $column)
+        foreach($columnIds as $columnId)
+        {
+            $tempColumnName = get_attr_from_cache('columns', 'id', $columnId, 'name');
+            if($tempColumnName == $columnName)
+                    return TRUE;
+        }
             
         return FALSE;
     }

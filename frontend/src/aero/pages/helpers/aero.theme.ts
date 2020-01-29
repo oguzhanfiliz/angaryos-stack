@@ -133,39 +133,67 @@ export class AeroThemeHelper
       return false;
     }
 
-    private getTablesMenuItem(search = "")
+    private getTableGroupdById(id)
     {
-      var tables =
-      {
-        title: 'Tablolar',
-        icon: 'zmdi-grid',
-        toggled: search.length > 0,
-        children: []
-      };
+      var tableGroups = BaseHelper.loggedInUserInfo.menu.tableGroups;
+      for (let i = 0; i < tableGroups.length; i++) 
+        if(tableGroups[i]['id'] == id)
+          return tableGroups[i];
+    }
 
-      var children = [];
-      var userTables = BaseHelper.loggedInUserInfo.menu;
-      for(var i = 0; i < userTables.length; i++)
-      {
-        if(!this.controlSearchForTableItem(userTables[i], search)) continue;
+    private getTableGroupsForMenuItem(search = "")
+    {
+      var menu = [];
 
-        var temp = 
+      var tables = BaseHelper.loggedInUserInfo.menu.tables;      
+      var tableGroupIds = Object.keys(tables);
+      for (var i = 0; i < tableGroupIds.length; i++) 
+      {
+        var tableGroup = this.getTableGroupdById(tableGroupIds[i]);
+        if(typeof tableGroup == "undefined")
+          tableGroup = 
+          {
+            name: 'Diğer',
+            icon: 'zmdi-aspect-ratio'
+          };
+
+        var tempMenuItem =
         {
-          title: userTables[i].display_name,
-          link: '/'+BaseHelper.angaryosUrlPath+'/table/'+userTables[i].name
+          title: tableGroup['name'],
+          icon: tableGroup['icon'],
+          toggled: search.length > 0,
+          children: []
         };
 
-        children.push(temp);
+        var children = [];        
+        var tempTables = tables[tableGroupIds[i]];
+        for(var j = 0; j < tempTables.length; j++)
+        {
+          if(!this.controlSearchForTableItem(tempTables[j], search)) continue;
+
+          var temp = 
+          {
+            title: tempTables[j].display_name,
+            link: '/'+BaseHelper.angaryosUrlPath+'/table/'+tempTables[j].name
+          };
+
+          children.push(temp);
+        }
+
+        if(children.length == 0) continue;
+
+        tempMenuItem.children = children.sort(function(a, b) 
+        { 
+          if(a.title == null) a.title = a.link;
+          if(b.title == null) b.title = b.link;
+
+          return a.title.localeCompare(b.title);
+        });
+        
+        menu.push(tempMenuItem);
       }
 
-      tables.children = children.sort(function(a, b) 
-      { 
-        if(a.title == null) a.title = a.link;
-        if(b.title == null) b.title = b.link;
-
-        return a.title.localeCompare(b.title);
-      });
-      return tables
+      return menu;
     }
 
     public getHomePageMenuItem()
@@ -194,9 +222,15 @@ export class AeroThemeHelper
     {
       this.baseMenu =  [ ];
 
-      this.baseMenu.push(this.getHomePageMenuItem());
-      this.baseMenu.push(this.getDashboardPageMenuItem());
-      this.baseMenu.push(this.getTablesMenuItem(search));
+      if(search == "")
+      {
+        this.baseMenu.push(this.getHomePageMenuItem());
+        this.baseMenu.push(this.getDashboardPageMenuItem());
+      }
+
+      var tableGroups = this.getTableGroupsForMenuItem(search);
+      for (let i = 0; i < tableGroups.length; i++) 
+        this.baseMenu.push(tableGroups[i]);
       
       setTimeout(() => 
       {

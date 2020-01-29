@@ -20,6 +20,7 @@ import { DeletedComponent } from './deleted/deleted.component';
 import { ShowComponent } from './show/show.component';
 import { FormComponent } from './form/form.component';
 import { AuthWizardComponent } from './auth-wizard/auth-wizard.component';
+import { DataEntegratorComponent } from './data-entegrator/data-entegrator.component';
 
 
 
@@ -57,6 +58,7 @@ import { GeoPreviewElementComponent } from './helpers/custom-elements/geo-previe
     ShowComponent,
     FormComponent,
     AuthWizardComponent,
+    DataEntegratorComponent,
 
     NotFoundComponent,
 

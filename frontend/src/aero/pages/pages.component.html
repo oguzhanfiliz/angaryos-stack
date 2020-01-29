@@ -102,7 +102,7 @@
                             
                             <a [hidden]="menuItem.link != null"  
                                 [class] = "'menu-toggle ' + (menuItem.toggled ? 'toggled' : '')">
-                                <i class="zmdi zmdi-grid"></i><span>{{ menuItem.title }}</span>
+                                <i [class]="'zmdi ' + menuItem.icon"></i><span>{{ menuItem.title }}</span>
                             </a>
                             <ul class="ml-menu">
                                 <li *ngFor="let childMenuItem of menuItem.children">

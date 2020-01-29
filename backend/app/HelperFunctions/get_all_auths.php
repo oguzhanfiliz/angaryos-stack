@@ -31,6 +31,7 @@ return Cache::rememberForever($key, function()
     
     $auths['admin:userImitation:0:0'] = 'Kullanıcı taklit';
     $auths['admin:authWizard:0:0'] = 'Yetki oluşturma yardımcısı';
+    $auths['admin:dataEntegrator:0:0'] = 'Veri Aktarıcı';
 
     
     
@@ -44,6 +45,14 @@ return Cache::rememberForever($key, function()
     {
         $source = 'tables:'.$table->name.':option:0';
         $display = 'Tablolar ' . $table->display_name. ' Özellik Menü Gizle';
+        $auths[$source] = $display;
+        
+        $source = 'tables:'.$table->name.':delete:0';
+        $display = 'Tablolar ' . $table->display_name. ' Kayıt Sil';
+        $auths[$source] = $display;
+        
+        $source = 'tables:'.$table->name.':restore:0';
+        $display = 'Tablolar ' . $table->display_name. ' Kayıt Geri Yükle';
         $auths[$source] = $display;
             
         foreach(['creates', 'lists', 'queries', 'edits', 'shows', 'deleteds'] as $type)

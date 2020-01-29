@@ -52,6 +52,9 @@ class UserPolicy
 
     public function delete($user, $record)
     {
+        if(!isset($user->auths['tables'][$record->getTable()]['delete'])) 
+            return FALSE;
+        
         return $this->recordPermitted($record, __FUNCTION__);
     }
     
@@ -74,6 +77,9 @@ class UserPolicy
 
     public function restore($user, $archiveRecord)
     {
+        if(!isset($user->auths['tables'][$record->getTable()]['restore'])) 
+            return FALSE;
+        
         $tableName = substr($archiveRecord->getTable(), 0, -8);
         $record = get_attr_from_cache($tableName, 'id', $archiveRecord->record_id, '*');
         

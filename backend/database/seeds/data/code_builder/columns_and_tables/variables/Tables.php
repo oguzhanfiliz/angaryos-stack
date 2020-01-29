@@ -67,7 +67,7 @@ $table_name_display_name_map =
     'data_source_column_relations' => 'Veri Kaynağı Kolon İlişkisi',
     'data_source_table_relations' => 'Veri Kaynağı Tablo İlişkisi',
     
-    'data_entegrator_errors' => 'Veri Kaynağı Hataları',
+    'data_entegrator_errors' => 'Veri Aktarıcı Hataları',
     
     'table_groups' => 'Tablo Grupları',
 ];

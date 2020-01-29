@@ -23,7 +23,7 @@ class TableController extends Controller
     
     public function __construct()
     {
-        \Cache::flush();
+        //\Cache::flush();
         global $pipe;
         $pipe['table'] = helper('get_table_name_from_url');
         

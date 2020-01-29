@@ -180,49 +180,6 @@ trait BaseModelGetDataColumnTrait
         }
         
         return $set;
-        /*$columnSet = new BaseModel('column_sets');
-        $columnSet = $columnSet->find($columnSetId);
-        
-        $temp = $columnSet->getRelationData('column_group_ids');
-        
-        $set = (Object)[];
-        $set->name = $columnSet->name;
-        $set->column_set_type = $columnSet->getRelationData('column_set_type_id')->name;
-        $set->column_groups = [];
-        
-        foreach($temp as $i => $columnGroup)
-        {
-            $columnGroup->fillVariables();
-            $temp2 = $columnGroup->getRelationData('column_array_ids');
-            
-            $set->column_groups[$i] = (Object)[];
-            $set->column_groups[$i]->id = $columnGroup->id;
-            $set->column_groups[$i]->name = $columnGroup->name;
-            $set->column_groups[$i]->color_class = $columnGroup->getRelationData('color_class_id')->name;
-            $set->column_groups[$i]->column_arrays = [];
-            
-            foreach($temp2 as $j => $columnArray)
-            {
-                $columnArray->fillVariables();
-                
-                $temp3 = (Object)[];
-                $temp3->id = $columnArray->id;
-                $temp3->name = $columnArray->name;
-                $temp3->column_array_type = $columnArray->getRelationData('column_array_type_id')->name;
-                $temp3->columns = (Object)[];
-                
-                $temp4 = $this->getAllColumnsFromColumnArray($model, $columnArray->id, $form);
-                if($temp4 == NULL) 
-                    $temp3->tree =  $columnSetId.':'
-                                        .$columnGroup->id.':'
-                                        .$columnArray->id;
-                else $temp3->columns = $temp4;
-                
-                $set->column_groups[$i]->column_arrays[$j] = $temp3;
-            }
-        }
-        
-        return $set;*/
     }
     
     public function getColumnsFromColumnSet($columnSet)

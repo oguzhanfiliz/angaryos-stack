@@ -209,7 +209,15 @@
                                                     class="btn btn-sm float-right btn-primary btn-icon pull-right" 
                                                     (click)="authWizard(record)"> 
                                                     
-                                                    <span class="ti-direction-alt"></span>
+                                                    <span class="ti-control-shuffle"></span>
+                                                </button>
+
+                                                <button *ngIf="can('dataEntegrator', record)"
+                                                    data-toggle="tooltip" title="Veri Aktarma Yardımcısı"
+                                                    class="btn btn-sm float-right btn-primary btn-icon pull-right" 
+                                                    (click)="dataEntegrator(record)"> 
+                                                    
+                                                    <span class="ti-server"></span>
                                                 </button>
 
                                                 <table class="light-table" *ngIf="!lightTable && !archiveTable">

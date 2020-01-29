@@ -77,7 +77,6 @@ trait BaseModelSelectColumnDataTrait
                 ->orWhere($sourceColumn->name, 'ilike', '%'.$params->search.'%');
         });
         
-        
         $sourceSpace = $this->getSourceSpaceFromUpColumn($params);
         if($sourceSpace != FALSE)
             $model->whereIn($sourceColumn->name, $sourceSpace);

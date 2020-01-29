@@ -48,6 +48,8 @@ class TableDBOperationsLibrary
             'tables:'.$table['name'].':edits:0',
             'tables:'.$table['name'].':deleteds:0',
             'tables:'.$table['name'].':creates:0',
+            'tables:'.$table['name'].':delete:0',
+            'tables:'.$table['name'].':restore:0',
         ];
 
         $robotUserId = ROBOT_USER_ID;
@@ -62,11 +64,11 @@ class TableDBOperationsLibrary
 
         $adminAuth = get_model_from_cache('auth_groups', 'id', 1);
         $adminAuth->fillVariables();
-
+        
         $temp = $adminAuth->auths;
         $temp[count($temp) - 1] = $auth->id;
         $adminAuth->auths = $temp;
-
+        
         $adminAuth->save();
     }
     

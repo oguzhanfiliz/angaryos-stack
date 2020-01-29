@@ -7,10 +7,13 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
 use Cache;
+use DB;
 
 class User extends Authenticatable
 {
     use Notifiable;
+    
+    private $tableGroups;
     
     protected $fillable = 
     [
@@ -32,11 +35,32 @@ class User extends Authenticatable
     protected $authTree;
 
 
-    ////burası çalışmıyor bir menüyü gizlemeyi test et
-    public function getMenuArray()
+    
+    private function getTableGruops()
+    {
+        if($this->tableGroups == NULL)
+            $this->tableGroups = Cache::rememberForever('tableGroups', function()
+            {
+                return DB::table('table_groups')->orderBy('order')->get();
+            });
+            
+        return $this->tableGroups;
+    }
+    
+    private function getTableGruop($tableId)
+    {
+        foreach($this->getTableGruops() as $tableGroup)
+        {
+            $tableIds = json_decode($tableGroup->table_ids);
+            if(in_array($tableId, $tableIds))
+                return $tableGroup;
+        }
+    }
+    
+    private function getTableListForMenu()
     {
         $return = [];
-        
+                
         if(isset($this->auths['tables']) && is_array($this->auths['tables']))
             foreach($this->auths['tables'] as $name => $auth)
             {
@@ -46,11 +70,49 @@ class User extends Authenticatable
                 $temp['id'] = get_attr_from_cache('tables', 'name', $name, 'id');
                 $temp['name'] = $name;
                 $temp['display_name'] = get_attr_from_cache('tables', 'name', $name, 'display_name');
-
-                array_push($return, $temp);
+                
+                $tableGroup = $this->getTableGruop($temp['id']);
+                if($tableGroup != NULL)
+                    $groupId= $tableGroup->id;
+                else
+                    $groupId = 0;
+                
+                if(!isset($return[$groupId]))
+                    $return[$groupId] = [];
+                
+                array_push($return[$groupId], $temp);
             }
-        
+            
         return $return;
+    }
+    
+    private function getTableGroupListForMenu()
+    {
+        $tableGroups = [];
+        foreach($this->getTableGruops() as $tableGroup)
+        {
+            $temp = 
+            [
+                'id' => $tableGroup->id,
+                'name' => $tableGroup->name,
+                'table_ids' => json_decode($tableGroup->table_ids),
+                'image' => helper('get_url_from_file', json_decode($tableGroup->image))[0],
+                'icon' => $tableGroup->icon,
+                'order' => $tableGroup->order
+            ];
+            array_push($tableGroups, $temp);
+        }
+        
+        return $tableGroups;
+    }
+    
+    public function getMenuArray()
+    {
+        return 
+        [
+            'tables' => $this->getTableListForMenu(),
+            'tableGroups' => $this->getTableGroupListForMenu() 
+        ];
     }
     
     public function getAuthRecursive($ids)

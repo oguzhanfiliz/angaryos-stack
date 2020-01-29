@@ -27,13 +27,20 @@ trait BaseModelGetDataFilterTrait
         
     private function addListFilters($model, $filters, $tableName)
     {
-        $dataFilter = new BaseModel('data_filters');
+        foreach($filters as $filterId)
+        {
+            $sqlCode = get_attr_from_cache('data_filters', 'id', $filterId, 'sql_code');
+            $sql = str_replace('TABLE', $tableName, $sqlCode);            
+            $model->whereRaw($sql);      
+        }
+        
+        /*$dataFilter = new BaseModel('data_filters');
             
         foreach($dataFilter->whereIn('id', $filters)->get() as $filter)
         {
             $sql = str_replace('TABLE', $tableName, $filter->sql_code);            
             $model->whereRaw($sql);      
-        }
+        }*/
     }
     
     private function addUpdateFilters($model, $filters, $tableName)
@@ -63,13 +70,21 @@ trait BaseModelGetDataFilterTrait
     
     private function addSelectForFilters($model, $filters, $tableName, $alias)
     {
-        $dataFilter = new BaseModel('data_filters');
+        /*$dataFilter = new BaseModel('data_filters');
             
         $filterSqls = [];
         foreach($dataFilter->whereIn('id', $filters)->get() as $filter)
         {
             $sql = str_replace('TABLE', $tableName, $filter->sql_code);
             array_push($filterSqls, $sql);        
+        }*/
+        
+        $filterSqls = [];
+        foreach($filters as $filterId)
+        {
+            $sqlCode = get_attr_from_cache('data_filters', 'id', $filterId, 'sql_code');
+            $sql = str_replace('TABLE', $tableName, $sqlCode);            
+            $model->whereRaw($sql);      
         }
         
         $sql = implode(' and ', $filterSqls);

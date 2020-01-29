@@ -52,6 +52,9 @@ foreach($tables as $table)
     
     $temp = 'tables:'.$table->name.':';
     
+    array_push($tableAuths, $temp.'delete:0');
+    array_push($tableAuths, $temp.'restore:0');
+    
     if(isset($column_arrays[$table->name]))
     {
         foreach($column_arrays[$table->name] as $column_array)
@@ -111,6 +114,7 @@ foreach($tables as $table)
 
 array_push($adminAuths, 'admin:authWizard:0:0');
 array_push($adminAuths, 'admin:userImitation:0:0');
+array_push($adminAuths, 'admin:dataEntegrator:0:0');
 
 $adminAuth->auths = $adminAuths;
 $adminAuth->save();
