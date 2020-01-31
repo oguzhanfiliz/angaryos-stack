@@ -38,7 +38,7 @@ trait BaseModelSelectColumnDataTrait
         $temp = new BaseModel($table->name);
         $model = $temp->getQuery();
         
-        $temp->addJoinsWithColumns($model, [$params->column]);
+        $temp->addJoinsWithColumns($model, [$params->column], TRUE);
         
         
         $source = $relationTable->relation_source_column;

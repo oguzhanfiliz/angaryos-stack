@@ -81,7 +81,7 @@
             </table>
         </div>
 
-        <div *ngIf="isElementSelected('data_source_direction_id')" class="form-group" id="data_source_remote_table_id-group">
+        <div *ngIf="isElementSelected('data_source_direction_id')" class="form-group" id="data_source_rmt_table_id-group">
             <table class="light-table">
                 <tbody>
                     <tr>
@@ -90,11 +90,11 @@
                     <tr>
                         <td colspan="2">
                             <form-element 
-                                type="select" [name]="'data_source_remote_table_id'" 
+                                type="select" [name]="'data_source_rmt_table_id'" 
                                 value="" value-json="" 
                                 baseUrl="tables/data_source_tbl_relations"
                                 (changed)="remoteTableChanged($event)"
-                                class="form-control" [columnName]="'data_source_remote_table_id'" 
+                                class="form-control" [columnName]="'data_source_rmt_table_id'" 
                                 placeholder="Uzak Tablo" 
                                 up-column-name="" up-form-id="" srid="">
                             
@@ -106,7 +106,7 @@
             </table>
         </div>
 
-        <div *ngIf="isElementSelected('data_source_remote_table_id')"  class="box box-primary">
+        <div *ngIf="isElementSelected('data_source_rmt_table_id')"  class="box box-primary">
             <table class="table table-bordered table-striped table-hover" style="width: 100%">
                 <tbody>
                     <tr *ngFor="let column of columns" [ngStyle]="getColumnTrStyle(column)">
@@ -141,44 +141,10 @@
                 </tbody>
             </table>
         </div>
-
-
-
-
-
         
-        
-        
-
         <button id="save-button" type="button" [class]="'btn btn-primary float-right btn-block ' + (!isDataEntegratable() ? 'disabled' : '')" (click)="save()">
             Veri Aktarımı Başlat
         </button>
 
     </div>
 </section>
-<!---
-<div class="modal fade" id="{{ inFormElementId }}inFormModal" role="dialog" [attr.aria-labelledby]="inFormTableName+'inFormModalLabel'" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
-        <div class="modal-content">
-            <div class="modal-body" style="padding: 0px !important;">
-                <in-form-element  
-                    *ngIf="inFormTableName.length > 0"
-                    id="{{ inFormElementId }}" 
-                    (formSaved)="inFormSavedSuccess($event)"
-                    (formLoad)="formLoad($event)"
-                    (formChanged)="formChanged($event)"
-                    (inFormOpened)="inFormOpened($event)"
-                    inFormTableName="{{ inFormTableName }}"
-                    inFormColumnName="{{ inFormColumnName }}" 
-                    inFormRecordId="{{ inFormRecordId }}">
-                
-                </in-form-element>
-                <button class="btn btn-danger btn-block" 
-                    style="position: absolute; margin: -35 20 0 20; width: -webkit-fill-available;"
-                    (click)="closeModal(inFormElementId+'inFormModal')"
-                    type="button">İptal
-                </button>
-            </div>
-        </div>
-    </div>
-</div> --->

@@ -59,8 +59,6 @@ export class DataEntegratorComponent
 
     isElementSelected(elementName)
     {
-        return true;
-
         var val = $("[name='"+elementName+"']").val();
         
         if(typeof val == "undefined") return false;
@@ -71,13 +69,13 @@ export class DataEntegratorComponent
 
     isDataEntegratable()
     {
-        return true;
+        if(this.loading) return false;
 
         if(!this.isElementSelected('data_source_id')) return false;
         if(!this.isElementSelected('data_source_direction_id')) return false;
-        if(!this.isElementSelected('data_source_remote_table_id')) return false;
+        if(!this.isElementSelected('data_source_rmt_table_id')) return false;
         
-        return false;
+        return true;
     }
 
     fillColumns()
@@ -140,7 +138,7 @@ export class DataEntegratorComponent
             sorts: {},
             filters: 
             {
-                data_source_remote_table_id: 
+                data_source_rmt_table_id: 
                 {
                     type: 1,
                     guiType: "multiselect",
@@ -235,7 +233,7 @@ export class DataEntegratorComponent
                 php_code: $('#'+this.columns[i]['source']+'_changer').val(),
                 state: 1,
                 column_set_id: 0,
-                in_form_column_name: "data_source_column_relation_ids",
+                in_form_column_name: "data_source_col_relation_ids",
             };
 
             col['id'] = await this.addRemoteColumn(col);
@@ -262,10 +260,10 @@ export class DataEntegratorComponent
         {
             data_source_id: $('#data_source_id').val(),
             table_id: this.tableId,
-            data_source_remote_table_id: $('#data_source_remote_table_id').val(),
+            data_source_rmt_table_id: $('#data_source_rmt_table_id').val(),
             data_source_direction_id: $('#data_source_direction_id').val(),
             cron: $('#cron').val(),
-            data_source_column_relation_ids: BaseHelper.objectToJsonStr(columnIds),
+            data_source_col_relation_ids: BaseHelper.objectToJsonStr(columnIds),
             state: 1,            
             column_set_id: 0
         }
@@ -283,7 +281,7 @@ export class DataEntegratorComponent
             else if(data['message'] == 'error')
                 this.messageHelper.sweetAlert("Bir hata oluştu:" + BaseHelper.objectToJsonStr(data['errors']), "Hata", "warning");
             else if(data['message'] == 'success')
-                alert(data);
+                this.messageHelper.sweetAlert("Veri aktarma görevi başarı ile oluştutuldu!", "Başarı", "success");
             else
                 this.messageHelper.sweetAlert("Beklenmedik cevap geldi!", "Hata", "warning");
         });
