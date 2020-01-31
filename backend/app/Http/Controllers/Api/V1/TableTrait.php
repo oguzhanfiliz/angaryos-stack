@@ -269,7 +269,7 @@ trait TableTrait
     private function getValidatedParamsForSelectColumnData($table, $column) 
     {
         $columns = $table->getAllColumnsFromDB();
-        if(!is_array($columns[$column->name])) return $this->abort('column.not.in.table');
+        if(!isset($columns[$column->name]) || !is_array($columns[$column->name])) return $this->abort('column.not.in.table');
         
         $search = read_from_response_data('get', 'search');
         if(strlen($search) == 0) return $this->abort('search.is.null');

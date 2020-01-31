@@ -64,10 +64,10 @@ $table_name_display_name_map =
     'data_sources' => 'Veri Kaynaklari',
     'data_source_remote_tables' => 'Veri Kaynağı Uzak Tablolar',
     'data_source_remote_columns' => 'Veri Kaynağı Uzak Kolonlar',
-    'data_source_column_relations' => 'Veri Kaynağı Kolon İlişkisi',
-    'data_source_table_relations' => 'Veri Kaynağı Tablo İlişkisi',
+    'data_source_col_relations' => 'Veri Kaynağı Kolon İlişkisi',
+    'data_source_tbl_relations' => 'Veri Kaynağı Tablo İlişkisi',
     
-    'data_entegrator_errors' => 'Veri Aktarıcı Hataları',
+    'data_entegrator_logs' => 'Veri Aktarıcı Logları',
     
     'table_groups' => 'Tablo Grupları',
 ];

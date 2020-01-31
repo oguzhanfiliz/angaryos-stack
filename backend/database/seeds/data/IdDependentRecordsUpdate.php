@@ -1,6 +1,36 @@
 <?php
 use App\BaseModel;
 
+$now = \Carbon\Carbon::now();
+
+$data_source_rmt_table_id_join1 = new BaseModel('join_tables');
+$data_source_rmt_table_id_join1->name_basic = 'Veri Kaynağı Uzak Kolon ve Veri Kaynağı Uzak Tablo bağlantısı';
+$data_source_rmt_table_id_join1->join_table_id = $tables['data_source_remote_tables']->id;
+$data_source_rmt_table_id_join1->join_table_alias = 'data_source_remote_tables';
+$data_source_rmt_table_id_join1->connection_column_with_alias = 'data_source_rmt_table_id';
+$data_source_rmt_table_id_join1->join_connection_type = '=';
+$data_source_rmt_table_id_join1->join_column_id = $columns['id']->id;
+$data_source_rmt_table_id_join1->state = TRUE;
+$data_source_rmt_table_id_join1->updated_at = $now;
+$data_source_rmt_table_id_join1->created_at = $now;
+$data_source_rmt_table_id_join1->user_id = ROBOT_USER_ID;
+$data_source_rmt_table_id_join1->own_id = ROBOT_USER_ID;
+$data_source_rmt_table_id_join1->save();
+
+$data_source_rmt_table_id_join2 = new BaseModel('join_tables');
+$data_source_rmt_table_id_join2->name_basic = 'Veri Kaynağı Uzak Tablo ve Veri Kaynağı bağlantısı';
+$data_source_rmt_table_id_join2->join_table_id = $tables['data_sources']->id;
+$data_source_rmt_table_id_join2->join_table_alias = 'data_sources';
+$data_source_rmt_table_id_join2->connection_column_with_alias = 'data_source_remote_tables.data_source_id';//'data_source_remote_tables.data_source_id';
+$data_source_rmt_table_id_join2->join_connection_type = '=';
+$data_source_rmt_table_id_join2->join_column_id = $columns['id']->id;
+$data_source_rmt_table_id_join2->state = TRUE;
+$data_source_rmt_table_id_join2->updated_at = $now;
+$data_source_rmt_table_id_join2->created_at = $now;
+$data_source_rmt_table_id_join2->user_id = ROBOT_USER_ID;
+$data_source_rmt_table_id_join2->own_id = ROBOT_USER_ID;
+$data_source_rmt_table_id_join2->save();
+
 $update_data =
 [
     $table_id_relation['relation_sql'] => 
@@ -143,6 +173,43 @@ $update_data =
         'relation_table_id' => $tables['column_gui_types']->id,
         'relation_source_column_id' => $columns['id']->id,
         'relation_display_column_id' => $columns['display_name']->id,
+        'relation_sql' => NULL,
+        'relation_source_column' => NULL,
+        'relation_display_column' => NULL
+    ],
+    $data_source_rmt_table_id_relation ['relation_sql'] =>
+    [
+        'relation_table_id' => $tables['data_source_remote_tables']->id,
+        'relation_source_column_id' => NULL,
+        'relation_display_column_id' => NULL,
+        'relation_sql' => NULL,
+        'join_table_ids' => [$data_source_rmt_table_id_join1->id, $data_source_rmt_table_id_join2->id],
+        'relation_source_column' => 'id',
+        'relation_display_column' => 'data_sources.name || \' - \' ||data_source_remote_tables.name_basic'
+    ],
+    $data_source_remote_column_id_relation ['relation_sql'] =>
+    [
+        'relation_table_id' => $tables['data_source_remote_columns']->id,
+        'relation_source_column_id' => $columns['id']->id,
+        'relation_display_column_id' => $columns['name_basic']->id,
+        'relation_sql' => NULL,
+        'relation_source_column' => NULL,
+        'relation_display_column' => NULL
+    ],
+    $data_source_col_relation_ids_relation['relation_sql'] =>
+    [
+        'relation_table_id' => $tables['data_source_col_relations']->id,
+        'relation_source_column_id' => $columns['id']->id,
+        'relation_display_column_id' => $columns['id']->id,
+        'relation_sql' => NULL,
+        'relation_source_column' => NULL,
+        'relation_display_column' => NULL
+    ],
+    $data_source_table_relation_ids_relation['relation_sql'] =>
+    [
+        'relation_table_id' => $tables['data_source_tbl_relations']->id,
+        'relation_source_column_id' => $columns['id']->id,
+        'relation_display_column_id' => $columns['id']->id,
         'relation_sql' => NULL,
         'relation_source_column' => NULL,
         'relation_display_column' => NULL

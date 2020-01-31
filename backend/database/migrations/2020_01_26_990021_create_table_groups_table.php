@@ -16,7 +16,7 @@ class CreateTableGroupsTable extends Migration
         Schema::create('table_groups', function (Blueprint $table) {
             $table->bigIncrements('id');
             
-            $table->string('name')->nullable();
+            $table->string('name_basic')->nullable();
             $table->jsonb('table_ids')->nullable();
             $table->jsonb('image')->nullable();
             $table->string('icon')->nullable();

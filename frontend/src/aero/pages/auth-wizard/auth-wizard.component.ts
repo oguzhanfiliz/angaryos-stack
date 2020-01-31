@@ -189,6 +189,11 @@ export class AuthWizardComponent
         .catch((e) => { this.stopLoading(); });
     }
 
+    writeErrors(errors)
+    {
+        alert(errors);
+    }
+
     getJsonStrFromMultiSelectElement(elementName)
     {
         var temp = $('[name="'+elementName+'"]').val();
@@ -412,7 +417,7 @@ export class AuthWizardComponent
         var url = this.sessionHelper.getBackendUrlWithToken()+"tables/auth_groups/getSelectColumnData/auths";
         var params = this.getParamsForSearch(search);
         
-        this.generalHelper.startLoading();
+        this.startLoading();
 
         $.ajax(
         {
@@ -421,12 +426,12 @@ export class AuthWizardComponent
             data : params,
             success : (data) =>
             {
-                this.generalHelper.stopLoading();
+                this.stopLoading();
                 this.searchSuccess(data);
             },
             error : (e) =>
             {
-                this.generalHelper.stopLoading();
+                this.stopLoading();
                 this.messageHelper.toastMessage("Bir hata oluştu", "warning");
             }
         });

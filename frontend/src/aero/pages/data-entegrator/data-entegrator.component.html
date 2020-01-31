@@ -1,3 +1,184 @@
 <section class="content">   
-    data entegrator
+    <div class="block-header">
+        <div class="row">
+            <div class="col-lg-7 col-md-6 col-sm-12">
+                <h4>Veri Aktarma Yardımcısı</h4>
+                <button class="btn btn-secondary btn-sm btn-icon mobile_menu" type="button"><i class="zmdi zmdi-sort-amount-desc"></i></button>
+            </div>
+            <div class="col-lg-5 col-md-6 col-sm-12">                
+                <button class="btn btn-sm btn-secondary btn-icon float-right right_icon_toggle_btn" type="button"><i class="zmdi zmdi-arrow-right"></i></button>
+            </div>
+        </div>
+    </div>
+    <div class="container-fluid">
+        
+        <div class="form-group" id="data_source_id-group">
+            <table class="light-table">
+                <tbody>
+                    <tr>
+                        <td>Veri Kaynağı</td>
+                    </tr>
+                    <tr>
+                        <td colspan="2">
+                            <form-element 
+                                type="select" [name]="'data_source_id'" 
+                                value="" value-json="" 
+                                baseUrl="tables/data_source_tbl_relations"
+                                class="form-control" [columnName]="'data_source_id'" 
+                                placeholder="Veri Kaynağı" 
+                                up-column-name="" up-form-id="" srid="">
+                            
+                            </form-element>
+
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div *ngIf="isElementSelected('data_source_id')" class="form-group" id="data_source_direction_id-group">
+            <table class="light-table">
+                <tbody>
+                    <tr>
+                        <td>Veri Akış Yönü</td>
+                    </tr>
+                    <tr>
+                        <td colspan="2">
+                            <form-element 
+                                type="select" [name]="'data_source_direction_id'" 
+                                value="" value-json="" 
+                                baseUrl="tables/data_source_tbl_relations"
+                                class="form-control" [columnName]="'data_source_direction_id'" 
+                                placeholder="Veri Akış Yönü" 
+                                up-column-name="" up-form-id="" srid="">
+                            
+                            </form-element>
+
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div *ngIf="isElementSelected('data_source_id')" class="form-group" id="cron-group">
+            <table class="light-table">
+                <tbody>
+                    <tr>
+                        <td>Tekrar (cron)</td>
+                    </tr>
+                    <tr>
+                        <td colspan="2">
+                            <form-element 
+                                type="string" [name]="'cron'" 
+                                value="" value-json="" 
+                                class="form-control" [columnName]="'cron'" 
+                                placeholder="Tekrar (cron)" >
+                            
+                            </form-element>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div *ngIf="isElementSelected('data_source_direction_id')" class="form-group" id="data_source_remote_table_id-group">
+            <table class="light-table">
+                <tbody>
+                    <tr>
+                        <td>Uzak Tablo</td>
+                    </tr>
+                    <tr>
+                        <td colspan="2">
+                            <form-element 
+                                type="select" [name]="'data_source_remote_table_id'" 
+                                value="" value-json="" 
+                                baseUrl="tables/data_source_tbl_relations"
+                                (changed)="remoteTableChanged($event)"
+                                class="form-control" [columnName]="'data_source_remote_table_id'" 
+                                placeholder="Uzak Tablo" 
+                                up-column-name="" up-form-id="" srid="">
+                            
+                            </form-element>
+
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div *ngIf="isElementSelected('data_source_remote_table_id')"  class="box box-primary">
+            <table class="table table-bordered table-striped table-hover" style="width: 100%">
+                <tbody>
+                    <tr *ngFor="let column of columns" [ngStyle]="getColumnTrStyle(column)">
+                        <td width="30%">
+                            {{ column.display }} ({{ column.source }}, {{ column.gui_type_name }})
+                        </td>
+                        <td>
+                            <select [id]="'remote_'+column.source" class="remoteColumns" style="width: 100%;">
+                                <option value="">Veri Aktarma</option>
+
+                                <option [value]="remoteColumn['id']" *ngFor="let remoteColumn of remoteColumns">
+                                    {{ remoteColumn['name'] }} ({{ remoteColumn['type'] }})
+                                </option>
+                            </select>
+                        </td>
+                        <td width="40%">
+                            <span *ngIf="columnHasValue(column) && !columnHasChanger(column)" style="cursor: pointer;"
+                                (click)="addDataChanger(column)" 
+                                class="badge badge-warning">
+
+                                <b>+</b>
+                            </span>
+
+
+                            <form-element *ngIf="columnHasChanger(column)" 
+                                class="form-control" type="codeeditor:php" value="<?php $data = $data; ?>"
+                                [name]="column['source']+'_changer'" [columnName]="column['source']+'_changer'">
+                            
+                            </form-element>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+
+
+
+
+        
+        
+        
+
+        <button id="save-button" type="button" [class]="'btn btn-primary float-right btn-block ' + (!isDataEntegratable() ? 'disabled' : '')" (click)="save()">
+            Veri Aktarımı Başlat
+        </button>
+
+    </div>
 </section>
+<!---
+<div class="modal fade" id="{{ inFormElementId }}inFormModal" role="dialog" [attr.aria-labelledby]="inFormTableName+'inFormModalLabel'" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-body" style="padding: 0px !important;">
+                <in-form-element  
+                    *ngIf="inFormTableName.length > 0"
+                    id="{{ inFormElementId }}" 
+                    (formSaved)="inFormSavedSuccess($event)"
+                    (formLoad)="formLoad($event)"
+                    (formChanged)="formChanged($event)"
+                    (inFormOpened)="inFormOpened($event)"
+                    inFormTableName="{{ inFormTableName }}"
+                    inFormColumnName="{{ inFormColumnName }}" 
+                    inFormRecordId="{{ inFormRecordId }}">
+                
+                </in-form-element>
+                <button class="btn btn-danger btn-block" 
+                    style="position: absolute; margin: -35 20 0 20; width: -webkit-fill-available;"
+                    (click)="closeModal(inFormElementId+'inFormModal')"
+                    type="button">İptal
+                </button>
+            </div>
+        </div>
+    </div>
+</div> --->

@@ -66,6 +66,32 @@ trait BaseModelGetDataSelectTrait
         $params->model->addSelect($alias.'.'.$params->column->name);
     }
     
+    public function addSelectForJoinTableIds($params)
+    {
+        $table = get_attr_from_cache('tables', 'id', $params->relation->relation_table_id, '*');
+        
+        $params->table_alias  = $params->column->name.'___'.$table->name.$params->relation->id;
+        
+        if(strstr($params->relation->relation_display_column, '.'))
+            $params->table_alias = explode('.', $params->relation->relation_display_column)[0];
+        else if(strstr($params->relation->relation_source_column, '.'))
+            $params->table_alias = explode('.', $params->relation->relation_source_column)[0];
+        
+        
+        if(strstr($params->relation->relation_display_column, '.'))
+            $params->column_with_alias  = $params->relation->relation_display_column;
+        else
+            $params->column_with_alias  = $params->table_alias.'.'.$params->relation->relation_display_column;
+        
+        
+        if(strstr($params->relation->relation_source_column, '.'))
+            $params->relation_source_column_with_alias  = $params->relation->relation_source_column;
+        else
+            $params->relation_source_column_with_alias = $params->table_alias.'.'.$params->relation->relation_source_column;
+        
+        $this->addSelectForColumnsDBTypesStatus($params);
+    }
+    
     
     
     /****    Common Functions    ****/

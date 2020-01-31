@@ -114,7 +114,7 @@ export class ColumnArrayFormElementComponent
                 val = this.getSelectedOptionValueSelect(val);
                 break;
             case "multiselect": 
-                val = this.getSelectedOptionValueMultiSelect(val, elementId);                
+                val = this.getSelectedOptionValueMultiSelect(val, elementId, columnName);                
                 break;
             case 'multiselectdragdrop':
                 val = this.getSelectedOptionValueMultiSelectDragDrop(elementId, columnName);                
@@ -141,7 +141,8 @@ export class ColumnArrayFormElementComponent
 
     getSelectedOptionValueMultiSelectDragDrop(elementId, columnName)
     {
-        var modalId = elementId.replace('#'+columnName, '');
+        //var modalId = elementId.replace('#'+columnName, '');
+        var modalId = elementId.replace('[name="'+columnName+'"]', '');
 
         var selectedId = modalId + ' [ng-reflect-name="'+columnName+'"] .selected-list .selected-option';
         var selected = $(selectedId);
@@ -150,18 +151,21 @@ export class ColumnArrayFormElementComponent
         return parseInt(selected.attr('source'));
     }
 
-    getSelectedOptionValueMultiSelect(val, elementId)
+    getSelectedOptionValueMultiSelect(val, elementId, columnName)
     {
+        var modalId = elementId.replace('[name="'+columnName+'"]', '');
+        
         if(val.length == 0) return 0;
         else if(val.length == 1) return parseInt(val[0]);
         else
         {
-            var selected = $(elementId+'-group .selected-option');
+            //var selected = $(elementId+'-group .selected-option');
+            var selected = $(modalId+" #"+columnName+'-group .selected-option');
             if(selected.length != 1) return 0;
 
             var control = false;
 
-            var selectedItem = $(elementId+'-group .selected-option').html().split('</span>')[1];
+            var selectedItem = selected.html().split('</span>')[1];
             var data = $(elementId).select2("data");
             for(var i = 0; i < data.length; i++)
                 if(data[i].text == selectedItem)

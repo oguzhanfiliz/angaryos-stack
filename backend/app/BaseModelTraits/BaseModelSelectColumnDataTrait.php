@@ -3,6 +3,7 @@
 namespace App\BaseModelTraits;
 
 use App\Libraries\ColumnClassificationLibrary;
+use App\BaseModel;
 use DB;
 
 trait BaseModelSelectColumnDataTrait 
@@ -27,6 +28,52 @@ trait BaseModelSelectColumnDataTrait
                                                         $this, 
                                                         NULL, 
                                                         $temp);
+    }
+    
+    public function getSelectColumnDataForJoinTableIds($params)
+    {
+        $relationTable = $params->column->getRelationData('column_table_relation_id');
+        $table = $relationTable->getRelationData('relation_table_id');
+        
+        $temp = new BaseModel($table->name);
+        $model = $temp->getQuery();
+        
+        $temp->addJoinsWithColumns($model, [$params->column]);
+        
+        
+        $source = $relationTable->relation_source_column;
+        if(!strstr($source, '.')) $source = $table->name.'.'.$source;        
+        $model->addSelect(DB::raw($source.' as source'));        
+        
+        $display = $relationTable->relation_display_column;
+        if(!strstr($display, '.')) $display = $table->name.'.'.$display;        
+        $model->addSelect(DB::raw($display.' as display'));
+        
+        
+        $model->where(function ($query) use($source, $display, $params)
+        {
+            $query->whereRaw($source.'::text ilike \'%'.$params->search.'%\'');
+            $query->orWhereRaw($display.'::text ilike \'%'.$params->search.'%\'');
+        });        
+        
+        $temp->addFilters($model, $table->name);
+        
+        $sourceSpace = $this->getSourceSpaceFromUpColumn($params);
+        if($sourceSpace != FALSE)
+            dd('getSelectColumnDataForJoinTableIds $sourceSpace');//$model->whereIn($sourceColumn->name, $sourceSpace);
+        
+        if(in_array($table->name, $this->deletables) && SHOW_DELETED_TABLES_AND_COLUMNS != '1')
+            $model->where($table->name.'.name', 'not like', 'deleted\_%');
+        
+        $offset = ($params->page - 1) * $params->record_per_page;
+        $params->count = $model->count();
+        
+        $params->records = $model->limit($params->record_per_page)->offset($offset)->get();
+        
+        $params->relation_source_column_name = 'source';
+        $params->relation_display_column_name = 'display';
+        
+        return $this->getSelectColumnDataFromRecords($params);
     }
     
     public function getSelectColumnDataForRelationSql ($params)

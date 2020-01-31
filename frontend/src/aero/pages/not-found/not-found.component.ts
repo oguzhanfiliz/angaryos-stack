@@ -1,6 +1,8 @@
 import { ActivatedRoute} from '@angular/router';
 import { Component } from '@angular/core';
 
+import { environment } from './../../../environments/environment';
+
 import { SessionHelper } from './../helpers/session';
 import { BaseHelper } from './../helpers/base';
 import { GeneralHelper } from './../helpers/general';
@@ -29,5 +31,10 @@ export class NotFoundComponent
     {    
         this.aeroThemeHelper.addEventForFeature("layoutCommonEvents"); 
         this.aeroThemeHelper.addEventForFeature("standartElementEvents");
+    }
+
+    get404ImageUrl()
+    {
+        return 'https://'+environment.host+'/assets/themes/aero/assets/images/404.svg';
     }
 }

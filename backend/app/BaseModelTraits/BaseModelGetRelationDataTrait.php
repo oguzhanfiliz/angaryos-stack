@@ -44,6 +44,52 @@ trait BaseModelGetRelationDataTrait
                                                                                         json_encode($params->data_array));*/
     }
     
+    public function fillRelationDataForJoinTableIds($params)
+    {
+        $relationTable = get_model_from_cache('column_table_relations', 'id', $params->column->column_table_relation_id);
+        $table = $relationTable->getRelationData('relation_table_id');
+        
+        $temp = new BaseModel($table->name);
+        $model = $temp->getQuery();
+        
+        $temp->addJoinsWithColumns($model, [$params->column], TRUE);
+        
+        $model->addSelect(DB::raw($table->name.'.id as id'));
+        
+        $source = $relationTable->relation_source_column;
+        if(!strstr($source, '.')) $source = $table->name.'.'.$source;        
+        $model->addSelect(DB::raw($source.' as source'));        
+        
+        $display = $relationTable->relation_display_column;
+        if(!strstr($display, '.')) $display = $table->name.'.'.$display;        
+        $model->addSelect(DB::raw($display.' as display'));
+        
+        $model->whereIn($source, $params->data_array)->get();
+        
+        $temp->addFilters($model, $table->name);
+        
+        $recs = $model->get();
+        foreach($recs as $key => $value)
+        {
+            $recs[$key]->_source_column = $recs[$key]->source;
+            $recs[$key]->_display_column = $recs[$key]->display;
+            $recs[$key]->_source_column_name = 'source';
+            $recs[$key]->_display_column_name = 'display';
+            
+            $key = (int)array_search($value->id, $params->data_array);
+            $sorted[$key] = $value;
+        }
+        
+        $recs = [];
+        for($i = 0; $i < count($sorted); $i++)
+            array_push ($recs, $sorted[$i]);
+        
+        if($params->column->column_db_type_id == $params->relation->column_db_type_id) 
+            $recs = $recs[0];
+        
+        $params->record->{$params->column->name . '__relation_data'} = $recs;
+    }
+    
     public function fillRelationDataForTableIdAndColumnIds($params)
     {
         $table = get_attr_from_cache('tables', 'id', $params->relation->relation_table_id, 'name');

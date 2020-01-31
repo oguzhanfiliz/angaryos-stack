@@ -9,18 +9,19 @@ trait BaseModelGetDataJoinTrait
 {    
     /****    Join For Selected Columns    ****/
     
-    public function addJoinsWithColumns($model, $columns)
+    public function addJoinsWithColumns($model, $columns, $disableFirstJoin = FALSE)
     {
         foreach($columns as $column)
             if(strlen($column->column_table_relation_id) > 0)
-                $this->addJoinWithColumn($model, $column);
+                $this->addJoinWithColumn($model, $column, $disableFirstJoin);
     }
     
-    private function addJoinWithColumn($model, $column)
+    private function addJoinWithColumn($model, $column, $disableFirstJoin = FALSE)
     {            
         $params = helper('get_null_object');
         $params->model = $model;
         $params->column = $column;
+        $params->disable_first_join = $disableFirstJoin;
         
         ColumnClassificationLibrary::relation(  $this, 
                                                 __FUNCTION__, 
@@ -39,6 +40,44 @@ trait BaseModelGetDataJoinTrait
                                                         $params->column, 
                                                         NULL/*$params->targetColumn*/, 
                                                         $params);
+    }
+    
+    public function addJoinWithColumnForJoinTableIds($params)
+    {
+        $joinIds = json_decode($params->relation->join_table_ids);
+        
+        //if(\Request::segment(6) == 'getSelectColumnData') unset($joinIds[0]);
+        if(@$params->disable_first_join) unset($joinIds[0]);
+        
+        foreach($joinIds as $joinId)
+        {
+            $params->join = get_attr_from_cache('join_tables', 'id', $joinId, '*');
+            
+            $params->joinTable = get_attr_from_cache('tables', 'id', $params->join->join_table_id, '*');
+            $params->joinColumn = get_attr_from_cache('columns', 'id', $params->join->join_column_id, '*');
+            
+            $columnName = explode('.', $params->join->connection_column_with_alias);
+            $columnName = last($columnName);
+            $params->column = get_attr_from_cache('columns', 'name', $columnName, '*');
+            
+            ColumnClassificationLibrary::relationDbTypes(   $this, 
+                                                        __FUNCTION__, 
+                                                        $params->column, 
+                                                        $params->joinColumn, 
+                                                        $params);
+        }
+    }
+    
+    public function addJoinWithColumnForJoinTableIdsForOneToOne($params)
+    {
+        $params->model->leftJoin($params->joinTable->name . ' as ' . $params->join->join_table_alias, 
+        function($join) use($params)
+        {
+           $join->on(
+                   $params->join->join_table_alias.'.'.$params->joinColumn->name,
+                   '=', 
+                   $params->join->connection_column_with_alias);
+        });
     }
     
     public function addJoinWithColumnForRelationSqlForOneToOne($params)

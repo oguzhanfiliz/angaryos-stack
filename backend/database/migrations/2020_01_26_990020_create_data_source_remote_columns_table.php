@@ -16,8 +16,9 @@ class CreateDataSourceRemoteColumnsTable extends Migration
         Schema::create('data_source_remote_columns', function (Blueprint $table) {
             $table->bigIncrements('id');
             
-            $table->integer('data_source_remote_table_id')->nullable();
+            $table->integer('data_source_rmt_table_id')->nullable();
             $table->string('name_basic')->nullable();
+            $table->string('db_type_name')->nullable();
             
             $table->boolean('state')->default(TRUE)->nullable();
             $table->integer('own_id');

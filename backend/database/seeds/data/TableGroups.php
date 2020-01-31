@@ -6,7 +6,7 @@ $order = 1;
 $table_groups = 
 [
     [
-        'name' => 'Sistem',
+        'name_basic' => 'Sistem',
         'table_ids' => 
         [
             $tables['settings']->id,
@@ -18,7 +18,7 @@ $table_groups =
         'order' => $order++
     ],
     [
-        'name' => 'İnsan Kaynakları',
+        'name_basic' => 'İnsan Kaynakları',
         'table_ids' => 
         [            
             $tables['users']->id,
@@ -29,7 +29,7 @@ $table_groups =
         'order' => $order++
     ],
     [
-        'name' => 'Tablolar ve Kolonlar',
+        'name_basic' => 'Tablolar ve Kolonlar',
         'table_ids' => 
         [
             $tables['column_db_types']->id,
@@ -52,7 +52,7 @@ $table_groups =
         'order' => $order++
     ],
     [
-        'name' => 'Yetkiler',
+        'name_basic' => 'Yetkiler',
         'table_ids' => 
         [            
             $tables['data_filter_types']->id,
@@ -68,7 +68,7 @@ $table_groups =
         'order' => $order++
     ],
     [
-        'name' => 'Proje Alt Nesneleri',
+        'name_basic' => 'Proje Alt Nesneleri',
         'table_ids' => 
         [            
             $tables['sub_tables']->id,
@@ -84,7 +84,7 @@ $table_groups =
         'order' => $order++
     ],
     [
-        'name' => 'Harita',
+        'name_basic' => 'Harita',
         'table_ids' => 
         [            
             $tables['layer_styles']->id,
@@ -97,7 +97,7 @@ $table_groups =
         'order' => $order++
     ],
     [
-        'name' => 'Veri Aktarıcı',
+        'name_basic' => 'Veri Aktarıcı',
         'table_ids' => 
         [            
             $tables['data_source_types']->id,
@@ -105,9 +105,9 @@ $table_groups =
             $tables['data_sources']->id,
             $tables['data_source_remote_tables']->id,
             $tables['data_source_remote_columns']->id,
-            $tables['data_source_column_relations']->id,
-            $tables['data_source_table_relations']->id,
-            $tables['data_entegrator_errors']->id
+            $tables['data_source_col_relations']->id,
+            $tables['data_source_tbl_relations']->id,
+            $tables['data_entegrator_logs']->id
         ],
         'image' => json_decode('[{"disk": "uploads", "file_name": "subfeatures.png", "destination_path": "uploads/2020/01/01/"}]'),
         'icon' => 'zmdi-repeat',

@@ -96,7 +96,7 @@ $column_name_display_name_map =
     'data_source_direction_id' => 'Veri Akış Yönü',
     'data_source_id' => 'Veri Kaynağı',
     
-    'data_source_remote_table_id' => 'Uzak Tablo',
+    'data_source_rmt_table_id' => 'Uzak Tablo',
     'data_source_remote_column_id' => 'Uzak Kolon',
     
     
@@ -107,11 +107,13 @@ $column_name_display_name_map =
     'params' => 'Parametre(ler)',
     'cron' => 'Tekrar (cron)',
     
-    'data_source_column_relation_ids' => 'Kolon(lar)',
+    'data_source_col_relation_ids' => 'Kolon(lar)',
     
     'image' => 'Resim',
     'icon' => 'İkon',
     'order' => 'Sıra',
+    
+    'db_type_name' => 'Veri Tabanı Tipi',
     
 ];
 

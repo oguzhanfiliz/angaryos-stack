@@ -125,7 +125,37 @@ $column_gui_type_id_relation =
     'relation_source_column' => 'id',
     'relation_display_column' => 'display_name',
 ];
-        
+
+$data_source_rmt_table_id_relation = 
+[
+    'relation_sql' => 'select id, display_name from data_source_remote_tables',
+    'relation_source_column' => 'id',
+    'relation_display_column' => 'name_basic',
+];
+
+$data_source_remote_column_id_relation = 
+[
+    'relation_sql' => 'select id, display_name from data_source_remote_columns',
+    'relation_source_column' => 'id',
+    'relation_display_column' => 'name_basic',
+];
+
+$data_source_col_relation_ids_relation = 
+[
+    'relation_sql' => 'select id, display_name from data_source_col_relations',
+    'relation_source_column' => 'id',
+    'relation_display_column' => 'id',
+];
+
+$data_source_table_relation_ids_relation = 
+[
+    'relation_sql' => 'select id, display_name from data_source_tbl_relations',
+    'relation_source_column' => 'id',
+    'relation_display_column' => 'id',
+];
+
+
+
 $column_table_relations =
 [
     //'auths' => '',
@@ -176,10 +206,11 @@ $column_table_relations =
     'data_source_type_id' => 'data_source_types',
     'data_source_id' => 'data_sources',
     
-    'data_source_remote_table_id' => 'data_source_remote_tables',
-    'data_source_remote_column_id' => 'data_source_remote_columns',
+    'data_source_rmt_table_id' => $data_source_rmt_table_id_relation,
+    'data_source_remote_column_id' => $data_source_remote_column_id_relation,
     
     'data_source_direction_id' => 'data_source_directions',
     
-    'data_source_column_relation_ids' => 'data_source_column_relations',
+    'data_source_col_relation_ids' => $data_source_col_relation_ids_relation,
+    'data_source_table_relation_ids' => $data_source_table_relation_ids_relation,
 ];

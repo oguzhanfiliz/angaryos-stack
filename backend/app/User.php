@@ -94,7 +94,7 @@ class User extends Authenticatable
             $temp = 
             [
                 'id' => $tableGroup->id,
-                'name' => $tableGroup->name,
+                'name_basic' => $tableGroup->name_basic,
                 'table_ids' => json_decode($tableGroup->table_ids),
                 'image' => helper('get_url_from_file', json_decode($tableGroup->image))[0],
                 'icon' => $tableGroup->icon,

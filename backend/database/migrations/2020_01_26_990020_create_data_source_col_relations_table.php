@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateDataEntegratorErrorsTable extends Migration
+class CreateDataSourceColRelationsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,10 +13,12 @@ class CreateDataEntegratorErrorsTable extends Migration
      */
     public function up()
     {
-        Schema::create('data_entegrator_errors', function (Blueprint $table) {
+        Schema::create('data_source_col_relations', function (Blueprint $table) {
             $table->bigIncrements('id');
             
-            $table->jsonb('log')->nullable();
+            $table->integer('column_id')->nullable();
+            $table->integer('data_source_remote_column_id')->nullable();
+            $table->text('php_code')->nullable();
             
             $table->boolean('state')->default(TRUE)->nullable();
             $table->integer('own_id');
@@ -32,6 +34,6 @@ class CreateDataEntegratorErrorsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('data_entegrator_errors');
+        Schema::dropIfExists('data_source_col_relations');
     }
 }

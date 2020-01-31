@@ -159,7 +159,7 @@ export class AeroThemeHelper
 
         var tempMenuItem =
         {
-          title: tableGroup['name'],
+          title: tableGroup['name_basic'],
           icon: tableGroup['icon'],
           toggled: search.length > 0,
           children: []

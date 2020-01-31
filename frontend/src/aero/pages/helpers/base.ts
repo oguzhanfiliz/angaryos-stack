@@ -1,12 +1,15 @@
+import { environment } from './../../../environments/environment';
+
 declare var $: any;
+document.title = environment.title;
 
 export abstract class BaseHelper 
 {     
-  public static angaryosUrlPath:string = "angaryos";
+  public static angaryosUrlPath:string = environment.urlPath;
   
-  public static backendUrl:string = "https://192.168.10.185/api/v1/";
-  public static baseUrl:string = "https://192.168.10.185/";
-  public static _keyStr = "angaryosEncryptKey";
+  public static backendUrl:string = "https://"+environment.host+"/api/v1/";
+  public static baseUrl:string = "https://"+environment.host+"/";
+  public static _keyStr = environment.encryptKey;
 
   public static tokenTimeOut = 1000 * 60 * 60 * 24 * 5;
   public static token:string = "";

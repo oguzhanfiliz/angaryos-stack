@@ -2,6 +2,8 @@ import { Component } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser'
 import { CommonModule } from "@angular/common";
 
+import { environment } from './../../environments/environment';
+
 import { BaseHelper } from './helpers/base';
 import { SessionHelper } from './helpers/session';
 import { GeneralHelper } from './helpers/general';
@@ -46,6 +48,11 @@ export class PagesComponent
       this.user = data.user;
       this.aeroThemeHelper.updateBaseMenu();
     })
+  }
+
+  getAppName()
+  {
+    return environment.appName.charAt(0).toUpperCase() + environment.appName.slice(1);
   }
 
   searchInMenuInputChanged(event) 

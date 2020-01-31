@@ -39,7 +39,7 @@ export class CodeEditorElementComponent
         {
             ace.config.set("workerPath", "assets/ext_modules/ace-builds/src-min/");
 
-            var editor = ace.edit("editor"); 
+            var editor = ace.edit("editor_"+this.name); 
             editor.setTheme("ace/theme/github");
             editor.session.setMode("ace/mode/"+this.type.split(':')[1]);
             editor.setValue(this.value);

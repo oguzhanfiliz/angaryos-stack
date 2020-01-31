@@ -61,6 +61,8 @@ services:
         image: karapazar/angular-serve:0.12 
         volumes:
             - ./frontend:/usr/src/app 
+        environment:
+            HOST: 192.168.10.185
         networks:
             - frontend-nw
         deploy:

@@ -315,6 +315,18 @@ trait BaseModelGetDataColumnTrait
         return $return;
     }
     
+    public function getRelationTableNameForJoinTableIds($params)
+    {
+        $tableName = get_attr_from_cache('tables', 'id', $params->relation->relation_table_id, 'name');
+        
+        return 
+        [
+            'table_name' => $tableName,
+            'source_column_name' => $params->relation->relation_source_column,
+            'display_column_name' => $params->relation->relation_display_column,
+        ];
+    }
+    
     public function getRelationTableNameForTableIdAndColumnIds($params)
     {
         $tableName = get_attr_from_cache('tables', 'id', $params->relation->relation_table_id, 'name');

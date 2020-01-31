@@ -121,6 +121,25 @@ $return = $helper->TableEvent($params);
 ?>'
 ];
 
+$subscribers['table']['data_sources'][0] =
+[
+    'name_basic' => 'Veri kaynağından tabloları ve kolonları okumak için trigger',
+    'subscriber_type_id' => $subscriber_types['after']->id,
+    'php_code' => '<?php
+$params = 
+[
+    "type" => $type,
+    "table" => $table,
+    "column" => $column,
+    "subscriber" => $subscriber,
+    "user" => $user,
+    "record" => $record    
+];
+$helper = new App\Libraries\DataSourceOperationsLibrary();
+$return = $helper->TableEvent($params);
+?>'
+];
+
 
 $subscribers['column']['profile_picture'][0] =
 [
