@@ -30,18 +30,6 @@ trait BaseModelGetRelationDataTrait
         eval(helper('clear_php_code', $dataSourceCode));
         
         $params->record->{$params->column->name . '__relation_data'} = $repository->getRecordsBySourceData(json_encode($params->data_array));
-        
-        /*if(!function_exists('getFromDataSource'.$params->column->name))
-        {
-            eval(helper('clear_php_code', $dataSource->php_code));
-        }
-        
-        $params->column->db_type_name = $params->column->getRelationData('column_db_type_id')->name;
-        $functionName = 'getFromDataSource'.$params->column->name;
-        $params->record->{$params->column->name . '__relation_data'} = $functionName(
-                                                                                        __FUNCTION__, 
-                                                                                        $params->column->db_type_name, 
-                                                                                        json_encode($params->data_array));*/
     }
     
     public function fillRelationDataForJoinTableIds($params)

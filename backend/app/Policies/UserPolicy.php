@@ -77,10 +77,11 @@ class UserPolicy
 
     public function restore($user, $archiveRecord)
     {
-        if(!isset($user->auths['tables'][$record->getTable()]['restore'])) 
+        $tableName = substr($archiveRecord->getTable(), 0, -8);
+        
+        if(!isset($user->auths['tables'][$tableName]['restore'])) 
             return FALSE;
         
-        $tableName = substr($archiveRecord->getTable(), 0, -8);
         $record = get_attr_from_cache($tableName, 'id', $archiveRecord->record_id, '*');
         
         if($record == NULL)

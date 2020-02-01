@@ -236,6 +236,8 @@ export class DataEntegratorComponent
                 in_form_column_name: "data_source_col_relation_ids",
             };
 
+            if(typeof col['php_code'] == "undefined") col['php_code'] = "";
+
             col['id'] = await this.addRemoteColumn(col);
 
             if(col['id'] == 0)

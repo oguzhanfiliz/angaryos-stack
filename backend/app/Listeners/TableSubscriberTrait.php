@@ -382,6 +382,7 @@ trait TableSubscriberTrait
         
         
         $record = $params->model->first();
+        
         $record = $model->updataDataFromDataSource($record, $params->columns);
         
         $record = $this->replaceDataForForm($model, $record, $columnSet);
@@ -393,22 +394,6 @@ trait TableSubscriberTrait
             'column_set' => $columnSet,
             'gui_triggers' => $params->guiTriggers,
         ];
-        
-        
-        
-        /*$params = $this->getModelForCreate($record, $params);
-        
-        $tableInfo = $record->getTableInfo($params->table);
-        $columnSet = $record->getFilteredColumnSet($params->columnSet, TRUE);
-        $data = $this->getDataArrayForEditFromColumnSet($record, $columnSet);
-        
-        return 
-        [
-            'table_info' => $tableInfo,
-            'column_set' => $columnSet,
-            'gui_triggers' => $params->guiTriggers,
-            'data' => $data
-        ];*/
     }
     
     public function filterColumnsForSingleColumnForm($columnSet, $singleColumnName)
@@ -418,17 +403,15 @@ trait TableSubscriberTrait
         $clone = helper('clone_object_as_array', $columnSet);
         
         $control = FALSE;
-        /*foreach($columnSet->column_groups as $columnGroupId => $columnGroup)
-            foreach($columnGroup->column_arrays as $columnArrayId => $columnArray)
-        */
-            foreach($columnSet->column_arrays as $columnArrayId => $columnArray)
-                foreach($columnArray->columns as $columnId => $column) 
-                {
-                    if($column->name == $singleColumnName)
-                        $control = TRUE;
-                    else
-                        unset($clone['column_arrays'][$columnArrayId]['columns'][$columnId]);
-                }
+        
+        foreach($columnSet->column_arrays as $columnArrayId => $columnArray)
+            foreach($columnArray->columns as $columnId => $column) 
+            {
+                if($column->name == $singleColumnName)
+                    $control = TRUE;
+                else
+                    unset($clone['column_arrays'][$columnArrayId]['columns'][$columnId]);
+            }
                 
         if(!$control) custom_abort ('no.auth.for.column.'.$singleColumnName);
         
@@ -437,14 +420,6 @@ trait TableSubscriberTrait
     
     public function getModelForEdit($model, $params)
     {
-        //$params->model = $model->getQuery();
-        
-        //$params->columnSet = $model->getColumnSet($params->model, $params->column_set_id, TRUE);
-        //$params->columns = $model->getColumnsFromColumnSet($params->columnSet);
-        //$params->guiTriggers = $model->getGuiTriggers($params->columns);
-        
-        //return $params;
-        
         $params->model = $model->getQuery();
         
         $params->columnSet = $model->getColumnSet($params->model, $params->column_set_id, TRUE);
@@ -453,9 +428,6 @@ trait TableSubscriberTrait
         $params->guiTriggers = $model->getGuiTriggers($params->columns);
         
         //$model->addJoinsWithColumns($params->model, $params->columns);
-        
-        //$model->addSelects($params->model, $params->columns);
-        //$params->model->addSelect($params->table.'.id');
         
         $model->addFilters($params->model, $params->table);        
         $params->model->where($params->table.'.id', $model->id);        
@@ -466,28 +438,29 @@ trait TableSubscriberTrait
     
     private function replaceDataForForm($model, $record, $columnSet)
     {
+        $dataClasses = ['stdClass', 'App\BaseModel'];
+        
         $data = (array)$record;
-        /*foreach($columnSet->column_groups as $columnGroup)
-            foreach($columnGroup->column_arrays as $columnArray)
-        */
-            foreach($columnSet->column_arrays as $columnArray)
-                foreach($columnArray->columns as $column) 
-                    if(strlen($column->column_table_relation_id) == 0)
-                        $data[$column->name] = $model->{$column->name};
-                    else
-                    {
-                        $relationData = $model->getRelationData($column->name);
-                        
-                        if(@get_class($relationData) == 'App\BaseModel')
-                            $relationData = [$relationData];
-                        
-                        $data[$column->name] = [];
-                        if(is_array($relationData))
-                            foreach($relationData as $r)
-                                array_push($data[$column->name], [
-                                    'source' => $r->_source_column,
-                                    'display' => $r->_display_column
-                                ]);
+        
+        foreach($columnSet->column_arrays as $columnArray)
+            foreach($columnArray->columns as $column) 
+                if(strlen($column->column_table_relation_id) == 0)
+                    $data[$column->name] = $model->{$column->name};
+                else
+                {
+                    $relationData = $model->getRelationData($column->name);
+
+                    $class = @get_class($relationData); 
+                    if(in_array($class, $dataClasses))
+                        $relationData = [$relationData];
+                    
+                    $data[$column->name] = [];
+                    if(is_array($relationData))
+                        foreach($relationData as $r)
+                            array_push($data[$column->name], [
+                                'source' => $r->_source_column,
+                                'display' => $r->_display_column
+                            ]);
                     }
         
         $data['id'] = $model->id;

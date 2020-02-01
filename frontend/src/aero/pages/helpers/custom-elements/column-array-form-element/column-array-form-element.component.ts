@@ -189,6 +189,11 @@ export class ColumnArrayFormElementComponent
 
     /****    Gui Functions     *****/
 
+    clearColumnData(columnName)
+    {
+        console.log(this.record);
+    }
+
     columnIsVisible(columnName)
     {
         var key = "formElementVisibility." + this.upFormId + "." + columnName;
