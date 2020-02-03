@@ -8,23 +8,9 @@
                 <td>
                     {{ getDataFromColumnArray('columns.'+columnName+'.display_name') }}
                 </td>
-                <td align="right">
-                    <button 
-                        *ngIf="getDataFromColumnArray('columns.'+columnName+'.relation.table_name')" 
-                        (click)="addRelationRecord(columnName)"  
-                        class="btn btn-sm btn-primary">
-                        
-                        Ekle
-                    </button>
-
-                    <button 
-                        *ngIf="getDataFromColumnArray('columns.'+columnName+'.relation.table_name')" 
-                        (click)="editRelationRecord(columnName)"  
-                        class="btn btn-sm btn-primary">
-                        
-                        Düzenle
-                    </button>
-                    <button (click)="clearColumnData(columnName)"  class="btn btn-sm btn-danger">Temizle</button>
+                <td *ngIf="getDataFromColumnArray('columns.'+columnName+'.relation.table_name')" align="right">
+                    <button (click)="addRelationRecord(columnName)"  class="btn btn-sm btn-primary">Ekle</button>
+                    <button (click)="editRelationRecord(columnName)"  class="btn btn-sm btn-primary">Düzenle</button>
                 </td>
             </tr><tr>
                 <td colspan="2">
@@ -35,6 +21,7 @@
                         columnName="{{ columnName  }}"
                         class="form-control"
                         upFormId="{{ upFormId }}"
+                        showClearDataButton="true"
                         baseUrl="{{ 'tables/' + tableName }}"
                         upColumnName="{{ getDataFromColumnArray('columns.'+columnName+'.up_column_name') }}"
                         srid="{{ getDataFromColumnArray('columns.'+columnName+'.srid') }}"

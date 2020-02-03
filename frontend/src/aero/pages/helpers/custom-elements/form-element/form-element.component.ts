@@ -24,6 +24,7 @@ export class FormElementComponent
     @Input() upColumnName: number;
     @Input() upFormId: string;    
     @Input() srid: string = "";
+    @Input() showClearDataButton: boolean = false;
     
     
     @Output() changed = new EventEmitter();

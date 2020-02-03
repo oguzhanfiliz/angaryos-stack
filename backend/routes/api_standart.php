@@ -10,8 +10,18 @@ Route::group(['prefix' => '{token}'], function ()
 {
     require 'api_binding.php';
 
-    Route::any('/', '\App\Http\Controllers\GeneralController@serviceOk');//Tested
-    Route::get('getLoggedInUserInfo', 'AuthController@getLoggedInUserInfo');//Tested
+    Route::get('test', function()
+    {
+        $exitCode = Artisan::call('data:entegrator', 
+        [
+            'tableRelationId' => 6,
+        ]);
+        
+        dd('e: ' . $exitCode);
+    });
+    
+    Route::any('/', '\App\Http\Controllers\GeneralController@serviceOk');
+    Route::get('getLoggedInUserInfo', 'AuthController@getLoggedInUserInfo');
     Route::get('getUserToken/{user_id}', 'AuthController@getUserToken');
     
     Route::get('assignAuth', 'AuthController@assignAuth');

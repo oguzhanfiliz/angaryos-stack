@@ -33,7 +33,6 @@ export class FilesElementComponent
 
     ngOnChanges()
     {   
-        console.log("asd");
         if(this.valueJson == "") return;
         
         this.val = BaseHelper.jsonStrToObject(this.valueJson);

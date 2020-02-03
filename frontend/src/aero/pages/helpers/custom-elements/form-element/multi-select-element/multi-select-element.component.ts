@@ -23,6 +23,7 @@ export class MultiSelectElementComponent
     @Input() filterType: string;
     @Input() upColumnName: string;
     @Input() upFormId: string = "";
+    @Input() showClearDataButton: boolean = false;
     
     baseElementSelector = "";
     val = [];
@@ -33,6 +34,9 @@ export class MultiSelectElementComponent
     {
         if(this.upFormId.length > 0)
             this.baseElementSelector = '[ng-reflect-id="'+this.upFormId+'"] ';
+
+        if(this.showClearDataButton == "false")
+            this.showClearDataButton = false;
 
         this.elementOperations();
     }
@@ -86,7 +90,6 @@ export class MultiSelectElementComponent
         url += "/"+this.baseUrl + "/getSelectColumnData/" + this.columnName;
         
         var th = this;
-
         $(this.baseElementSelector+' [name="'+this.name+'"]').select2(
         {
             ajax: 
@@ -110,7 +113,8 @@ export class MultiSelectElementComponent
                     return r;
                 }
             },
-            debug: true,
+            
+            allowClear: this.showClearDataButton,
             closeOnSelect: false,
             minimumInputLength: 3,
             placeholder: $(this.baseElementSelector+' [name="'+this.name+'"] span').html(),

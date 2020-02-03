@@ -107,7 +107,7 @@ export class SelectElementComponent
                     return r;
                 }
             },
-
+            allowClear: true,
             minimumInputLength: 3,
             placeholder: $('[name="'+this.name+'"] span').html(),
             sorter: function(data) 

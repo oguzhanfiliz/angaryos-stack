@@ -216,6 +216,8 @@ export abstract class BaseHelper
 
   public static jsonStrToObject(jsonStr)
   {
+    if(jsonStr == "") return "";
+    
     return JSON.parse(jsonStr);
   }
 

@@ -45,7 +45,8 @@
             "app/Libraries",
             "app/Listeners",
             "app/Repositories",
-            "app/BaseModelTraits"
+            "app/BaseModelTraits",
+            "app/Libraries/DataEntegratorTraits"
         ],
         "files": [
             "app/helpers.php"
