@@ -5,7 +5,7 @@ namespace App\Libraries;
 
 class LdapLibrary
 {
-    private $connection;
+    public $connection;
     private $baseDn;
     
     public function __construct($host, $username, $password, $baseDn = 'dc=liderahenk,dc=org') 
@@ -22,14 +22,16 @@ class LdapLibrary
         if($bind) $this->connection = $ldap;
     }
     
-    public function searchInLdap($filter)
+    public function search($filter, $dn = '')
     {
-        $result = ldap_search($this->connection, $this->baseDn, $filter);
+        if($dn == '') $dn = $this->baseDn;
+        
+        $result = ldap_search($this->connection, $dn, $filter);
         $entries = ldap_get_entries($this->connection, $result);
-        return $this->formatLdapEntries($entries);
+        return $this->formatEntries($entries);
     }
     
-    public function formatLdapEntries($entries)
+    public function formatEntries($entries)
     {
         if($entries == NULL) return [];
         if($entries['count'] == 0) return [];
@@ -60,132 +62,48 @@ class LdapLibrary
         return $data;
     }
     
-    
-    
-    /*private function userCompabilityControl($user)
+    public function getModifyTime($dn, $deref=LDAP_DEREF_NEVER)
     {
-        if(!isset($user) || !isset($user->tc_no) || strlen($user->tc_no) == 0)
-        {
-            dd('Kullanıcı TC Bulunamadı', [$user]);
-            
-            \Log::alert('Kullanıcı TC yok! User: ' . json_encode($user));
-            
-            return FALSE;
-        }
+        $attrs = array( 'modifytimestamp' );
+        $search = ldap_read( $this->connection, $dn, '(objectClass=*)', $attrs, 0, 0, 0, $deref );
+        $entry = ldap_first_entry( $this->connection, $search );
+        $attrs = ldap_get_attributes( $this->connection, $entry );
         
-        return TRUE;
+        $temp = $attrs['modifyTimestamp'][0];
+        $time = new \Carbon\Carbon($temp);
+        $time->addHours(3);//TR
+        
+        return $time;
     }
     
-    
-    
-    public function getUser($user)
+    public function add($entry, $dn = '')
     {
-        if(!$this->userCompabilityControl($user)) return;      
+        if($dn == '') $dn = $this->baseDn;
+        $dn = 'cn='.$entry['cn'].','.$dn;
         
-        $filter='(cn='.$user->tc_no.')';
-        $entries = $this->searchInLdap($filter);
+        unset($entry['updated_at']);
         
-        if(count($entries) == 0) return NULL;
-        else return $entries[0];
+        
+        /*$new["uidnumber"] = $entry['uidnumber'];
+        $new["gidnumber"] = $entry['gidnumber'];
+        $new["cn"] = $entry['cn'];
+        $new["sn"] = $entry['sn'];
+        $new["mail"] = $entry['mail'];
+        $new["uid"] = $entry['uid'];
+        $new["objectclass"] = $entry['objectclass'];
+        $new["userpassword"] = $entry["userpassword"];//'{md5}' . base64_encode(pack('H*', md5('1234d')));
+        //$new["businesscategory"] = getAttributeWithCache('internet_yetkileri', $user->internet_yetki_id, 'name');
+        $new["homedirectory"] = $entry["homedirectory"];
+        
+        //dd($this->connection, $dn, $new, $entry);
+        
+        //dd($this->connection, $dn, $entry);*/
+        
+        return ldap_add($this->connection, $dn, $entry);
     }
     
-    private function deleteUser($user)
+    public function delete($dn)
     {
-        $ldapUser = $this->getUser($user);
-        $r = ldap_delete($this->connection, $ldapUser['dn']);
-        $ldapUser['deleted'] = $r;
-        
-        return $ldapUser;
+        ldap_delete($this->connection, $dn);
     }
-    
-    public function deleteUserIfExist($user)
-    {
-        if(!$this->userCompabilityControl($user)) return;      
-        
-        $ldapUser = $this->getUser($user);
-        if($ldapUser != NULL) $ldapUser = $this->deleteUser($user);
-        
-        return $ldapUser;
-    }
-    
-    private function getUserDataForAdd($user)
-    {
-        $new["uidnumber"] = $user->id;
-        $new["gidnumber"] = $user->id;
-        $new["cn"] = $user->tc_no;
-        $new["sn"] = $user->tc_no;
-        $new["mail"] = $user->email;
-        $new["uid"] = $user->name. ' ' . $user->surname;
-        $new["objectclass"] = ['pardusAccount', 'inetOrgPerson', 'organizationalPerson', 'person', 'top', 'posixAccount', 'shadowAccount'];
-        $new["userpassword"] = '{md5}' . base64_encode(pack('H*', md5($user->password)));
-        $new["businesscategory"] = getAttributeWithCache('internet_yetkileri', $user->internet_yetki_id, 'name');
-        $new["homedirectory"] = '/home/'.$user->tc_no;
-        
-        return $new;
-    }
-    
-    private function createUser($user)
-    {
-        if(!$this->userCompabilityControl($user)) return;
-        
-        $ldapDepartment = $this->createDepartmentOUIfNotExist($user->department_id);
-        
-        $new = $this->getUserDataForAdd($user);
-        
-        $dn = 'cn='.$user->tc_no.','.$ldapDepartment['dn'];
-        
-        $r = ldap_add($this->connection, $dn, $new);
-        
-        $new['added'] = $r;
-        
-        return $new;
-    }
-    
-    public function createOrUpdateUser($user)
-    {
-        if(!$this->userCompabilityControl($user)) return;
-        
-        $this->deleteUserIfExist($user);
-        return $this->createUser($user);
-    }
-    
-    private function getDeaprtmentName($departmentId)
-    {
-        return getAttributeWithCache('departments', $departmentId, 'name');
-    }
-        
-    public function getDepartmentOU($departmentId)
-    {
-        $departmentName = $this->getDeaprtmentName($departmentId);
-        if(strlen($departmentName) == 0) return NULL;
-        
-        $filter='(ou='.$departmentName.')';
-        $entries = $this->searchInLdap($filter);
-        
-        if(count($entries) == 0) return NULL;
-        else return $entries[0];
-    }
-    
-    private function createDepartmentOU($departmentId)
-    {
-        $departmentName = $this->getDeaprtmentName($departmentId);
-        $dn = 'ou='.$departmentName.',ou=Kullanıcılar,'.$this->baseDn;
-        $new["objectclass"] = ['organizationalUnit', 'top'];
-        
-        $r = ldap_add($this->connection, $dn, $new);
-        if(!$r) dd('Depatman eklenemedi!');
-        
-        $new['ou'] = $departmentName;
-        $new['dn'] = $dn;
-
-        return $new;
-    }
-
-    public function createDepartmentOUIfNotExist($departmentId)
-    {
-        $ldapDepartment = $this->getDepartmentOU($departmentId);
-        if(count($ldapDepartment) != NULL) return $ldapDepartment;
-        
-        return $this->createDepartmentOU($departmentId);
-    }*/
 }

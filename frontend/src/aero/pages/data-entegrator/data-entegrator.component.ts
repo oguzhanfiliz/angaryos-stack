@@ -87,6 +87,14 @@ export class DataEntegratorComponent
         {
             var keys = Object.keys(data['column_set']['column_arrays'][0]['columns']);
 
+            // Tablo yada kolon eklenme sırası değişirse güncellenmesi gerekir
+            this.columns.push({
+                id: 1,
+                source: 'id',
+                display: 'Kayıt No',
+                gui_type_name: 'numeric'
+            });
+
             for (var i = 0; i < keys.length; i++)
                 this.columns.push({
                     id: data['column_set']['column_arrays'][0]['columns'][keys[i]]['id'],

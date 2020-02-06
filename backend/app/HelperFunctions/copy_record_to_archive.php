@@ -2,6 +2,7 @@
 
 try { $record->fillVariables(); }
 catch(\Exception $e) {}
+catch(\Error $e) {}
 
 if($tableName == NULL)
 {
@@ -21,6 +22,23 @@ $record->own_id = $record['user_id'];
 $record->updated_at = \Carbon\Carbon::now();
 $record->user_id = \Auth::user()->id;
 
+$geometryColumnTypes = ['point', 'linestring', 'polygon', 'multipoint', 'multilinestring', 'multipolygon'];
+
+$tempData = [];
+foreach($record->getAllColumnsFromDB() as $columnName => $array)
+{
+    if(!in_array($array['type'], $geometryColumnTypes)) continue;
+    
+    $temp = substr($record->{$columnName}, 0, 1);
+    if($temp != '1' && $temp != '0') continue;
+    
+    $tempData[$columnName] = $record->{$columnName};
+    $record->{$columnName} = NULL;
+}
+
 $record->save();
 
+if($tempData == []) return TRUE;
+
+DB::table($tableName.'_archive')->where('id', $record->id)->update($tempData);
 return TRUE;

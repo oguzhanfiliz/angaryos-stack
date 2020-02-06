@@ -5,21 +5,21 @@ $temps =
 [
     'data_sources' => 
     [
-        /*[
+        [
             'name' => 'Kübis DB',
             'data_source_type_id' => 1,
             'host' =>  '192.168.10.151',
             'user_name' => 'postgres',
             'passw' => 'Kozidbim.2643*',
             'params' => 'cbs|public'
-        ],*/
+        ],
         [
             'name' => 'Ldap DB',
             'data_source_type_id' => 2,
             'host' =>  'ldap://192.168.1.82',
             'user_name' => 'cn=admin,dc=liderahenk,dc=org',
             'passw' => 'ssifre',
-            'params' => ''
+            'params' => 'dc=liderahenk,dc=org'
         ]
     ]
 ];

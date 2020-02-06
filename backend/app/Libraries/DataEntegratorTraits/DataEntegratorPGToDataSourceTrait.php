@@ -33,7 +33,7 @@ trait DataEntegratorPGToDataSourceTrait
         }
         else
         {
-            $remoteRecord = $this->GetRecordFromDataSourceById($remoteConnection, $remoteTable, $record);
+            $remoteRecord = $this->GetRecordFromPGDataSourceById($remoteConnection, $remoteTable, $record);
             if($remoteRecord == NULL)
                 $this->CreateRecordOnPGDataSource($remoteConnection, $remoteTable, $columnRelations, $table, $record);
             else
@@ -41,7 +41,7 @@ trait DataEntegratorPGToDataSourceTrait
         }
     }
     
-    private function GetRecordFromDataSourceById($remoteConnection, $remoteTable, $record)
+    private function GetRecordFromPGDataSourceById($remoteConnection, $remoteTable, $record)
     {
         $remoteRecord = $remoteConnection->table($remoteTable->name_basic)->where('id', $record->remote_record_id)->get();
         
@@ -52,34 +52,5 @@ trait DataEntegratorPGToDataSourceTrait
         }
         
         return $remoteRecord[0];
-    }
-    
-    private function GetNewRecordDataFromCurrentRecord($columnRelations, $record)
-    {
-        $direction = 'toDataSource';//using in eval()
-        
-        $newRecord = [];
-        foreach($columnRelations as $columnRelation)
-        {
-            $columnName = get_attr_from_cache('columns', 'id', $columnRelation->column_id, 'name');
-            $remoteColumnName = get_attr_from_cache('data_source_remote_columns', 'id', $columnRelation->data_source_remote_column_id, 'name_basic');
-            
-            try 
-            {
-                $data = $record->{$columnName};
-                
-                if(strlen($columnRelation->php_code) > 0)
-                    eval(helper('clear_php_code', $columnRelation->php_code)); 
-                
-                $newRecord[$remoteColumnName] = $data;
-            } 
-            catch (\Error  $ex) 
-            {
-                throw new \Exception('Error in eval (data_source_col_relations:'.$columnRelation->id.'): '.$ex->getMessage());
-            }
-            
-        }
-        
-        return $newRecord;
     }
 }

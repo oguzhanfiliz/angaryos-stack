@@ -220,7 +220,6 @@ class DataSourceOperationsLibrary
         foreach($tables as $tableName => $tableId)
         {
             $temp = $this->getColumnsFromLdapDB($connection, $dataSource, [$tableName, $tableId]);
-            dd($temp); //her column da name ve type olmalı
             $columns[$tableName] = $this->columnsSyncOnDB($connection, $dataSource, [$tableName, $tableId], $temp);
         }
         
@@ -244,7 +243,7 @@ class DataSourceOperationsLibrary
     {
         $filter='(ou=*)';
         
-        $entries = $connection->searchInLdap($filter); 
+        $entries = $connection->search($filter); 
         
         $tableNames = [];
         foreach($entries as $entry)
@@ -255,7 +254,26 @@ class DataSourceOperationsLibrary
     
     private function getColumnsFromLdapDB($connection, $dataSource, $table)
     {
-        dd('get columns from ldap');
-        dd($connection, $dataSource, $table);
+        $filter='(cn=*)';
+        $entries = $connection->search($filter, $table[0]); 
+        if(count($entries) == 0) return [];
+        
+        $columns = [];
+        foreach(array_keys($entries[0]) as $key)
+        {
+            $temp = helper('get_null_object');
+            $temp->type = 'string';
+            $temp->name = $key;
+            
+            array_push ($columns, $temp);
+        }
+        
+        $temp = helper('get_null_object');
+        $temp->type = 'datetime';
+        $temp->name = 'updated_at';
+
+        array_push ($columns, $temp);
+            
+        return $columns;
     }
 }

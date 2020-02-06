@@ -4,42 +4,47 @@ namespace App\Libraries\DataEntegratorTraits;
 
 use DB;
 
-trait DataEntegratorPGFromDataSourceTrait 
+trait DataEntegratorLdapFromDataSourceTrait 
 {    
-    private function EntegratePostgresqlFromDataSourceUpdateRecords($remoteConnection, $table, $remoteTable, $columnRelations)
+    private function EntegrateLdapFromDataSourceUpdateRecords($remoteConnection, $table, $remoteTable, $columnRelations)
     {
-        $start = 0;
-        while(TRUE)
-        {
-            $remoteRecords = $remoteConnection->table($remoteTable->name_basic)->limit(100)->offset($start)->get();
-            if(count($remoteRecords) == 0) break;
-            $start += 100;
-            
-            foreach($remoteRecords as $remoteRecord)
-                $this->EntegratePostgresqlFromDataSourceUpdateRecord(
+        $filter='(cn=*)';
+        $remoteRecords = $remoteConnection->search($filter, $remoteTable->name_basic); 
+        
+        foreach($remoteRecords as $remoteRecord)
+            $this->EntegrateLdapFromDataSourceUpdateRecord(
                                                                     $remoteConnection, 
                                                                     $table,
                                                                     $remoteTable, 
                                                                     $columnRelations, 
                                                                     $remoteRecord);
-        }
     }
-    
-    private function EntegratePostgresqlFromDataSourceUpdateRecord($remoteConnection, $table, $remoteTable, $columnRelations, $remoteRecord)
+
+    private function EntegrateLdapFromDataSourceUpdateRecord($remoteConnection, $table, $remoteTable, $columnRelations, $remoteRecord)
     {    
+        $remoteIdColumnName = $this->getRelatedColumnName($columnRelations, 'id');
+        $updatedAt = $remoteConnection->getModifyTime($remoteRecord['dn']);
+        
+        $remoteRecord['id'] = $remoteRecord[$remoteIdColumnName];
+        $remoteRecord['updated_at'] = $updatedAt->toDateTimeString();
+        $remoteRecord = (Object)$remoteRecord;
+        
+        
         $currentRecords = $this->GetRecordsFromDBByRemoteRecordId($table, $remoteRecord);
         if($currentRecords === FALSE) return;
-      
+        
         $count = count($currentRecords);
         if($count == 1)
             if($this->CompareUpdatedAtTime($columnRelations, $currentRecords[0], $remoteRecord))
                 return;
         
         $newRecord = $this->GetNewRecordDataFromRemoteRecord($columnRelations, $remoteRecord);
-           
+        
         if($count == 0)
             $this->CreateRecordOnDB($table->name, $newRecord);
         else if($count == 1)
+        {
             $this->UpdateRecordOnDB($currentRecords[0], $table->name, $newRecord);
+        }
     }
 }

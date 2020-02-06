@@ -169,7 +169,7 @@ else
     if($type == \'update\')
         $pass = get_attr_from_cache($table->name, \'id\', \Request::segment(6), $column->name);
     else 
-        $pass == NULL;
+        $pass = NULL;
 }
 
 $return = [$column->name => $pass]; 

@@ -40,33 +40,44 @@ trait DataEntegratorPGTrait
         ]]);
         
         return DB::connection('currentDataSource');  
-    }  
+    } 
     
-    private function CompareUpdatedAtTime($columnRelations, $currentRecord, $remoteRecord)
+    /*private function GetNewRecordDataFromCurrentRecordForPG($columnRelations, $record)
     {
-        $remoteUpdatedAtColumnName = '';
+        $direction = 'toDataSource';//using in eval()
+        
+        $newRecord = [];
         foreach($columnRelations as $columnRelation)
         {
             $columnName = get_attr_from_cache('columns', 'id', $columnRelation->column_id, 'name');
-            if($columnName == 'updated_at')
+            $remoteColumnName = get_attr_from_cache('data_source_remote_columns', 'id', $columnRelation->data_source_remote_column_id, 'name_basic');
+            
+            try 
             {
-                $remoteUpdatedAtColumnName = get_attr_from_cache('data_source_remote_columns', 'id', $columnRelation->data_source_remote_column_id, 'name_basic');
-                break;
+                $data = $record->{$columnName};
+                
+                if(strlen($columnRelation->php_code) > 0)
+                    eval(helper('clear_php_code', $columnRelation->php_code)); 
+                
+                $newRecord[$remoteColumnName] = $data;
+            } 
+            catch (\Error  $ex) 
+            {
+                throw new \Exception('Error in eval (data_source_col_relations:'.$columnRelation->id.'): '.$ex->getMessage());
             }
+            
         }
         
-        if($remoteUpdatedAtColumnName == '')
-            throw new \Exception('Remote table relation not has updated_at column relation. (id:'.$this->tableRelation->id.')');
-        
-        return $currentRecord->updated_at >= $remoteRecord->{$remoteUpdatedAtColumnName};        
-    }
+        return $newRecord;
+    }*/
     
     private function CreateRecordOnPGDataSource($remoteConnection, $remoteTable, $columnRelations, $table, $record)
     {
-        $newRecord = $this->GetNewRecordDataFromCurrentRecord($columnRelations, $record);
+        $newRecord = $this->GetNewRemoteRecordDataFromCurrentRecord($columnRelations, $record);
         
         $newRecordId = $remoteConnection->table($remoteTable->name_basic)->insertGetId($newRecord);
 
+        copy_record_to_archive($record, $table->name);        
         DB::table($table->name)->where('id', $record->id)->update(['remote_record_id' => $newRecordId]);
     }
     
@@ -75,23 +86,10 @@ trait DataEntegratorPGTrait
         if($this->CompareUpdatedAtTime($columnRelations, $remoteRecord, $record))
             return;
         
-        $newRecord = $this->GetNewRecordDataFromCurrentRecord($columnRelations, $record);
+        $newRecord = $this->GetNewRemoteRecordDataFromCurrentRecord($columnRelations, $record);
         
         $this->SaveOldDataToLocalFromDataSource($remoteRecord, $newRecord);
         
         $newRecordId = $remoteConnection->table($remoteTable->name_basic)->where('id', $record->remote_record_id)->update($newRecord);
-    }
-    
-    private function SaveOldDataToLocalFromDataSource($remoteRecord, $newRecord)
-    {
-        $disk = env('FILESYSTEM_DRIVER', 'uploads');
-        Storage::disk($disk)
-            ->put(
-                'dataEntegratorDatas/'
-                .$this->dataSource->name.'/'
-                .$this->tableRelation->id.'/'
-                .$remoteRecord->id.' '.date("Y-m-d h:i:s").'.json', 
-
-                json_encode(['old' => $remoteRecord, 'new' => $newRecord]));
     }
 }

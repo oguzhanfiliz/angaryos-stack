@@ -3,12 +3,16 @@
 namespace App\Libraries;
 
 use App\Libraries\DataEntegratorTraits\DataEntegratorPGTrait;
+use App\Libraries\DataEntegratorTraits\DataEntegratorLdapTrait;
+
+use Storage;
 use Event;
 use DB;
 
 class DataEntegratorLibrary
 {
     use DataEntegratorPGTrait;
+    use DataEntegratorLdapTrait;
     
     public $tableRelation, $dataSource, $dataSourceType, $dataEntegratorDirection;
     
@@ -28,6 +32,9 @@ class DataEntegratorLibrary
         {
             case 'postgresql':
                 $this->EntegratePostgresql($this->dataSource, $this->tableRelation, $this->dataEntegratorDirection);
+                break;
+            case 'ldap':
+                $this->EntegrateLdap($this->dataSource, $this->tableRelation, $this->dataEntegratorDirection);
                 break;
 
             default: 
@@ -53,7 +60,35 @@ class DataEntegratorLibrary
         if($control) return;
         
         $this->AddRemoteRecordIDColumn($table);
-    }   
+    }  
+        
+    private function GetRelatedColumnName($columnRelations, $columnName)
+    {
+        $remoteColumnName = '';
+        foreach($columnRelations as $columnRelation)
+        {
+            $tempColumnName = get_attr_from_cache('columns', 'id', $columnRelation->column_id, 'name');
+            if($tempColumnName == $columnName)
+            {
+                $remoteColumnName = get_attr_from_cache('data_source_remote_columns', 'id', $columnRelation->data_source_remote_column_id, 'name_basic');
+                break;
+            }
+        }
+        
+        if($remoteColumnName == '')
+            throw new \Exception('Remote table relation not has '.$columnName.' column relation. (id:'.$this->tableRelation->id.')');
+        
+        return $remoteColumnName;
+    }
+    
+    private function CompareUpdatedAtTime($columnRelations, $currentRecord, $remoteRecord)
+    {
+        $remoteUpdatedAtColumnName = $this->getRelatedColumnName($columnRelations, 'updated_at');
+        if(strlen($remoteUpdatedAtColumnName) == 0)
+            throw new \Exception('Remote table relation not has updated_at column relation. (id:'.$this->tableRelation->id.')');
+        
+        return $currentRecord->updated_at >= $remoteRecord->{$remoteUpdatedAtColumnName};        
+    }
     
     private function AddRemoteRecordIDColumn($table)
     {
@@ -64,10 +99,95 @@ class DataEntegratorLibrary
         
         $temp = get_model_from_cache('tables', 'name', $table->name);
         $temp->fillVariables();
+        
         $tempColumns = $temp->column_ids;
         array_push($tempColumns, $remoteRecordIdColumnId);
         $temp->column_ids = $tempColumns;
+        
         $temp->save();
+    }
+    
+    private function GetNewRemoteRecordDataFromCurrentRecord($columnRelations, $record)
+    {
+        $direction = 'toDataSource';//using in eval()
+        
+        $newRecord = [];
+        foreach($columnRelations as $columnRelation)
+        {
+            $columnName = get_attr_from_cache('columns', 'id', $columnRelation->column_id, 'name');
+            $remoteColumnName = get_attr_from_cache('data_source_remote_columns', 'id', $columnRelation->data_source_remote_column_id, 'name_basic');
+            
+            try 
+            {
+                $data = $record->{$columnName};
+                
+                if(strlen($columnRelation->php_code) > 0)
+                    eval(helper('clear_php_code', $columnRelation->php_code)); 
+                
+                if($data == '***') continue;
+                
+                $newRecord[$remoteColumnName] = $data;
+            } 
+            catch (\Error  $ex) 
+            {
+                throw new \Exception('Error in eval (data_source_col_relations:'.$columnRelation->id.'): '.$ex->getMessage());
+            }
+            
+        }
+        
+        return $newRecord;
+    }
+    
+    private function GetNewRecordDataFromRemoteRecord($columnRelations, $remoteRecord)
+    {
+        $direction = 'fromDataSource';//using in eval()
+        
+        $newRecord['remote_record_id'] = $remoteRecord->id;
+        foreach($columnRelations as $columnRelation)
+        {
+            $columnName = get_attr_from_cache('columns', 'id', $columnRelation->column_id, 'name');
+            $remoteColumnName = get_attr_from_cache('data_source_remote_columns', 'id', $columnRelation->data_source_remote_column_id, 'name_basic');
+            
+            try 
+            {
+                $data = $remoteRecord->{$remoteColumnName};
+                
+                if(strlen($columnRelation->php_code) > 0)
+                    eval(helper('clear_php_code', $columnRelation->php_code)); 
+                
+                if($data == '***') continue;
+                
+                $newRecord[$columnName] = $data;
+            } 
+            catch (\Exception  $ex) 
+            {
+                throw new \Exception('Error in eval (data_source_col_relations:'.$columnRelation->id.'): '.$ex->getMessage());
+            }
+            catch (\Error  $ex) 
+            {
+                throw new \Exception('Error in eval (data_source_col_relations:'.$columnRelation->id.'): '.$ex->getMessage());
+            }
+            
+        }
+        
+        if(!isset($newRecord['user_id'])) $newRecord['user_id'] = ROBOT_USER_ID;
+        if(!isset($newRecord['own_id'])) $newRecord['own_id'] = ROBOT_USER_ID;
+        
+        return $newRecord;
+    }
+    
+    private function GetRecordsFromDBByRemoteRecordId($table, $remoteRecord)
+    {
+        $currentRecords = DB::table($table->name)->where('remote_record_id', $remoteRecord->id)->get();
+        $count = count($currentRecords);
+        
+        if($count > 1) 
+        {
+            helper('data_entegrator_log', ['warning', 'Multi record has same remote_record_id', $table->name.':'.$remoteRecord->id]);
+            return FALSE;
+        }
+        
+        return $currentRecords;
     }
     
     private function CreateRecordOnDB($tableName, $data)
@@ -77,8 +197,11 @@ class DataEntegratorLibrary
         
         $data['column_set_id'] = 0;
         
+        \Request::merge($data);
+        
         $controller = new \App\Http\Controllers\Api\V1\TableController();
         $params = $controller->getValidatedParamsForStore($data, TRUE);
+        $params->request->remote_record_id = $data['remote_record_id'];
         $record = Event::dispatch('record.store.requested', $params)[1];
         Event::dispatch('record.store.success', [$params, $record]);
         
@@ -93,6 +216,8 @@ class DataEntegratorLibrary
         $pipe['table'] = $tableName;
         
         $data['column_set_id'] = 0;
+        
+        \Request::merge($data);
         
         $controller = new \App\Http\Controllers\Api\V1\TableController();
         $params = $controller->getValidatedParamsForUpdate($data, TRUE);
@@ -114,5 +239,18 @@ class DataEntegratorLibrary
         
         if($update != [])
             DB::table($record->getTable())->where('id', $record->id)->update($update);
+    }
+    
+    private function SaveOldDataToLocalFromDataSource($remoteRecord, $newRecord)
+    {
+        $disk = env('FILESYSTEM_DRIVER', 'uploads');
+        Storage::disk($disk)
+            ->put(
+                'dataEntegratorDatas/'
+                .$this->dataSource->name.'/'
+                .$this->tableRelation->id.'/'
+                .$remoteRecord->id.' '.date("Y-m-d h:i:s").'.json', 
+
+                json_encode(['old' => $remoteRecord, 'new' => $newRecord]));
     }
 }
