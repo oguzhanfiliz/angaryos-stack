@@ -56,7 +56,7 @@ $column_name_display_name_map =
     'join_table_id' => 'Join Tablo',
     'join_table_alias' => 'Join Tablo Takma Ad',
     'connection_column_with_alias' => 'Bağlanılacak Ana Tablo Kolonu',
-    'join_connection_type' => 'Bağlantı Operatörü',
+    //'join_connection_type' => 'Bağlantı Operatörü',
     'join_column_id' => 'Join Kolonu',
     'location' => 'Konum',
     'department_id' => 'Müdürlüğü',
@@ -115,6 +115,7 @@ $column_name_display_name_map =
     
     'db_type_name' => 'Veri Tabanı Tipi',
     
+    'log_level_id' => 'Log Seviyesi'   
 ];
 
 

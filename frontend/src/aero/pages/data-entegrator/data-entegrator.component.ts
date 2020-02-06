@@ -95,29 +95,30 @@ export class DataEntegratorComponent
                     gui_type_name: data['column_set']['column_arrays'][0]['columns'][keys[i]]['gui_type_name']
                 });
             
+            // Tablo yada kolon eklenme sırası değişirse güncellenmesi gerekir
             this.columns.push({
-                id: 9,
+                id: 10,
                 source: 'own_id',
                 display: 'Kaydın Sahibi',
                 gui_type_name: 'select'
             });
 
             this.columns.push({
-                id: 10,
+                id: 11,
                 source: 'user_id',
                 display: 'Kaydı Güncelleyen',
                 gui_type_name: 'select'
             });
 
             this.columns.push({
-                id: 11,
+                id: 12,
                 source: 'created_at',
                 display: 'Oluşturulma Zamanı',
                 gui_type_name: 'datatime'
             });
 
             this.columns.push({
-                id: 12,
+                id: 13,
                 source: 'updated_at',
                 display: 'Günzellenme Zamanı',
                 gui_type_name: 'datetime'
@@ -230,13 +231,14 @@ export class DataEntegratorComponent
             {
                 column_id: this.columns[i]['id'],
                 data_source_remote_column_id: $('#remote_'+this.columns[i]['source']).val(),
-                php_code: $('#'+this.columns[i]['source']+'_changer').val(),
+                php_code: encodeURIComponent($('#'+this.columns[i]['source']+'_changer').val()),
                 state: 1,
                 column_set_id: 0,
                 in_form_column_name: "data_source_col_relation_ids",
             };
 
             if(typeof col['php_code'] == "undefined") col['php_code'] = "";
+            if(col['php_code'] == "null") col['php_code'] = "";
 
             col['id'] = await this.addRemoteColumn(col);
 
@@ -270,14 +272,11 @@ export class DataEntegratorComponent
             column_set_id: 0
         }
 
-        console.log(table);
-
         var url = this.sessionHelper.getBackendUrlWithToken()+"tables/data_source_tbl_relations/store";
         
         this.sessionHelper.doHttpRequest("GET", url, table) 
         .then((data) => 
         {         
-            console.log(data);   
             if(typeof data['message'] == "undefined")
                 this.messageHelper.sweetAlert("Beklenmedik cevap geldi!", "Hata", "warning");
             else if(data['message'] == 'error')

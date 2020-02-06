@@ -67,6 +67,8 @@ $table_name_display_name_map =
     'data_source_col_relations' => 'Veri Kaynağı Kolon İlişkisi',
     'data_source_tbl_relations' => 'Veri Kaynağı Tablo İlişkisi',
     
+    'log_levels' => 'Log Seviyeleri',
+    
     'data_entegrator_logs' => 'Veri Aktarıcı Logları',
     
     'table_groups' => 'Tablo Grupları',

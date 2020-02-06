@@ -54,6 +54,19 @@ $temp = array_merge($tempColumn, $temp);
 $columns['record_id'] = new BaseModel('columns', $temp);
 $columns['record_id']->save();
 
+$tempColumn = 
+[
+    'name' => 'remote_record_id',
+    'display_name' => 'Uzak Kayıt ID',
+    'column_db_type_id' => get_attr_from_cache('column_db_types', 'name', 'integer', 'id'),
+    'column_gui_type_id' => get_attr_from_cache('column_gui_types', 'name', 'numeric', 'id')
+];
+$temp = $this->get_base_record();
+$temp = array_merge($tempColumn, $temp);
+
+$columns['remote_record_id'] = new BaseModel('columns', $temp);
+$columns['remote_record_id']->save();
+
 
 
 /*$requiredColumns = 

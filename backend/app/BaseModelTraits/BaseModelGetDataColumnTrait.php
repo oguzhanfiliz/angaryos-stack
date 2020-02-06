@@ -63,11 +63,12 @@ trait BaseModelGetDataColumnTrait
         
         $type = get_attr_from_cache('column_array_types', 'id', $columnArray->column_array_type_id, 'name');
         if($type == 'direct_data')
-            foreach(json_decode($columnArray->join_table_ids) as $joinId)
-            {
-                $join = get_attr_from_cache('join_tables', 'id', $joinId, '*');
-                $this->addJoinForColumnArray($model, $join);
-            }
+            if(strlen($columnArray->join_table_ids) > 0)
+                foreach(json_decode($columnArray->join_table_ids) as $joinId)
+                {
+                    $join = get_attr_from_cache('join_tables', 'id', $joinId, '*');
+                    $this->addJoinForColumnArray($model, $join);
+                }
         
         if($form) return $columns;
         

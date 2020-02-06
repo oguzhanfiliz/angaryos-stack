@@ -9,7 +9,7 @@ $join_tables['departments'] =
         'join_table_alias' => 'mudur',
         
         'connection_column_with_alias' => 'departments.manager_id',
-        'join_connection_type' => '=',
+        //'join_connection_type' => '=',
         'join_column_id' => 'id',//$column['id']->id
     ],
     [
@@ -19,7 +19,7 @@ $join_tables['departments'] =
         'join_table_alias' => 'mudur_kaydini_ekleyen_kullanici',
         
         'connection_column_with_alias' => 'mudur.user_id',
-        'join_connection_type' => '=',
+        //'join_connection_type' => '=',
         'join_column_id' => 'id',
     ],
     //Bu özel join. Tablo buradan başlıyor. Bilgi kartı içinde liste göstermek için
@@ -30,7 +30,7 @@ $join_tables['departments'] =
         'join_table_alias' => 'mudurlukteki_personeller',
         
         'connection_column_with_alias' => 'departments.id',
-        'join_connection_type' => '=',
+        //'join_connection_type' => '=',
         'join_column_id' => 16//'department_id' Tablo yada kolon eklenme sırası değişirse güncellenmesi gerekir
     ],
     [
@@ -40,7 +40,7 @@ $join_tables['departments'] =
         'join_table_alias' => 'personelin_mudurlugu',
         
         'connection_column_with_alias' => 'users.department_id',
-        'join_connection_type' => '=',
+        //'join_connection_type' => '=',
         'join_column_id' => 'id'
     ]
 ];

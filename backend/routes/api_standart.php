@@ -12,9 +12,24 @@ Route::group(['prefix' => '{token}'], function ()
 
     Route::get('test', function()
     {
+        /*$temp = 'ldap://192.168.1.82|cn=admin,dc=liderahenk,dc=org|ssifre';
+        $temp = explode('|', $temp);
+        
+        $ldap = new App\Libraries\LdapHelper($temp[0], $temp[1], $temp[2]);
+        
+        
+        $filter='(ou=*)';
+        $entries = $ldap->searchInLdap($filter);
+        dd($entries);*/
+        //$cron = "*/5 1-2 3 3,4,5 *"; 
+        //$result = preg_match( "/^((?:[1-9]?\d|\*)\s*(?:(?:[\/-][1-9]?\d)|(?:,[1-9]?\d)+)?\s*){5}$/", $cron, $matches); 
+        //print_r(count($matches) == 2);
+dd(99);
+
+
         $exitCode = Artisan::call('data:entegrator', 
         [
-            'tableRelationId' => 6,
+            'tableRelationId' => 3,
         ]);
         
         dd('e: ' . $exitCode);

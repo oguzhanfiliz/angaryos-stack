@@ -2,6 +2,7 @@
 
 namespace App\Repositories;
 
+use Cache;
 use DB;
 
 class AuthsRepository 
@@ -126,5 +127,30 @@ class AuthsRepository
         }
 
         return $return;
+    }
+    
+    public function ClearCache($tableName, $record, $type)
+    {
+        if($tableName != 'auth_groups') return;
+        
+        $keys = getMemcachedKeys();
+        
+        $columnId = get_attr_from_cache('columns', 'name', 'auths', 'id');
+        $tables = DB::table('tables')->whereRaw('column_ids @> \''.$columnId.'\'::jsonb ')->get();
+        foreach($tables as $table)
+        {
+            foreach($keys as $key)
+            {
+                if(substr($key, -13, 13) != '|relationData') continue;
+                    
+                $prefix = 'tableName:'.$table->name.'|columnName:auths|columnData:';
+                
+                if(strstr($key, $prefix)) 
+                { 
+                    $key = str_replace(explode($prefix, $key)[0], '', $key);
+                    Cache::forget($key);
+                }
+            }
+        }
     }
 }

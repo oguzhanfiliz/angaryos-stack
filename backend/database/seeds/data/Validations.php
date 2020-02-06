@@ -12,6 +12,8 @@ $validations['name_not_start_deleted']['display_name'] = 'İsim "deleted_" ile b
 $validations['no_change']['display_name'] = 'Data değiştirilemez';
 $validations['valid_validations']['display_name'] = 'Olmayan doğrulama kuralı yazılamaz!';
 $validations['column_table_relation_control']['display_name'] = 'İlişkili kolon ilişki kontrolü';
+$validations['cron']['display_name'] = 'Crontab sözdizimi kontrolü';
+$validations['select_updated_at']['display_name'] = 'Güncelleyen kullanıcı kolonu kontrolü';
 
 
 
@@ -111,6 +113,29 @@ $return  = (strlen($value) > 0);
 
 ?>';
 
+$validations['cron']['php_code'] = '<?php
+$result = preg_match( "/^((?:[1-9]?\d|\*)\s*(?:(?:[\/-][1-9]?\d)|(?:,[1-9]?\d)+)?\s*){5}$/", $value, $matches); 
+$return  = (count($matches) == 2);
+?>';
+
+$validations['select_updated_at']['php_code'] = '<?php
+
+$return = FALSE;
+
+if($value == \'[]\') return;
+
+$value = json_decode($value);
+foreach($value as $columnRelationId)
+{
+    $columnId = get_attr_from_cache(\'data_source_col_relations\', \'id\', $columnRelationId, \'column_id\');
+    $columnName = get_attr_from_cache(\'columns\', \'id\', $columnId, \'name\');
+    if($columnName == \'updated_at\')
+    {
+        $return = TRUE;
+        break;
+    }
+}
+?>';
 
 $validations['numeric_min']['error_message'] = 'Değer en az :parameters[0] olmalıdır';
 $validations['files_type']['error_message'] = 'Dosya tipi yalnızca :parameters[0] olabilir.';
@@ -120,7 +145,10 @@ $validations['name_not_start_deleted']['error_message'] = 'İsim "deleted_" ile 
 $validations['no_change']['error_message'] = 'Bu veri değiştirilemez.';
 $validations['valid_validations']['error_message'] = 'Böyle bir doğrulama kuralı yok!';
 $validations['column_table_relation_control']['error_message'] = 'İlişkili kolon için bir data ilişkisi seçmelisiniz!';
+$validations['cron']['error_message'] = 'Geçerisiz bir zamanlayıcı girdiniz! (cron syntax)';
+$validations['select_updated_at']['error_message'] = 'Güncelleyen kullanıcı kolonu seçilmelidir!';
         
+
 $temp = $this->get_base_record();
 
 foreach($validations as $name => $array)
@@ -162,6 +190,8 @@ $column_validations['name_not_start_deleted'] = NULL;
 $column_validations['no_change'] = NULL;
 $column_validations['valid_validations'] = NULL;
 $column_validations['column_table_relation_control'] = NULL;
+$column_validations['cron'] = NULL;
+$column_validations['select_updated_at'] = NULL;
 
 $temp = $this->get_base_record();
 

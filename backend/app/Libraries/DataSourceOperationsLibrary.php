@@ -6,6 +6,9 @@ use App\BaseModel;
 
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
+
+use App\Libraries\LdapLibrary;
+
 use DB;
 
 class DataSourceOperationsLibrary 
@@ -49,25 +52,9 @@ class DataSourceOperationsLibrary
         dd(__FUNCTION__);
     }
     
-    private function CreatePGDBConnectionForCurrentDataSource($dataSource)
-    {
-        $params = explode('|', $dataSource->params);
-        
-        config(['database.connections.currentDataSource' => 
-        [
-            'driver' => 'pgsql',
-            'host' => $dataSource->host,
-            'database' => $params[0],
-            'username' => $dataSource->user_name,
-            'password' => $dataSource->passw,
-            'schema' => $params[1]
-        ]]);
-    }
     
-    private function getTableNamesFromDB($connection)
-    {
-        return $connection->getDoctrineSchemaManager()->listTableNames();
-    }
+    
+    /****    Common Functions    ****/
     
     private function tablesSyncOnDB($dataSource, $tableNames)
     {
@@ -106,15 +93,9 @@ class DataSourceOperationsLibrary
         return $return;
     }
     
-    private function columnsSyncOnDB($connection, $dataSource, $table)
+    private function columnsSyncOnDB($connection, $dataSource, $table, $columns)
     {
         $userId = \Auth::user()->id;
-        
-        $sql = 'SELECT column_name as name, data_type as type, udt_name FROM information_schema.columns';
-        $sql .= ' WHERE table_schema = \''.env('DB_SCHEMA', 'public').'\' AND ';
-        $sql .= ' table_name   = \''.$table[0].'\'';
-        
-        $columns = $connection->select($sql);
         
         DB::table('data_source_remote_columns')->where('data_source_rmt_table_id', $table[1])->update(
         [
@@ -150,10 +131,45 @@ class DataSourceOperationsLibrary
         return $return;
     }
     
+    
+    
+    /****    Postgrtesql    ****/
+    
+    private function CreatePGDBConnectionForCurrentDataSource($dataSource)
+    {
+        $params = explode('|', $dataSource->params);
+        
+        config(['database.connections.currentDataSource' => 
+        [
+            'driver' => 'pgsql',
+            'host' => $dataSource->host,
+            'database' => $params[0],
+            'username' => $dataSource->user_name,
+            'password' => $dataSource->passw,
+            'schema' => $params[1]
+        ]]);
+    }
+    
+    private function GetTableNamesFromPGDB($connection)
+    {
+        return $connection->getDoctrineSchemaManager()->listTableNames();
+    }
+    
+    private function getColumnsFromPGDB($connection, $dataSource, $table)
+    {
+        $sql = 'SELECT column_name as name, data_type as type, udt_name FROM information_schema.columns';
+        $sql .= ' WHERE table_schema = \''.env('DB_SCHEMA', 'public').'\' AND ';
+        $sql .= ' table_name   = \''.$table[0].'\'';
+        
+        $columns = $connection->select($sql);
+        return $columns; 
+    }
+    
     private function UpdateRemoteTablesAndColumnsForPostgresql($dataSource)
     {
         helper('data_entegrator_log', 
         [
+            'info',
             'Update remote tables and columns for pg started', 
             $dataSource
         ]);
@@ -161,20 +177,85 @@ class DataSourceOperationsLibrary
         $this->CreatePGDBConnectionForCurrentDataSource($dataSource);
         $connection = DB::connection('currentDataSource');  
         
-        $tableNames = $this->getTableNamesFromDB($connection);
+        $tableNames = $this->GetTableNamesFromPGDB($connection);
         $tables = $this->tablesSyncOnDB($dataSource, $tableNames);
         
         $columns = [];
         foreach($tables as $tableName => $tableId)
-            $columns[$tableName] = $this->columnsSyncOnDB($connection, $dataSource, [$tableName, $tableId]);
+        {
+            $temp = $this->getColumnsFromPGDB($connection, $dataSource, [$tableName, $tableId]);
+            $columns[$tableName] = $this->columnsSyncOnDB($connection, $dataSource, [$tableName, $tableId], $temp);
+        }
         
         helper('data_entegrator_log', 
         [
+            'info',
             'Update remote tables and columns for pg finished',
             [
                 'tables' => $tables, 
                 'columns' => $columns
             ]
         ]);
+    }
+    
+    
+    
+    /****    Ldap    ****/
+    
+    private function UpdateRemoteTablesAndColumnsForLdap($dataSource)
+    {
+        helper('data_entegrator_log', 
+        [
+            'info',
+            'Update remote tables and columns for ldap started', 
+            $dataSource
+        ]);
+        
+        $connection = $this->GetLdapDBConnectionForCurrentDataSource($dataSource);
+        
+        $tableNames = $this->GetTableNamesFromLdapDB($connection);
+        $tables = $this->tablesSyncOnDB($dataSource, $tableNames);
+        
+        $columns = [];
+        foreach($tables as $tableName => $tableId)
+        {
+            $temp = $this->getColumnsFromLdapDB($connection, $dataSource, [$tableName, $tableId]);
+            dd($temp); //her column da name ve type olmalı
+            $columns[$tableName] = $this->columnsSyncOnDB($connection, $dataSource, [$tableName, $tableId], $temp);
+        }
+        
+        helper('data_entegrator_log', 
+        [
+            'info',
+            'Update remote tables and columns for pg finished',
+            [
+                'tables' => $tables, 
+                'columns' => $columns
+            ]
+        ]);
+    }
+    
+    private function GetLdapDBConnectionForCurrentDataSource($dataSource)
+    {
+        return (new LdapLibrary($dataSource->host, $dataSource->user_name, $dataSource->passw, $dataSource->params));
+    }
+    
+    private function GetTableNamesFromLdapDB($connection)
+    {
+        $filter='(ou=*)';
+        
+        $entries = $connection->searchInLdap($filter); 
+        
+        $tableNames = [];
+        foreach($entries as $entry)
+                array_push($tableNames, $entry['dn']);
+        
+        return $tableNames;
+    }
+    
+    private function getColumnsFromLdapDB($connection, $dataSource, $table)
+    {
+        dd('get columns from ldap');
+        dd($connection, $dataSource, $table);
     }
 }

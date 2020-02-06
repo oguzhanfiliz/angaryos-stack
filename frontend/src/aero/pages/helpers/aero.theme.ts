@@ -141,19 +141,30 @@ export class AeroThemeHelper
           return tableGroups[i];
     }
 
+    private getTableGroupdByIds()
+    {
+      var tableGroups = BaseHelper.loggedInUserInfo.menu.tableGroups;
+      
+      var tableGroupIds = []
+      for(var i = 0; i < tableGroups.length; i++)
+        tableGroupIds.push(tableGroups[i]['id']);
+
+      return tableGroupIds;
+    }
+
     private getTableGroupsForMenuItem(search = "")
     {
       var menu = [];
 
       var tables = BaseHelper.loggedInUserInfo.menu.tables;      
-      var tableGroupIds = Object.keys(tables);
+      var tableGroupIds = this.getTableGroupdByIds();//Object.keys(tables);
       for (var i = 0; i < tableGroupIds.length; i++) 
       {
         var tableGroup = this.getTableGroupdById(tableGroupIds[i]);
         if(typeof tableGroup == "undefined")
           tableGroup = 
           {
-            name: 'Diğer',
+            name_basic: 'Diğer',
             icon: 'zmdi-aspect-ratio'
           };
 
@@ -163,8 +174,8 @@ export class AeroThemeHelper
           icon: tableGroup['icon'],
           toggled: search.length > 0,
           children: []
-        };
-
+        }; 
+ 
         var children = [];        
         var tempTables = tables[tableGroupIds[i]];
         for(var j = 0; j < tempTables.length; j++)

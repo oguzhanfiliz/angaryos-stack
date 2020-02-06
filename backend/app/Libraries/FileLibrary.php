@@ -52,7 +52,7 @@ class FileLibrary
             if($error != 0)
                 dd('error var');
         
-        $disk = 'uploads';
+        $disk = env('FILESYSTEM_DRIVER', 'uploads');
         $tempFolder = 'temps/';
         
         $temp = [];
@@ -91,8 +91,20 @@ class FileLibrary
         return $temp;
     }
     
+    private function singleColumnControl($params)
+    {
+        $singleColumn = \Request::input('single_column');
+        if($singleColumn != null && $singleColumn != $params['columnName']);
+            return TRUE;
+            
+        return FALSE;
+    }
+
     public function fileUploadEvent($params)
     {
+        $control = $this->singleColumnControl($params);
+        if($control == TRUE) return [];
+            
         $column = $params['columnName'];
 
         $old = @\Request::input($column.'_old');

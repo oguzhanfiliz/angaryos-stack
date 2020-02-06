@@ -177,7 +177,7 @@ trait BaseModelGetDataJoinTrait
         return $params->model->leftJoin(
                 $params->realtion_table_name, 
                 $params->realtion_column_name, 
-                $params->join->join_connection_type, 
+                '=', 
                 $params->join->connection_column_with_alias);
     }
     

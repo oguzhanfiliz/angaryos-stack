@@ -204,19 +204,23 @@ trait TableTrait
         return $this->getValidatedParamsForCreate();
     }
     
-    private function getValidatedParamsForStore($request)
+    public function getValidatedParamsForStore($request, $isRequestArray = FALSE)
     {
         global $pipe;
         
         $params = helper('get_null_object');
-        $params->request = (Object)$request->all();
+            
+        if($isRequestArray)
+            $params->request = (Object)$request;
+        else
+            $params->request = (Object)$request->all();
         
         param_is_have($params->request, 'column_set_id');
         
         $model = new BaseModel($pipe['table']);
         $params->columnSet = $model->getColumnSet($model, (int)$params->request->column_set_id, TRUE);
         $params->columns = $model->getColumnsFromColumnSet($params->columnSet);
-        
+
         
         $temp = $model->getFilteredColumnSet($params->columnSet, TRUE);
         $temp = $model->getColumnsFromColumnSet($temp);
@@ -233,14 +237,15 @@ trait TableTrait
         $params->request = (Object)$arr;
         
         $params->table = new BaseModel('tables');
+
         $params->table = $params->table->where('name', $pipe['table'])->first();
-        
+
         return $params;
     }
     
-    private function getValidatedParamsForUpdate($request)
+    public function getValidatedParamsForUpdate($request, $isRequestArray = FALSE)
     {
-        $params = $this->getValidatedParamsForStore($request);
+        $params = $this->getValidatedParamsForStore($request, $isRequestArray);
         return $params;
     }
     

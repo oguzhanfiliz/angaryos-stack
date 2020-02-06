@@ -24,7 +24,7 @@ class CreateJoinTables extends Migration
             
             $table->string('connection_column_with_alias')->nullable();
             
-            $table->string('join_connection_type')->nullable();
+            //$table->string('join_connection_type')->nullable();
             
             $table->integer('join_column_id')->nullable();
             

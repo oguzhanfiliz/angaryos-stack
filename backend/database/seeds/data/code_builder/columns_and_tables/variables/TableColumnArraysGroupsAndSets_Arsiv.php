@@ -11,7 +11,7 @@ $join_tables['columns'] =
         'join_table_alias' => 'kolon_db_tipleri',
         
         'connection_column_with_alias' => 'columns.column_db_type_id',
-        'join_connection_type' => '=',
+        //'join_connection_type' => '=',
         'join_column_id' => 'id',//$column['id']->id
     ],
     [
@@ -23,7 +23,7 @@ $join_tables['columns'] =
         'join_table_alias' => 'db_tipini_ekleyen_kullanicilar',
         
         'connection_column_with_alias' => 'kolon_db_tipleri.user_id',
-        'join_connection_type' => '=',
+        //'join_connection_type' => '=',
         'join_column_id' => 'id',
     ],
     [
@@ -35,7 +35,7 @@ $join_tables['columns'] =
         'join_table_alias' => 'kolonu_iceren_tablo',
         
         'connection_column_with_alias' => 'columns.id',
-        'join_connection_type' => '=',
+        //'join_connection_type' => '=',
         'join_column_id' => 57//'column_ids' Tablo yada kolon eklenme sırası değişirse güncellenmesi gerekir
     ],
     [
@@ -47,7 +47,7 @@ $join_tables['columns'] =
         'join_table_alias' => 'tablo_takipcileri',
         
         'connection_column_with_alias' => 'tables.subscriber_ids',
-        'join_connection_type' => '=',
+        //'join_connection_type' => '=',
         'join_column_id' => 'id',//$column['id']->id
     ],
 ];

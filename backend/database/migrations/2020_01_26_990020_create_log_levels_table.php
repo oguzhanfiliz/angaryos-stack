@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateDataEntegratorLogsTable extends Migration
+class CreateLogLevelsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,12 +13,11 @@ class CreateDataEntegratorLogsTable extends Migration
      */
     public function up()
     {
-        Schema::create('data_entegrator_logs', function (Blueprint $table) {
+        Schema::create('log_levels', function (Blueprint $table) {
             $table->bigIncrements('id');
             
-            $table->integer('log_level_id')->nullable();
-            $table->string('name_basic')->nullable();
-            $table->jsonb('log')->nullable();
+            $table->string('name')->nullable();
+            $table->text('description')->nullable();
             
             $table->boolean('state')->default(TRUE)->nullable();
             $table->integer('own_id');
@@ -34,6 +33,6 @@ class CreateDataEntegratorLogsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('data_entegrator_logs');
+        Schema::dropIfExists('log_levels');
     }
 }

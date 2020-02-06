@@ -50,7 +50,7 @@ class BaseModel extends Model
     public function getAllColumnsFromDB()
     {
         if($this->allColumnsFromDB == [])
-            $this->fillAllColumnsFromDB ();
+            $this->fillAllColumnsFromDB();
         
         return $this->allColumnsFromDB;
     }
@@ -102,43 +102,6 @@ class BaseModel extends Model
         
         return $return;
     }
-    
-    
-    
-    /*****    ****/
-    
-    /*public function archive($columnArrayId, $page, $limit)
-    {
-        //column array bile olmadan herşeyi geri dönebilir tüm kolonları
-        custom_abort(999);
-        $start = ($page - 1) * $limit;
-        
-        $model = DB::table($this->getTable().'_archive')
-                ->where('record_id', $this->id);
-        
-        $count = $model->count();
-        
-        $data = $model->limit($limit)->offset($start) ->get();
-        
-        $columns = $this->getColumnsByColumnArrayId($this->getQuery(), $columnArrayId);
-        $columns = $this->getFilteredColumns($columns);
-        
-        $records = [];
-        foreach($data as $record)
-        {
-            $temp = [];
-            foreach($columns as $column)
-                $temp[$column->name] = $record->{$column->name};
-            array_push($records, $temp);
-        }
-        
-        return 
-        [
-            'records' => $records, 
-            'columns' => $columns,
-            'count' => $count
-        ];
-    }*/
     
     public function fillAllColumnsFromDB()
     {
@@ -200,8 +163,10 @@ class BaseModel extends Model
         $json = $this->{$columnName};
             if(is_array($this->{$columnName}))
                 $json = json_encode($this->{$columnName});
-                
-        $cacheName = 'tableName:'.$this->getTable().'|id:'.$this->id.'|columnName:'.$columnName.'|columnData:'.$json.'|relationData';
+          
+        //Kaydın id si önemli değil kim olursa olsun deparment_id = 1 ise bilgi işlem müdürlüğüdür
+        //$cacheName = 'tableName:'.$this->getTable().'|id:'.$this->id.'|columnName:'.$columnName.'|columnData:'.$json.'|relationData';
+        $cacheName = 'tableName:'.$this->getTable().'|columnName:'.$columnName.'|columnData:'.$json.'|relationData';
         $th = $this;
         
         return Cache::rememberForever($cacheName, function() use($th, $columnName)

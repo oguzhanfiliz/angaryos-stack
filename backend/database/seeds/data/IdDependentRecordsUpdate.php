@@ -8,7 +8,7 @@ $data_source_rmt_table_id_join1->name_basic = 'Veri Kaynağı Uzak Kolon ve Veri
 $data_source_rmt_table_id_join1->join_table_id = $tables['data_source_remote_tables']->id;
 $data_source_rmt_table_id_join1->join_table_alias = 'data_source_remote_tables';
 $data_source_rmt_table_id_join1->connection_column_with_alias = 'data_source_rmt_table_id';
-$data_source_rmt_table_id_join1->join_connection_type = '=';
+//$data_source_rmt_table_id_join1->join_connection_type = '=';
 $data_source_rmt_table_id_join1->join_column_id = $columns['id']->id;
 $data_source_rmt_table_id_join1->state = TRUE;
 $data_source_rmt_table_id_join1->updated_at = $now;
@@ -22,7 +22,7 @@ $data_source_rmt_table_id_join2->name_basic = 'Veri Kaynağı Uzak Tablo ve Veri
 $data_source_rmt_table_id_join2->join_table_id = $tables['data_sources']->id;
 $data_source_rmt_table_id_join2->join_table_alias = 'data_sources';
 $data_source_rmt_table_id_join2->connection_column_with_alias = 'data_source_remote_tables.data_source_id';//'data_source_remote_tables.data_source_id';
-$data_source_rmt_table_id_join2->join_connection_type = '=';
+//$data_source_rmt_table_id_join2->join_connection_type = '=';
 $data_source_rmt_table_id_join2->join_column_id = $columns['id']->id;
 $data_source_rmt_table_id_join2->state = TRUE;
 $data_source_rmt_table_id_join2->updated_at = $now;
@@ -210,6 +210,15 @@ $update_data =
         'relation_table_id' => $tables['data_source_tbl_relations']->id,
         'relation_source_column_id' => $columns['id']->id,
         'relation_display_column_id' => $columns['id']->id,
+        'relation_sql' => NULL,
+        'relation_source_column' => NULL,
+        'relation_display_column' => NULL
+    ],
+    $log_level_id_relation['relation_sql'] =>
+    [
+        'relation_table_id' => $tables['log_levels']->id,
+        'relation_source_column_id' => $columns['id']->id,
+        'relation_display_column_id' => $columns['name']->id,
         'relation_sql' => NULL,
         'relation_source_column' => NULL,
         'relation_display_column' => NULL

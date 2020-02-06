@@ -11,7 +11,9 @@ RUN apt-get update && apt-get install -y \
     curl \
     git \
     nano \ 
-    libxml2-dev
+    libxml2-dev \
+    libldap2-dev 
+    
 
 RUN curl -L -o /tmp/memcached.tar.gz "https://github.com/php-memcached-dev/php-memcached/archive/php7.tar.gz" \
     && mkdir -p /usr/src/php/ext/memcached \
@@ -35,6 +37,9 @@ RUN docker-php-ext-install sockets
 RUN docker-php-ext-install opcache
 RUN docker-php-ext-install zip
 RUN docker-php-ext-install xml
+
+RUN docker-php-ext-configure ldap --with-libdir=lib/x86_64-linux-gnu/ 
+RUN docker-php-ext-install ldap
 
 RUN apt-get clean && rm -rf /var/lib/apt/lists/*
 

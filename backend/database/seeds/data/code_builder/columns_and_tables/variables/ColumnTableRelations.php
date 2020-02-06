@@ -154,6 +154,12 @@ $data_source_table_relation_ids_relation =
     'relation_display_column' => 'id',
 ];
 
+$log_level_id_relation =
+[
+    'relation_sql' => 'select id, display_name from log_levels',
+    'relation_source_column' => 'id',
+    'relation_display_column' => 'name',
+];
 
 
 $column_table_relations =
@@ -213,4 +219,6 @@ $column_table_relations =
     
     'data_source_col_relation_ids' => $data_source_col_relation_ids_relation,
     'data_source_table_relation_ids' => $data_source_table_relation_ids_relation,
+    
+    'log_level_id' => $log_level_id_relation,
 ];

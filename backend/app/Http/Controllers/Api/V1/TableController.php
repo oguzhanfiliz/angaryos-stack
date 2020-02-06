@@ -23,9 +23,11 @@ class TableController extends Controller
     
     public function __construct()
     {
-        \Cache::flush();
+        //\Cache::flush();
+        
         global $pipe;
-        $pipe['table'] = helper('get_table_name_from_url');
+        if(!isset($pipe['table']) || strlen($pipe['table']) == 0)
+            $pipe['table'] = helper('get_table_name_from_url');
         
         $this->fillAuthFunctions();  
     }

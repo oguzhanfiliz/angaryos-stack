@@ -571,7 +571,10 @@ class TableDBOperationsLibrary
     }
     
     public function GetDeletedColumns($currentColumnIds, $columnIds)
-    {        
+    {      
+        if(!is_array($currentColumnIds))
+            $currentColumnIds = json_decode($currentColumnIds);
+        
         $temp = [];
         foreach($currentColumnIds as $columnId)
             if(!in_array($columnId, $columnIds))
@@ -587,6 +590,9 @@ class TableDBOperationsLibrary
     
     public function GetAddedColumns($currentColumnIds, $columnIds)
     {
+        if(!is_array($currentColumnIds))
+            $currentColumnIds = json_decode($currentColumnIds);
+        
         $temp = [];
         foreach($columnIds as $columnId)
             if(!in_array($columnId, $currentColumnIds))

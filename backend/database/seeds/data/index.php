@@ -22,6 +22,8 @@ $files =
     'DataEntegratorDatas',
     'CustomLayerDatas',
     
+    'LogLevels',
+    
     'TableGroups',
     'Temp'
 ];

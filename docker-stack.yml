@@ -61,8 +61,6 @@ services:
         image: karapazar/angular-serve:0.12 
         volumes:
             - ./frontend:/usr/src/app 
-        environment:
-            HOST: 192.168.10.185
         networks:
             - frontend-nw
         deploy:
@@ -80,7 +78,7 @@ services:
     #######       BACKEND       #######
  
     laravel:
-        image: karapazar/laravel-php-fpm:0.40
+        image: karapazar/laravel-php-fpm:0.41
         volumes:
             - ./backend:/var/www 
             - ./backend/php.ini:/usr/local/etc/php/conf.d/local.ini
