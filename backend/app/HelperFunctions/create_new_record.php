@@ -5,6 +5,7 @@ if($user == NULL) $user = \Auth::user();
 //$now = \Carbon\Carbon::now();
 
 $record = new App\BaseModel($tableName);
+//\Cache::flush();
 
 $columns = $record->getAllColumnsFromDB();
 

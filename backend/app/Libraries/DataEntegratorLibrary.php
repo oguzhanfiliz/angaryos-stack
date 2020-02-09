@@ -5,6 +5,8 @@ namespace App\Libraries;
 use App\Libraries\DataEntegratorTraits\DataEntegratorPGTrait;
 use App\Libraries\DataEntegratorTraits\DataEntegratorLdapTrait;
 
+use App\Listeners\CacheSubscriber;
+
 use Storage;
 use Event;
 use DB;
@@ -105,13 +107,13 @@ class DataEntegratorLibrary
         $temp->column_ids = $tempColumns;
         
         $temp->save();
+        
+        $cacheSubscriber = new CacheSubscriber();
+        $cacheSubscriber->clearTableCache($temp);
     }
     
-    private function GetNewRemoteRecordDataFromCurrentRecord($columnRelations, $record)
+    private function GetDefaultNewRecordDataFromCurrentRecord($columnRelations, $record, $remoteRecord, $direction, $newRecord, $witchRecordName, $witchColumnName)
     {
-        $direction = 'toDataSource';//using in eval()
-        
-        $newRecord = [];
         foreach($columnRelations as $columnRelation)
         {
             $columnName = get_attr_from_cache('columns', 'id', $columnRelation->column_id, 'name');
@@ -119,45 +121,14 @@ class DataEntegratorLibrary
             
             try 
             {
-                $data = $record->{$columnName};
+                $data = $$witchRecordName->{$witchColumnName == 'columnName' ? $remoteColumnName : $columnName};
                 
                 if(strlen($columnRelation->php_code) > 0)
                     eval(helper('clear_php_code', $columnRelation->php_code)); 
                 
                 if($data == '***') continue;
                 
-                $newRecord[$remoteColumnName] = $data;
-            } 
-            catch (\Error  $ex) 
-            {
-                throw new \Exception('Error in eval (data_source_col_relations:'.$columnRelation->id.'): '.$ex->getMessage());
-            }
-            
-        }
-        
-        return $newRecord;
-    }
-    
-    private function GetNewRecordDataFromRemoteRecord($columnRelations, $remoteRecord)
-    {
-        $direction = 'fromDataSource';//using in eval()
-        
-        $newRecord['remote_record_id'] = $remoteRecord->id;
-        foreach($columnRelations as $columnRelation)
-        {
-            $columnName = get_attr_from_cache('columns', 'id', $columnRelation->column_id, 'name');
-            $remoteColumnName = get_attr_from_cache('data_source_remote_columns', 'id', $columnRelation->data_source_remote_column_id, 'name_basic');
-            
-            try 
-            {
-                $data = $remoteRecord->{$remoteColumnName};
-                
-                if(strlen($columnRelation->php_code) > 0)
-                    eval(helper('clear_php_code', $columnRelation->php_code)); 
-                
-                if($data == '***') continue;
-                
-                $newRecord[$columnName] = $data;
+                $newRecord[$$witchColumnName] = $data;
             } 
             catch (\Exception  $ex) 
             {
@@ -166,9 +137,35 @@ class DataEntegratorLibrary
             catch (\Error  $ex) 
             {
                 throw new \Exception('Error in eval (data_source_col_relations:'.$columnRelation->id.'): '.$ex->getMessage());
-            }
-            
+            }            
         }
+        
+        return $newRecord;
+    }
+    
+    private function GetNewRemoteRecordDataFromCurrentRecord($columnRelations, $record)
+    {
+        $direction = 'toDataSource';//using in eval()
+        
+        $newRecord = [];
+        $newRecord = $this->GetDefaultNewRecordDataFromCurrentRecord($columnRelations, $record, NULL, $direction, $newRecord, 'record', 'remoteColumnName');
+            
+        return $newRecord;
+    }
+    
+    private function GetNewRecordDataFromRemoteRecord($columnRelations, $remoteRecord)
+    {
+        $direction = 'fromDataSource';//using in eval()
+        
+        $newRecord['remote_record_id'] = $remoteRecord->id;
+        $newRecord = $this->GetDefaultNewRecordDataFromCurrentRecord(
+                                                                        $columnRelations, 
+                                                                        NULL, 
+                                                                        $remoteRecord, 
+                                                                        $direction, 
+                                                                        $newRecord, 
+                                                                        'remoteRecord', 
+                                                                        'columnName');
         
         if(!isset($newRecord['user_id'])) $newRecord['user_id'] = ROBOT_USER_ID;
         if(!isset($newRecord['own_id'])) $newRecord['own_id'] = ROBOT_USER_ID;

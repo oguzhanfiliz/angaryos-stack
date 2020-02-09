@@ -34,7 +34,6 @@ class CacheSubscriber
             case 'users':
                 $this->clearUserCache($record);
                 break;
-            
             case 'auth_groups':
                 $this->clearAuthGroupsCache($record);
                 break;
@@ -43,6 +42,7 @@ class CacheSubscriber
             case 'data_filter_types':
             case 'column_sets':
             case 'column_arrays':
+            case 'missions':
                 Cache::forget('allAuths');
                 break;
         }
@@ -222,7 +222,7 @@ class CacheSubscriber
             $this->clearTablesAndColumnCommonCache($table);
     }
     
-    private function clearTableCache($table)
+    public function clearTableCache($table)
     {
         Cache::forget('allAuths');
         Cache::forget('tableName:'.$table->name.'|tableInfo');

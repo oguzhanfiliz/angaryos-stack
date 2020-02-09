@@ -86,6 +86,13 @@ return Cache::rememberForever($key, function()
         }
     }
     
+    foreach(\DB::table('missions')->where('state', TRUE)->get() as $mission)
+    {
+        $source = 'missions:'.$mission->id.':0:0';
+        $display = 'Görevler ' . $mission->name. ' Tetikleme';
+        $auths[$source] = $display;
+    }
+    
     foreach(\DB::table('auth_groups')->where('state', TRUE)->get() as $auth)
         $auths[$auth->id] = $auth->name_basic;
 

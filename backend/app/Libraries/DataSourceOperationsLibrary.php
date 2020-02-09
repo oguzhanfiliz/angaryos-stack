@@ -32,7 +32,8 @@ class DataSourceOperationsLibrary
     
     private function TableEventForClone($params)
     {
-        dd(__FUNCTION__);
+        $dbTypeName = get_attr_from_cache('data_source_types', 'id', $params['record']->data_source_type_id, 'name');
+        return $this->{'UpdateRemoteTablesAndColumnsFor'.ucfirst($dbTypeName)}($params['record']);
     }
     
     private function TableEventForUpdate($params)
@@ -152,7 +153,19 @@ class DataSourceOperationsLibrary
     
     private function GetTableNamesFromPGDB($connection)
     {
-        return $connection->getDoctrineSchemaManager()->listTableNames();
+        $return = $connection->getDoctrineSchemaManager()->listTableNames();
+        
+        $temp = $connection->getDoctrineSchemaManager()->listViews();
+        $temp = array_keys($temp);
+        foreach($temp as $viewName)
+        {
+            $viewName = explode('.', $viewName);
+            if($viewName[0] != DB_SCHEMA) continue;
+            
+            array_push($return, $viewName[1]);
+        }
+        
+        return $return;
     }
     
     private function getColumnsFromPGDB($connection, $dataSource, $table)

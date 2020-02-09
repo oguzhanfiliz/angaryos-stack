@@ -158,6 +158,7 @@ export class AeroThemeHelper
 
       var tables = BaseHelper.loggedInUserInfo.menu.tables;      
       var tableGroupIds = this.getTableGroupdByIds();//Object.keys(tables);
+      tableGroupIds.push(0);
       for (var i = 0; i < tableGroupIds.length; i++) 
       {
         var tableGroup = this.getTableGroupdById(tableGroupIds[i]);

@@ -11,7 +11,8 @@ $table_groups =
         [
             $tables['settings']->id,
             $tables['color_classes']->id,
-            $tables['table_groups']->id
+            $tables['table_groups']->id,
+            $tables['log_levels']->id,
         ],
         'image' => json_decode('[{"disk": "uploads", "file_name": "settings.png", "destination_path": "uploads/2020/01/01/"}]'),
         'icon' => 'zmdi-settings',

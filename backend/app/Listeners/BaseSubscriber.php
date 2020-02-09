@@ -62,5 +62,12 @@ class BaseSubscriber
         
         /****    Auth Subscribers    ****/
         $events->listen('auth.assign.requested', 'App\Listeners\TableSubscriber@authAssignRequested');
+        
+        
+        
+        /****    Mission Trigger Subscribers    ****/
+                
+        $events->listen('standart.mission.trigger.requested', 'App\Listeners\MissionSubscriber@DoMission');
+        
     }
 }

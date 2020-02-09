@@ -60,7 +60,7 @@ trait BaseModelSelectColumnDataTrait
         
         $sourceSpace = $this->getSourceSpaceFromUpColumn($params);
         if($sourceSpace != FALSE)
-            dd('getSelectColumnDataForJoinTableIds $sourceSpace');//$model->whereIn($sourceColumn->name, $sourceSpace);
+            $model->whereIn($source, $sourceSpace);
         
         if(in_array($table->name, $this->deletables) && SHOW_DELETED_TABLES_AND_COLUMNS != '1')
             $model->where($table->name.'.name', 'not like', 'deleted\_%');
@@ -174,50 +174,15 @@ trait BaseModelSelectColumnDataTrait
     {
         if(strlen($params->up_column_data) == 0) return FALSE;
         
-        $params->upColumnRule = $this->getRelationData('up_column_id');
-        $params->upColumnRule->fillVariables();
-
-        $params->upColumn = $params->upColumnRule->getRelationData('column_id');
-        if($params->upColumn->name != $params->up_column_name)
-            custom_abort ('invalid.up.column');
-
-        $params->relation = $params->upColumn->getRelationData('column_table_relation_id');
+        $params->upColumnRule = get_attr_from_cache('up_columns', 'id', $params->column->up_column_id, '*');
+        $upColumnName = get_attr_from_cache('columns', 'id', $params->upColumnRule->column_id, 'name');
+        if($upColumnName != $params->up_column_name)
+            custom_abort ('invalid.up.column.'.$params->up_column_name);
         
-        return ColumnClassificationLibrary::relation(  $this, 
-                                                        __FUNCTION__,
-                                                        $params->upColumn, 
-                                                        $params->relation, 
-                                                        $params);
-    }
-    
-    public function getSourceSpaceFromUpColumnForTableIdAndColumnIds($params)
-    {
-        $params->upColumnFrom = $params->relation->getRelationData('relation_table_id');
-        $params->upColumnWhere = $params->relation->getRelationData('relation_source_column_id');
-
-        $params->upColumnSource = $params->upColumnRule->getRelationData('source_column_id');
+        $data = $params->up_column_data;
         
-        return ColumnClassificationLibrary::relationDbTypes(  $this, 
-                                                                __FUNCTION__,
-                                                                $params->upColumn, 
-                                                                NULL, 
-                                                                $params);
-    }
-    
-    public function getSourceSpaceFromUpColumnForTableIdAndColumnIdsForOneToOne($params)
-    {
-        $recs = $params->upColumnFrom->where($params->upColumnWhere->name, $params->up_column_data)->get();
-        
-        $return = [];
-        foreach($recs as $rec)
-        {
-            $rec->fillVariables();
-            $data = $rec->{$params->upColumnSource->name};
-            if(is_array($data)) 
-                $return = array_merge ($return, $data);
-            else
-                array_push ($return, $data);
-        }
+        $return = NULL;
+        eval(helper('clear_php_code', $params->upColumnRule->php_code)); 
         
         return $return;
     }

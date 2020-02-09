@@ -96,7 +96,7 @@
                                 (changed)="remoteTableChanged($event)"
                                 class="form-control" [columnName]="'data_source_rmt_table_id'" 
                                 placeholder="Uzak Tablo" 
-                                up-column-name="" up-form-id="" srid="">
+                                upColumnName="data_source_id" up-form-id="" srid="">
                             
                             </form-element>
 
@@ -106,7 +106,14 @@
             </table>
         </div>
 
-        <div *ngIf="isElementSelected('data_source_rmt_table_id')"  class="box box-primary">
+        <div *ngIf="isElementSelected('data_source_rmt_table_id') && remoteColumns.length > 0"  class="box box-primary">
+            
+            <button type="button" class="btn btn-success btn-block" (click)="autoSelectColumns()">
+                Otomatik Seçim
+            </button>
+
+            <br>
+
             <table class="table table-bordered table-striped table-hover" style="width: 100%">
                 <tbody>
                     <tr *ngFor="let column of columns" [ngStyle]="getColumnTrStyle(column)">
@@ -115,7 +122,7 @@
                         </td>
                         <td>
                             <select [id]="'remote_'+column.source" class="remoteColumns" style="width: 100%;">
-                                <option value="">Veri Aktarma</option>
+                                <option value="">İlişki yok</option>
 
                                 <option [value]="remoteColumn['id']" *ngFor="let remoteColumn of remoteColumns">
                                     {{ remoteColumn['name'] }} ({{ remoteColumn['type'] }})
@@ -123,11 +130,26 @@
                             </select>
                         </td>
                         <td width="40%">
-                            <span *ngIf="columnHasValue(column) && !columnHasChanger(column)" style="cursor: pointer;"
+                            <span style="cursor: pointer;margin-right: 10px;"
+                                    (click)="cloneColumn(column)"
+                                    class="badge badge-primary">
+
+                                Kolonu Kopyala
+                            </span>
+                            <span *ngIf="columnHasValue(column)"
+                                    style="cursor: pointer;margin-right: 10px;"
+                                    (click)="removeRelation(column)"
+                                    class="badge badge-danger">
+
+                                Seçimi Temizle
+                            </span>
+
+                            <span *ngIf="columnHasValue(column) && !columnHasChanger(column)" 
+                                style="cursor: pointer;"
                                 (click)="addDataChanger(column)" 
                                 class="badge badge-warning">
 
-                                <b>+</b>
+                                Kod Ekle
                             </span>
 
 
@@ -142,7 +164,7 @@
             </table>
         </div>
         
-        <button id="save-button" type="button" [class]="'btn btn-primary float-right btn-block ' + (!isDataEntegratable() ? 'disabled' : '')" (click)="save()">
+        <button id="save-button" type="button" [class]="'btn btn-primary btn-block ' + (!isDataEntegratable() ? 'disabled' : '')" (click)="save()">
             Veri Aktarımı Başlat
         </button>
 

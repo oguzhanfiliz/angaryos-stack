@@ -9,11 +9,12 @@ if(is_numeric($up_columns[$column->name]['column_id']))
 else
     $temp['column_id'] = $columns[$up_columns[$column->name]['column_id']]->id;
 
+$temp['php_code'] = $up_columns[$column->name]['php_code'];
 
-if(is_numeric($up_columns[$column->name]['source_column_id']))
+/*if(is_numeric($up_columns[$column->name]['source_column_id']))
     $temp['source_column_id'] = $up_columns[$column->name]['source_column_id'];
 else
-    $temp['source_column_id'] = $columns[$up_columns[$column->name]['source_column_id']]->id;
+    $temp['source_column_id'] = $columns[$up_columns[$column->name]['source_column_id']]->id;*/
 
 
 $temp['table_ids'] = [];

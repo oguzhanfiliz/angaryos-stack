@@ -51,12 +51,22 @@ Route::bind('id', function ($id)
 
 Route::bind('archive_id', function ($id) 
 {
-    
     if(!is_numeric($id)) abort(helper('response_error', 'fail.archive_id'));
     
     global $pipe;
     $model = get_model_from_cache($pipe['table'].'_archive', 'id', $id);    
     if($model == NULL) abort(helper('response_error', 'fail.archive_id'));
+    
+    return $model;
+});
+
+Route::bind('mission', function ($id) 
+{
+    if(!is_numeric($id)) abort(helper('response_error', 'fail.mission_id'));
+    
+    global $pipe;
+    $model = get_model_from_cache('missions', 'id', $id);    
+    if($model == NULL) abort(helper('response_error', 'fail.mission_id'));
     
     return $model;
 });

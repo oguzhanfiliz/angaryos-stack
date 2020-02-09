@@ -118,4 +118,9 @@ class UserPolicy
     {
         return isset($user->auths['admin']['authWizard']);
     }
+    
+    public function missionTrigger($user, $mission)
+    {
+        return isset($user->auths['missions'][$mission->id]);
+    }
 }

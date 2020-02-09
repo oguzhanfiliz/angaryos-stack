@@ -28,4 +28,9 @@ class TestRepository
     {
         dd(__FUNCTION__);
     }
+    
+    public function ClearCache($tableName, $record, $type)
+    {
+        //dd(__FUNCTION__);
+    }
 }

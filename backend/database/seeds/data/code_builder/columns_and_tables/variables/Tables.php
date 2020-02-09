@@ -72,4 +72,6 @@ $table_name_display_name_map =
     'data_entegrator_logs' => 'Veri Aktarıcı Logları',
     
     'table_groups' => 'Tablo Grupları',
+    
+    'missions' => 'Görevler'
 ];

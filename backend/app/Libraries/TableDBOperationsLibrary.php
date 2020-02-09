@@ -348,7 +348,7 @@ class TableDBOperationsLibrary
                 $srid = $column->srid;
                 if(strlen($srid) == 0) $srid = DB_PROJECTION;
 
-                DB::statement('ALTER TABLE '.$requests['name'].' ADD COLUMN '.$column->name.' geometry('. ucfirst($dbTypeName).', '.$srid.')');
+                DB::statement('ALTER TABLE '.$tableName.' ADD COLUMN '.$column->name.' geometry('. ucfirst($dbTypeName).', '.$srid.')');
             }
         }
     }
@@ -397,6 +397,7 @@ class TableDBOperationsLibrary
     
     public function UpdateTable($tableName, $deletedColumnIds, $addedColumnIds)
     {
+        //dd($deletedColumnIds, $addedColumnIds);
         $geoColumns = $this->geoColumns;        
         Schema::table($tableName, function (Blueprint $table) use($deletedColumnIds, $addedColumnIds, $geoColumns) 
         {

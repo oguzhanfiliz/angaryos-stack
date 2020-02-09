@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateUpColumnsTable extends Migration
+class CreateMissionsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,13 +13,11 @@ class CreateUpColumnsTable extends Migration
      */
     public function up()
     {
-        Schema::create('up_columns', function (Blueprint $table) {
+        Schema::create('missions', function (Blueprint $table) {
             $table->bigIncrements('id');
             
-            $table->string('name_basic')->nullable();
-            $table->integer('column_id')->nullable();
-            //$table->integer('source_column_id')->nullable();
-            $table->jsonb('table_ids')->nullable();
+            $table->string('name')->nullable();
+            $table->string('cron')->nullable();
             $table->text('php_code')->nullable();
             $table->text('description')->nullable();
             
@@ -37,6 +35,6 @@ class CreateUpColumnsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('up_columns');
+        Schema::dropIfExists('missions');
     }
 }

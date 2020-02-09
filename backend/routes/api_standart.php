@@ -24,8 +24,7 @@ Route::group(['prefix' => '{token}'], function ()
         //$cron = "*/5 1-2 3 3,4,5 *"; 
         //$result = preg_match( "/^((?:[1-9]?\d|\*)\s*(?:(?:[\/-][1-9]?\d)|(?:,[1-9]?\d)+)?\s*){5}$/", $cron, $matches); 
         //print_r(count($matches) == 2);
-dd(4);
-
+        dd(55);
         $exitCode = Artisan::call('data:entegrator', 
         [
             'tableRelationId' => 2,
@@ -43,6 +42,8 @@ dd(4);
     
     
     Route::get('tables/{table_name}/report', 'ReportController@index');
+    
+    Route::get('missions/{mission}', 'MissionController@DoMission');
     
     Route::get('tables/{table_name}', 'TableController@index');
     Route::get('tables/{table_name}/deleted', 'TableController@deleted');

@@ -4,9 +4,16 @@ namespace Tests\Feature;
 
 use App\User;
 
+use DB;
+
 trait TestTrait
 {
     /****    Get Data Functions    ****/
+    
+    private function getLastId($tableName)
+    {
+        return DB::table($tableName)->max('id');
+    }
     
     private function getToken()
     {

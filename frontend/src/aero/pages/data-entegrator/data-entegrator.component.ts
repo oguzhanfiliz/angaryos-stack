@@ -78,6 +78,26 @@ export class DataEntegratorComponent
         return true;
     }
 
+    cloneColumn(column)
+    {
+        for(var i = 0; i < this.columns.length; i++)
+            if(column['source'] == this.columns[i]['source'])
+            {
+                var clone = BaseHelper.getCloneFromObject(column);
+                clone['source'] = clone['source'] + '_klon';
+
+                var temp = this.columns.splice(i+1);
+                this.columns = this.columns.concat(clone);
+                this.columns = this.columns.concat(temp);
+
+                setTimeout(() => {
+                    this.addSelect2();
+                }, 100);
+
+                return;
+            }
+    }
+
     fillColumns()
     {
         var url = this.sessionHelper.getBackendUrlWithToken()+"tables/"+this.tableName+"/create";
@@ -89,10 +109,17 @@ export class DataEntegratorComponent
 
             // Tablo yada kolon eklenme sırası değişirse güncellenmesi gerekir
             this.columns.push({
-                id: 1,
+                id: 5,
                 source: 'id',
                 display: 'Kayıt No',
                 gui_type_name: 'numeric'
+            });
+
+            this.columns.push({
+                id: 13,
+                source: 'updated_at',
+                display: 'Güncellenme Zamanı (Zorunlu)',
+                gui_type_name: 'datetime'
             });
 
             for (var i = 0; i < keys.length; i++)
@@ -123,13 +150,6 @@ export class DataEntegratorComponent
                 source: 'created_at',
                 display: 'Oluşturulma Zamanı',
                 gui_type_name: 'datatime'
-            });
-
-            this.columns.push({
-                id: 13,
-                source: 'updated_at',
-                display: 'Günzellenme Zamanı',
-                gui_type_name: 'datetime'
             });
 
             this.addSelect2()
@@ -179,6 +199,30 @@ export class DataEntegratorComponent
         }, 100);
     }
 
+    autoSelectColumns()
+    {
+        for(var i = 0; i < this.columns.length; i++)
+            for(var j = 0; j < this.remoteColumns.length; j++)
+                if(this.columns[i]['source'] == this.remoteColumns[j]['name'])
+                {
+                    if(this.columns[i]['source'] == 'id') continue;
+
+                    $('#remote_'+this.columns[i]['source']).val(this.remoteColumns[j]['id']);
+
+                    var display = this.remoteColumns[j]['name']+" "+this.remoteColumns[j]['type'];
+                    $('#select2-remote_'+this.columns[i]['source']+'-container').html(display);
+                }
+    }
+
+    removeRelation(column)
+    {
+        if(this.columnHasChanger(column))
+            delete this.columnChanges[column['source']];
+
+        $('#remote_'+column['source']).val("");
+        $('#select2-remote_'+column['source']+'-container').html("İlişki yok");
+    }
+
     getColumnTrStyle(column)
     {
         var style = {};
@@ -193,12 +237,19 @@ export class DataEntegratorComponent
 
     columnHasValue(column)
     {
+        if(typeof column['source'] == "undefined") return false;
+
         var val = $('#remote_'+column['source']).val();
+        
+        if(typeof val == "undefined") return false;
+
         return val != "";
     }
 
     columnHasChanger(column)
     {
+        if(typeof column['source'] == "undefined") return false;
+
         return (typeof this.columnChanges[column['source']] != "undefined");
     }
 
@@ -228,25 +279,41 @@ export class DataEntegratorComponent
         return id;
     }
 
+    formValidation()
+    {
+        var control = this.columnHasValue({source: 'updated_at'});
+        if(!control)
+        {
+            this.messageHelper.toastMessage("Güncellenme Zamanı kolonu boş geçilemez!");
+            return false;
+        }
+
+        return true;
+    }
+
     async addRemoteColumnRelations()
     {
+        if(!this.formValidation()) return [];
+
         var columns = [];
         for(var i = 0; i < this.columns.length; i++)
         {
             if(!this.columnHasValue(this.columns[i])) continue;
 
+            var php_code = $('#'+this.columns[i]['source']+'_changer').val();
+            if(typeof php_code == "undefined") php_code = "";
+            else if(php_code == "null") php_code = "";
+            else php_code = BaseHelper.replaceAll(php_code, '+', '%2B');
+
             var col = 
             {
                 column_id: this.columns[i]['id'],
                 data_source_remote_column_id: $('#remote_'+this.columns[i]['source']).val(),
-                php_code: encodeURIComponent($('#'+this.columns[i]['source']+'_changer').val()),
+                php_code: php_code,
                 state: 1,
                 column_set_id: 0,
                 in_form_column_name: "data_source_col_relation_ids",
             };
-
-            if(typeof col['php_code'] == "undefined") col['php_code'] = "";
-            if(col['php_code'] == "null") col['php_code'] = "";
 
             col['id'] = await this.addRemoteColumn(col);
 
@@ -298,10 +365,12 @@ export class DataEntegratorComponent
 
     async save()
     {
+        if(!this.isDataEntegratable()) return;
+
         this.startLoading();
 
         var columns = await this.addRemoteColumnRelations()
-        if(columns == []) 
+        if(columns.length == 0) 
         {
             this.stopLoading();
             return;

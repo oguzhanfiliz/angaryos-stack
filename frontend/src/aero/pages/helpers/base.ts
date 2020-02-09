@@ -46,6 +46,11 @@ export abstract class BaseHelper
     return html.replace(/&/g, "&amp;").replace(/>/g, "&gt;").replace(/</g, "&lt;").replace(/"/g, "&quot;");
   }
 
+  public static replaceAll(str, oldStr, newStr)
+  {
+    return str.split(oldStr).join(newStr);
+  }
+
   public static doInterval(id, func, params, duration = 1000)
   {
     return new Promise(resolve => 

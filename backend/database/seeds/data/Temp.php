@@ -1,4 +1,5 @@
 <?php
+return;
 use App\BaseModel;
 
 $temps = 

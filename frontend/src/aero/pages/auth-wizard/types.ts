@@ -29,8 +29,8 @@ export const types = [
             display: 'Silme',
             table: 'data_filters',
             in_form_column: 'data_filter_ids',
-            description: 'Kullanıcıların varsayılan olarak kayıt <span class="badge badge-danger">silme yetkisi vardır</span>. Burada, bu yetkiyi kaldırabilir yada kısıtlayabilirsiniz.',
-            search: 'filters:tableName:delete:'
+            description: 'Kullanıcıların varsayılan olarak kayıt <span class="badge badge-warning">silme yetkisi yoktur</span>. Burada, bu yetkiyi ekleyebilir yada kısıtlayabilirsiniz.',
+            search: 'tableName:delete:'
         },        
         {
             source: 'show',
@@ -53,7 +53,7 @@ export const types = [
             display: 'Geri Yükleme',
             table: 'data_filters',
             in_form_column: 'data_filter_ids',
-            description: 'Kullanıcıların varsayılan olarak kayıt <span class="badge badge-danger">geri yükleme yetkisi vardır</span>. Burada, bu yetkiyi kaldırabilir yada kısıtlayabilirsiniz.',
+            description: 'Kullanıcıların varsayılan olarak kayıt <span class="badge badge-warning">geri yükleme yetkisi yoktur</span>. Burada, bu yetkiyi ekleyebilir yada kısıtlayabilirsiniz.',
             search: 'filters:tableName:restore:'
         },
         {

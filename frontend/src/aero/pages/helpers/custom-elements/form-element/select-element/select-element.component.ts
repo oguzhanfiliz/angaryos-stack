@@ -84,7 +84,7 @@ export class SelectElementComponent
         
         var th = this;
 
-        $('[name="'+this.name+'"]').select2(
+        $(this.baseElementSelector+' [name="'+this.name+'"]').select2(
         {
             ajax: 
             {
@@ -118,7 +118,16 @@ export class SelectElementComponent
                 });
             }
         })
-        .on('select2:select', (event) => this.changed.emit(event))
+        .on('select2:select', (event) => 
+        {
+            if(event.target.value == '-9999')
+            {
+                $(th.baseElementSelector+' [name="'+th.name+'"]').val("");
+                $(th.baseElementSelector+' #select2-'+th.name+'-container').html("");
+                return;
+            }
+            this.changed.emit(event);
+        })
         .on('select2:unselect', (event) => this.changed.emit(event));
     }
 

@@ -58,7 +58,7 @@ class TableGeoServerOperationsLibrary
 
         $helper = $this->GetGeoServerHelper();
         
-        if(!$this->LayerIsExistOnGeoServer($helper)) return;
+        if(!$this->LayerIsExistOnGeoServer($helper, $params)) return;
         
         $this->CreateViewIfNotExistForLayer($params['table']);
 
@@ -94,7 +94,7 @@ class TableGeoServerOperationsLibrary
         return $helper;
     }
     
-    private function LayerIsExistOnGeoServer($helper)
+    private function LayerIsExistOnGeoServer($helper, $params)
     {
         $layers = $helper->listLayers($helper->workspaceName, $helper->dataStoreName);
         if($layers == NULL) dd('Geoserver unavilable');
