@@ -118,7 +118,7 @@ trait TestTrait
             $this->assertTrue(is_bool($data->{$attribute}));
     }
     
-    private function createColumnAndTest($url)
+    public function createAndTest($url)
     {
         $response = $this->standartTest($url, FALSE); 
         $data = $response->getData();

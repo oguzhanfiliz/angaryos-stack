@@ -397,9 +397,8 @@ class TableDBOperationsLibrary
     
     public function UpdateTable($tableName, $deletedColumnIds, $addedColumnIds)
     {
-        //dd($deletedColumnIds, $addedColumnIds);
         $geoColumns = $this->geoColumns;        
-        Schema::table($tableName, function (Blueprint $table) use($deletedColumnIds, $addedColumnIds, $geoColumns) 
+        Schema::table($tableName, function (Blueprint $table) use($deletedColumnIds, $addedColumnIds, $geoColumns, $tableName) 
         {
             foreach($addedColumnIds as $columnId)
             {
@@ -413,7 +412,7 @@ class TableDBOperationsLibrary
             foreach($deletedColumnIds as $columnId)
             {
                 $columnName = get_attr_from_cache('columns', 'id', $columnId, 'name');
-                $table->renameColumn($columnName, 'deleted_'.$columnName);
+                DB::statement('ALTER TABLE '.$tableName.' RENAME COLUMN '.$columnName.' TO deleted_'.$columnName.';');
             }
         });
 
