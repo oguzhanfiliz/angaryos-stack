@@ -29,6 +29,7 @@ class TableController extends Controller
         //if(!isset($pipe['table']) || strlen($pipe['table']) == 0)
             $pipe['table'] = helper('get_table_name_from_url');
         
+        unset($pipe['overrideRequestDatas']);
         $this->fillAuthFunctions();  
     }
     

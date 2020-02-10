@@ -352,11 +352,11 @@ class TableTest extends TestCase
         $this->createAndTest($url);
     }
     
-    /*public function testTableEdit2()
+    public function testTableEdit2()
     {
         $columnIds = [];
         
-        $columns = helper('get_all_columns_from_db', 'test2');
+        $columns = helper('get_all_columns_from_db', 'test22');
         unset($columns['description']);
         
         foreach($columns as $columnName => $temp)
@@ -369,5 +369,5 @@ class TableTest extends TestCase
                
         $url = 'tables/tables/'.$tableId.'/update?display_name=Test&name=test&column_ids=%5B%22'.implode('%22,%22', $columnIds).'%22%5D&subscriber_ids=%5B%5D&description=&state=1&column_set_id=0&';
         $this->createAndTest($url);
-    }*/
+    }
 }
