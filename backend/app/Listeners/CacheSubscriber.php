@@ -237,14 +237,20 @@ class CacheSubscriber
         Cache::forget('tableName:'.$table->name.'|allColumsFromDb');
         Cache::forget('tableName:'.$table->name.'|allColumsFromDbWithTableAliasAndGuiType');
         
+        Cache::forget('tableName:'.$table->name.'_archive|fillableColumns');
+        Cache::forget('tableName:'.$table->name.'_archive|castsColumns');
+        Cache::forget('tableName:'.$table->name.'_archive|allColumsFromDb');
+        Cache::forget('tableName:'.$table->name.'_archive|allColumsFromDbWithTableAliasAndGuiType');
+        
         $keys = $this->getCacheKeys();
         foreach($keys as $key)
         {
             if(substr($key, -16, 16) != '|filteredColumns') continue;
                     
             $prefix = 'tableName:'.$table->name.'|columnName:';
+            $prefixArchive = 'tableName:'.$table->name.'_archive|columnName:';
             
-            if(strstr($key, $prefix))
+            if(strstr($key, $prefix) || strstr($key, $prefixArchive))
             { 
                 dd('clearTablesAndColumnCommonCache');
                 $key = str_replace(explode($prefix, $key)[0], '', $key);

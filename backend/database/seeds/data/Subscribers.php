@@ -176,6 +176,25 @@ $return = [$column->name => $pass];
 ?>'
 ];
 
+$subscribers['table']['column_arrays'][0] =
+[
+    'name_basic' => 'Kolon dizisi işlemleri için trigger',
+    'subscriber_type_id' => $subscriber_types['before']->id,
+    'php_code' => '<?php
+$params = 
+[
+    "type" => $type,
+    "table" => $table,
+    "column" => $column,
+    "subscriber" => $subscriber,
+    "requests" => $requests,
+    "user" => $user,
+    "record" => $record    
+];
+$helper = new App\Libraries\TableDBOperationsLibrary();
+$return = $helper->ColumnArrayEvent($params);
+?>'
+];
 
 
 

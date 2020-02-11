@@ -10,6 +10,28 @@ trait TestTrait
 {
     /****    Get Data Functions    ****/
     
+    private function getWithCurl($url, $json = TRUE)
+    {
+        $ch = curl_init(); 
+        curl_setopt($ch,CURLOPT_URL, $url);
+        curl_setopt($ch,CURLOPT_RETURNTRANSFER,true);
+        curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; SV1; .NET CLR 1.0.3705; .NET CLR 1.1.4322)');
+        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        
+        $r = curl_exec($ch);
+        
+        $this->assertNotEquals($r, FALSE);
+        
+        if($r === false) $r = [curl_errno($ch), curl_error($ch)];
+        
+        curl_close($ch);
+        
+        if($json) $r = json_decode ($r);
+        
+        return $r;
+    }
+    
     private function getLastId($tableName)
     {
         return DB::table($tableName)->max('id');
@@ -44,6 +66,12 @@ trait TestTrait
 
     
     /****    Common Control Data Functions    ****/
+    
+    private function controlObjectIsSuccess($data)
+    {
+        $this->assertEquals($data->code, 200);
+        $this->assertEquals($data->status, 'success');
+    }
     
     private function standartTest($url, $control = TRUE)
     {

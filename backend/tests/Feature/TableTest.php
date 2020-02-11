@@ -331,10 +331,10 @@ class TableTest extends TestCase
         $tableId = $this->getLastId('tables');
         $url = 'tables/tables/'.$tableId.'/edit?params=%7B%22column_set_id%22:%220%22%7D&';
         
-        $response = $this->standartTest($url); 
+        $this->standartTest($url); 
     }
     
-    public function testTableEdit1()
+    public function testTableEditAddDescriptionColumn()
     {
         $columnIds = [];
         $columns = helper('get_all_columns_from_db', 'test');
@@ -352,7 +352,7 @@ class TableTest extends TestCase
         $this->createAndTest($url);
     }
     
-    public function testTableEdit2()
+    public function testTableEditRemoveDescriptionColumnInColumnIds()
     {
         $columnIds = [];
         
@@ -369,5 +369,319 @@ class TableTest extends TestCase
                
         $url = 'tables/tables/'.$tableId.'/update?display_name=Test&name=test&column_ids=%5B%22'.implode('%22,%22', $columnIds).'%22%5D&subscriber_ids=%5B%5D&description=&state=1&column_set_id=0&';
         $this->createAndTest($url);
+    }
+    
+    public function testTableEditAddNameBasicColumn()
+    {
+        $columnIds = [];
+        $columns = helper('get_all_columns_from_db', 'test');
+        foreach($columns as $columnName => $temp)
+        {
+            if(substr($columnName, 0, 8) == 'deleted_') continue;
+            
+            $id = get_attr_from_cache('columns', 'name', $columnName, 'id');
+            array_push ($columnIds, $id);
+        }
+        $id = get_attr_from_cache('columns', 'name', 'name_basic', 'id');
+        array_push ($columnIds, $id);
+        
+        $tableId = $this->getLastId('tables');
+        
+        $url = 'tables/tables/'.$tableId.'/update?display_name=Test&name=test&column_ids=%5B%22'.implode('%22,%22', $columnIds).'%22%5D&subscriber_ids=%5B%5D&description=&state=1&column_set_id=0&';
+        $this->createAndTest($url);
+    }
+    
+    
+    public function testColumnSetForm()
+    {
+        $url = 'tables/column_sets/create?params=%7B%22column_set_id%22:%220%22%7D&';
+        $this->standartTest($url); 
+    }
+    
+    public function testColumnArrayForm()
+    {
+        $url = 'tables/column_arrays/create?params=%7B%22column_set_id%22:%220%22%7D&';
+        $this->standartTest($url); 
+    }
+    
+    
+    public function testColumnArrayDirectData()
+    {
+        $columnIds = [];
+        $columns = ['test_types_id','test_types_ids','test_string','test_text','test_integer','test_boolean'];
+        foreach($columns as $columnName)
+        {
+            $id = get_attr_from_cache('columns', 'name', $columnName, 'id');
+            array_push ($columnIds, $id);
+        }
+        
+        $tableId = get_attr_from_cache('tables', 'name', 'test', 'id');
+        
+        $url = 'tables/column_arrays/store?name_basic=Test%20Kolon%20Dizisi&column_array_type_id=1&table_id='.$tableId.'&column_ids=%5B%22'.implode('%22,%22', $columnIds).'%22%5D&join_table_ids=%5B%5D&description=&state=1&column_set_id=0&in_form_column_name=column_array_ids&';
+        $this->createAndTest($url);
+    }
+    
+    
+    public function testColumnArrayJoinForm()
+    {
+        $url = 'tables/join_tables/create?params=%7B%22column_set_id%22:%220%22%7D&';
+        $this->standartTest($url); 
+    }
+    
+    public function testColumnArrayJoinCreate()
+    {
+        $tableId = get_attr_from_cache('tables', 'name', 'users', 'id');
+        $columnId = get_attr_from_cache('columns', 'name', 'id', 'id');
+        
+        $url = 'tables/join_tables/store?name_basic=Test%20join%20kolon&join_table_id='.$tableId.'&join_table_alias=kaydin_sahibi&connection_column_with_alias=test.own_id&join_column_id='.$columnId.'&description=&state=1&column_set_id=0&in_form_column_name=join_table_ids&';
+        $this->createAndTest($url);
+    }
+    
+    public function testColumnArrayDirectDataWithJoin()
+    {
+        $columnIds = [];
+        $columns = ['test_json','test_date','name_basic'];
+        foreach($columns as $columnName)
+        {
+            $id = get_attr_from_cache('columns', 'name', $columnName, 'id');
+            array_push ($columnIds, $id);
+        }
+        
+        $tableId = get_attr_from_cache('tables', 'name', 'test', 'id');
+        $joinId = $this->getLastId('join_tables');
+        
+        $url = 'tables/column_arrays/store?name_basic=Test%20join%20&column_array_type_id=1&table_id='.$tableId.'&column_ids=%5B%22'.implode('%22,%22', $columnIds).'%22%5D&join_table_ids=%5B%22'.$joinId.'%22%5D&description=&state=1&column_set_id=0&in_form_column_name=column_array_ids&join_columns=kaydin_sahibi.name_basic';
+        $this->createAndTest($url);
+    }
+    
+    
+    public function testColumnSetCreate()
+    {
+        $tableId = get_attr_from_cache('tables', 'name', 'test', 'id');
+        $arrayId = $this->getLastId('column_arrays');
+        
+        $url = 'tables/column_sets/store?name_basic=Test%20kolon%20seti&table_id='.$tableId.'&column_set_type_id=1&column_array_ids=%5B%22'.($arrayId-1).'%22,%22'.$arrayId.'%22%5D&description=&state=1&column_set_id=0&';
+        $this->createAndTest($url);
+    }
+    
+    
+    
+    
+    public function testJoinForColumnArrayJoinedDataTableForm()
+    {
+        $url = 'tables/join_tables/create?params=%7B%22column_set_id%22:%220%22%7D&';
+        $this->standartTest($url); 
+    }
+    
+    public function testJoinForColumnArrayJoinedDataTableCreate()
+    {
+        $joinTableId = get_attr_from_cache('tables', 'name', 'test', 'id');
+        $joinColumnId = get_attr_from_cache('columns', 'name', 'test_types_id', 'id');
+        
+        $url = 'tables/join_tables/store?name_basic=Bilgi%20kart%C4%B1nda%20g%C3%B6sterilecek%20olan%20bu%20tipteki%20kay%C4%B1tlar%20tablosu%20i%C3%A7in%20tablo%20ili%C5%9Fkisi&join_table_id='.$joinTableId.'&join_table_alias=bu_tiptekiler&connection_column_with_alias=test_types.id&join_column_id='.$joinColumnId.'&description=&state=1&column_set_id=0&in_form_column_name=join_table_ids&';
+        $this->createAndTest($url);
+    }
+    
+    
+    public function testColumnArrayJoinedDataTable()
+    {
+        $joinId = $this->getLastId('join_tables');
+        $tableId = get_attr_from_cache('tables', 'name', 'test_types', 'id');
+        
+        $url = 'tables/column_arrays/store?name_basic=Test%20tipleri%20bilgi%20kart%C4%B1%20i%C3%A7in%20bunu%20i%C3%A7erenler%20ba%C4%9Fl%C4%B1%20data&column_array_type_id=2&table_id='.$tableId.'&column_ids=%5B%5D&join_table_ids=%5B%22'.$joinId.'%22%5D&join_columns=bu_tiptekiler.id,%20bu_tiptekiler.test_text&description=&state=1&column_set_id=0&';
+        $this->createAndTest($url);
+    }
+    
+    public function testColumnSetCreateForTestTypesInfoCard()
+    {
+        $tableId = get_attr_from_cache('tables', 'name', 'test_types', 'id');
+        $arrayId = $this->getLastId('column_arrays');
+        
+        $url = 'tables/column_sets/store?name_basic=Test%20tipler%20bilgi%20karti&table_id='.$tableId.'&column_set_type_id=1&column_array_ids=%5B%22'.$arrayId.'%22%5D&description=&state=1&column_set_id=0&';
+        $this->createAndTest($url);
+    }
+    
+    
+    public function testDeleteColumnInTable()
+    {
+        $columnIds = [];
+        
+        $columns = helper('get_all_columns_from_db', 'test');
+        unset($columns['name_basic']);
+        
+        foreach($columns as $columnName => $temp)
+        {
+            if(substr($columnName, 0, 8) == 'deleted_') continue;
+            
+            $id = get_attr_from_cache('columns', 'name', $columnName, 'id');
+            array_push ($columnIds, $id);
+        }
+        
+        $tableId = get_attr_from_cache('tables', 'name', 'test', 'id');
+               
+        $url = 'tables/tables/'.$tableId.'/update?display_name=Test&name=test&column_ids=%5B%22'.implode('%22,%22', $columnIds).'%22%5D&subscriber_ids=%5B%5D&description=&state=1&column_set_id=0&';
+        $this->createAndTest($url);
+        
+        
+        $columnId = get_attr_from_cache('columns', 'name', 'name_basic', 'id');
+        $arrayId = $this->getLastId('column_arrays') - 1;
+        $columnIds = get_attr_from_cache('column_arrays', 'id', $arrayId, 'column_ids');
+        $columnIds = json_decode($columnIds);
+        
+        $this->assertTrue(!in_array($columnId, $columnIds));
+    }
+    
+    public function testColumnForm()
+    {
+        $id = get_attr_from_cache('columns', 'name', 'test_string', 'id');
+        $url = 'tables/columns/'.$id.'/edit?params=%7B%22column_set_id%22:%222%22%7D&';
+        $this->standartTest($url); 
+    }
+    
+    public function testUpdateColumnNameAndDBType()
+    {
+        $id = get_attr_from_cache('columns', 'name', 'test_string', 'id');
+        $typeId = get_attr_from_cache('column_db_types', 'name', 'text', 'id');
+        
+        $url = 'tables/columns/'.$id.'/update?display_name=Test%20String&name=test_string2&column_db_type_id='.$typeId.'&column_gui_type_id=1&up_column_id=&column_table_relation_id=&subscriber_ids=%5B%5D&column_validation_ids=%5B%5D&column_gui_trigger_ids=%5B%5D&column_collective_info_id=&default=&state=1&column_set_id=2&';
+        $this->standartTest($url); 
+        
+        $dbTypeId = get_attr_from_cache('columns', 'name', 'test_string2', 'column_db_type_id');
+        $dbTypeName = get_attr_from_cache('column_db_types', 'id', $dbTypeId, 'name');
+        
+        $this->assertEquals($dbTypeName, 'text');
+    }
+    
+    public function testDeleteColumn()
+    {
+        $id = get_attr_from_cache('columns', 'name', 'test_string2', 'id');
+        $url = 'tables/columns/'.$id.'/delete?';
+        $this->standartTest($url); 
+    }
+    
+    
+    
+    public function testColumnArrayArchiveHadDeletedColumn()
+    {
+        $arrayId = $this->getLastId('column_arrays') - 1;
+        
+        $url = 'tables/column_arrays/'.$arrayId.'/archive?params=%7B%22page%22:1,%22limit%22:3,%22column_array_id%22:%220%22,%22column_array_id_query%22:%220%22,%22sorts%22:%7B%7D,%22filters%22:%7B%7D,%22edit%22:true,%22columns%22:%5B%22id%22,%22name_basic%22,%22column_array_type_id%22,%22table_id%22,%22column_ids%22,%22join_table_ids%22,%22join_columns%22,%22description%22,%22state%22,%22own_id%22,%22user_id%22,%22created_at%22,%22updated_at%22,%22record_id%22%5D%7D&';
+        $this->standartTest($url);
+    }
+    
+    public function testRestoreColumnArrayHasDeletedColumn()
+    {
+        $arrayId = $this->getLastId('column_arrays') - 2;
+        $archive = DB::table('column_arrays_archive')->where('record_id', $arrayId)->first();
+        
+        $url = 'tables/column_arrays/'.$archive->id.'/restore?';
+        $resposne = $this->standartTest($url, FALSE); 
+        
+        $this->controlResponseIsError($resposne);
+    }
+    
+    
+    public function testTableArchiveHadDeletedColumn()
+    {
+        $id = get_attr_from_cache('tables', 'name', 'test', 'id');
+        
+        $url = 'tables/tables/'.$id.'/archive?params=%7B%22page%22:1,%22limit%22:%2210%22,%22column_array_id%22:%220%22,%22column_array_id_query%22:%220%22,%22sorts%22:%7B%7D,%22filters%22:%7B%7D,%22edit%22:true,%22columns%22:%5B%5D%7D&';
+        $this->standartTest($url);
+    }
+    
+    public function testRestoreTableHasDeletedColumn()
+    {
+        $tableId = get_attr_from_cache('tables', 'name', 'test', 'id');
+        
+        $id = get_attr_from_cache('columns', 'name', 'deleted_test_string2', 'id');
+        $archive = DB::table('tables_archive')->where('record_id', $tableId)->whereRaw('column_ids @> \''.$id.'\'::jsonb')->first();
+        
+        $url = 'tables/tables/'.$archive->id.'/restore?';
+        $resposne = $this->standartTest($url, FALSE); 
+        
+        $this->controlResponseIsError($resposne);
+        
+    }
+    
+    public function testShowDeletedTablesAndColumnsSettingOn()
+    {
+        $id = DB::table('settings')->where('name', 'SHOW_DELETED_TABLES_AND_COLUMNS')->first()->id;
+        $url = 'tables/settings/'.$id.'/update?name=SHOW_DELETED_TABLES_AND_COLUMNS&value=1&description=&state=1&column_set_id=0&';
+        $this->standartTest($url);
+        
+        
+        
+        
+        $tableId = get_attr_from_cache('tables', 'name', 'test', 'id');
+        
+        $id = get_attr_from_cache('columns', 'name', 'deleted_test_string2', 'id');
+        $archive = DB::table('tables_archive')->where('record_id', $tableId)->whereRaw('column_ids @> \''.$id.'\'::jsonb')->first();
+        
+        $url = 'https://192.168.10.185/api/v1/1111111111111111d1/tables/tables/'.$archive->id.'/restore?';
+        
+        $data = $this->getWithCurl($url);
+        $this->controlObjectIsSuccess($data);
+        
+        
+        $id = DB::table('settings')->where('name', 'SHOW_DELETED_TABLES_AND_COLUMNS')->first()->id;
+        $url = 'tables/settings/'.$id.'/update?name=SHOW_DELETED_TABLES_AND_COLUMNS&value=0&description=&state=1&column_set_id=0&';
+        $this->standartTest($url);
+    }
+    
+    
+    public function testRenameDeletedColumnName()
+    {
+        $id = get_attr_from_cache('columns', 'name', 'deleted_test_string2', 'id');
+        
+        $url = 'tables/columns/'.$id.'/update?name=test_string2&column_set_id=2&in_form_column_name=name&single_column=name&';
+        $this->standartTest($url);
+    }
+    
+    public function testTableEditDeleteColumnInColumnIds()
+    {
+        $columnIds = [];
+        
+        $columns = helper('get_all_columns_from_db', 'test');
+        unset($columns['test_string2']);
+        
+        foreach($columns as $columnName => $temp)
+        {
+            if(substr($columnName, 0, 8) == 'deleted_') continue;
+            
+            $id = get_attr_from_cache('columns', 'name', $columnName, 'id');
+            array_push ($columnIds, $id);
+        }
+        
+        $tableId = get_attr_from_cache('tables', 'name', 'test', 'id');
+        $url = 'tables/tables/'.$tableId.'/update?display_name=Test&name=test&column_ids=%5B%22'.implode('%22,%22', $columnIds).'%22%5D&subscriber_ids=%5B%5D&description=&state=1&column_set_id=0&';
+        $this->createAndTest($url);
+        
+        $columns = array_keys(helper('get_all_columns_from_db', 'test'));
+        
+        $this->assertTrue(in_array('deleted_test_string2', $columns));
+    }
+    
+    public function testTableEditAddColumnInColumnIds()
+    {
+        $columnIds = [];
+        
+        $columns = helper('get_all_columns_from_db', 'test');
+        $columns['test_string2'] = TRUE;
+        
+        foreach($columns as $columnName => $temp)
+        {
+            if(substr($columnName, 0, 8) == 'deleted_') continue;
+            
+            $id = get_attr_from_cache('columns', 'name', $columnName, 'id');
+            array_push ($columnIds, $id);
+        }
+        
+        $tableId = get_attr_from_cache('tables', 'name', 'test', 'id');
+        $url = 'tables/tables/'.$tableId.'/update?display_name=Test&name=test&column_ids=%5B%22'.implode('%22,%22', $columnIds).'%22%5D&subscriber_ids=%5B%5D&description=&state=1&column_set_id=0&';
+        $this->createAndTest($url);
+        
+        $columns = array_keys(helper('get_all_columns_from_db', 'test'));
+        $this->assertTrue(in_array('deleted_test_string2', $columns));
+        $this->assertTrue(in_array('test_string2', $columns));
     }
 }

@@ -38,6 +38,11 @@ class TableDBOperationsLibrary
         return $this->{'ColumnEventFor'.ucfirst($params['type'])}($params);
     }
     
+    public function ColumnArrayEvent($params)
+    {
+        return $this->{'ColumnArrayEventFor'.ucfirst($params['type'])}($params);
+    }
+    
     public function AddTableFullAuthToAdminUser($table)
     {
         $auths = 
@@ -149,28 +154,40 @@ class TableDBOperationsLibrary
     
     private function RenameColumn($tableName, $oldName, $newName)
     {
-        Schema::table($tableName, function (Blueprint $table) use($oldName, $newName)
-        {
-            $table->renameColumn($oldName, $newName);
-        });
+        DB::statement('ALTER TABLE '.$tableName.' RENAME COLUMN '.$oldName.' TO '.$newName.';');
     }
     
     private function ChangeColumn($tableName, $newColumn)
     {
+        $geoColumns = $this->geoColumns;
         $type = get_attr_from_cache('column_db_types', 'id', $newColumn['column_db_type_id'], 'schema_code');
         
         try 
         {
-            Schema::table($tableName, function (Blueprint $table) use($type, $newColumn)
+            if(in_array($type, $geoColumns))
             {
-                if(strlen($newColumn['default']) == 0)
-                    $table->{$type}($newColumn['name'])->nullable()->change();
-                else
-                    $table->{$type}($newColumn['name'])->default($newColumn['default'])->change();
-            });
+                dd('ChangeColumn');
+                DB::statement('ALTER TABLE '
+                                    .$tableName.' ALTER COLUMN '
+                                    .$newColumn['name'].' geometry('. ucfirst($type).', '.$newColumn['srid'].')');
+            }
+            else
+            {
+                $baseSql = 'ALTER TABLE '
+                        .$tableName.' ALTER COLUMN '
+                        .$newColumn['name'];
+                
+                DB::statement($baseSql.' type '.$type);  
+                
+                if(strlen($newColumn['default']) > 0) 
+                    DB::statement($baseSql.' set default '.$newColumn['default']);  
+                else 
+                    DB::statement($baseSql.' drop default'); 
+            }
         } 
         catch (\Exception $exc) 
         {
+            dd($exc);
             $this->ReturnError('column_db_type_id', [$exc->getMessage()]);
         }
     }
@@ -238,25 +255,34 @@ class TableDBOperationsLibrary
             $this->RenameColumn($t->name.'_archive', $params['record']->name, 'deleted_'.$params['record']->name);
         }
         
-        $model = new BaseModel('column_arrays');
-        $columnArrays = $model->where('column_ids', '@>', $params['record']->id)->get();
-        foreach($columnArrays as $columnArray)
-        {
-            $columnArray->fillVariables();
-            copy_record_to_archive($columnArray);
-            
-            $columnArray->column_ids = $this->DeleteColumnInColumnIds($columnArray->column_ids, $params['record']->id);
-            
-            $columnArray->save();
-        }
+        $this->DeleteColumnsInColumnArray($params['record']->id);
     }
     
     
     
     /****    Column Common Functions    ****/
     
+    private function DeleteColumnsInColumnArray($columnId)
+    {
+        $model = new BaseModel('column_arrays');
+        $columnArrays = $model->where('column_ids', '@>', $columnId)->get();
+        foreach($columnArrays as $columnArray)
+        {
+            $columnArray->fillVariables();
+            copy_record_to_archive($columnArray);
+            
+            $columnArray->column_ids = $this->DeleteColumnInColumnIds($columnArray->column_ids, $columnId);
+            
+            $columnArray->save();
+        }
+    }
+    
     private function UpdateColumn($old, $new)
     {
+        if(!isset($new['name'])) $new['name'] = $old['name'];
+        if(!isset($new['column_db_type_id'])) $new['column_db_type_id'] = $old['column_db_type_id'];
+        if(!isset($new['default'])) $new['default'] = $old['default'];
+        
         if( $old['name'] == $new['name'] 
             && $old['column_db_type_id'] == $new['column_db_type_id']
             && $old['default'] == $new['default'])
@@ -283,6 +309,41 @@ class TableDBOperationsLibrary
     
     
     
+    /****    Column Array Functions    ****/
+    
+    public function ColumnArrayEventForRestore($params)
+    {
+        $params['record']->fillVariables();
+        $columns = $params['record']->getRelationData('column_ids');
+        $this->ReturnErrorIFTableHasDeletedRecord($columns);
+    }
+    
+    public function ColumnArrayEventForUpdate($params)
+    {
+        $params['record']->fillVariables();
+        $columns = $params['record']->getRelationData('column_ids');
+        $this->ReturnErrorIFTableHasDeletedRecord($columns);
+    }
+    
+    public function ColumnArrayEventForDelete($params)
+    {
+        
+    }
+    
+    public function ColumnArrayEventForCreate($params)
+    {
+        $columnIds = $params['requests']['column_ids'];
+        $columnIds = json_decode($columnIds);
+        
+        $columns = [];
+        foreach($columnIds as $columnId)
+            array_push($columns, get_attr_from_cache ('columns', 'id', $columnId, '*'));
+        
+        $this->ReturnErrorIFTableHasDeletedRecord($columns);
+    }
+    
+    
+        
     /****    Table Create    ****/
     
     public function TableEventForCreate($params)
@@ -391,6 +452,9 @@ class TableDBOperationsLibrary
         $this->UpdateTable($params['requests']['name'], $deletedColumnIds, $addedColumnIds);
         $this->UpdateTable($params['requests']['name'].'_archive', $deletedColumnIds, $addedColumnIds);
         
+        foreach($deletedColumnIds as $deletedColumnId)
+            $this->DeleteColumnsInColumnArray($deletedColumnId);
+        
         $column_ids = $this->GetColumnIdsForColumnIdsInjection($columns);        
         return ['column_ids' => json_encode($column_ids)];
     }
@@ -412,7 +476,16 @@ class TableDBOperationsLibrary
             foreach($deletedColumnIds as $columnId)
             {
                 $columnName = get_attr_from_cache('columns', 'id', $columnId, 'name');
-                DB::statement('ALTER TABLE '.$tableName.' RENAME COLUMN '.$columnName.' TO deleted_'.$columnName.';');
+                
+                $columns = array_keys(helper('get_all_columns_from_db', $tableName));
+                $i = '';
+                while(TRUE)
+                {
+                    if(!in_array('deleted_'.$columnName.$i, $columns)) break;                    
+                    $i = ((int)$i) + 1;
+                }
+                
+                DB::statement('ALTER TABLE '.$tableName.' RENAME COLUMN '.$columnName.' TO deleted_'.$columnName.$i.';');
             }
         });
 
@@ -480,6 +553,9 @@ class TableDBOperationsLibrary
         $this->RestoreTable($newTable->name, $deletedColumnIds, $addedColumnIds);
         $this->RestoreTable($newTable->name.'_archive', $deletedColumnIds, $addedColumnIds);
         
+        foreach($deletedColumnIds as $deletedColumnId)
+            $this->DeleteColumnsInColumnArray($deletedColumnId);
+        
         return TRUE;
     }
     
@@ -493,24 +569,23 @@ class TableDBOperationsLibrary
     private function RestoreTable($tableName, $deletedColumnIds, $addedColumnIds)
     {
         $geoColumns = $this->geoColumns;        
-        Schema::table($tableName, function (Blueprint $table) use($deletedColumnIds, $addedColumnIds, $geoColumns) 
+        
+        foreach($addedColumnIds as $columnId)
         {
-            foreach($addedColumnIds as $columnId)
-            {
-                $columnName = get_attr_from_cache('columns', 'id', $columnId, 'name');                
-                if(substr($columnName, 0, 8) == 'deleted_') continue;                
-                $table->renameColumn('deleted_'.$columnName, $columnName);
-            }
-            
-            foreach($deletedColumnIds as $columnId)
-            {
-                $columnName = get_attr_from_cache('columns', 'id', $columnId, 'name');
-                
-                if(substr($columnName, 0, 8) == 'deleted_') continue;
-                
-                $table->renameColumn($columnName, 'deleted_'.$columnName);
-            }
-        });
+            $columnName = get_attr_from_cache('columns', 'id', $columnId, 'name');                
+            if(substr($columnName, 0, 8) == 'deleted_') continue;   
+
+            $this->RenameColumn($tableName, 'deleted_'.$columnName, $columnName);
+        }
+
+        foreach($deletedColumnIds as $columnId)
+        {
+            $columnName = get_attr_from_cache('columns', 'id', $columnId, 'name');
+
+            if(substr($columnName, 0, 8) == 'deleted_') continue;
+
+            $this->RenameColumn($tableName, $columnName, 'deleted_'.$columnName);
+        }
     }
     
     

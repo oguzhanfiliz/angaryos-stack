@@ -240,20 +240,20 @@ trait TableSubscriberTrait
     {
         $val = $params->record{$params->column->name};
         
-        $table = $params->relation->getRelationData('relation_table_id');
-        $sourceColumn = $params->relation->getRelationData('relation_source_column_id');
-        $displayColumn = $params->relation->getRelationData('relation_display_column_id');
-        
-        $rec = DB::table($table->name)
-                ->select($sourceColumn->name)
-                ->addSelect($displayColumn->name)
-                ->where($sourceColumn->name, $val)
+        $tableName = get_attr_from_cache('tables', 'id', $params->relation->relation_table_id, 'name');
+        $sourceColumnName = get_attr_from_cache('columns', 'id', $params->relation->relation_source_column_id, 'name');
+        $displayColumnName = get_attr_from_cache('columns', 'id', $params->relation->relation_display_column_id, 'name');
+                
+        $rec = DB::table($tableName)
+                ->select($sourceColumnName)
+                ->addSelect($displayColumnName)
+                ->where($sourceColumnName, $val)
                 ->first();
         
         return
         [
-            'source' => $rec->{$sourceColumn->name},
-            'display' => $rec->{$displayColumn->name}
+            'source' => $rec->{$sourceColumnName},
+            'display' => $rec->{$displayColumnName}
         ];
     }
     
