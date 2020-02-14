@@ -68,4 +68,9 @@ class ChangeDataLibrary
     {
         return $params->value;
     }
+    
+    public function ForRelationSql($params)
+    {
+        return $params->value;
+    }
 }

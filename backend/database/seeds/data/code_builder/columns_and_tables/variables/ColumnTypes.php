@@ -15,7 +15,11 @@ $colmn_db_type_map =
     'multilinestring' => 'multilinestring',
     'polygon' => 'polygon',
     'multipolygon' => 'multipolygon',
-    'timestamp without time zone' => 'datetime'
+    'timestamp' => 'datetime',
+    'timestamp without time zone' => 'datetime',
+    'date' => 'date',
+    'time' => 'time',
+    'time without time zone' => 'time',
 ];
 
 $colmn_gui_type_map = 
@@ -32,7 +36,12 @@ $colmn_gui_type_map =
     'linestring' => 'linestring',
     'multilinestring' => 'multilinestring',
     'polygon' => 'polygon',
-    'timestamp without time zone' => 'datetime'
+    'multipolygon' => 'multipolygon',
+    'timestamp' => 'datetime',
+    'timestamp without time zone' => 'datetime',
+    'date' => 'date',
+    'time' => 'time',
+    'time without time zone' => 'time',
 ];
 
 $column_type_validation_map =
@@ -43,10 +52,15 @@ $column_type_validation_map =
     'text' => NULL,
     'jsonb' => [$column_validations['nullable']->id, $column_validations['json']->id],
     'boolean' => [$column_validations['nullable']->id, $column_validations['boolean']->id],
-    'timestamp without time zone' => [$column_validations['nullable']->id, $column_validations['date']->id],
+    'timestamp' => [$column_validations['nullable']->id, $column_validations['date_format:Y-m-d H:i:s']->id],
+    'timestamp without time zone' => [$column_validations['nullable']->id, $column_validations['date_format:Y-m-d H:i:s']->id],
+    'date' => [$column_validations['nullable']->id, $column_validations['date_format:Y-m-d']->id],
+    'time' => [$column_validations['nullable']->id, $column_validations['date_format:H:i:s']->id],
+    'time without time zone' => [$column_validations['nullable']->id, $column_validations['date_format:H:i:s']->id],
     'point' => NULL,
     'multipoint' => NULL,
     'linestring' => NULL,
     'multilinestring' => NULL,
-    'polygon' => NULL
+    'polygon' => NULL,
+    'multipolygon' => NULL
 ];

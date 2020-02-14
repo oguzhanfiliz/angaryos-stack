@@ -71,91 +71,151 @@ class TableTest extends TestCase
     
     public function testCreateColumnStringType()
     {
-        $url = 'tables/columns/store?display_name=Test%20String&name=test_string&column_db_type_id=1&column_gui_type_id=1&up_column_id=&column_table_relation_id=&subscriber_ids=%5B%5D&column_validation_ids=%5B%5D&column_gui_trigger_ids=%5B%5D&column_collective_info_id=&default=&description=&state=1&column_set_id=2&';
+        $dbTypeId = get_attr_from_cache('column_db_types', 'name', 'string', 'id');
+        $guiTypeId = get_attr_from_cache('column_gui_types', 'name', 'string', 'id');
+        //$validationId = get_attr_from_cache('column_validation', 'validation_with_params', 'date_format:Y-m-d H:i:s', 'id');
+        
+        $url = 'tables/columns/store?display_name=Test%20String&name=test_string&column_db_type_id='.$dbTypeId.'&column_gui_type_id='.$guiTypeId.'&up_column_id=&column_table_relation_id=&subscriber_ids=%5B%5D&column_validation_ids=%5B%5D&column_gui_trigger_ids=%5B%5D&column_collective_info_id=&default=&description=&state=1&column_set_id=2&';
         $this->createAndTest($url);
     }
     
     public function testCreateColumnTextType()
     {
-        $url = 'tables/columns/store?display_name=Test%20Text&name=test_text&column_db_type_id=2&column_gui_type_id=2&up_column_id=&column_table_relation_id=&subscriber_ids=%5B%5D&column_validation_ids=%5B%5D&column_gui_trigger_ids=%5B%5D&column_collective_info_id=&default=&description=&state=1&column_set_id=2&';
+        $dbTypeId = get_attr_from_cache('column_db_types', 'name', 'text', 'id');
+        $guiTypeId = get_attr_from_cache('column_gui_types', 'name', 'text', 'id');
+        //$validationId = get_attr_from_cache('column_validation', 'validation_with_params', 'date_format:Y-m-d H:i:s', 'id');
+        
+        $url = 'tables/columns/store?display_name=Test%20Text&name=test_text&column_db_type_id='.$dbTypeId.'&column_gui_type_id='.$guiTypeId.'&up_column_id=&column_table_relation_id=&subscriber_ids=%5B%5D&column_validation_ids=%5B%5D&column_gui_trigger_ids=%5B%5D&column_collective_info_id=&default=&description=&state=1&column_set_id=2&';
         $this->createAndTest($url);
     }
     
     public function testCreateColumnJsonType()
     {
-        $url = 'tables/columns/store?display_name=Test%20JSON&name=test_json&column_db_type_id=3&column_gui_type_id=4&up_column_id=&column_table_relation_id=&subscriber_ids=%5B%5D&column_validation_ids=%5B%5D&column_gui_trigger_ids=%5B%5D&column_collective_info_id=&default=&description=&state=1&column_set_id=2&';
+        $dbTypeId = get_attr_from_cache('column_db_types', 'name', 'jsonb', 'id');
+        $guiTypeId = get_attr_from_cache('column_gui_types', 'name', 'jsonb', 'id');
+        //$validationId = get_attr_from_cache('column_validation', 'validation_with_params', 'date_format:Y-m-d H:i:s', 'id');
+        
+        $url = 'tables/columns/store?display_name=Test%20JSON&name=test_json&column_db_type_id='.$dbTypeId.'&column_gui_type_id='.$guiTypeId.'&up_column_id=&column_table_relation_id=&subscriber_ids=%5B%5D&column_validation_ids=%5B%5D&column_gui_trigger_ids=%5B%5D&column_collective_info_id=&default=&description=&state=1&column_set_id=2&';
         $this->createAndTest($url);
     }
     
     public function testCreateColumnIntType()
     {
-        $url = 'tables/columns/store?display_name=Test%20Integer&name=test_integer&column_db_type_id=5&column_gui_type_id=3&up_column_id=&column_table_relation_id=&subscriber_ids=%5B%5D&column_validation_ids=%5B%5D&column_gui_trigger_ids=%5B%5D&column_collective_info_id=&default=&description=&state=1&column_set_id=2&';
+        $dbTypeId = get_attr_from_cache('column_db_types', 'name', 'integer', 'id');
+        $guiTypeId = get_attr_from_cache('column_gui_types', 'name', 'numeric', 'id');
+        //$validationId = get_attr_from_cache('column_validation', 'validation_with_params', 'date_format:Y-m-d H:i:s', 'id');
+        
+        $url = 'tables/columns/store?display_name=Test%20Integer&name=test_integer&column_db_type_id='.$dbTypeId.'&column_gui_type_id='.$guiTypeId.'&up_column_id=&column_table_relation_id=&subscriber_ids=%5B%5D&column_validation_ids=%5B%5D&column_gui_trigger_ids=%5B%5D&column_collective_info_id=&default=&description=&state=1&column_set_id=2&';
         $this->createAndTest($url);
     }
     
     public function testCreateColumnFloatType()
     {
-        $url = 'tables/columns/store?display_name=Test%20Float&name=test_float&column_db_type_id=6&column_gui_type_id=3&up_column_id=&column_table_relation_id=&subscriber_ids=%5B%5D&column_validation_ids=%5B%5D&column_gui_trigger_ids=%5B%5D&column_collective_info_id=&default=&description=&state=1&column_set_id=2&';
+        $dbTypeId = get_attr_from_cache('column_db_types', 'name', 'float', 'id');
+        $guiTypeId = get_attr_from_cache('column_gui_types', 'name', 'numeric', 'id');
+        //$validationId = get_attr_from_cache('column_validation', 'validation_with_params', 'date_format:Y-m-d H:i:s', 'id');
+        
+        $url = 'tables/columns/store?display_name=Test%20Float&name=test_float&column_db_type_id='.$dbTypeId.'&column_gui_type_id='.$guiTypeId.'&up_column_id=&column_table_relation_id=&subscriber_ids=%5B%5D&column_validation_ids=%5B%5D&column_gui_trigger_ids=%5B%5D&column_collective_info_id=&default=&description=&state=1&column_set_id=2&';
         $this->createAndTest($url);
     }
     
     public function testCreateColumnBooleanType()
     {
-        $url = 'tables/columns/store?display_name=Test%20Boolean&name=test_boolean&column_db_type_id=7&column_gui_type_id=8&up_column_id=&column_table_relation_id=&subscriber_ids=%5B%5D&column_validation_ids=%5B%5D&column_gui_trigger_ids=%5B%5D&column_collective_info_id=&default=&description=&state=1&column_set_id=2&';
+        $dbTypeId = get_attr_from_cache('column_db_types', 'name', 'boolean', 'id');
+        $guiTypeId = get_attr_from_cache('column_gui_types', 'name', 'boolean', 'id');
+        //$validationId = get_attr_from_cache('column_validation', 'validation_with_params', 'date_format:Y-m-d H:i:s', 'id');
+        
+        $url = 'tables/columns/store?display_name=Test%20Boolean&name=test_boolean&column_db_type_id='.$dbTypeId.'&column_gui_type_id='.$guiTypeId.'&up_column_id=&column_table_relation_id=&subscriber_ids=%5B%5D&column_validation_ids=%5B%5D&column_gui_trigger_ids=%5B%5D&column_collective_info_id=&default=&description=&state=1&column_set_id=2&';
         $this->createAndTest($url);
     }
     
     public function testCreateColumnDateType()
     {
-        $url = 'tables/columns/store?display_name=Test%20Date&name=test_date&column_db_type_id=8&column_gui_type_id=5&up_column_id=&column_table_relation_id=&subscriber_ids=%5B%5D&column_validation_ids=%5B%5D&column_gui_trigger_ids=%5B%5D&column_collective_info_id=&default=&description=&state=1&column_set_id=2&';
+        $dbTypeId = get_attr_from_cache('column_db_types', 'name', 'date', 'id');
+        $guiTypeId = get_attr_from_cache('column_gui_types', 'name', 'date', 'id');
+        $validationId = get_attr_from_cache('column_validations', 'validation_with_params', 'date_format:Y-m-d', 'id');
+        
+        $url = 'tables/columns/store?display_name=Test%20Date&name=test_date&column_db_type_id='.$dbTypeId.'&column_gui_type_id='.$guiTypeId.'&up_column_id=&column_table_relation_id=&subscriber_ids=%5B%5D&column_validation_ids=%5B'.$validationId.'%5D&column_gui_trigger_ids=%5B%5D&column_collective_info_id=&default=&description=&state=1&column_set_id=2&';
         $this->createAndTest($url);
     }
     
     public function testCreateColumnTimeType()
     {
-        $url = 'tables/columns/store?display_name=Test%20Time&name=test_time&column_db_type_id=9&column_gui_type_id=5&up_column_id=&column_table_relation_id=&subscriber_ids=%5B%5D&column_validation_ids=%5B%5D&column_gui_trigger_ids=%5B%5D&column_collective_info_id=&default=&description=&state=1&column_set_id=2&';
+        $dbTypeId = get_attr_from_cache('column_db_types', 'name', 'time', 'id');
+        $guiTypeId = get_attr_from_cache('column_gui_types', 'name', 'time', 'id');
+        $validationId = get_attr_from_cache('column_validations', 'validation_with_params', 'date_format:H:i:s', 'id');
+        
+        $url = 'tables/columns/store?display_name=Test%20Time&name=test_time&column_db_type_id='.$dbTypeId.'&column_gui_type_id='.$guiTypeId.'&up_column_id=&column_table_relation_id=&subscriber_ids=%5B%5D&column_validation_ids=%5B'.$validationId.'%5D&column_gui_trigger_ids=%5B%5D&column_collective_info_id=&default=&description=&state=1&column_set_id=2&';
         $this->createAndTest($url);
     }
     
     public function testCreateColumnDateTimeType()
     {
-        $url = 'tables/columns/store?display_name=Test%20DateTime&name=test_datetime&column_db_type_id=10&column_gui_type_id=5&up_column_id=&column_table_relation_id=&subscriber_ids=%5B%5D&column_validation_ids=%5B%5D&column_gui_trigger_ids=%5B%5D&column_collective_info_id=&default=&description=&state=1&column_set_id=2&';
+        $dbTypeId = get_attr_from_cache('column_db_types', 'name', 'datetime', 'id');
+        $guiTypeId = get_attr_from_cache('column_gui_types', 'name', 'datetime', 'id');
+        $validationId = get_attr_from_cache('column_validations', 'validation_with_params', 'date_format:Y-m-d H:i:s', 'id');
+        
+        $url = 'tables/columns/store?display_name=Test%20DateTime&name=test_datetime&column_db_type_id='.$dbTypeId.'&column_gui_type_id='.$guiTypeId.'&up_column_id=&column_table_relation_id=&subscriber_ids=%5B%5D&column_validation_ids=%5B'.$validationId.'%5D&column_gui_trigger_ids=%5B%5D&column_collective_info_id=&default=&description=&state=1&column_set_id=2&';
         $this->createAndTest($url);
     }
     
     public function testCreateColumnPointType()
     {
-        $url = 'tables/columns/store?display_name=Test%20Point&name=test_point&column_db_type_id=11&column_gui_type_id=11&srid=7932&up_column_id=&column_table_relation_id=&subscriber_ids=%5B%5D&column_validation_ids=%5B%5D&column_gui_trigger_ids=%5B%5D&column_collective_info_id=&default=&description=&state=1&column_set_id=2&';
+        $dbTypeId = get_attr_from_cache('column_db_types', 'name', 'point', 'id');
+        $guiTypeId = get_attr_from_cache('column_gui_types', 'name', 'point', 'id');
+        //$validationId = get_attr_from_cache('column_validation', 'validation_with_params', 'date_format:Y-m-d H:i:s', 'id');
+        
+        $url = 'tables/columns/store?display_name=Test%20Point&name=test_point&column_db_type_id='.$dbTypeId.'&column_gui_type_id='.$guiTypeId.'&srid=7932&up_column_id=&column_table_relation_id=&subscriber_ids=%5B%5D&column_validation_ids=%5B%5D&column_gui_trigger_ids=%5B%5D&column_collective_info_id=&default=&description=&state=1&column_set_id=2&';
         $this->createAndTest($url);
     }
     
     public function testCreateColumnMultiPointType()
     {
-        $url = 'tables/columns/store?display_name=Test%20MultiPoint&name=test_multipoint&column_db_type_id=12&column_gui_type_id=14&srid=7932&up_column_id=&column_table_relation_id=&subscriber_ids=%5B%5D&column_validation_ids=%5B%5D&column_gui_trigger_ids=%5B%5D&column_collective_info_id=&default=&description=&state=1&column_set_id=2&';
+        $dbTypeId = get_attr_from_cache('column_db_types', 'name', 'multipoint', 'id');
+        $guiTypeId = get_attr_from_cache('column_gui_types', 'name', 'multipoint', 'id');
+        //$validationId = get_attr_from_cache('column_validation', 'validation_with_params', 'date_format:Y-m-d H:i:s', 'id');
+        
+        $url = 'tables/columns/store?display_name=Test%20MultiPoint&name=test_multipoint&column_db_type_id='.$dbTypeId.'&column_gui_type_id='.$guiTypeId.'&srid=7932&up_column_id=&column_table_relation_id=&subscriber_ids=%5B%5D&column_validation_ids=%5B%5D&column_gui_trigger_ids=%5B%5D&column_collective_info_id=&default=&description=&state=1&column_set_id=2&';
         $this->createAndTest($url);
     }
     
     public function testCreateColumnLinestringType()
     {
-        $url = 'tables/columns/store?display_name=Test%20LineString&name=test_linestring&column_db_type_id=13&column_gui_type_id=12&srid=7932&up_column_id=&column_table_relation_id=&subscriber_ids=%5B%5D&column_validation_ids=%5B%5D&column_gui_trigger_ids=%5B%5D&column_collective_info_id=&default=&description=&state=1&column_set_id=2&';
+        $dbTypeId = get_attr_from_cache('column_db_types', 'name', 'linestring', 'id');
+        $guiTypeId = get_attr_from_cache('column_gui_types', 'name', 'linestring', 'id');
+        //$validationId = get_attr_from_cache('column_validation', 'validation_with_params', 'date_format:Y-m-d H:i:s', 'id');
+        
+        $url = 'tables/columns/store?display_name=Test%20LineString&name=test_linestring&column_db_type_id='.$dbTypeId.'&column_gui_type_id='.$guiTypeId.'&srid=7932&up_column_id=&column_table_relation_id=&subscriber_ids=%5B%5D&column_validation_ids=%5B%5D&column_gui_trigger_ids=%5B%5D&column_collective_info_id=&default=&description=&state=1&column_set_id=2&';
         $this->createAndTest($url);
     }
     
     public function testCreateColumnMultiLinestringType()
     {
-        $url = 'tables/columns/store?display_name=Test%20MultiLineString&name=test_multilinestring&column_db_type_id=14&column_gui_type_id=15&srid=7932&up_column_id=&column_table_relation_id=&subscriber_ids=%5B%5D&column_validation_ids=%5B%5D&column_gui_trigger_ids=%5B%5D&column_collective_info_id=&default=&description=&state=1&column_set_id=2&';
+        $dbTypeId = get_attr_from_cache('column_db_types', 'name', 'multilinestring', 'id');
+        $guiTypeId = get_attr_from_cache('column_gui_types', 'name', 'multilinestring', 'id');
+        //$validationId = get_attr_from_cache('column_validation', 'validation_with_params', 'date_format:Y-m-d H:i:s', 'id');
+        
+        $url = 'tables/columns/store?display_name=Test%20MultiLineString&name=test_multilinestring&column_db_type_id='.$dbTypeId.'&column_gui_type_id='.$guiTypeId.'&srid=7932&up_column_id=&column_table_relation_id=&subscriber_ids=%5B%5D&column_validation_ids=%5B%5D&column_gui_trigger_ids=%5B%5D&column_collective_info_id=&default=&description=&state=1&column_set_id=2&';
         $this->createAndTest($url);
     }
     
     public function testCreateColumnPolygonType()
     {
-        $url = 'tables/columns/store?display_name=Test%20Polygon&name=test_polygon&column_db_type_id=15&column_gui_type_id=13&srid=7932&up_column_id=&column_table_relation_id=&subscriber_ids=%5B%5D&column_validation_ids=%5B%5D&column_gui_trigger_ids=%5B%5D&column_collective_info_id=&default=&description=&state=1&column_set_id=2&';
+        $dbTypeId = get_attr_from_cache('column_db_types', 'name', 'polygon', 'id');
+        $guiTypeId = get_attr_from_cache('column_gui_types', 'name', 'polygon', 'id');
+        //$validationId = get_attr_from_cache('column_validation', 'validation_with_params', 'date_format:Y-m-d H:i:s', 'id');
+        
+        $url = 'tables/columns/store?display_name=Test%20Polygon&name=test_polygon&column_db_type_id='.$dbTypeId.'&column_gui_type_id='.$guiTypeId.'&srid=7932&up_column_id=&column_table_relation_id=&subscriber_ids=%5B%5D&column_validation_ids=%5B%5D&column_gui_trigger_ids=%5B%5D&column_collective_info_id=&default=&description=&state=1&column_set_id=2&';
         $this->createAndTest($url);
     }
     
     public function testCreateColumnMultiPolygonType()
     {
-        $url = 'tables/columns/store?display_name=Test%20MultiPolygon&name=test_multipolygon&column_db_type_id=16&column_gui_type_id=16&srid=7932&up_column_id=&column_table_relation_id=&subscriber_ids=%5B%5D&column_validation_ids=%5B%5D&column_gui_trigger_ids=%5B%5D&column_collective_info_id=&default=&description=&state=1&column_set_id=2&';
+        $dbTypeId = get_attr_from_cache('column_db_types', 'name', 'multipolygon', 'id');
+        $guiTypeId = get_attr_from_cache('column_gui_types', 'name', 'multipolygon', 'id');
+        //$validationId = get_attr_from_cache('column_validation', 'validation_with_params', 'date_format:Y-m-d H:i:s', 'id');
+        
+        $url = 'tables/columns/store?display_name=Test%20MultiPolygon&name=test_multipolygon&column_db_type_id='.$dbTypeId.'&column_gui_type_id='.$guiTypeId.'&srid=7932&up_column_id=&column_table_relation_id=&subscriber_ids=%5B%5D&column_validation_ids=%5B%5D&column_gui_trigger_ids=%5B%5D&column_collective_info_id=&default=&description=&state=1&column_set_id=2&';
         $this->createAndTest($url);
     }
     
@@ -187,17 +247,25 @@ class TableTest extends TestCase
     
     public function testCreateColumnSqlRelationOneToOne()
     {
+        $dbTypeId = get_attr_from_cache('column_db_types', 'name', 'integer', 'id');
+        $guiTypeId = get_attr_from_cache('column_gui_types', 'name', 'select', 'id');
+        //$validationId = get_attr_from_cache('column_validation', 'validation_with_params', 'date_format:Y-m-d H:i:s', 'id');
+        
         $id = $this->getLastId('column_table_relations');
         
-        $url = 'tables/columns/store?display_name=Test%20Sql%20Relation%20One%20To%20One&name=test_sql_relation_one_to_one&column_db_type_id=5&column_gui_type_id=6&up_column_id=&column_table_relation_id='.$id.'&subscriber_ids=%5B%5D&column_validation_ids=%5B%5D&column_gui_trigger_ids=%5B%5D&column_collective_info_id=&default=&description=&state=1&column_set_id=2&';
+        $url = 'tables/columns/store?display_name=Test%20Sql%20Relation%20One%20To%20One&name=test_sql_relation_one_to_one&column_db_type_id='.$dbTypeId.'&column_gui_type_id='.$guiTypeId.'&up_column_id=&column_table_relation_id='.$id.'&subscriber_ids=%5B%5D&column_validation_ids=%5B%5D&column_gui_trigger_ids=%5B%5D&column_collective_info_id=&default=&description=&state=1&column_set_id=2&';
         $this->createAndTest($url);
     }
     
     public function testCreateColumnSqlRelationOneToMany()
     {
+        $dbTypeId = get_attr_from_cache('column_db_types', 'name', 'jsonb', 'id');
+        $guiTypeId = get_attr_from_cache('column_gui_types', 'name', 'multiselect', 'id');
+        //$validationId = get_attr_from_cache('column_validation', 'validation_with_params', 'date_format:Y-m-d H:i:s', 'id');
+        
         $id = $this->getLastId('column_table_relations');
         
-        $url = 'tables/columns/store?display_name=Test%20Sql%20Relation%20One%20To%20Many&name=test_sql_relation_one_to_many&column_db_type_id=3&column_gui_type_id=7&up_column_id=&column_table_relation_id='.$id.'&subscriber_ids=%5B%5D&column_validation_ids=%5B%5D&column_gui_trigger_ids=%5B%5D&column_collective_info_id=&default=&description=&state=1&column_set_id=2&';
+        $url = 'tables/columns/store?display_name=Test%20Sql%20Relation%20One%20To%20Many&name=test_sql_relation_one_to_many&column_db_type_id='.$dbTypeId.'&column_gui_type_id='.$guiTypeId.'&up_column_id=&column_table_relation_id='.$id.'&subscriber_ids=%5B%5D&column_validation_ids=%5B%5D&column_gui_trigger_ids=%5B%5D&column_collective_info_id=&default=&description=&state=1&column_set_id=2&';
         $this->createAndTest($url);
     }
     
@@ -225,9 +293,13 @@ class TableTest extends TestCase
     
     public function testCreateJoinedTableColumn()
     {
+        $dbTypeId = get_attr_from_cache('column_db_types', 'name', 'integer', 'id');
+        $guiTypeId = get_attr_from_cache('column_gui_types', 'name', 'select', 'id');
+        //$validationId = get_attr_from_cache('column_validation', 'validation_with_params', 'date_format:Y-m-d H:i:s', 'id');
+        
         $id = $this->getLastId('column_table_relations');
         
-        $url = 'tables/columns/store?display_name=Test%20Relation%20Data%20Column&name=test_relation_table_column&column_db_type_id=3&column_gui_type_id=7&up_column_id=&column_table_relation_id='.$id.'&subscriber_ids=%5B%5D&column_validation_ids=%5B%5D&column_gui_trigger_ids=%5B%5D&column_collective_info_id=&default=&description=&state=1&column_set_id=2&';
+        $url = 'tables/columns/store?display_name=Test%20Relation%20Data%20Column&name=test_relation_table_column&column_db_type_id='.$dbTypeId.'&column_gui_type_id='.$guiTypeId.'&up_column_id=&column_table_relation_id='.$id.'&subscriber_ids=%5B%5D&column_validation_ids=%5B%5D&column_gui_trigger_ids=%5B%5D&column_collective_info_id=&default=&description=&state=1&column_set_id=2&';
         $this->createAndTest($url);
     }
     
@@ -249,9 +321,13 @@ class TableTest extends TestCase
     
     public function testCreateDataSourceColumn()
     {
+        $dbTypeId = get_attr_from_cache('column_db_types', 'name', 'integer', 'id');
+        $guiTypeId = get_attr_from_cache('column_gui_types', 'name', 'select', 'id');
+        //$validationId = get_attr_from_cache('column_validation', 'validation_with_params', 'date_format:Y-m-d H:i:s', 'id');
+        
         $id = $this->getLastId('column_table_relations');
         
-        $url = 'tables/columns/store?display_name=Test%20Data%20Source%20Column&name=test_data_source&column_db_type_id=1&column_gui_type_id=6&up_column_id=&column_table_relation_id='.$id.'&subscriber_ids=%5B%5D&column_validation_ids=%5B%5D&column_gui_trigger_ids=%5B%5D&column_collective_info_id=&default=&description=&state=1&column_set_id=2&';
+        $url = 'tables/columns/store?display_name=Test%20Data%20Source%20Column&name=test_data_source&column_db_type_id='.$dbTypeId.'&column_gui_type_id='.$guiTypeId.'&up_column_id=&column_table_relation_id='.$id.'&subscriber_ids=%5B%5D&column_validation_ids=%5B%5D&column_gui_trigger_ids=%5B%5D&column_collective_info_id=&default=&description=&state=1&column_set_id=2&';
         $this->createAndTest($url);
     }
     
@@ -267,10 +343,14 @@ class TableTest extends TestCase
     
     public function testUpColumn()
     {
+        $dbTypeId = get_attr_from_cache('column_db_types', 'name', 'integer', 'id');
+        $guiTypeId = get_attr_from_cache('column_gui_types', 'name', 'select', 'id');
+        //$validationId = get_attr_from_cache('column_validation', 'validation_with_params', 'date_format:Y-m-d H:i:s', 'id');
+        
         $upColumnId = $this->getLastId('up_columns');
         $realtionId = get_attr_from_cache('columns', 'name', 'test_types_id', 'column_table_relation_id');
 
-        $url = 'tables/columns/store?display_name=Test%20Up%20Column&name=test_up_column&column_db_type_id=5&column_gui_type_id=6&up_column_id='.$upColumnId.'&column_table_relation_id='.$realtionId.'&subscriber_ids=%5B%5D&column_validation_ids=%5B%5D&column_gui_trigger_ids=%5B%5D&column_collective_info_id=&default=&description=&state=1&column_set_id=2&';
+        $url = 'tables/columns/store?display_name=Test%20Up%20Column&name=test_up_column&column_db_type_id='.$dbTypeId.'&column_gui_type_id='.$guiTypeId.'&up_column_id='.$upColumnId.'&column_table_relation_id='.$realtionId.'&subscriber_ids=%5B%5D&column_validation_ids=%5B%5D&column_gui_trigger_ids=%5B%5D&column_collective_info_id=&default=&description=&state=1&column_set_id=2&';
         $this->createAndTest($url);
     }
     
@@ -284,9 +364,13 @@ class TableTest extends TestCase
     
     public function testCreateSubscriberColumn()
     {
+        $dbTypeId = get_attr_from_cache('column_db_types', 'name', 'string', 'id');
+        $guiTypeId = get_attr_from_cache('column_gui_types', 'name', 'string', 'id');
+        //$validationId = get_attr_from_cache('column_validation', 'validation_with_params', 'date_format:Y-m-d H:i:s', 'id');
+        
         $id = $this->getLastId('subscribers');
         
-        $url = 'tables/columns/store?display_name=Test%20Subscriber&name=test_subscriber&column_db_type_id=1&column_gui_type_id=1&up_column_id=&column_table_relation_id=&subscriber_ids=%5B%22'.$id.'%22%5D&column_validation_ids=%5B%5D&column_gui_trigger_ids=%5B%5D&column_collective_info_id=&default=&description=&state=1&column_set_id=2&';
+        $url = 'tables/columns/store?display_name=Test%20Subscriber&name=test_subscriber&column_db_type_id='.$dbTypeId.'&column_gui_type_id='.$guiTypeId.'&up_column_id=&column_table_relation_id=&subscriber_ids=%5B%22'.$id.'%22%5D&column_validation_ids=%5B%5D&column_gui_trigger_ids=%5B%5D&column_collective_info_id=&default=&description=&state=1&column_set_id=2&';
         $this->createAndTest($url);
     }
     
@@ -306,9 +390,13 @@ class TableTest extends TestCase
     
     public function testValidationColumn()
     {
+        $dbTypeId = get_attr_from_cache('column_db_types', 'name', 'string', 'id');
+        $guiTypeId = get_attr_from_cache('column_gui_types', 'name', 'string', 'id');
+        //$validationId = get_attr_from_cache('column_validation', 'validation_with_params', 'date_format:Y-m-d H:i:s', 'id');
+        
         $id = $this->getLastId('column_validations');
         
-        $url = 'tables/columns/store?display_name=Test%20Validation&name=test_validation&column_db_type_id=5&column_gui_type_id=3&up_column_id=&column_table_relation_id=&subscriber_ids=%5B%5D&column_validation_ids=%5B%22'.$id.'%22%5D&column_gui_trigger_ids=%5B%5D&column_collective_info_id=&default=&description=&state=1&column_set_id=2&';
+        $url = 'tables/columns/store?display_name=Test%20Validation&name=test_validation&column_db_type_id='.$dbTypeId.'&column_gui_type_id='.$guiTypeId.'&up_column_id=&column_table_relation_id=&subscriber_ids=%5B%5D&column_validation_ids=%5B%22'.$id.'%22%5D&column_gui_trigger_ids=%5B%5D&column_collective_info_id=&default=&description=&state=1&column_set_id=2&';
         $this->createAndTest($url);
     }
     
@@ -316,7 +404,11 @@ class TableTest extends TestCase
     
     public function testCollectiveInfoColumn()
     {
-        $url = 'tables/columns/store?display_name=Test%20Collective%20Info&name=test_collective_info&column_db_type_id=1&column_gui_type_id=1&up_column_id=&column_table_relation_id=&subscriber_ids=%5B%5D&column_validation_ids=%5B%5D&column_gui_trigger_ids=%5B%5D&column_collective_info_id=5&default=&description=&state=1&column_set_id=2&';
+        $dbTypeId = get_attr_from_cache('column_db_types', 'name', 'string', 'id');
+        $guiTypeId = get_attr_from_cache('column_gui_types', 'name', 'string', 'id');
+        $id = get_attr_from_cache('column_collective_infos', 'name', 'count', 'id');
+        
+        $url = 'tables/columns/store?display_name=Test%20Collective%20Info&name=test_collective_info&column_db_type_id='.$dbTypeId.'&column_gui_type_id='.$guiTypeId.'&up_column_id=&column_table_relation_id=&subscriber_ids=%5B%5D&column_validation_ids=%5B%5D&column_gui_trigger_ids=%5B%5D&column_collective_info_id='.$id.'&default=&description=&state=1&column_set_id=2&';
         $this->createAndTest($url);
     }
     
@@ -548,10 +640,12 @@ class TableTest extends TestCase
     
     public function testUpdateColumnNameAndDBType()
     {
+        $guiTypeId = get_attr_from_cache('column_gui_types', 'name', 'string', 'id');
+        
         $id = get_attr_from_cache('columns', 'name', 'test_string', 'id');
         $typeId = get_attr_from_cache('column_db_types', 'name', 'text', 'id');
         
-        $url = 'tables/columns/'.$id.'/update?display_name=Test%20String&name=test_string2&column_db_type_id='.$typeId.'&column_gui_type_id=1&up_column_id=&column_table_relation_id=&subscriber_ids=%5B%5D&column_validation_ids=%5B%5D&column_gui_trigger_ids=%5B%5D&column_collective_info_id=&default=&state=1&column_set_id=2&';
+        $url = 'tables/columns/'.$id.'/update?display_name=Test%20String&name=test_string2&column_db_type_id='.$typeId.'&column_gui_type_id='.$guiTypeId.'&up_column_id=&column_table_relation_id=&subscriber_ids=%5B%5D&column_validation_ids=%5B%5D&column_gui_trigger_ids=%5B%5D&column_collective_info_id=&default=&state=1&column_set_id=2&';
         $this->standartTest($url); 
         
         $dbTypeId = get_attr_from_cache('columns', 'name', 'test_string2', 'column_db_type_id');
@@ -691,5 +785,34 @@ class TableTest extends TestCase
         $columns = array_keys(helper('get_all_columns_from_db', 'test'));
         $this->assertTrue(in_array('deleted_test_string2', $columns));
         $this->assertTrue(in_array('test_string2', $columns));
+    }
+    
+    
+    
+    public function testCreateRecordInTestTypesTable()
+    {
+        $url = 'tables/test_types/store?name=11&state=1&column_set_id=0&in_form_column_name=test_sql_relation_one_to_many&';
+        $this->standartTest($url); 
+        
+        $url = 'tables/test_types/store?name=22&state=1&column_set_id=0&in_form_column_name=test_sql_relation_one_to_many&';
+        $this->standartTest($url); 
+        
+        $url = 'tables/test_types/store?name=33&state=1&column_set_id=0&in_form_column_name=test_sql_relation_one_to_many&';
+        $this->standartTest($url); 
+    }
+    
+    public function testRecordListForTestTable()
+    {
+        $url = 'tables/test?params=%7B%22page%22:1,%22limit%22:3,%22column_array_id%22:%220%22,%22column_array_id_query%22:%220%22,%22sorts%22:%7B%7D,%22filters%22:%7B%7D,%22edit%22:true,%22columns%22:%5B%22id%22,%22test_types_id%22,%22test_types_ids%22,%22test_text%22,%22test_json%22,%22test_integer%22,%22test_float%22,%22test_boolean%22,%22test_date%22,%22test_time%22,%22test_datetime%22,%22test_sql_relation_one_to_one%22,%22test_sql_relation_one_to_many%22,%22test_relation_table_column%22,%22test_data_source%22,%22test_up_column%22,%22test_subscriber%22,%22test_validation%22,%22test_collective_info%22,%22state%22,%22own_id%22,%22user_id%22,%22created_at%22,%22updated_at%22,%22test_point%22,%22test_multipoint%22,%22test_linestring%22,%22test_multilinestring%22,%22test_polygon%22,%22test_multipolygon%22,%22test_string2%22%5D%7D&';
+        $response = $this->standartTest($url);
+        
+        $data = $response->getData();
+        $this->assertEquals(count($data->data->records), 0);
+    }
+    
+    public function testGetTestTablesForm()
+    {
+        $url = 'tables/test/create?params=%7B%22column_set_id%22:%220%22%7D&';
+        $this->standartTest($url);
     }
 }

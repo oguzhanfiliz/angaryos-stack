@@ -36,6 +36,8 @@ import { FilesElementComponent } from './helpers/custom-elements/form-element/fi
 import { MultiSelectDragDropElementComponent } from './helpers/custom-elements/form-element/multi-select-drag-drop-element/multi-select-drag-drop-element.component';
 import { MapElementComponent } from './helpers/custom-elements/form-element/map-element/map-element.component';
 import { DateTimeElementComponent } from './helpers/custom-elements/form-element/date-time-element/date-time-element.component';
+import { DateElementComponent } from './helpers/custom-elements/form-element/date-element/date-element.component';
+import { TimeElementComponent } from './helpers/custom-elements/form-element/time-element/time-element.component';
 import { CodeEditorElementComponent } from './helpers/custom-elements/form-element/code-editor-element/code-editor-element.component';
 
 import { DataTableElementComponent } from './helpers/custom-elements/data-table-element/data-table-element.component';
@@ -74,6 +76,8 @@ import { GeoPreviewElementComponent } from './helpers/custom-elements/geo-previe
     MultiSelectDragDropElementComponent,
     MapElementComponent,
     DateTimeElementComponent,
+    DateElementComponent,
+    TimeElementComponent,
     CodeEditorElementComponent,
 
     DataTableElementComponent,
@@ -108,6 +112,8 @@ import { GeoPreviewElementComponent } from './helpers/custom-elements/geo-previe
     MultiSelectDragDropElementComponent,
     MapElementComponent,
     DateTimeElementComponent,
+    DateElementComponent,
+    TimeElementComponent,
     CodeEditorElementComponent,
 
     DataTableElementComponent,
@@ -136,6 +142,9 @@ export class PagesModule
     'map-element': MapElementComponent,
     
     'date-time-element': DateTimeElementComponent,
+    'date-element': DateElementComponent,
+    'time-element': TimeElementComponent,
+    
     'data-table-element': DataTableElementComponent,
     'detail-filter-element': DetailFilterElementComponent,
     'column-array-element': ColumnArrayElementComponent,

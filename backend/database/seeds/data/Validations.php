@@ -105,7 +105,10 @@ $return = ($temp != NULL);
 ?>';
 
 $validations['column_table_relation_control']['php_code'] = '<?php
-$relationGuiTypeIds = [6, 7, 20];
+$relationGuiTypeIds = [];
+array_push($relationGuiTypeIds, get_attr_from_cache(\'column_gui_types\', \'name\', \'select\', \'id\'));
+array_push($relationGuiTypeIds, get_attr_from_cache(\'column_gui_types\', \'name\', \'multiselect\', \'id\'));
+array_push($relationGuiTypeIds, get_attr_from_cache(\'column_gui_types\', \'name\', \'multiselectdragdrop\', \'id\'));
 
 $guiTypeId = \Request::input(\'column_gui_type_id\');
 if(!in_array($guiTypeId, $relationGuiTypeIds)) 
@@ -175,7 +178,9 @@ $column_validations['required'] = NULL;
 $column_validations['integer'] = NULL;
 $column_validations['numeric'] = NULL;
 $column_validations['unique'] = NULL;
-$column_validations['date'] = NULL;
+$column_validations['date_format:Y-m-d H:i:s'] = NULL;
+$column_validations['date_format:Y-m-d'] = NULL;
+$column_validations['date_format:H:i:s'] = NULL;
 $column_validations['boolean'] = NULL;
 $column_validations['boolean_custom'] = NULL;
 $column_validations['email'] = NULL;

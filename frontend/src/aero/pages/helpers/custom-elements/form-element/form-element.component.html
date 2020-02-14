@@ -1,4 +1,4 @@
-<text-element *ngIf="type == 'text'" 
+<text-element *ngIf="type == 'text' || type == 'jsonb'" 
 (changed)="handleChanged($event)"
 value="{{ value }}"
 name="{{ name }}"
@@ -39,6 +39,24 @@ showFilterTypesSelect="{{ showFilterTypesSelect }}"
 filterType="{{ filterType }}"
 class="{{ class }}"></date-time-element>
 
+<time-element *ngIf="type == 'time'" 
+(changed)="handleChanged($event)"
+value="{{ value }}"
+name="{{ name }}"
+placeholder="{{ placeholder }}"
+showFilterTypesSelect="{{ showFilterTypesSelect }}"
+filterType="{{ filterType }}"
+class="{{ class }}"></time-element>
+
+<date-element *ngIf="type == 'date'" 
+(changed)="handleChanged($event)"
+value="{{ value }}"
+name="{{ name }}"
+placeholder="{{ placeholder }}"
+showFilterTypesSelect="{{ showFilterTypesSelect }}"
+filterType="{{ filterType }}"
+class="{{ class }}"></date-element>
+
 <boolean-element *ngIf="type == 'boolean'" 
 (changed)="handleChanged($event)"
 value="{{ value }}"
@@ -63,7 +81,7 @@ showFilterTypesSelect="{{ showFilterTypesSelect }}"
 filterType="{{ filterType }}"
 class="{{ class }}"></select-element>
 
-<multi-select-element *ngIf="type == 'multiselect' || type == 'jsonb'" 
+<multi-select-element *ngIf="type == 'multiselect'" 
 (changed)="handleChanged($event)"
 upColumnName="{{ upColumnName }}"
 upFormId="{{ upFormId }}"

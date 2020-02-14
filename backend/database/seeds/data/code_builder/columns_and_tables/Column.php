@@ -12,7 +12,9 @@ $column_gui_type_override =
     'column_ids' => $column_gui_types['multiselectdragdrop']->id,
     'profile_picture' => $column_gui_types['files']->id,
     'image' => $column_gui_types['files']->id,
-    'password' => $column_gui_types['password']->id
+    'password' => $column_gui_types['password']->id,
+        
+    'auths' => $column_gui_types['multiselect']->id
 ];
 
 $columns[$column->name] = 

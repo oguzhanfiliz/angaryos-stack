@@ -22,7 +22,7 @@ export class MessageHelper
         const Toast = Swal.mixin(
         {
         toast: true,
-        position: 'top-end',
+        position: 'bottom-end',
         showConfirmButton: false,
         timer: duration
         })

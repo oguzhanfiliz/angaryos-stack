@@ -294,6 +294,15 @@ trait TableSubscriberTrait
         ];
     }
     
+    public function getDataForSelectElementForRelationSql($params)
+    {
+        return
+        [
+            'source' => $params->record{$params->relation->relation_source_column},
+            'display' => $params->record{$params->relation->relation_display_column}
+        ];
+    }
+    
     public function getDataForSelectElementForDataSource($params)
     {
         //test auths
