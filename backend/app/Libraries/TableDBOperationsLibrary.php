@@ -67,11 +67,12 @@ class TableDBOperationsLibrary
         $auth->user_id = $robotUserId;
         $auth->save();
 
-        $adminAuth = get_model_from_cache('auth_groups', 'id', 1);
+        $adminAuth = new \App\BaseModel('auth_groups');
+        $adminAuth = $adminAuth->find(1);//get_model_from_cache('auth_groups', 'id', 1);
         $adminAuth->fillVariables();
         
         $temp = $adminAuth->auths;
-        $temp[count($temp) - 1] = $auth->id;
+        $temp[count($temp)] = $auth->id;
         $adminAuth->auths = $temp;
         
         $adminAuth->save();

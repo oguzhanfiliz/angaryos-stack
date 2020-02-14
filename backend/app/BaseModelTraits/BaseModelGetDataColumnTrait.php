@@ -234,6 +234,8 @@ trait BaseModelGetDataColumnTrait
 
             foreach($model->getAllColumnsFromDB() as $column)
             {
+                if(substr($column['name'], 0, 8) == 'deleted_') continue;
+                
                 $column = get_attr_from_cache('columns', 'name', $column['name'], '*');
 
                 $column->gui_type_name = get_attr_from_cache('column_gui_types', 'id', $column->column_gui_type_id, 'name');

@@ -33,7 +33,9 @@ class TableTest extends TestCase
     
     public function testCreateTableTestType()
     {
-        $url = 'tables/tables/store?display_name=Test%20Types&name=test_types&column_ids=%5B%2226%22,%227%22%5D&subscriber_ids=%5B%5D&description=&state=1&column_set_id=0&';
+        $nameId = get_attr_from_cache('columns', 'name', 'name', 'id');
+        
+        $url = 'tables/tables/store?display_name=Test%20Types&name=test_types&column_ids=%5B%22'.$nameId.'%22%5D&subscriber_ids=%5B%5D&description=&state=1&column_set_id=0&';
         $response = $this->standartTest($url);
         $data = $response->getData();
         $this->assertEquals($data->data->message, 'success');
@@ -177,7 +179,7 @@ class TableTest extends TestCase
     
     public function testColumnTableRelationTestSqlRelation()
     {
-        $url = 'tables/column_table_relations/store?name_basic=Test%20Types%20Sql%20Relation&relation_source_column_id=&relation_display_column_id=&join_table_ids=%5B%5D&relation_sql=select%20*%20from%20test_types&relation_source_column=id&relation_display_column=display_name&column_data_source_id=&up_column_id=&description=&state=1&column_set_id=0&in_form_column_name=column_table_relation_id&';
+        $url = 'tables/column_table_relations/store?name_basic=Test%20Types%20Sql%20Relation&relation_source_column_id=&relation_display_column_id=&join_table_ids=%5B%5D&relation_sql=select%20*%20from%20test_types&relation_source_column=id&relation_display_column=name&column_data_source_id=&up_column_id=&description=&state=1&column_set_id=0&in_form_column_name=column_table_relation_id&';
         $this->createAndTest($url);
     }
     
@@ -200,8 +202,14 @@ class TableTest extends TestCase
     }
     
     
+    //
+    public function testCreateUsersJoinTableForRelation()
+    {
+        $url = 'tables/join_tables/store?name_basic=users%20relation%20join&join_table_id=2&join_table_alias=users&connection_column_with_alias=test.test_relation_table_column&join_column_id=5&description=&state=1&column_set_id=0&in_form_column_name=join_table_ids&';
+        $this->createAndTest($url);
+    }
     
-    public function testCreateJoinTableForRelation()
+    public function testCreateDepartmentsJoinTableForRelation()
     {
         $url = 'tables/join_tables/store?name_basic=Users%20department%20relation&join_table_id=1&join_table_alias=users_department&connection_column_with_alias=users.department_id&join_connection_type==&join_column_id=5&description=&state=1&column_set_id=0&in_form_column_name=join_table_ids&';
         $this->createAndTest($url);
@@ -211,7 +219,7 @@ class TableTest extends TestCase
     {
         $id = $this->getLastId('join_tables');
         
-        $url = 'tables/column_table_relations/store?name_basic=Test%20relation%20table%20column%20default%20relation&relation_table_id=2&relation_source_column_id=&relation_display_column_id=&join_table_ids=%5B%22'.$id.'%22%5D&relation_sql=&relation_source_column=users.id&relation_display_column=users_department.name_basic&column_data_source_id=&description=&state=1&column_set_id=0&in_form_column_name=column_table_relation_id';
+        $url = 'tables/column_table_relations/store?name_basic=Test%20relation%20table%20column%20default%20relation&relation_table_id=2&relation_source_column_id=&relation_display_column_id=&join_table_ids=%5B%22'.($id-1).'%22, %22'.$id.'%22%5D&relation_sql=&relation_source_column=users.id&relation_display_column=users_department.name_basic&column_data_source_id=&description=&state=1&column_set_id=0&in_form_column_name=column_table_relation_id';
         $this->createAndTest($url);
     }
     

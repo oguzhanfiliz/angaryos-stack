@@ -22,29 +22,34 @@ $return = (int)$value >= (int)$parameters[0];
 ?>';
 
 $validations['files_type']['php_code'] = '<?php
-foreach($value as $file)
-{
-    $control = FALSE;
-    foreach($parameters as $param)
+
+if(is_array($value))
+    foreach($value as $file)
     {
-        if(strstr($file->getMimeType(), $param))
+        $control = FALSE;
+        if(is_array($parameters))
+            foreach($parameters as $param)
+            {
+                if(strstr($file->getMimeType(), $param))
+                {
+                    $control = TRUE;
+                    break;
+                }
+            }
+        
+        if($control == FALSE)
         {
-            $control = TRUE;
-            break;
+            $return = FALSE;
+            return;
         }
     }
-    
-    if($control == FALSE)
-    {
-        $return = FALSE;
-        return;
-    }
-}
 
 $return = TRUE;
 ?>';
 
 $validations['files_count']['php_code'] = '<?php
+if(!is_array($value)) return TRUE;
+    
 if($parameters[0] == \'<\')
     $return = (count($value) < $parameters[1]);
 else if($parameters[0] == \'>\')

@@ -45,7 +45,7 @@ class ColumnClassificationLibrary
         $intType = get_attr_from_cache('column_db_types', 'name', 'integer', 'id');
         
         if($targetColumn == NULL) $targetColumn = self::getTargetColumnFromColumn($sourceColumn);
-            
+          
         if($targetColumn->column_db_type_id == $sourceColumn->column_db_type_id)
             $id = 0;
         else if($targetColumn->column_db_type_id == $intType && $sourceColumn->column_db_type_id == $jsonType)            
@@ -82,7 +82,11 @@ class ColumnClassificationLibrary
         if(strlen($relation->relation_source_column_id) > 0)
             $targetColumn = get_attr_from_cache('columns', 'id', $relation->relation_source_column_id, '*');
         else if(strlen($relation->relation_source_column) > 0)
-            $targetColumn = get_attr_from_cache('columns', 'name', $relation->relation_source_column, '*');
+        {
+            $columnName = explode('.', $relation->relation_source_column);
+            $columnName = last($columnName);
+            $targetColumn = get_attr_from_cache('columns', 'name', $columnName, '*');
+        }
         else if($relation->column_data_source_id > 0)
             $targetColumn = null;
         else

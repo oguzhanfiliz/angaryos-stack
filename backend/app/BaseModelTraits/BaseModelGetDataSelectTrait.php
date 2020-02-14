@@ -72,10 +72,15 @@ trait BaseModelGetDataSelectTrait
         
         $params->table_alias  = $params->column->name.'___'.$table->name.$params->relation->id;
         
-        if(strstr($params->relation->relation_display_column, '.'))
+        $joinIds = json_decode($params->relation->join_table_ids);
+        $joinId = $joinIds[0];
+        $params->table_alias = get_attr_from_cache('join_tables', 'id', $joinId, 'join_table_alias');
+        
+        
+        /*if(strstr($params->relation->relation_display_column, '.'))
             $params->table_alias = explode('.', $params->relation->relation_display_column)[0];
         else if(strstr($params->relation->relation_source_column, '.'))
-            $params->table_alias = explode('.', $params->relation->relation_source_column)[0];
+            $params->table_alias = explode('.', $params->relation->relation_source_column)[0];*/
         
         
         if(strstr($params->relation->relation_display_column, '.'))
@@ -126,29 +131,4 @@ trait BaseModelGetDataSelectTrait
         
         $params->model->addSelect(DB::raw($temp));
     }
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-   
-    
-    
-    
-    public function add_select_for_join_table_ids($params)
-    {
-        dd('add_select_for_join_table_ids');
-        //daha önce joined tabledan ekleme yapıldı add_select_for_joined_column
-    }
-    
-    
-    
-    
-    
-    
 }

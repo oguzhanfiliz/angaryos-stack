@@ -80,6 +80,44 @@ trait BaseModelGetDataJoinTrait
         });
     }
     
+    public function addJoinWithColumnForJoinTableIdsForOneToMany($params)
+    {
+        //left join lateral jsonb_array_elements("test"."test_relation_table_column") with ordinality as users_lateral on true = true 
+        //left join users as users on (users_lateral.value->>0)::bigint = "users"."id" 
+
+        //--left join "users" as "users" on "test"."test_relation_table_column" @> users.id::text::jsonb 
+        
+        
+        
+        
+        
+        $lateral = 'lateral jsonb_array_elements('
+                .$params->join->connection_column_with_alias.') with ordinality ' 
+                .' as '.$params->join->join_table_alias.'_lateral';
+        $params->model->leftJoin(DB::raw($lateral), DB::raw('true'), '=', DB::raw('true'));
+        
+        $params->model->leftJoin($params->joinTable->name . ' as ' . $params->join->join_table_alias,
+                DB::raw('('.$params->join->join_table_alias.'_lateral.value->>0)::bigint'),
+                '=',
+                $params->join->join_table_alias.'.'.$params->joinColumn->name);
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        /*$params->model->leftJoin($params->joinTable->name . ' as ' . $params->join->join_table_alias, 
+        function($join) use($params)
+        {
+           $join->on($params->join->connection_column_with_alias,
+                   '@>', 
+                   DB::raw($params->join->join_table_alias.'.'.$params->joinColumn->name.'::text::jsonb'));
+        });*/
+    }
+    
     public function addJoinWithColumnForRelationSqlForOneToOne($params)
     {
         $params->model->leftJoin(DB::raw($params->joinTable), 
@@ -90,6 +128,39 @@ trait BaseModelGetDataJoinTrait
                    '=', 
                    $params->tableAlias.'.'.$params->relation->relation_source_column);
         });
+    }
+    
+    public function addJoinWithColumnForRelationSqlForOneToMany($params)
+    {
+        //left join lateral jsonb_array_elements(test.test_sql_relation_one_to_many) with ordinality as test_sql_relation_one_to_many___sql_relation47_lateral on true = true 
+        //left join (select * from test_types) as test_sql_relation_one_to_many___sql_relation47 on (test_sql_relation_one_to_many___sql_relation47_lateral.value->>0)::bigint = "test_sql_relation_one_to_many___sql_relation47"."id" 
+
+
+        //--left join (select * from test_types) as test_sql_relation_one_to_many___sql_relation47 on "test"."test_sql_relation_one_to_many" @> test_sql_relation_one_to_many___sql_relation47.id::text::jsonb 
+
+        
+        
+        $lateral = 'lateral jsonb_array_elements('
+                .$this->getTable().'.'.$params->column->name.') with ordinality ' 
+                .' as '.$params->tableAlias.'_lateral';
+        $params->model->leftJoin(DB::raw($lateral), DB::raw('true'), '=', DB::raw('true'));
+        
+        $params->model->leftJoin(DB::raw($params->joinTable), 
+                DB::raw('('.$params->tableAlias.'_lateral.value->>0)::bigint'),
+                '=',
+                $params->tableAlias.'.'.$params->relation->relation_source_column);
+        
+        
+        
+        
+        /*$params->model->leftJoin(DB::raw($params->joinTable), 
+        function($join) use($params)
+        {
+           $join->on(
+                   $this->getTable().'.'.$params->column->name,
+                   '@>', 
+                   DB::raw($params->tableAlias.'.'.$params->relation->relation_source_column.'::text::jsonb'));
+        });*/
     }
     
     public function addJoinWithColumnForTableIdAndColumnIds($params)
@@ -133,6 +204,15 @@ trait BaseModelGetDataJoinTrait
                 DB::raw('('.$params->join_table_alias.'_lateral.value->>0)::bigint'),
                 '=',
                 $params->join_table_alias.'.'.$params->join_source->name);
+        
+        
+        //{"1": {"source": 1, "display": "ID"}, "2": {"source": 3, "display": "Ad"}}
+        //Bu da çalışıyor ama kolon yukarıdaki şekilde geri döndürüldüğü için lateral ile böldük
+        /*$params->model->leftJoin(
+                $params->join_table->name . ' as ' . $params->join_table_alias, 
+                $this->getTable().'.'.$params->column->name,
+                '@>',
+                DB::raw($params->join_table_alias.'.'.$params->join_source->name.'::text::jsonb'));*/
     }
     
     public function addJoinWithColumnForDataSource($params) { }
@@ -180,91 +260,5 @@ trait BaseModelGetDataJoinTrait
                 '=', 
                 $params->join->connection_column_with_alias);
     }
-    
-    
-    
-    
-    
-    public function add_join_for_column_array_for_many_to_one($params)
-    {
-        $params->model->leftJoin(
-                $params->realtion_table_name, 
-                $params->realtion_column_name, 
-                '@>', 
-                $params->join->connection_column_with_alias);
-    }
-    
-    public function add_join_for_column_array_for_one_to_many($params)
-    {
-        $params->model->leftJoin(
-                $params->realtion_table_name, 
-                $params->join->connection_column_with_alias, 
-                '@>', 
-                $params->realtion_column_name);
-    }
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    public function add_join_for_relation_sql_for_one_to_many($params)
-    {
-        dd('many için yaz');
-        $params->model->leftJoin(DB::raw($params->join_table), 
-        function($join) use($params)
-        {
-           $join->on(
-                   $params->record->getTable().'.'.$params->column->name,
-                   '=', 
-                   $params->table_alias.'.'.$params->relation->relation_source_column);
-        });
-    }
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    public function add_join_for_with_join_table_ids($params)
-    {
-        dd('add_join_for_with_join_table_ids');
-    }
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
     
 }

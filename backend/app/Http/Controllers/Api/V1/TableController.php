@@ -23,7 +23,7 @@ class TableController extends Controller
     
     public function __construct()
     {
-        //\Cache::flush();
+        \Cache::flush();
         
         global $pipe;
         //if(!isset($pipe['table']) || strlen($pipe['table']) == 0)

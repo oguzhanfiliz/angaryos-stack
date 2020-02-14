@@ -54,7 +54,7 @@ $columns_validations =
     'color_id' => [ $column_validations['required']->id, $column_validations['numeric']->id ],
     'data_source_col_relation_ids' => [$column_validations['required']->id, $column_validations['select_updated_at']->id ],
     'join_table_alias' => [$column_validations['required']->id, $column_validations['unique']->id ],
-    'profile_picture' => [ $column_validations['files_type:image']->id, $column_validations['files_count:1']->id ],
+    'profile_picture' => [ $column_validations['nullable']->id,$column_validations['files_type:image']->id, $column_validations['files_count:1']->id ],
     'image' => [ $column_validations['files_type:image']->id, $column_validations['files_count:1']->id ],
     'layer_base_url ' => [$column_validations['required']->id, $column_validations['url']->id ]
 ];
