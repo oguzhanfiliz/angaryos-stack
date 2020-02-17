@@ -23,12 +23,18 @@ export class MultiSelectElementComponent
     @Input() filterType: string;
     @Input() upColumnName: string;
     @Input() upFormId: string = "";
-    @Input() showClearDataButton: boolean = false;
+    @Input() showClearDataButton;
     
     baseElementSelector = "";
     val = [];
 
     @Output() changed = new EventEmitter();
+
+    constructor()
+    {
+        if(this.showClearDataButton == null)
+            this.showClearDataButton = false;
+    }
 
     ngAfterViewInit()
     {

@@ -44,7 +44,7 @@ export class TimeElementComponent
 
     ngOnChanges()
     {
-        this.val = BaseHelper.dBDateStringToHumanString(this.value);
+        this.val = this.value;
     }
 
     addInputMask()

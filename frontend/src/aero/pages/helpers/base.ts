@@ -245,7 +245,7 @@ export abstract class BaseHelper
     return rt;
   }
 
-  public static dBDateStringToHumanString(dateString) 
+  public static dBDateTimeStringToHumanDateTimeString(dateString) 
   {
     if(dateString == null || dateString.length == 0) return dateString;
     
@@ -254,20 +254,25 @@ export abstract class BaseHelper
     return date[2]+"/"+date[1]+"/"+date[0]+" "+arr[1];
   }
 
-  public static humanDateStringToDBString(dateString) 
+  public static dBDateStringToHumanDateString(dateString) 
+  {
+    if(dateString == null || dateString.length == 0) return dateString;
+    
+    var date = dateString.split('-');
+    return date[2]+"/"+date[1]+"/"+date[0];
+  }
+
+  public static humanDateTimeStringToDBDateTimeString(dateString) 
   {
     var arr = dateString.split(' ');
     var date = arr[0].split('/');
     return date[2]+"-"+date[1]+"-"+date[0]+" "+arr[1];
   }
 
-  public static humanDateStringToDate(str)
+  public static humanDateStringToDBDateString(str)
   {
-    str = str.split(" ");
-    var date = str[0].split("/");
-    var time = str[1].split(":")
-    
-    return new Date(date[2], date[1] - 1, date[0], time[0], time[1], time[2]);
+    var date = str.split('/');
+    return date[2]+"-"+date[1]+"-"+date[0];
   }
 
   public static writeToPipe(key, data, debug = false)

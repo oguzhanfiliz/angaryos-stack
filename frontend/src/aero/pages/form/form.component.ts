@@ -270,7 +270,8 @@ export class FormComponent
             params['single_column'] = this.inFormColumnName;
 
         this.startLoading();
-        
+        console.log(params);
+        return;
         //this.sessionHelper.doHttpRequest("POST", url, params) 
         this.sessionHelper.doHttpRequest("GET", url, params) 
         .then((data) => 

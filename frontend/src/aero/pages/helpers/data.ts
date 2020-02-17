@@ -177,7 +177,7 @@ export abstract class DataHelper
 
     public static getFilterDescriptionForDateTimeType(filterType, data)
     {
-        data = BaseHelper.dBDateStringToHumanString(data);
+        data = BaseHelper.dBDateTimeStringToHumanDateTimeString(data);
         
         switch(filterType)
         {
@@ -285,7 +285,7 @@ export abstract class DataHelper
     {
         switch(guiType)
         {
-            case 'datetime': return BaseHelper.dBDateStringToHumanString(data);
+            case 'datetime': return BaseHelper.dBDateTimeStringToHumanDateTimeString(data);
             default: return data;
         }
     }
@@ -303,8 +303,13 @@ export abstract class DataHelper
                 break;
             case 'multiselect':
             case 'multiselectdragdrop':
-            case 'jsonb':
                 data = this.changeDataForFormByGuiTypeMultiSelect(data);
+                break;
+            case 'datetime':
+                data = BaseHelper.humanDateTimeStringToDBDateTimeString(data);
+                break;
+            case 'date':
+                data = BaseHelper.humanDateStringToDBDateString(data);
                 break;
             case 'point':
             case 'linestring':
@@ -317,8 +322,6 @@ export abstract class DataHelper
                 if(guiType.indexOf("multi") > -1)
                     if(data.indexOf("MULTI") < 0)
                         data = guiType.toUpperCase()+"("+data+")";
-
-                console.log(data)
                 break;
         }
 
@@ -413,7 +416,7 @@ export abstract class DataHelper
         data = data.replace('_', '');
         if(data.length < 19) return "";
         
-        return BaseHelper.humanDateStringToDBString(data);
+        return BaseHelper.humanDateTimeStringToDBDateTimeString(data);
     }
 
     public static changeDataForFilterByGuiTypeSelectAndMultiSelect(columnName, elementName, localKey)
