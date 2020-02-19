@@ -21,9 +21,16 @@ class TestRepository
         return [$temp];
     }
     
-    public function getRecordsForListBySourceData($data)
+    public function getRecordsForListBySourceData($record, $column)
     {
-        return ['1' => 'Bir'];
+        $guiType = get_attr_from_cache('column_gui_types', 'id', $column->column_gui_type_id, 'name');
+        
+        if($guiType == 'select')
+            return 'Bir';
+        else if($guiType == 'multiselect')
+            return [['source' => '1', 'display' => 'Bir']];
+        else
+            dd('unexpected.gui.type.'.$guiType);
     }
     
     public function searchRecords($serach, $page, $limit = REC_COUNT_PER_PAGE)
@@ -33,7 +40,7 @@ class TestRepository
     
     public function whereRecords($serach)
     {
-        dd('TestRepository:'.__FUNCTION__);
+        return [1];
     }
     
     public function ClearCache($tableName, $record, $type) { }

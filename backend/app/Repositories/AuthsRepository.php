@@ -50,15 +50,21 @@ class AuthsRepository
         return $return;
     }
     
-    public function getRecordsForListBySourceData($data)
+    public function getRecordsForListBySourceData($record, $column)
     {
+        $data = $record->{$column->name};
         $data = $this->getRecordsBySourceData($data);
         
         $return = [];
-        foreach($data as $item)
-            $return[$item->_source_column] = $item->_display_column;
+        foreach($data as $i => $item)
+        {
+            $temp['source'] = $item->_source_column;
+            $temp['display'] = $item->_display_column;
+            
+            $return[$i] = $temp;
+        }
         
-        return $return;
+        return json_encode($return);
     }
     
     public function searchRecords($serach, $page, $limit = REC_COUNT_PER_PAGE)

@@ -43,20 +43,19 @@ class TableAfterTriggerSubscriber
         }
         
         foreach($columns as $column)
-        {
-            if(strlen($column->subscriber_ids) > 0)
-            {
-                $subscribers = $subscribers = $this->getSubscribers($column->subscriber_ids);
-                foreach($subscribers as $subscriber)
+            if(isset($column->subscriber_ids))
+                if(strlen($column->subscriber_ids) > 0)
                 {
-                    $subscriberTypeName = get_attr_from_cache('subscriber_types', 'id', $subscriber->subscriber_type_id, 'name');
-                    if($subscriberTypeName != 'after') continue;
-                    
-                    $temp = $this->triggerSubscriber($record, $table, $column, $subscriber, $type);
-                    $returned = array_merge($returned, $temp);
+                    $subscribers = $subscribers = $this->getSubscribers($column->subscriber_ids);
+                    foreach($subscribers as $subscriber)
+                    {
+                        $subscriberTypeName = get_attr_from_cache('subscriber_types', 'id', $subscriber->subscriber_type_id, 'name');
+                        if($subscriberTypeName != 'after') continue;
+
+                        $temp = $this->triggerSubscriber($record, $table, $column, $subscriber, $type);
+                        $returned = array_merge($returned, $temp);
+                    }
                 }
-            }
-        }
                 
         if(count($returned) > 0)
         {

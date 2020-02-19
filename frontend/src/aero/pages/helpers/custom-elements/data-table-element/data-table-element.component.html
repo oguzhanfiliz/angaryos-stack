@@ -36,7 +36,15 @@
                 <i class="zmdi zmdi-sort-amount-desc"></i>
             </button>
 
-            <button *ngIf="!lightTable"
+            <button *ngIf="!lightTable && !archiveTable" id="report-button"
+                (click)="downloadStandartReport()"
+                class="btn btn-sm float-right btn-primary btn-icon pull-right" 
+                type="button">
+
+                <span class="ti-arrow-down"></span> 
+            </button>
+
+            <!--<button *ngIf="!lightTable"
                 id="report-button"
                 class="btn btn-sm float-right btn-primary btn-icon pull-right" 
                 data-toggle="dropdown" role="button" aria-haspopup="true" 
@@ -50,7 +58,7 @@
                         Tabloyu İndir
                     </a>
                 </li>
-            </ul>
+            </ul> -->
 
             <button *ngIf="!lightTable && !archiveTable && can('deleted')"
                 id="delete-button" (click)="deleted()"
@@ -196,7 +204,7 @@
                                                     <span class="ti-reload"></span>
                                                 </button>
 
-                                                <button *ngIf="can('userImitation', record)"
+                                                <button *ngIf="can('userImitation', record) && !archiveTable"
                                                     data-toggle="tooltip" title="Kullanıcıyı taklit et"
                                                     class="btn btn-sm float-right btn-primary btn-icon pull-right" 
                                                     (click)="userImitation(record)"> 
@@ -204,7 +212,7 @@
                                                     <span class="ti-user"></span>
                                                 </button>
 
-                                                <button *ngIf="can('authWizard', record)"
+                                                <button *ngIf="can('authWizard', record) && !archiveTable"
                                                     data-toggle="tooltip" title="Yetki oluşturma yardımcısı"
                                                     class="btn btn-sm float-right btn-primary btn-icon pull-right" 
                                                     (click)="authWizard(record)"> 
@@ -212,7 +220,7 @@
                                                     <span class="ti-control-shuffle"></span>
                                                 </button>
 
-                                                <button *ngIf="can('dataEntegrator', record)"
+                                                <button *ngIf="can('dataEntegrator', record) && !archiveTable"
                                                     data-toggle="tooltip" title="Veri Aktarma Yardımcısı"
                                                     class="btn btn-sm float-right btn-primary btn-icon pull-right" 
                                                     (click)="dataEntegrator(record)"> 

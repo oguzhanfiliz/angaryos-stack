@@ -7,7 +7,7 @@ use App\Libraries\ColumnClassificationLibrary;
 trait BaseModelGetDataWhereTrait 
 {    
     use BaseModelWhereStringTrait;
-    use BaseModelWhereIntegerTrait;
+    use BaseModelWhereNumericTrait;
     use BaseModelWhereDateTimeTrait;
     use BaseModelWhereBooleanTrait;
     use BaseModelWhereGeoTrait;
@@ -46,12 +46,22 @@ trait BaseModelGetDataWhereTrait
             {
                 case 'string':
                 case 'text':
+                case 'jsonb':
                     return $this->addWhereForString($params);
-                case 'integer': return $this->addWhereForInteger($params);
-                case 'datetime': return $this->addWhereForDateTime($params);
+                case 'integer': 
+                case 'float': 
+                    return $this->addWhereForNumeric($params);
+                case 'datetime': 
+                case 'date': 
+                case 'time': 
+                    return $this->addWhereForDateTime($params);
                 case 'boolean': return $this->addWhereForBoolean($params);
                 case 'point': 
                 case 'multipoint': 
+                case 'linestring': 
+                case 'multilinestring': 
+                case 'polygon': 
+                case 'multipolygon': 
                     return $this->addWhereForGeo($params);
                 default: dd($dbTypeName.' için where yap');
             } 
@@ -103,6 +113,32 @@ trait BaseModelGetDataWhereTrait
                     foreach($params->filter->filter as $filter)
                         $query->where($params->column->column_name_with_alias, '=', $params->filter->filter);
                 });
+                break;
+            default: abort(helper('response_error', 'undefined.filter.type:'.$params->filter->type));  
+        }
+    }
+    
+    public function addWhereForRelationSqlForOneToMany($params)
+    {
+        switch ($params->filter->type)
+        {
+            case 1://table filter (basic)
+                $params->model->where(function ($query) use ($params) 
+                {
+                    foreach($params->filter->filter as $filter)
+                    {
+                        $query->orWhereRaw("$params->column_name_with_alias @> '$filter'");
+                        $query->orWhereRaw("$params->column_name_with_alias @> '\"$filter\"'");
+                    }
+                });
+                break;
+            case 2://all element in same record
+                foreach($params->filter->filter as $filter)
+                    $params->model->where(function ($query) use ($params, $filter) 
+                    {
+                        $query->whereRaw("$params->column_name_with_alias @> '$filter'");
+                        $query->orWhereRaw("$params->column_name_with_alias @> '\"$filter\"'");
+                    });
                 break;
             default: abort(helper('response_error', 'undefined.filter.type:'.$params->filter->type));  
         }
@@ -216,6 +252,7 @@ trait BaseModelGetDataWhereTrait
             switch($params->column->db_type_name)
             {
                 case 'jsonb': return $this->addWhereForDataSourceJsonb($params);
+                case 'integer': return $this->addWhereForDataSourceNumeric($params);
                 default: dd('addWhereForDataSource db type: ' .$params->column->db_type_name);
             }
         }
@@ -227,7 +264,7 @@ trait BaseModelGetDataWhereTrait
         $params->model->whereRaw($where);
     }
     
-    private function addWhereForDataSourceJsonb($params)
+    private function addWhereForDataSourceJsonb($params)//OneToMany
     {
         $relation = $params->column->getRelationData('column_table_relation_id');
         $dataSource = $relation->getRelationData('column_data_source_id');
@@ -248,8 +285,17 @@ trait BaseModelGetDataWhereTrait
                     $query->orWhereRaw($params->column_name_with_alias. ' @> \''.$filter.'\'::jsonb');
             }
             
-            foreach($temp as $auth)
-                $query->orWhereRaw($params->column_name_with_alias. ' @> \''.$auth.'\'::jsonb');
+            foreach($temp as $t)
+                $query->orWhereRaw($params->column_name_with_alias. ' @> \''.$t.'\'::jsonb');
+        });
+    }
+    
+    private function addWhereForDataSourceNumeric($params)//OneToOne
+    {
+        $params->model->where(function ($query) use ($params) 
+        {
+            foreach($params->filter->filter as $filter)
+                $query->orWhereRaw($params->column_name_with_alias. ' = '.$filter);
         });
     }
     

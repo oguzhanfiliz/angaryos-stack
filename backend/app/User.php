@@ -68,6 +68,8 @@ class User extends Authenticatable
                     continue;
 
                 $temp['id'] = get_attr_from_cache('tables', 'name', $name, 'id');
+                if($temp['id'] == NULL) continue;
+                
                 $temp['name'] = $name;
                 $temp['display_name'] = get_attr_from_cache('tables', 'name', $name, 'display_name');
                 

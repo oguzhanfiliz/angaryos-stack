@@ -241,6 +241,8 @@ class TableController extends Controller
         DB::beginTransaction();
         
         $record = Event::dispatch('record.restore.requested', $archiveRecord)[1];
+        if(Gate::denies('restored', $record)) $this->abort();
+        
         Event::dispatch('record.restore.success', [$archiveRecord, $record]);
         
         DB::commit();

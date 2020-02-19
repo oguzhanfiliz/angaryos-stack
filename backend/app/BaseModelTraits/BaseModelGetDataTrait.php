@@ -112,7 +112,8 @@ trait BaseModelGetDataTrait
         
         foreach($columns as $column)
         {
-            if(!isset($column->column_gui_type_id)) dd($column);
+            if(!isset($column->column_gui_type_id)) dd('updataDataFromDataSource');
+            
             $guiTypeName = get_attr_from_cache('column_gui_types', 'id', $column->column_gui_type_id, 'name');
             if($guiTypeName == 'password')
             {
@@ -140,12 +141,12 @@ trait BaseModelGetDataTrait
             
             if(get_class($records) == 'stdClass')
             {
-                $records->{$column->name} = $repository->getRecordsForListBySourceData($records->{$column->name});
+                $records->{$column->name} = $repository->getRecordsForListBySourceData($records, $column);
             }
             else
             {
                 foreach($records as $i => $record)
-                    $records[$i]->{$column->name} = $repository->getRecordsForListBySourceData($record->{$column->name});
+                    $records[$i]->{$column->name} = $repository->getRecordsForListBySourceData($record, $column);
             }
         }
 

@@ -8,6 +8,7 @@ use App\Libraries\ChangeDataLibrary;
 use App\Libraries\ColumnClassificationLibrary;
 
 use DB;
+use Auth;
 use App\BaseModel;
 
 trait TableSubscriberTrait 
@@ -30,6 +31,7 @@ trait TableSubscriberTrait
         $params->model->limit($params->limit);
         $params->model->offset($params->limit * ($params->page - 1));
         $records = $params->model->get();
+        
         $records = $model->updataDataFromDataSource($records, $params->columns);
         
         $tableInfo = $model->getTableInfo($params->table_name);
@@ -38,6 +40,8 @@ trait TableSubscriberTrait
         
         $params->query_columns = $model->getColumns($model->getQuery(), 'column_arrays', $params->column_array_id_query);
         $queryColumns = $model->getFilteredColumns($params->query_columns);
+        
+        $records = $this->fillRecordCanInfos($records, $params->table_name);
         
         return 
         [
@@ -67,6 +71,29 @@ trait TableSubscriberTrait
         $params->model->groupBy($params->table_name.'.id');
         
         return $params;
+    }
+    
+    private function fillRecordCanInfos($records, $tableName)
+    {
+        $infos = 
+        [
+            '_is_restorable' => 'restore',
+            '_is_deletable' => 'delete',
+            '_is_editable' => 'edits',
+            '_is_showable' => 'shows'
+        ];
+        
+        $auths = Auth::user()->auths['tables'][$tableName];
+        
+        foreach($records as $i => $record)
+            foreach($infos as $columnName => $authPrefix)
+            {
+                if(isset($record->{$columnName})) continue;
+                
+                $records[$i]->{$columnName} = isset($auths[$authPrefix]);
+            }
+            
+        return $records;
     }
     
     
@@ -115,12 +142,36 @@ trait TableSubscriberTrait
         $model->addWheres($params->model, $params->columns, $params->filters);
         $model->addSelects($params->model, $params->columns);
         
+        $this->addFiltersForArchiveAndDeletedList($params->model, $params->table_name);
+        
         $params->model->where($params->table_name.'.record_id', $record->id);
         
         $params->model->addSelect($params->table_name.'.id');
         $params->model->groupBy($params->table_name.'.id');
         
         return $params;
+    }
+    
+    public function addFiltersForArchiveAndDeletedList($model, $tableName)
+    {
+        $tableName = str_replace('_archive', '', $tableName);
+        
+        $auths = Auth::user()->auths;
+        
+        if(!isset($auths['filters'])) return;
+        if(!isset($auths['filters'][$tableName])) return;
+        if(!isset($auths['filters'][$tableName]['list'])) return;
+        
+        $filters = $auths['filters'][$tableName]['list'];
+        
+        $model->leftJoin($tableName, DB::raw($tableName.'.id'), '=', DB::raw($tableName.'_archive.record_id'));
+        
+        foreach($filters as $filterId)
+        {
+            $sqlCode = get_attr_from_cache('data_filters', 'id', $filterId, 'sql_code');
+            $sql = str_replace('TABLE', $tableName, $sqlCode);            
+            $model->whereRaw($sql);
+        }
     }
     
     
@@ -168,6 +219,8 @@ trait TableSubscriberTrait
         $params->recordModel->addSorts($params->model, $params->columns, $params->sorts);
         $params->recordModel->addWheres($params->model, $params->columns, $params->filters);
         $params->recordModel->addSelects($params->model, $params->columns);
+        
+        $this->addFiltersForArchiveAndDeletedList($params->model, $params->table_name);
         
         $tableName = substr($params->table_name, 0, -8);
         
@@ -515,6 +568,8 @@ trait TableSubscriberTrait
         $columnSet = $model->getFilteredColumnSet($params->columnSet);
         
         $record = $params->model->first();
+        if($record == NULL) custom_abort ('no.auth.for.this.record');
+        
         $record = $model->updataDataFromDataSource($record, $params->columns);
         
         return 

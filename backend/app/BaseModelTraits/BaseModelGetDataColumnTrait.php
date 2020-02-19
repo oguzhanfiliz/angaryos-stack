@@ -50,16 +50,17 @@ trait BaseModelGetDataColumnTrait
     {
         $columns = helper('get_null_object');
         
-        foreach(json_decode($columnArray->column_ids) as $columnId)
-        {
-            $column = get_attr_from_cache('columns', 'id', $columnId, '*');
-            
-            $column->gui_type_name = get_attr_from_cache('column_gui_types', 'id', $column->column_gui_type_id, 'name');
-            $column->db_type_name = get_attr_from_cache('column_db_types', 'id', $column->column_db_type_id, 'name');
-            $column->table_alias = $this->getTable();
-            
-            $columns->{$column->name} = $column;
-        }
+        if(strlen($columnArray->column_ids) > 0)
+            foreach(json_decode($columnArray->column_ids) as $columnId)
+            {
+                $column = get_attr_from_cache('columns', 'id', $columnId, '*');
+
+                $column->gui_type_name = get_attr_from_cache('column_gui_types', 'id', $column->column_gui_type_id, 'name');
+                $column->db_type_name = get_attr_from_cache('column_db_types', 'id', $column->column_db_type_id, 'name');
+                $column->table_alias = $this->getTable();
+
+                $columns->{$column->name} = $column;
+            }
         
         $type = get_attr_from_cache('column_array_types', 'id', $columnArray->column_array_type_id, 'name');
         if($type == 'direct_data')

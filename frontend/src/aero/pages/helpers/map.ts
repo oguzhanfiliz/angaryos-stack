@@ -63,7 +63,7 @@ export abstract class MapHelper
 
   public static mapFactory(mapId)
   {
-    var h = $('body').height();
+    var h = window.innerHeight;
     $('#'+mapId).css('height', (h*0.9)+"px");
     $('#'+mapId).css('min-height', (h*0.9)+"px");
 

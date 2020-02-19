@@ -68,6 +68,5 @@ class BaseSubscriber
         /****    Mission Trigger Subscribers    ****/
                 
         $events->listen('standart.mission.trigger.requested', 'App\Listeners\MissionSubscriber@DoMission');
-        
     }
 }

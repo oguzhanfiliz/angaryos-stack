@@ -6,7 +6,7 @@ class MissionSubscriber
 {
     public function DoMission($mission)
     {
-        $return = FALSE;
+        $return = NULL;
         eval(helper('clear_php_code', $mission->php_code));            
         return $return;
     }

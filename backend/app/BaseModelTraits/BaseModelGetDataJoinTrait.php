@@ -70,6 +70,25 @@ trait BaseModelGetDataJoinTrait
     
     public function addJoinWithColumnForJoinTableIdsForOneToOne($params)
     {
+        global $pipe;
+        
+        $temp = substr($params->join->connection_column_with_alias, 0, strlen($pipe['table'])+1);
+        if(
+            $temp == $pipe['table'].'.' 
+            && 
+            (
+                \Request::segment(7) == 'archive'
+                ||
+                \Request::segment(6) == 'deleted'
+            )
+        )
+        {
+            $params->join->connection_column_with_alias = str_replace(
+                                                                    $pipe['table'].'.',
+                                                                    $pipe['table'].'_archive.',
+                                                                    $params->join->connection_column_with_alias);
+        }
+                
         $params->model->leftJoin($params->joinTable->name . ' as ' . $params->join->join_table_alias, 
         function($join) use($params)
         {

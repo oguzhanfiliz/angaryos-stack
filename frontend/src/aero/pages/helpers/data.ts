@@ -100,6 +100,8 @@ export abstract class DataHelper
             case "numeric": return this.getFilterDescriptionForNumericType(filterType, data);
             case "boolean": return this.getFilterDescriptionForBooleanType(filterType, guiType, data);
             case "datetime": return this.getFilterDescriptionForDateTimeType(filterType, data);
+            case "date": return this.getFilterDescriptionForDateType(filterType, data);
+            case "time": return this.getFilterDescriptionForTimeType(filterType, data);
             case "jsonb": return this.getFilterDescriptionForJsonbType(columnName, filterType, data, key);
             case "select":
             case "multiselect": 
@@ -114,8 +116,7 @@ export abstract class DataHelper
 
     public static getFilterDescriptionForJsonbType(columnName, filterType, data, key)
     {
-        data = BaseHelper.jsonStrToObject(data);
-        return this.getFilterDescriptionForSelectType(columnName, filterType, data, key);
+        return this.getFilterDescriptionForTextType(filterType, data);
     }
 
     public static getFilterDescriptionForStringType(filterType, data)
@@ -188,6 +189,30 @@ export abstract class DataHelper
         }
     }
 
+    public static getFilterDescriptionForDateType(filterType, data)
+    {
+        data = BaseHelper.dBDateStringToHumanDateString(data);
+        
+        switch(filterType)
+        {
+            case 1: return data;
+            case 2: return data + " 'dan önce";
+            case 3: return data + " 'dan sonra";
+            default: return "no datetime filter type for " + filterType;
+        }
+    }
+
+    public static getFilterDescriptionForTimeType(filterType, data)
+    {
+        switch(filterType)
+        {
+            case 1: return data;
+            case 2: return data + " 'dan önce";
+            case 3: return data + " 'dan sonra";
+            default: return "no datetime filter type for " + filterType;
+        }
+    }
+
     public static getFilterDescriptionForBooleanType(filterType, guiType, data)
     {
         switch(filterType)
@@ -248,7 +273,8 @@ export abstract class DataHelper
 
     public static convertDataByGuiTypeMultiSelect(guiType, data)
     {
-        data = BaseHelper.jsonStrToObject(data);
+        if(typeof data != "object")
+            data = BaseHelper.jsonStrToObject(data);
 
         var html = "";        
         var keys = Object.keys(data);
@@ -319,7 +345,7 @@ export abstract class DataHelper
             case 'multipolygon':
                 data = this.changeDataForFormByGuiTypeGeo(guiType, data);
                 
-                if(guiType.indexOf("multi") > -1)
+                if(data.length > 0 && guiType.indexOf("multi") > -1)
                     if(data.indexOf("MULTI") < 0)
                         data = guiType.toUpperCase()+"("+data+")";
                 break;
@@ -339,6 +365,7 @@ export abstract class DataHelper
         else
         {
             var wkt = guiType.toUpperCase() + "(";
+            if(guiType == "multipolygon") wkt += "(";
 
             var temp = data.split('(');
             for(var i = 0; i < temp.length; i++)
@@ -347,7 +374,9 @@ export abstract class DataHelper
                     var coords = temp[i].split(')')[0];
                     wkt += "(" + coords + "),";
                 }
-            wkt = wkt.substr(0, wkt.length -1) + ")";
+
+            wkt = wkt.substr(0, wkt.length -1) + ")";            
+            if(guiType == "multipolygon") wkt += ")";
 
             return wkt;
         } 
@@ -384,6 +413,9 @@ export abstract class DataHelper
             case 'boolean':
                 data = this.changeDataForFilterByGuiTypeBoolean(data);
                 break;
+            case 'date':
+                data = this.changeDataForFilterByGuiTypeDate(data);
+                break;
             case 'datetime':
                 data = this.changeDataForFilterByGuiTypeDateTime(data);
                 break;
@@ -391,20 +423,20 @@ export abstract class DataHelper
             case 'multiselect':
                 data = this.changeDataForFilterByGuiTypeSelectAndMultiSelect(columnName, elementName, localKey);
                 break;
-            case 'jsonb':
-                data = this.changeDataForFilterByGuiTypeJsonb(columnName, elementName, localKey);
-                break;
+            //case 'jsonb':
+            //    data = this.changeDataForFilterByGuiTypeJsonb(columnName, elementName, localKey);
+            //    break;
             
         }
 
         return data;
     }
 
-    public static changeDataForFilterByGuiTypeJsonb(columnName, elementName, localKey)
+    /*public static changeDataForFilterByGuiTypeJsonb(columnName, elementName, localKey)
     {
         var data = this.changeDataForFilterByGuiTypeSelectAndMultiSelect(columnName, elementName, localKey);
         return BaseHelper.objectToJsonStr(data);
-    }
+    }*/
 
     public static changeDataForFilterByGuiTypeBoolean(data)
     {
@@ -417,6 +449,14 @@ export abstract class DataHelper
         if(data.length < 19) return "";
         
         return BaseHelper.humanDateTimeStringToDBDateTimeString(data);
+    }
+
+    public static changeDataForFilterByGuiTypeDate(data)
+    {
+        data = data.replace('_', '');
+        if(data.length < 10) return "";
+        
+        return BaseHelper.humanDateStringToDBDateString(data);
     }
 
     public static changeDataForFilterByGuiTypeSelectAndMultiSelect(columnName, elementName, localKey)

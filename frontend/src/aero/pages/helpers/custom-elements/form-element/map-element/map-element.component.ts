@@ -84,7 +84,10 @@ export class MapElementComponent
 
     addDrawing(map)
     {
-        MapHelper.addDraw(map, BaseHelper.ucfirst(this.type.replace("multi", "")), this.multiple)
+        var type = BaseHelper.ucfirst(this.type.replace("multi", ""));
+        if(type == "Linestring") type = "LineString";
+        
+        MapHelper.addDraw(map, type, this.multiple)
         MapHelper.addModify(map, this.multiple)
         MapHelper.addSnap(map);
         

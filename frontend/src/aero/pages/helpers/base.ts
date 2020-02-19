@@ -6,9 +6,11 @@ document.title = environment.title;
 export abstract class BaseHelper 
 {     
   public static angaryosUrlPath:string = environment.urlPath;
+
+  public static formSendMethod = 'POST';
   
   public static backendUrl:string = "https://"+environment.host+"/api/v1/";
-  public static baseUrl:string = "https://"+environment.host+"/";
+  public static baseUrl:string = "https://"+environment.host+"/#/"+environment.urlPath+"/dashboard";
   public static _keyStr = environment.encryptKey;
 
   public static tokenTimeOut = 1000 * 60 * 60 * 24 * 5;

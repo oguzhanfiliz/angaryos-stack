@@ -28,6 +28,7 @@ trait TableTrait
             'delete',
             'archive',
             'restore',
+            'restored',
             'deleted',
             'cloneRecord',
             'columnSetOrArrayIsPermitted',

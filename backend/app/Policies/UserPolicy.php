@@ -15,6 +15,9 @@ class UserPolicy
     {
         global $pipe;
         
+        if(!isset($user->auths['tables'][$pipe['table']]['lists'])) 
+            return FALSE;
+            
         if(!in_array($params->column_array_id, $user->auths['tables'][$pipe['table']]['lists']))
             return FALSE;
         
@@ -69,6 +72,11 @@ class UserPolicy
     
     public function archive($user, $record, $params)
     {
+        $tableName = substr($params->table_name, 0, -8);
+        
+        if(!isset($user->auths['tables'][$tableName]['restore'])) 
+            return FALSE;
+        
         $control = $this->columnSetOrArrayIsPermitted($user, $params->column_array_id, 'lists');
         if(!$control) return FALSE;
         
@@ -91,6 +99,29 @@ class UserPolicy
         }
         
         return $this->recordPermitted($record, 'restore');
+    }
+    
+    public function restored($user, $record)
+    {
+        $tableName = $record->getTable();
+        
+        $auths = $user->auths;
+        
+        if(!isset($auths['filters'])) return TRUE;
+        if(!isset($auths['filters'][$tableName])) return TRUE;
+        if(!isset($auths['filters'][$tableName]['list'])) return TRUE;
+        
+        $filters = $auths['filters'][$tableName]['list'];
+        
+        $model = $record->getQuery(); 
+        $model->whereRaw($tableName.'.id = '.$record->id);
+        foreach($filters as $filterId)
+        {
+            $sqlCode = get_attr_from_cache('data_filters', 'id', $filterId, 'sql_code');
+            $sql = str_replace('TABLE', $tableName, $sqlCode);            
+            $model->whereRaw($sql);
+        }
+        return (count($model->get()) > 0);
     }
     
     public function deleted($user, $params)
