@@ -275,8 +275,8 @@ export abstract class BaseHelper
 
   public static humanDateStringToDBDateString(str)
   {
-    if(dateString == null || dateString.length == 0) return dateString;
-    
+    if(str == null || str.length == 0) return str;
+
     var date = str.split('/');
     return date[2]+"-"+date[1]+"-"+date[0];
   }

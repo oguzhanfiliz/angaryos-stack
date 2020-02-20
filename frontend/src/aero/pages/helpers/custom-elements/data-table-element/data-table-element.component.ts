@@ -911,7 +911,6 @@ export class DataTableElementComponent
 
     inFormSavedSuccess(event)
     {
-        console.log("ad");
         var temp = BaseHelper.readFromPipe(this.getLocalKey("data"));
 
         var len = temp[this.params.page]['records'].length;
