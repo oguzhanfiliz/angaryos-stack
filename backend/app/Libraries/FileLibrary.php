@@ -94,9 +94,10 @@ class FileLibrary
     private function singleColumnControl($params)
     {
         $singleColumn = \Request::input('single_column');
-        if($singleColumn != null && $singleColumn != $params['columnName']);
+        
+        if($singleColumn != NULL && $singleColumn != $params['columnName'])
             return TRUE;
-            
+        
         return FALSE;
     }
 

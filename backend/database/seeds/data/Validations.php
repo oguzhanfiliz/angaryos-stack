@@ -59,7 +59,7 @@ else
 ?>';
 
 $validations['no_self']['php_code'] = '<?php
-if(\Request::segment(7) != \'update\')
+if(\Request::segment(7) != \'update\' || \Request::segment(5) != \'auth_groups\')
 {
     $return = TRUE;
     return;
@@ -178,9 +178,9 @@ $column_validations['required'] = NULL;
 $column_validations['integer'] = NULL;
 $column_validations['numeric'] = NULL;
 $column_validations['unique'] = NULL;
-$column_validations['date_format:Y-m-d H:i:s'] = NULL;
-$column_validations['date_format:Y-m-d'] = NULL;
-$column_validations['date_format:H:i:s'] = NULL;
+$column_validations['date_format:"Y-m-d H:i:s"'] = NULL;
+$column_validations['date_format:"Y-m-d"'] = NULL;
+$column_validations['date_format:"H:i:s"'] = NULL;
 $column_validations['boolean'] = NULL;
 $column_validations['boolean_custom'] = NULL;
 $column_validations['email'] = NULL;

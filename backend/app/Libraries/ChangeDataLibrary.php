@@ -6,7 +6,7 @@ class ChangeDataLibrary
 {
     public function UpdateData($columns, $data, $record) 
     {
-        $geoColumns = ['point', 'multipoint', 'linestring', 'multilinestring', 'polygon', 'multipolygon'];
+        //$geoColumns = ['point', 'multipoint', 'linestring', 'multilinestring', 'polygon', 'multipolygon'];
 
         foreach($data as $key => $value)
         {
@@ -15,8 +15,15 @@ class ChangeDataLibrary
                 
             if($columns[$key]['type'] == 'jsonb')
             {
-                $params = helper('get_null_object');
-                $params->value = json_decode ($value);
+                try 
+                {
+                    $params = helper('get_null_object');
+                    $params->value = json_decode ($value);
+                } 
+                catch (\Exception $exc) 
+                {
+                    continue;
+                }
 
                 $column = get_attr_from_cache('columns', 'name', $key, '*');
 
@@ -53,7 +60,7 @@ class ChangeDataLibrary
                 
                 break;
             default:
-                dd('updateDataForJsonbColumnForTableIdAndColumnIds');
+                dd('ChangeDataLibraryupdateDataForJsonbColumnForTableIdAndColumnIds');
         }
         
         return $value;

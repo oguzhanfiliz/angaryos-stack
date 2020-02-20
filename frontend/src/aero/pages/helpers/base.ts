@@ -266,6 +266,8 @@ export abstract class BaseHelper
 
   public static humanDateTimeStringToDBDateTimeString(dateString) 
   {
+    if(dateString == null || dateString.length == 0) return dateString;
+
     var arr = dateString.split(' ');
     var date = arr[0].split('/');
     return date[2]+"-"+date[1]+"-"+date[0]+" "+arr[1];
@@ -273,6 +275,8 @@ export abstract class BaseHelper
 
   public static humanDateStringToDBDateString(str)
   {
+    if(dateString == null || dateString.length == 0) return dateString;
+    
     var date = str.split('/');
     return date[2]+"-"+date[1]+"-"+date[0];
   }
