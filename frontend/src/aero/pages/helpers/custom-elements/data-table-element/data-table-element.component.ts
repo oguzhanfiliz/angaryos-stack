@@ -1,7 +1,7 @@
 import { ActivatedRoute} from '@angular/router';
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 
-import { DomSanitizer} from '@angular/platform-browser';
+import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 
 import {CdkDragDrop, moveItemInArray} from '@angular/cdk/drag-drop';
 

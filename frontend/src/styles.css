@@ -47,6 +47,13 @@ input::placeholder, .select2-selection__placeholder, textarea::placeholder
     width: 70% !important;
 }
 
+.file-preview
+{
+    box-shadow: 0px 5px 5px 0px rgba(41,42,51,0.2);
+    height: 40px;
+    width: 40px;
+}
+
 #close
 {
     position: absolute !important;

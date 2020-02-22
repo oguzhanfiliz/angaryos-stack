@@ -11,6 +11,9 @@ export abstract class BaseHelper
   
   public static backendUrl:string = "https://"+environment.host+"/api/v1/";
   public static baseUrl:string = "https://"+environment.host+"/#/"+environment.urlPath+"/dashboard";
+  
+  public static noImageUrl = 'assets/themes/aero/assets/images/profile_av.jpg';
+
   public static _keyStr = environment.encryptKey;
 
   public static tokenTimeOut = 1000 * 60 * 60 * 24 * 5;
@@ -156,6 +159,13 @@ export abstract class BaseHelper
 
 
   /***   Data Functions    ****/
+
+  public static getFileUrl(file, prefix)
+  {
+    if(file == null) return this.noImageUrl;
+
+    return "https://"+environment.host+"/"+file['destination_path']+prefix+file['file_name'];
+  }
 
   public static ucfirst(s)
   {

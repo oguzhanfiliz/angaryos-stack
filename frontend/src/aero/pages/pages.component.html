@@ -38,14 +38,14 @@
                         <li class="header">Kısayollar</li>
                         <li class="body">
                             <ul class="menu app_sortcut list-unstyled">
-                                <li>
+                                <!--<li>
                                     <a>
                                         <div class="icon-circle mb-2 bg-blue">
                                             <i class="zmdi zmdi-account"></i>
                                         </div>
                                         <p style="font-size: 11px" class="mb-0">Yetki<br>Yenile</p>
                                     </a>
-                                </li>
+                                </li>-->
                             </ul>
                         </li>
                     </ul>
@@ -80,7 +80,7 @@
                 <ul class="list">
                     <li [hidden]="user == {}">
                         <div class="user-info">
-                            <a class="image" href="profile.html"><img src="assets/themes/aero/assets/images/profile_av.jpg" alt="User"></a>
+                            <a class="image"><img src="{{ getProfilePictureUrl() }}" alt='{{ user["name_basic"] + " " + user["surname"] }}'></a>
                             <div class="detail">
                                 <h4>{{ user["name_basic"] + " " + user["surname"] }}</h4>
                                 <small>{{ user["email"] }}</small>                        

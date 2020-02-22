@@ -254,6 +254,9 @@ export abstract class DataHelper
             case "text":
                 data = this.convertDataByGuiTypeText(type, data);
                 break;
+            case "files":
+                data = this.convertDataByGuiTypeFiles(type, data);
+                break;
             case "boolean":
                 data = this.convertDataByGuiTypeBoolean(type, data);
                 break;
@@ -299,6 +302,23 @@ export abstract class DataHelper
             case 'boolean': return data ? 'Aktif' : 'Pasif';
             default: return data.toString();
         }
+    }
+
+    public static convertDataByGuiTypeFiles(guiType, data)
+    {
+        if(data == null) return null;
+
+        var rt = "";
+
+        var temp = BaseHelper.jsonStrToObject(data);
+        for(var i = 0; i < temp.length; i++)
+        {
+            rt += "<a data-fancybox='gallery' href='"+BaseHelper.getFileUrl(temp[i], 'b_')+"'>"
+                rt += "<img src='"+BaseHelper.getFileUrl(temp[i], 's_')+"' class='rounded-circle file-preview' alt=''>";
+            rt += "</a>"
+        }
+
+        return rt;
     }
 
     public static convertDataByGuiTypeText(guiType, data)

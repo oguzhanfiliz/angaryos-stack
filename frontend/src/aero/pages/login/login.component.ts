@@ -57,8 +57,11 @@ export class LoginComponent
         .then((data) => 
         {
             BaseHelper.setToken(data["token"]);
-            this.sessionHelper.fillLoggedInUserInfo();
-            window.location.href = BaseHelper.baseUrl;
+            this.sessionHelper.fillLoggedInUserInfo()
+            .then((data) =>
+            {
+                window.location.href = BaseHelper.baseUrl;
+            });
         })
         .catch((errorMessage) =>  
         {

@@ -55,6 +55,14 @@ export class PagesComponent
     return environment.appName.charAt(0).toUpperCase() + environment.appName.slice(1);
   }
 
+  getProfilePictureUrl()
+  {
+    if(this.user['profile_picture'] == null) return BaseHelper.noImageUrl;
+
+    var temp = BaseHelper.jsonStrToObject(this.user['profile_picture']);
+    return BaseHelper.getFileUrl(temp[0], '');
+  }
+
   searchInMenuInputChanged(event) 
   {
     var params =

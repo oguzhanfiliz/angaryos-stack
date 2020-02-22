@@ -31,6 +31,13 @@ export class ColumnArrayElementComponent
             this.record = BaseHelper.jsonStrToObject(this.recordJson);
     }
 
+     isGeoColumn(columnName)
+    {
+        var geoColumns = ['point', 'linestring', 'polygon', 'multipoint', 'multilinestring', 'multipolygon'];
+        var type = this.getDataFromColumnArray('columns.'+columnName+".gui_type_name");
+        return geoColumns.includes(type);
+    }
+
     getDataFromColumnArray(path = '')
     {
         return DataHelper.getData(this.columnArray, path);

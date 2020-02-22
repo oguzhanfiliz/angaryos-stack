@@ -7,7 +7,16 @@
             <th class="title">
                 {{ getDataFromColumnArray('columns.'+columnName+'.display_name') }}
             </th>
-            <td [innerHTML]="getConvertedDataForGuiByColumnName(columnName)">
+            <td *ngIf="!isGeoColumn(columnName)" [innerHTML]="getConvertedDataForGuiByColumnName(columnName)">
+            </td>
+            <td *ngIf="isGeoColumn(columnName)">
+                <geo-preview-element 
+                    *ngIf="isGeoColumn(columnName)" 
+                    name="{{ columnName }}"
+                    type="{{ getDataFromColumnArray('columns.'+columnName+'.gui_type_name') }}"
+                    srid="{{ getDataFromColumnArray('columns.'+columnName+'.srid') }}"
+                    wkt="{{ this.getDataFromRecord(columnName) }}">
+                </geo-preview-element>
             </td>
         </tr>
     </tbody>
@@ -27,4 +36,21 @@
         lightTable = "true" tableName="tree:{{ columnArray.tree }}"
         defaultLimit="{{ defaultLimit }}">
     </data-table-element>
+</div>
+
+<div class="modal fade" id="mapPreviewModal" tabindex="-1" role="dialog" aria-labelledby="mapPreviewModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-body" style="padding: 5px !important;">
+                <div style="width: 100%; min-height: 200px;"  id="mapPreview"></div>
+                <div id="mouse-position-mapPreview" class="mouse-position"></div>
+                
+                <button id="close" data-dismiss="modal"
+                    class="btn btn-primary btn-sm btn-icon" type="button">
+
+                    <i class="zmdi zmdi-close"></i>
+                </button>
+            </div>
+        </div>
+    </div>
 </div>

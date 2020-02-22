@@ -258,10 +258,12 @@ export class FormComponent
         else
             url += this.recordId + "/update";
 
+        var params = null;
+        
         if(BaseHelper.formSendMethod == "POST")
-            var params = this.getElementsDataForUpload(); 
+            params = this.getElementsDataForUpload(); 
         else
-            var params = this.getElementsData();
+            params = this.getElementsData();
 
         if(this.inFormColumnName.length > 0)
         {
