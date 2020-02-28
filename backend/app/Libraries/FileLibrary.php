@@ -103,6 +103,8 @@ class FileLibrary
 
     public function fileUploadEvent($params)
     {
+        if($params['type'] == 'clone') return NULL;
+        
         $control = $this->singleColumnControl($params);
         if($control == TRUE) return [];
             

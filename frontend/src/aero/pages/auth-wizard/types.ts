@@ -54,7 +54,7 @@ export const types = [
             table: 'data_filters',
             in_form_column: 'data_filter_ids',
             description: 'Kullanıcıların varsayılan olarak kayıt <span class="badge badge-warning">geri yükleme yetkisi yoktur</span>. Burada, bu yetkiyi ekleyebilir yada kısıtlayabilirsiniz.',
-            search: 'filters:tableName:restore:'
+            search: 'tableName:restore:'
         },
         {
             source: 'deleted',

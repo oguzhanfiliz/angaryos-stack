@@ -68,5 +68,11 @@ class BaseSubscriber
         /****    Mission Trigger Subscribers    ****/
                 
         $events->listen('standart.mission.trigger.requested', 'App\Listeners\MissionSubscriber@DoMission');
+        
+        
+        
+        /****    Dashboard Subscribers    ****/
+                
+        $events->listen('standart.dashboard.getData.requested', 'App\Listeners\DashboardSubscriber@GetData');
     }
 }

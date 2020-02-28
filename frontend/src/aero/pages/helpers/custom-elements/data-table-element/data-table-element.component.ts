@@ -750,8 +750,17 @@ export class DataTableElementComponent
         if(this.tableName.indexOf('tree:') == -1)
         {
             var auth = BaseHelper.loggedInUserInfo.auths.tables[this.tableName];
-            this.params.column_array_id = auth['lists'][0];
-            this.params.column_array_id_query = auth['queries'][0];
+
+            var listId = 0;
+            if(typeof auth['lists'] != "undefined" && typeof auth['lists'][0] != "undefined")
+                listId = auth['lists'][0]
+
+            var queryId = 0;
+            if(typeof auth['queries'] != "undefined" && typeof auth['queries'][0] != "undefined")
+                queryId = auth['queries'][0]
+                
+            this.params.column_array_id = listId;
+            this.params.column_array_id_query = queryId;
         }
         else
         {

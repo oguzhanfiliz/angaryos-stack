@@ -177,7 +177,10 @@ export class AeroThemeHelper
           children: []
         }; 
  
-        var children = [];        
+        if(typeof tables[tableGroupIds[i]] == "undefined")
+          continue;
+
+        var children = []; 
         var tempTables = tables[tableGroupIds[i]];
         for(var j = 0; j < tempTables.length; j++)
         {

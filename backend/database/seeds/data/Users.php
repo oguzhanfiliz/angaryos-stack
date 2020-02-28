@@ -28,7 +28,11 @@ $adminAuth->save();
 
 $createExcept = [];//['data_filter_types'];
 $hideMenuLink = [];
-/*[
+[
+    'log_levels',
+    'column_gui_types',
+    'column_db_types', 
+    'custom_layer_types',
     'data_filter_types', 
     'join_tables', 
     'column_gui_triggers', 
@@ -39,8 +43,11 @@ $hideMenuLink = [];
     'column_collective_infos', 
     'color_classes', 
     'subscriber_types', 
-    'subscribers'
-];*/
+    'subscribers',
+    'data_source_col_relations',
+    'data_source_types',
+    'data_source_directions'
+];
 
 $adminAuths = [];
 foreach($tables as $table)
@@ -85,7 +92,10 @@ foreach($tables as $table)
     
     array_push($tableAuths, $temp.'shows:0');
     array_push($tableAuths, $temp.'edits:0');
-    if(!in_array($table->name, $createExcept)) array_push($tableAuths, $temp.'creates:0');
+    
+    if(!in_array($table->name, $createExcept)) 
+        array_push($tableAuths, $temp.'creates:0');
+    
     array_push($tableAuths, $temp.'deleteds:0');
     
     
@@ -112,9 +122,19 @@ foreach($tables as $table)
     array_push($adminAuths, $tableAuths->id);
 }
 
+
+
 array_push($adminAuths, 'admin:authWizard:0:0');
 array_push($adminAuths, 'admin:userImitation:0:0');
 array_push($adminAuths, 'admin:dataEntegrator:0:0');
+
+
+
+array_push($adminAuths, 'dashboards:RecordCount:auth_groups:0');
+array_push($adminAuths, 'dashboards:RecordCount:users:0');
+array_push($adminAuths, 'dashboards:RecordCount:departments:0');
+
+
 
 $adminAuth->auths = $adminAuths;
 $adminAuth->save();

@@ -117,6 +117,11 @@ class User extends Authenticatable
         ];
     }
     
+    public function getDashboardArray()
+    {
+        return $this->auths['dashboards'];
+    }
+    
     public function getAuthRecursive($ids)
     {
         if($ids == null) return [];

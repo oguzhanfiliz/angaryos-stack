@@ -310,7 +310,10 @@ export abstract class DataHelper
 
         var rt = "";
 
-        var temp = BaseHelper.jsonStrToObject(data);
+        var temp = data;
+        if(typeof temp == "string")
+            temp = BaseHelper.jsonStrToObject(data);
+            
         for(var i = 0; i < temp.length; i++)
         {
             rt += "<a data-fancybox='gallery' href='"+BaseHelper.getFileUrl(temp[i], 'b_')+"'>"

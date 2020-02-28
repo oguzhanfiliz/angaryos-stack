@@ -43,6 +43,10 @@ return Cache::rememberForever($key, function()
 
     foreach(\DB::table('tables')->where('state', TRUE)->get() as $table)
     {
+        $source = 'dashboards:RecordCount:'.$table->name.':0';
+        $display = 'Göstergeler Kayıt Sayısı '.$table->display_name;
+        $auths[$source] = $display;
+                
         $source = 'tables:'.$table->name.':option:0';
         $display = 'Tablolar ' . $table->display_name. ' Özellik Menü Gizle';
         $auths[$source] = $display;
@@ -95,6 +99,6 @@ return Cache::rememberForever($key, function()
     
     foreach(\DB::table('auth_groups')->where('state', TRUE)->get() as $auth)
         $auths[$auth->id] = $auth->name_basic;
-
+    
     return $auths;        
 });

@@ -48,7 +48,11 @@ $return = TRUE;
 ?>';
 
 $validations['files_count']['php_code'] = '<?php
-if(!is_array($value)) return TRUE;
+if(!is_array($value))
+{
+    $return = TRUE;
+    return;
+}
     
 if($parameters[0] == \'<\')
     $return = (count($value) < $parameters[1]);

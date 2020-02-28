@@ -230,13 +230,15 @@ export class SessionHelper
       var token = BaseHelper.readFromLocal("realUserToken");
 
       BaseHelper.setToken(token);
-      this.fillLoggedInUserInfo();
+      this.fillLoggedInUserInfo()
+      .then((data) =>
+      {
+        BaseHelper.removeFromLocal("realUserToken");
 
-      BaseHelper.removeFromLocal("realUserToken");
+        this.messageHelper.toastMessage("Gerçek kullanıcıya dönüldü");
 
-      this.messageHelper.toastMessage("Gerçek kullanıcıya dönüldü");
-
-      this.navigateToPage('table/users');
+        this.navigateToPage('table/users');
+      });
     }
 
     public logout()

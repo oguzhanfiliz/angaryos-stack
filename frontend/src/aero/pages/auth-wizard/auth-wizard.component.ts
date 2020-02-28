@@ -340,7 +340,7 @@ export class AuthWizardComponent
         $(columnArrayTypeElement).val("1");
         $(modalId+' #column_array_type_id-group').css('display', 'none');
 
-        var val = $("input[name='name']").val();
+        var val = $("input[name='name_basic']").val();
         $(nameElement).val(val+" ("+this.inFormType['display']+")");
     }
 

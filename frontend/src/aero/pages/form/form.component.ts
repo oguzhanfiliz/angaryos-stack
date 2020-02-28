@@ -188,9 +188,20 @@ export class FormComponent
         if(this.recordId == 0) type = "creates";
         else type = "edits";
 
+        var columnSetId = 0;
+        if(
+            typeof BaseHelper.loggedInUserInfo.auths.tables[this.tableName] != "undefined"
+            &&
+            typeof BaseHelper.loggedInUserInfo.auths.tables[this.tableName][type] != "undefined"
+            &&
+            typeof BaseHelper.loggedInUserInfo.auths.tables[this.tableName][type][0] != "undefined"
+            )
+
+            columnSetId = BaseHelper.loggedInUserInfo.auths.tables[this.tableName][type][0];
+
         var params = 
         {
-            column_set_id: BaseHelper.loggedInUserInfo.auths.tables[this.tableName][type][0],
+            column_set_id: columnSetId,
         };
 
         if(this.singleColumn)
@@ -259,7 +270,7 @@ export class FormComponent
             url += this.recordId + "/update";
 
         var params = null;
-        
+
         if(BaseHelper.formSendMethod == "POST")
             params = this.getElementsDataForUpload(); 
         else

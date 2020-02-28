@@ -185,6 +185,19 @@ export class ColumnArrayFormElementComponent
         }
     }
 
+    isColumnRelationDataAuth(columnName, type)
+    {
+        var tableName = this.getDataFromColumnArray('columns.'+columnName+'.relation.table_name');
+        if(tableName == null) return false;
+
+        if(typeof BaseHelper.loggedInUserInfo.auths == "undefined") return false;
+        if(typeof BaseHelper.loggedInUserInfo.auths['tables'] == "undefined") return false;
+        if(typeof BaseHelper.loggedInUserInfo.auths['tables'][tableName] == "undefined") return false;
+        if(typeof BaseHelper.loggedInUserInfo.auths['tables'][tableName][type] == "undefined") return false;
+
+        return true;
+    }
+
 
 
     /****    Gui Functions     *****/

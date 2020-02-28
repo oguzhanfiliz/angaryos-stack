@@ -4,8 +4,8 @@ $up_columns['column_ids'] =
 [
     'name_basic' => 'sadece seçili tablonun kolonları gelsin',
     'column_id' => 60,//'table_id',//Tablo yada kolon eklenme sırası değişirse güncellenmesi gerekir
-    'table_ids' => [/*'column_arrays'*/21],//Tablo yada kolon eklenme sırası değişirse güncellenmesi gerekir
-    'php_code' => '<?php
+    'table_ids' => [/*'column_arrays'*//*21*/],//İptal edildi**//Tablo yada kolon eklenme sırası değişirse güncellenmesi gerekir
+    'php_code' => '<?php 
 $return = get_attr_from_cache(\'tables\', \'id\', (int)$data, \'column_ids\');
 $return = json_decode($return);
 ?>'
@@ -25,3 +25,5 @@ $return = [];
 foreach($temp as $item) array_push($return, $item);
 ?>'
 ];
+
+//**:join ile başka tablolardaki kolonlar da kolon dizisine eklenmek istenebilir

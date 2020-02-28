@@ -56,7 +56,7 @@ class TableSubscriber
         foreach($dataArray as $key => $value)
             if(is_array($value))
                 $dataArray[$key] = json_encode($value);
-            
+           
         foreach(array_keys($dataArray) as $columnName)
         {
             $vals = get_attr_from_cache('columns', 'name', $columnName, 'column_validation_ids');
@@ -72,7 +72,7 @@ class TableSubscriber
                     $dataArray[$columnName] = $dataArray[$columnName] . 'klon';
             }
         }
-                    
+        
         $errors = $this->validateRecordData($dataArray);
         if($errors != []) return $errors;
         

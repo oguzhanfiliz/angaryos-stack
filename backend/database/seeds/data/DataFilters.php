@@ -1,34 +1,33 @@
 <?php
-
+return;
 use App\BaseModel;
 
 $defaultCounts = 
 [
     //'settings' => 3,
-    //'validations' => 4,
-    //'data_filter_types' => 7,
-    /*'data_filters' => 75,
-    'join_tables' => 10,
-    'column_gui_triggers' => 5,
+    'validations' => 10,
+    'data_filter_types' => 6,
+    'data_filters' => 64,
+    'join_tables' => 6,
+    'column_gui_triggers' => 1,
     'column_array_types' => 2,
     'column_arrays' => 5,
-    'column_validations' => 20,
-    'column_gui_types' => 28,
-    'column_gui_triggers' => 1,
+    'column_validations' => 27,
+    'column_gui_types' => 22,
     'column_set_types' => 6,
-    'column_sets' => 1,
-    'column_table_relations' => 40,
+    'column_sets' => 2,
+    'column_table_relations' => 45,
     'column_collective_infos' => 5,
     'column_data_sources' => 1,
     'column_db_types' => 16,
-    'columns' => 61,
-    'users' => 0,
-    'departments' => 0,
+    'columns' => 99,
+    //'users' => 0,
+    //'departments' => 0,
     'color_classes' => 6,
-    'tables' => 25,
+    'tables' => 47,
     'subscriber_types' => 2,
-    'subscribers' => 3,
-    'auth_groups' => 26*/
+    'subscribers' => 10,
+    'auth_groups' => 48
 ];
 
 foreach($defaultCounts as $tableName => $count)

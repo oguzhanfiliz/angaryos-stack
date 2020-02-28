@@ -8,9 +8,22 @@
                 <td>
                     {{ getDataFromColumnArray('columns.'+columnName+'.display_name') }}
                 </td>
-                <td *ngIf="getDataFromColumnArray('columns.'+columnName+'.relation.table_name')" align="right">
-                    <button (click)="addRelationRecord(columnName)"  class="btn btn-sm btn-primary">Ekle</button>
-                    <button (click)="editRelationRecord(columnName)"  class="btn btn-sm btn-primary">Düzenle</button>
+                <td align="right">
+                    <button 
+                        *ngIf="isColumnRelationDataAuth(columnName, 'creates')"
+                        (click)="addRelationRecord(columnName)"  
+                        class="btn btn-sm btn-primary">
+                        
+                        Ekle
+                    </button>
+
+                    <button 
+                        *ngIf="isColumnRelationDataAuth(columnName, 'edits')"
+                        (click)="editRelationRecord(columnName)"  
+                        class="btn btn-sm btn-primary">
+                        
+                        Düzenle
+                    </button>
                 </td>
             </tr><tr>
                 <td colspan="2">
