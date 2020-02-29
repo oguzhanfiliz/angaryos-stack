@@ -12,7 +12,7 @@ export abstract class BaseHelper
   public static backendUrl:string = "https://"+environment.host+"/api/v1/";
   public static baseUrl:string = "https://"+environment.host+"/#/"+environment.urlPath+"/dashboard";
   
-  public static noImageUrl = 'assets/themes/aero/assets/images/profile_av.jpg';
+  public static noImageUrl = 'assets/img/404.png';
 
   public static _keyStr = environment.encryptKey;
 

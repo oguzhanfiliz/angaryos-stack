@@ -16,6 +16,8 @@ declare var $: any;
 })
 export class LoginComponent 
 {
+    public loading = false;
+
     public user = 
     {
         "email": "iletisim@omersavas.com",
@@ -53,6 +55,8 @@ export class LoginComponent
     {
         if(!this.validate()) return;
 
+        this.loading = true;
+
         this.sessionHelper.login(this.user.email, this.user.password)
         .then((data) => 
         {
@@ -60,11 +64,17 @@ export class LoginComponent
             this.sessionHelper.fillLoggedInUserInfo()
             .then((data) =>
             {
+                this.loading = false;
                 window.location.href = BaseHelper.baseUrl;
+            })
+            .catch((e) =>
+            {
+                this.loading = false;
             });
         })
         .catch((errorMessage) =>  
         {
+            this.loading = false;
             this.messageHelper.toastMessage(errorMessage, "Doğrulama Hatası");
         });
     }

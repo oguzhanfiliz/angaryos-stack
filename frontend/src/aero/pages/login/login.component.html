@@ -21,7 +21,10 @@
                             </div>                            
                         </div>
                         
-                        <button (click)="doLogin()" class="btn btn-primary btn-block waves-effect waves-light">
+                        <button 
+                            (click)="doLogin()" 
+                            [class]="'btn btn-primary btn-block waves-effect waves-light' + (loading ? 'disabled' : '')"
+                            >
                             Giriş Yap
                         </button>                        
                         

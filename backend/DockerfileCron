@@ -38,11 +38,6 @@ RUN apt-get clean && rm -rf /var/lib/apt/lists/*
 
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
-RUN touch /var/log/cron.log
-
-COPY cron /etc/cron.d/laravel-cron
-RUN chmod 0644 /etc/cron.d/laravel-cron
-RUN crontab /etc/cron.d/laravel-cron
 
 RUN groupadd -g 1000 www
 RUN useradd -u 1000 -ms /bin/bash -g www www
@@ -51,6 +46,10 @@ COPY . /var/www
 
 COPY --chown=www:www . /var/www
 
-#USER www
 
-CMD cron -f 
+RUN touch /var/log/cron.log
+COPY cron /etc/cron.d/cron
+RUN chmod 0644 /etc/cron.d/cron
+RUN crontab /etc/cron.d/cron
+
+CMD printenv > /etc/environment && echo "cron starting..." && (cron) && : > /var/log/cron.log && tail -f /var/log/cron.log
