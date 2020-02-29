@@ -181,6 +181,8 @@ class BaseSeeder extends Seeder
 
     public function run()
     {
+        if (!defined('ROBOT_USER_ID')) define('ROBOT_USER_ID', 3); 
+        
         //$this->confirmation();        
         $this->fill_infos();
         

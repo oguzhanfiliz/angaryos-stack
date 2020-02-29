@@ -1,6 +1,6 @@
 <?php
 
-Route::any('/', '\App\Http\Controllers\GeneralController@serviceOk');//Tested
+Route::any('/', '\App\Http\Controllers\GeneralController@serviceOk');
 Route::get('/initializeDb', '\App\Http\Controllers\GeneralController@initializeDb');
 
     
@@ -12,25 +12,7 @@ Route::group(['prefix' => '{token}'], function ()
 
     Route::get('test', function()
     {
-        /*$temp = 'ldap://192.168.1.82|cn=admin,dc=liderahenk,dc=org|ssifre';
-        $temp = explode('|', $temp);
         
-        $ldap = new App\Libraries\LdapHelper($temp[0], $temp[1], $temp[2]);
-        
-        
-        $filter='(ou=*)';
-        $entries = $ldap->searchInLdap($filter);
-        dd($entries);*/
-        //$cron = "*/5 1-2 3 3,4,5 *"; 
-        //$result = preg_match( "/^((?:[1-9]?\d|\*)\s*(?:(?:[\/-][1-9]?\d)|(?:,[1-9]?\d)+)?\s*){5}$/", $cron, $matches); 
-        //print_r(count($matches) == 2);
-        dd(55);
-        $exitCode = Artisan::call('data:entegrator', 
-        [
-            'tableRelationId' => 2,
-        ]);
-        
-        dd('e: ' . $exitCode);
     });
     
     Route::any('/', '\App\Http\Controllers\GeneralController@serviceOk');

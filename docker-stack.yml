@@ -58,7 +58,7 @@ services:
     #######       FRONTEND       #######
 
     frontend: 
-        image: karapazar/angular-serve:0.12 
+        image: karapazar/angular-serve:0.14 
         volumes:
             - ./frontend:/usr/src/app 
         networks:
@@ -78,7 +78,7 @@ services:
     #######       BACKEND       #######
  
     laravel:
-        image: karapazar/laravel-php-fpm:0.42
+        image: karapazar/laravel-php-fpm:0.44
         volumes:
             - ./backend:/var/www 
             - ./backend/php.ini:/usr/local/etc/php/conf.d/local.ini
@@ -94,7 +94,7 @@ services:
             - mq-nw
 
     laravelcron:
-        image: karapazar/laravel-cron:0.8
+        image: karapazar/laravel-cron:0.9
         volumes:
             - ./backend:/var/www 
             - ./backend/php.ini:/usr/local/etc/php/conf.d/local.ini
@@ -110,7 +110,7 @@ services:
             - mq-nw
             
     laraveljobs:
-        image: karapazar/laravel-jobs:0.1
+        image: karapazar/laravel-jobs:0.2
         volumes:
             - ./backend:/var/www 
             - ./backend/php.ini:/usr/local/etc/php/conf.d/local.ini
@@ -155,15 +155,19 @@ services:
     #######       DB       #######
 
     postgresql:
-        image: geographica/postgis:dev_diplodocus
-        networks:
-            - db-nw
+        hostname: 'postgresql'
+        image: kartoza/postgis:12.0
+        environment:
+            - POSTGRES_DB=postgres
+            - POSTGRES_USER=postgres
+            - POSTGRES_PASS=1234Aa.
+            - ALLOW_IP_RANGE=0.0.0.0/0
+        volumes:
+            - ./services/postgresql/data:/var/lib/postgresql
         ports:
             - "5432:5432"
-        #volumes:
-        #    - ./services/postgresql/data:/data
-        environment:
-          - POSTGRES_PASSWD=1234Aa.
+        networks:
+            - db-nw
 
 
 

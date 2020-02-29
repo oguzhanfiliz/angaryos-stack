@@ -73,9 +73,10 @@ export class DashboardComponent
   getRecordCountPercent(data)
   {
     var p = (100 * data['count']) / data['all'];
-    p = parseInt(p * 100);
+    p = p * 100;
+    var temp = parseInt((p).toString());
     
-    return p / 100;
+    return temp / 100;
   }
 
   async getDashboardsDataRecordCount()

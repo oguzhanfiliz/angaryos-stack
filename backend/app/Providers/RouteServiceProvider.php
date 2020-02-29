@@ -28,6 +28,7 @@ class RouteServiceProvider extends ServiceProvider
         parent::boot();
         
         helper('load_application_variables_from_db');
+        helper('db_control');
     }
 
     /**
