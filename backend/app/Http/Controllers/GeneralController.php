@@ -7,6 +7,11 @@ use DB;
 
 class GeneralController extends Controller
 {
+    public function __construct()
+    {
+        \Cache::flush();
+    }
+    
     public function initializeDB()
     {
         $output = helper('initialize_db');

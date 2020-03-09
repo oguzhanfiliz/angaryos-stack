@@ -48,6 +48,7 @@
             "app/Listeners",
             "app/Repositories",
             "app/BaseModelTraits",
+            "app/BaseModelTraits/BaseModelWhereTraits",
             "app/Libraries/DataEntegratorTraits"
         ],
         "files": [

@@ -15,14 +15,12 @@ sudo chmod +x start.sh
 sudo ./start.sh
 ```
 
-ardından  "Angaryos/frontend/environments" dizini içindeki dosyaları düzenleyiniz. Bu dosyalar IP vb ayarlarınızı içerir.
-
-
 ### Windows
 
 
 ### Mac
 
+ardından  "Angaryos/frontend/src/environments" dizini içindeki dosyaları düzenleyiniz. Bu dosyalar IP vb ayarlarınızı içerir.
 
 ## Kullanım 
 
