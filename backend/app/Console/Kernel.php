@@ -13,12 +13,6 @@ class Kernel extends ConsoleKernel
 
     protected function schedule(Schedule $schedule)
     {
-        // $schedule->command('inspire')
-        //          ->hourly();
-        
-        //$no = (int)(\DB::table('settings')->where('name', 'REC_COUNT_PER_PAGE')->first()->value);
-        //\DB::table('settings')->where('name', 'REC_COUNT_PER_PAGE')->update(['value' => $no+1]);
-        
         $missions = DB::table('missions')->where('state', TRUE)->get();
         
         foreach($missions as $mission)
