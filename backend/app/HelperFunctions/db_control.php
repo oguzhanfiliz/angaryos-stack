@@ -1,6 +1,11 @@
 <?php
 
-if(\Request::segment(3) == 'initializeDb' || @$_SERVER['argv'][0] == 'artisan') return TRUE;
+if(
+    \Request::segment(3) == 'initializeDb' 
+    ||
+    strstr(@$_SERVER['argv'][0], 'artisan')
+) 
+    return TRUE;
     
 if(defined('ROBOT_USER_ID')) return TRUE;
 
