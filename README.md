@@ -25,3 +25,6 @@ ardından  "Angaryos/frontend/src/environments" dizini içindeki dosyaları düz
 ## Kullanım 
 
 Döküman hazırlanıyor...
+
+
+**** Varsayılan web arayüz teması bir lisans anahtarına ihtiyaç duyar.

@@ -83,7 +83,7 @@ class BaseModel extends Model
         $this->fillVariables();
         
         $orj = [];
-        foreach($this->getAllColumnsFromDB() as $column_name => $column)
+        foreach($this->getAllColumnsFromDB() as $columnName => $column)
             if(strlen($column['srid']) > 0)
                 if(strlen($this->{$column['name']}) > 0)
                     if(!is_object($this->{$column['name']}))
@@ -91,13 +91,17 @@ class BaseModel extends Model
                         $orj[$column['name']] = $this->{$column['name']} ;
                         $this->{$column['name']} = DB::raw('ST_GeomFromText(\''.$this->{$column['name']}.'\', '.$column['srid'].')');
                     }
-                    
-        $return = parent::save($options);
+         
+        foreach(array_keys($this->toArray()) as $columnName)
+            if(substr($columnName, -15) == '__relation_data')
+                unset($this->{$columnName});
         
-        foreach($orj as $column_name => $value) 
+        $return = parent::save($options);        
+        
+        foreach($orj as $columnName => $value) 
         {
-            $this->{$column_name} = $value;
-            $this->original[$column_name] = $value;
+            $this->{$columnName} = $value;
+            $this->original[$columnName] = $value;
         }
         
         return $return;

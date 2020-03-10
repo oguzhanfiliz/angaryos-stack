@@ -30,9 +30,6 @@ export class AeroThemeHelper
             $.getScript('assets/themes/aero/assets/bundles/sparkline.bundle.js');
             $.getScript('assets/themes/aero/assets/bundles/c3.bundle.js');
 
-            $.getScript('assets/ext_modules/select2/select2.min.js');
-
-            
             $.getScript('assets/themes/aero/assets/plugins/jquery-validation/jquery.validate.js');
             $.getScript('assets/themes/aero/assets/plugins/jquery-steps/jquery.steps.js');
           });     
@@ -44,7 +41,10 @@ export class AeroThemeHelper
             $.getScript('assets/ext_modules/ace-builds/src-min/theme-twilight.js');
             $.getScript('assets/ext_modules/ace-builds/src-min/theme-github.js');
           });
-        });   
+        });
+
+        $.getScript('assets/ext_modules/select2/select2.min.js');
+        //$.getScript('https://cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js');//index.aero da yükleniyor
       }, 10);
     }
     

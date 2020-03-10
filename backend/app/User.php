@@ -119,6 +119,8 @@ class User extends Authenticatable
     
     public function getDashboardArray()
     {
+        if(!isset($this->auths['dashboards'])) return [];
+        
         return $this->auths['dashboards'];
     }
     

@@ -1,5 +1,7 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 
+import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
+
 import { BaseHelper } from './../../base';
 import { DataHelper } from './../../data';
  
@@ -21,6 +23,9 @@ export class ColumnArrayElementComponent
     loadedRelationTable = [];
     columnArray = null;
     record = null;
+
+    constructor(private sanitizer:DomSanitizer) 
+    { }
 
     ngOnChanges()
     {
@@ -51,7 +56,8 @@ export class ColumnArrayElementComponent
     getConvertedDataForGuiByColumnName(columnName)
     {
         var type = this.getDataFromColumnArray('columns.'+columnName+".gui_type_name");
-        return DataHelper.convertDataForGui(this.getDataFromRecord(), columnName, type);
+        var data = DataHelper.convertDataForGui(this.getDataFromRecord(), columnName, type);
+        return this.sanitizer.bypassSecurityTrustHtml(data);        
     }
 
     columnArrayIsRelationTable(columnArray)

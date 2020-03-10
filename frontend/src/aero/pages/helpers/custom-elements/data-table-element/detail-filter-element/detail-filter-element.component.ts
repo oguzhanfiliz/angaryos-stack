@@ -41,19 +41,19 @@ export class DetailFilterElementComponent
             var id = '#'+filter['columnName']+'_filter_detail';
             filter.type = parseInt($(id+'_filter_type').val());
             filter.filter = $(id).val();
-        }
 
-        filter.filter = DataHelper.changeDataForFilterByGuiType(
+            filter.filter = DataHelper.changeDataForFilterByGuiType(
                                                                     filter.guiType, 
                                                                     filter.filter, 
                                                                     filter['columnName']+'_filter_detail', 
                                                                     filter.columnName,
                                                                     this.getLocalKey("data"));
+        } 
 
         this.changed.emit(filter);
         
         $('#detailFilterModal').modal('hide');
-    }
+    } 
 
     getColumnGuiTypeForQuery(guiType)
     {

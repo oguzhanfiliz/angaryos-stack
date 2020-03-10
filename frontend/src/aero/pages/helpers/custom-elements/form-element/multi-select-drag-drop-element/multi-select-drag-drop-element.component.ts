@@ -133,10 +133,22 @@ export class MultiSelectDragDropElementComponent
 
     fillSelectedElements()
     {
-        this.val = [];
         var temp = BaseHelper.jsonStrToObject(this.valueJson);
         for(var i = 0; i < temp.length; i++)
+        {
+            var control = false;
+            for(var j = 0; j < this.val.length; j++)
+                if(this.val[j]['source'] == temp[i]['source'])
+                {
+                    this.val[j]['display'] = temp[i]['display'];
+                    control = true;
+                    break;
+                }
+
+            if(control) continue;
+
             this.val.push({source: temp[i]['source'], display: temp[i]['display']});
+        }
     }
 
     fillListElements(search)
