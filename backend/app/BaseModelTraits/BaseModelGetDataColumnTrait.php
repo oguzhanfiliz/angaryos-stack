@@ -5,6 +5,7 @@ namespace App\BaseModelTraits;
 use App\Libraries\ColumnClassificationLibrary;
 use App\BaseModel;
 use Cache;
+use DB;
 
 trait BaseModelGetDataColumnTrait 
 {    
@@ -35,7 +36,6 @@ trait BaseModelGetDataColumnTrait
     private function getAllColumnsFromColumnArray($model, $id, $form = FALSE)
     {
         $columnArray = get_attr_from_cache('column_arrays', 'id', $id, '*');
-        //$columnArray->fillVariables();
         
         $type = get_attr_from_cache('column_array_types', 'id', $columnArray->column_array_type_id, 'name');
         switch($type)
@@ -230,15 +230,18 @@ trait BaseModelGetDataColumnTrait
         $cacheName = 'tableName:'.$this->getTable().'|allColumsFromDbWithTableAliasAndGuiType';
         $columns = Cache::rememberForever($cacheName, function()
         {   
-            $columns = (Object)[];
+            $json = get_attr_from_cache('tables', 'name', $this->getTable(), 'column_ids');
+            $columnsSort = json_decode($json);
+            
             $model = new BaseModel($this->getTable());
-
-            foreach($model->getAllColumnsFromDB() as $column)
+            $allColumnsFromDB = $model->getAllColumnsFromDB();
+            
+            $columns = (Object)[];
+            foreach($columnsSort as $columnId)
             {
-                if(substr($column['name'], 0, 8) == 'deleted_') continue;
+                $column = get_attr_from_cache('columns', 'id', $columnId, '*');
+                if(substr($column->name, 0, 8) == 'deleted_') continue;
                 
-                $column = get_attr_from_cache('columns', 'name', $column['name'], '*');
-
                 $column->gui_type_name = get_attr_from_cache('column_gui_types', 'id', $column->column_gui_type_id, 'name');
                 $column->db_type_name = get_attr_from_cache('column_db_types', 'id', $column->column_db_type_id, 'name');
                 $column->table_alias = $this->getTable();

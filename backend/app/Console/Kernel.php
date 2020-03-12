@@ -13,6 +13,9 @@ class Kernel extends ConsoleKernel
 
     protected function schedule(Schedule $schedule)
     {
+        //Data entegratör görevlerini de ekle
+        
+        
         $missions = DB::table('missions')->where('state', TRUE)->get();
         
         foreach($missions as $mission)
