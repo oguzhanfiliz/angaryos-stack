@@ -36,11 +36,42 @@ export class ColumnArrayElementComponent
             this.record = BaseHelper.jsonStrToObject(this.recordJson);
     }
 
-     isGeoColumn(columnName)
+    getObjectKeys(obj)
+    {
+        return BaseHelper.getObjectKeys(obj)
+    }
+
+    isGeoColumn(columnName)
     {
         var geoColumns = ['point', 'linestring', 'polygon', 'multipoint', 'multilinestring', 'multipolygon'];
         var type = this.getDataFromColumnArray('columns.'+columnName+".gui_type_name");
         return geoColumns.includes(type);
+    }
+
+    isFileColumn(columnName)
+    {
+        var type = this.getDataFromColumnArray('columns.'+columnName+'.gui_type_name');
+        return type == "files";
+    }
+
+    getFileUrls(data)
+    {
+        if(data == null) return [];
+
+        if(typeof data == "string")
+            data = BaseHelper.jsonStrToObject(data);
+
+        var rt = [];
+        for(var i = 0; i < data.length; i++)
+        {
+            var temp = { };
+            temp['small'] = BaseHelper.getFileUrl(data[i], 's_');
+            temp['big'] = BaseHelper.getFileUrl(data[i], 'b_');
+
+            rt.push(temp);
+        }
+        
+        return rt;
     }
 
     getDataFromColumnArray(path = '')

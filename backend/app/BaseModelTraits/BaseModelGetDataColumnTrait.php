@@ -230,7 +230,11 @@ trait BaseModelGetDataColumnTrait
         $cacheName = 'tableName:'.$this->getTable().'|allColumsFromDbWithTableAliasAndGuiType';
         $columns = Cache::rememberForever($cacheName, function()
         {   
-            $json = get_attr_from_cache('tables', 'name', $this->getTable(), 'column_ids');
+            $tableName = $this->getTable();
+            $tableName = str_replace('_archive', '', $tableName);
+            
+            $json = get_attr_from_cache('tables', 'name', $tableName, 'column_ids');
+            
             $columnsSort = json_decode($json);
             
             $model = new BaseModel($this->getTable());

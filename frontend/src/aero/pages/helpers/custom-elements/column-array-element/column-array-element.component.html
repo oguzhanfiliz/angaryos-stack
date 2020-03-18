@@ -7,7 +7,16 @@
             <th class="title">
                 {{ getDataFromColumnArray('columns.'+columnName+'.display_name') }}
             </th>
-            <td *ngIf="!isGeoColumn(columnName)" [innerHTML]="getConvertedDataForGuiByColumnName(columnName)">
+            <td *ngIf="!isGeoColumn(columnName) && !isFileColumn(columnName)" [innerHTML]="getConvertedDataForGuiByColumnName(columnName)">
+            </td>
+            <td *ngIf="isFileColumn(columnName)">
+                <a data-fancybox="gallery"
+                    *ngFor="let i of getObjectKeys(getFileUrls(record[columnName]))"
+                    href="{{ getFileUrls(record[columnName])[i]['big'] }}"
+                    >
+
+                    <img class='rounded-circle file-preview' src="{{ getFileUrls(record[columnName])[i]['small'] }}">
+                </a>
             </td>
             <td *ngIf="isGeoColumn(columnName)">
                 <geo-preview-element 

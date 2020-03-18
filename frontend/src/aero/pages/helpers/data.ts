@@ -316,10 +316,8 @@ export abstract class DataHelper
             
         for(var i = 0; i < temp.length; i++)
         {
-            //rt += "<a data-fancybox='gallery' href='"+BaseHelper.getFileUrl(temp[i], 'b_')+"'>"
-            
-
-            rt += "<a href='"+BaseHelper.getFileUrl(temp[i], 'b_')+"'>"
+            rt += "<a data-fancybox='gallery' href='"+BaseHelper.getFileUrl(temp[i], 'b_')+"'>"
+            //rt += "<a href='"+BaseHelper.getFileUrl(temp[i], 'b_')+"'>"
                 rt += "<img src='"+BaseHelper.getFileUrl(temp[i], 's_')+"' class='rounded-circle file-preview' alt=''>";
             rt += "</a>"
         }

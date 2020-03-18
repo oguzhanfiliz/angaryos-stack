@@ -481,6 +481,12 @@ export class DataTableElementComponent
         return geoColumns.includes(type);
     }
 
+    isFileColumn(columnName)
+    {
+        var type = this.getData('columns.'+columnName+'.gui_type_name');
+        return type == "files";
+    }
+
     getRecordOperations()
     {
         return DataHelper.recordOperations;
@@ -491,6 +497,26 @@ export class DataTableElementComponent
         var type = this.getData('columns.'+columnName+".gui_type_name");
         var data = DataHelper.convertDataForGui(record, columnName, type);
         return this.sanitizer.bypassSecurityTrustHtml(data);
+    }
+
+    getFileUrls(data)
+    {
+        if(data == null) return [];
+
+        if(typeof data == "string")
+            data = BaseHelper.jsonStrToObject(data);
+
+        var rt = [];
+        for(var i = 0; i < data.length; i++)
+        {
+            var temp = { };
+            temp['small'] = BaseHelper.getFileUrl(data[i], 's_');
+            temp['big'] = BaseHelper.getFileUrl(data[i], 'b_');
+
+            rt.push(temp);
+        }
+        
+        return rt;
     }
 
     getColumnVisibility(columnName)

@@ -259,8 +259,18 @@
                                                 <table class="light-table-force">
                                                     <tr>
                                                         <td>
-                                                            <div *ngIf="!isGeoColumn(columnName)" [innerHTML]="convertDataForGui(record, columnName)"></div> 
-                                                
+                                                            <div *ngIf="!isGeoColumn(columnName) && !isFileColumn(columnName)" [innerHTML]="convertDataForGui(record, columnName)"></div> 
+                                                            
+                                                            <div *ngIf="isFileColumn(columnName)">
+                                                                <a data-fancybox="gallery"
+                                                                    *ngFor="let i of getObjectKeys(getFileUrls(record[columnName]))"
+                                                                    href="{{ getFileUrls(record[columnName])[i]['big'] }}"
+                                                                    >
+
+                                                                   <img class='rounded-circle file-preview' src="{{ getFileUrls(record[columnName])[i]['small'] }}">
+                                                                </a>                                                                
+                                                            </div>
+                                                            
                                                             <geo-preview-element 
                                                                 *ngIf="isGeoColumn(columnName)" 
                                                                 name="{{ columnName }}"
