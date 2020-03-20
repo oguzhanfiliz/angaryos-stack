@@ -20,6 +20,10 @@ Route::group(['prefix' => '{token}'], function ()
     Route::get('getUserToken/{user_id}', 'AuthController@getUserToken');
     
     Route::get('assignAuth', 'AuthController@assignAuth');
+    
+    
+    
+    Route::get('getMapTile', 'MapController@GetTile');
 
     
     

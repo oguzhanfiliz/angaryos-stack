@@ -1,6 +1,8 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { NgModule } from '@angular/core';
+
+import { Injector, NgModule } from '@angular/core';
+import { createCustomElement } from '@angular/elements';
 
 import { FormsModule } from '@angular/forms';
 
@@ -10,6 +12,11 @@ import { RouterModule } from '@angular/router';
 
 import { AeroRoutingModule } from './aero-routing.module';
 import { AeroComponent } from './aero.component';
+
+import { MapComponent } from './pages/map/map.component';
+import { PublicMapComponent } from './pages/public-map/public-map.component';
+
+import { FullScreenMapElementComponent } from './pages/helpers/custom-elements/fullscreen-map-element/fullscreen-map-element.component';
 
 import { LoginComponent } from './pages/login/login.component';
 import { LinkPageComponent } from './pages/link-page/link-page.component';
@@ -25,7 +32,10 @@ import { AeroThemeHelper } from './pages/helpers/aero.theme';
   [
     AeroComponent,
     LinkPageComponent,
-    LoginComponent
+    LoginComponent,
+    MapComponent,
+    PublicMapComponent,
+    FullScreenMapElementComponent
   ],
   imports: 
   [
@@ -46,6 +56,28 @@ import { AeroThemeHelper } from './pages/helpers/aero.theme';
   bootstrap: 
   [
     AeroComponent
-  ]
+  ],
+  entryComponents: 
+  [
+    FullScreenMapElementComponent
+  ],
 })
-export class AeroModule {}
+export class AeroModule 
+{
+  customElementList =
+  {
+    'fullscreen-map-element': FullScreenMapElementComponent
+  };
+
+  constructor(private injector: Injector) 
+  {
+    
+  }
+
+  ngDoBootstrap()
+  {
+    var keys = Object.keys(this.customElementList);
+    for(var i = 0; i < keys.length; i++)
+      customElements.define(keys[i], createCustomElement(this.customElementList[keys[i]], {injector: this.injector}));
+  }
+}

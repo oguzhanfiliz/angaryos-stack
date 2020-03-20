@@ -25,27 +25,27 @@ class TableGeoServerOperationsLibrary
 
     public function TableEventForUpdate($params)
     {
-        $this->CreateLayerIfNotExist($params);
+        return $this->CreateLayerIfNotExist($params);
     }
     
     public function TableEventForCreate($params)
     {
-        $this->CreateLayerIfNotExist($params);
+        return $this->CreateLayerIfNotExist($params);
     }
     
     public function TableEventForClone($params)
     {
-        $this->CreateLayerIfNotExist($params);
+        return $this->CreateLayerIfNotExist($params);
     }
     
     public function TableEventForRestore($params)
     {
-        $this->CreateLayerIfNotExist($params);
+        return $this->CreateLayerIfNotExist($params);
     }
     
-    public function TableEventForDelete($params)
+    public function TableEventForDelete($params) 
     {
-        
+        return NULL; 
     }
     
     
@@ -58,13 +58,60 @@ class TableGeoServerOperationsLibrary
 
         $helper = $this->GetGeoServerHelper();
         
-        if(!$this->LayerIsExistOnGeoServer($helper, $params)) return;
+        $this->WorkspaceControl($helper);
+        $this->DataStoreControl($helper);
+        
+        if($this->LayerIsExistOnGeoServer($helper, $params)) return;
         
         $this->CreateViewIfNotExistForLayer($params['table']);
-
-        $temp = $helper->createLayer('v_'.$params['table']->name, $helper->workspaceName, $helper->dataStoreName);
-        //if($temp != '') dd('geoserver layer oluşturulamadı!');
         
+        $temp = $helper->createLayer('v_'.$params['table']->name, $helper->workspaceName, $helper->dataStoreName);
+        if($temp != '') \Log::error('Geoserver layer oluşturulamadı! (Hata: ' . $temp . ')');        
+    }
+    
+    private function WorkspaceIsExist($helper)
+    {
+        $workspaces = $helper->listWorkspaces();
+        if(gettype($workspaces->workspaces) != 'object') return FALSE;
+        
+        foreach($workspaces->workspaces->workspace as $workspace)
+            if($workspace->name == $helper->workspaceName)
+                return TRUE;
+            
+        return FALSE;
+    }
+    
+    private function WorkspaceControl($helper)
+    {
+        if($this->WorkspaceIsExist($helper)) return;
+        
+        $helper->createWorkspace($helper->workspaceName);
+    }
+    
+    private function DataStoreIsExist($helper)
+    {
+        $dataStores = $helper->listDatastores($helper->workspaceName);
+        if(gettype($dataStores->dataStores) != 'object') return FALSE;
+        
+        foreach($dataStores->dataStores->dataStore as $dataStore)
+            if($dataStore->name == $helper->dataStoreName)
+                return TRUE;
+            
+        return FALSE;
+    }
+    
+    private function DataStoreControl($helper)
+    {
+        if($this->DataStoreIsExist($helper)) return;
+        
+        $helper->createPostGISDataStore(
+                $helper->dataStoreName, 
+                $helper->workspaceName, 
+                env('DB_DATABASE', 'postgres'), 
+                env('DB_USERNAME', 'postgres'), 
+                env('DB_PASSWORD', '1234Aa.'), 
+                env('DB_HOST', 'postgresql'), 
+                env('DB_PORT', '5432'));
     }
     
     private function TableIsHasGeoColumn($table)
@@ -114,8 +161,8 @@ class TableGeoServerOperationsLibrary
         $viewNames = \DB::select('select table_name as name from INFORMATION_SCHEMA.views');
         
         $control = FALSE;
-        foreach ($viewNames as $viewName)
-            if($viewName->name == $viewName)
+        foreach ($viewNames as $temp)
+            if($temp->name == $viewName)
             {
                 $control = TRUE;
                 break;

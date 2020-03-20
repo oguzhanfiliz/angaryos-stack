@@ -4,6 +4,9 @@ import View from 'ol/View';
 import { WKT, GeoJSON} from 'ol/format';
 
 import { Tile as TileLayer, Vector as VectorLayer } from 'ol/layer';
+import TileLayer from 'ol/layer/Tile';
+import TileWMS from 'ol/source/TileWMS';
+
 import { OSM, Vector as VectorSource } from 'ol/source';
 
 import {Draw, Modify, Snap} from 'ol/interaction';
@@ -49,23 +52,32 @@ export abstract class MapHelper
     this.customProjectionAdded = true;
   }
 
-  public static createFormElementMap(mapId)
+  public static createFullScreenMap(mapId)
   {
     var task = this.mapFactory(mapId);
+    return task;
+  }
+
+  public static createFormElementMap(mapId)
+  {
+    var task = this.mapFactory(mapId, true);
     return task;
   }
 
   public static createPreviewMap(mapId)
   {
-    var task = this.mapFactory(mapId);
+    var task = this.mapFactory(mapId, true);
     return task;
   }
 
-  public static mapFactory(mapId)
+  public static mapFactory(mapId, modal = false)
   {
-    var h = window.innerHeight;
-    $('#'+mapId).css('height', (h*0.9)+"px");
-    $('#'+mapId).css('min-height', (h*0.9)+"px");
+    if(modal)
+    {
+      var h = window.innerHeight;
+      $('#'+mapId).css('height', (h*0.9)+"px");
+      $('#'+mapId).css('min-height', (h*0.9)+"px");
+    }
 
     var task = new Promise((resolve) =>
     {
@@ -146,8 +158,7 @@ export abstract class MapHelper
     }
 
     var temp = BaseHelper.readFromLocal('map.'+mapId+'.config');
-    if(temp != null)
-      config = temp;
+    if(temp != null) config = temp;
 
     return config;
   }
@@ -203,6 +214,62 @@ export abstract class MapHelper
     });    
   }
 
+  public static getLayerFromMapAuth(map, tableAuth)
+  {
+    switch (tableAuth['type']) 
+    {
+      case 'wms':
+        return this.getLayerFromMapAuthWms(map, tableAuth);
+
+      default: console.log("Undefined layer type: " + tableAuth['type']);
+    }
+  }
+
+  public static getLayerFromMapAuthWms(map, tableAuth)
+  {
+    var url = tableAuth["base_url"];
+    if(url == "") url = BaseHelper["pipe"]["geoserverBaseUrl"];
+
+    var layer = new TileLayer(
+    {
+      source: new TileWMS(
+      {
+        url: url,
+        params: 
+        {
+          'LAYERS': tableAuth["workspace"]+':'+tableAuth["layer_name"],
+          'TILED': true
+        },
+        serverType: 'geoserver',
+        transition: 0
+      })
+    });
+
+    layer['display_name'] = tableAuth["display_name"];
+
+    return layer;
+  }
+
+  public static addLayersFromMapAuth(map, layerAuths)
+  {
+    return new Promise((resolve) =>
+    {
+      var tableNames = Object.keys(layerAuths);
+
+      for(var i = 0; i < tableNames.length; i++)
+      {
+        var tableName = tableNames[i];
+        var auth = layerAuths[tableName];
+
+        var layer = this.getLayerFromMapAuth(map, auth);
+        if(layer == null) continue;
+
+        map.addLayer(layer);
+      }
+
+      resolve(map);
+    });    
+  }
 
 
   /****    Events     ****/

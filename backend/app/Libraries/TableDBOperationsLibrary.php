@@ -43,6 +43,11 @@ class TableDBOperationsLibrary
         return $this->{'ColumnArrayEventFor'.ucfirst($params['type'])}($params);
     }
     
+    public function UpdateTableFullAuthToAdminUser($table)
+    {
+        dd('UpdateTableFullAuthToAdminUser');//add map auth in auth group if geo column is exist; after archived
+    }
+    
     public function AddTableFullAuthToAdminUser($table)
     {
         $auths = 
@@ -56,7 +61,22 @@ class TableDBOperationsLibrary
             'tables:'.$table['name'].':delete:0',
             'tables:'.$table['name'].':restore:0',
         ];
+        
+        
+        $geometryColumnTypes = ['point', 'linestring', 'polygon', 'multipoint', 'multilinestring', 'multipolygon'];
+        
+        $columnIds = json_decode($table->column_ids);
+        foreach($columnIds as $columnId)
+        {
+            $columnDbTypeId = get_attr_from_cache('columns', 'id', $columnId, 'column_db_type_id');
+            $columnDbType = get_attr_from_cache('column_db_types', 'id', $columnDbTypeId, 'name');
+            
+            if(!in_array($columnDbType, $geometryColumnTypes)) continue;
 
+            array_push($aurhs, 'tables:'.$table->name.':maps:0');
+            break;
+        }
+        
         $robotUserId = ROBOT_USER_ID;
 
         $auth = new \App\BaseModel('auth_groups');
@@ -68,7 +88,7 @@ class TableDBOperationsLibrary
         $auth->save();
 
         $adminAuth = new \App\BaseModel('auth_groups');
-        $adminAuth = $adminAuth->find(1);//get_model_from_cache('auth_groups', 'id', 1);
+        $adminAuth = $adminAuth->find(1);
         $adminAuth->fillVariables();
         
         $temp = $adminAuth->auths;
@@ -500,7 +520,7 @@ class TableDBOperationsLibrary
                 $srid = $column->srid;
                 if(strlen($srid) == 0) $srid = DB_PROJECTION;
 
-                DB::statement('ALTER TABLE '.$params['requests']['name'].' ADD COLUMN '.$column->name.' geometry('. ucfirst($dbType->name).', '.$srid.')');
+                DB::statement('ALTER TABLE '.$tableName.' ADD COLUMN '.$column->name.' geometry('. ucfirst($dbType->name).', '.$srid.')');
             }
         }
     }

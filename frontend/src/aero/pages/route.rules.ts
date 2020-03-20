@@ -2,7 +2,6 @@ import { PagesComponent } from './pages.component';
 
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { LinkPageComponent } from './link-page/link-page.component';
-import { LoginComponent } from './login/login.component';
 import { ListComponent } from './list/list.component';
 import { ArchiveComponent } from './archive/archive.component';
 import { DeletedComponent } from './deleted/deleted.component';

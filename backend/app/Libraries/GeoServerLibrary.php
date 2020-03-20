@@ -33,7 +33,8 @@ class GeoServerLibrary {
 	}
 
 	private function runApi($apiPath, $method = 'GET', $data = '', $contentType = 'text/xml') {
-		$ch = curl_init();
+            
+                $ch = curl_init();
 		curl_setopt($ch, CURLOPT_URL, $this->serverUrl.'rest/'.$apiPath);
 		curl_setopt($ch, CURLOPT_USERPWD, $this->username.":".$this->password); 
 		if ($method == 'POST') {
@@ -52,6 +53,10 @@ class GeoServerLibrary {
 
 		curl_setopt($ch, CURLOPT_HEADER, false);
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+                
+                curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 5); 
+                curl_setopt($ch, CURLOPT_TIMEOUT, 10);
+                
 		$rslt = curl_exec($ch);
 		$info = curl_getinfo($ch);
 		
@@ -143,7 +148,8 @@ class GeoServerLibrary {
 
 		// Just in case it's a .shp and the .shp was included
 		$layerName = str_replace('.shp', '', str_replace('.SHP', '', $layerName));
-		return $this->runApi('workspaces/'.urlencode($workspaceName).'/datastores/'.urlencode($datastoreName).'/featuretypes.xml', 'POST', '<featureType>
+                
+                return $this->runApi('workspaces/'.urlencode($workspaceName).'/datastores/'.urlencode($datastoreName).'/featuretypes.xml', 'POST', '<featureType>
 			<name>'.$layerName.'</name>
 			<nativeName>'.$layerName.'</nativeName>
 			<description>'.htmlentities($description, ENT_COMPAT).'</description>

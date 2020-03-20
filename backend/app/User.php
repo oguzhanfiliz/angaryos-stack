@@ -117,6 +117,45 @@ class User extends Authenticatable
         ];
     }
     
+    private function getLayerInfo($tableName, $tableAuth)
+    {
+        $info['base_url'] = '';
+        $info['display_name'] = get_attr_from_cache('tables', 'name', $tableName, 'display_name');
+        $info['workspace'] = env('GEOSERVER_WORKSPACE', 'angaryos');
+        $info['layer_name'] = 'v_'.$tableName;
+        $info['type'] = 'wms';
+        $info['period'] = '0';
+        
+        $info['filter'] = FALSE;
+        $info['search'] = FALSE;
+        
+        if(in_array(0, $tableAuth))
+        {
+            $info['filter'] = TRUE;
+            $info['search'] = TRUE;
+        }
+        else
+        {
+            if(in_array(3, $tableAuth)) $info['filter'] = TRUE;
+            if(in_array(2, $tableAuth)) $info['search'] = TRUE;
+        }
+        
+        return $info;
+    }
+    
+    public function getMapArray()
+    {
+        if(!isset($this->auths['tables'])) return [];
+        
+        $mapAuths = [];
+        
+        foreach($this->auths['tables'] as $tableName => $table)            
+            if(isset($table['map']))
+                $mapAuths[$tableName] = $this->getLayerInfo($tableName, $table['map']);
+            
+        return $mapAuths;
+    }
+    
     public function getDashboardArray()
     {
         if(!isset($this->auths['dashboards'])) return [];

@@ -150,7 +150,7 @@ export class PagesModule
     'column-array-element': ColumnArrayElementComponent,
     'column-array-form-element': ColumnArrayFormElementComponent,
     'geo-preview-element': GeoPreviewElementComponent,
-
+    
     'code-editor-element': CodeEditorElementComponent,
 
     'in-form-element': FormComponent

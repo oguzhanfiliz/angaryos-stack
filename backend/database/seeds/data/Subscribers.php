@@ -59,13 +59,7 @@ $subscribers['table']['tables'][2] =
     'name_basic' => 'Yeni  GeoServer işlemleri için before trigger',
     'subscriber_type_id' => $subscriber_types['after']->id,
     'php_code' => '<?php
-$params =
-[
-    "type"=> $type,
-    "table" => $record 
-];
-$helper = new App\Libraries\TableGeoServerOperationsLibrary();
-$return = $helper->TableEvent($params);
+\App\Jobs\LayerOperationOnGeoserver::dispatch($type, $record->id); 
 ?>'
 ];
 
@@ -74,10 +68,12 @@ $subscribers['table']['tables'][3] =
     'name_basic' => 'Yönetici için tam yetki oluşturma trigger',
     'subscriber_type_id' => $subscriber_types['after']->id,
     'php_code' => '<?php
-if($type != "create") return;
-
 $helper = new App\Libraries\TableDBOperationsLibrary();
-$return = $helper->AddTableFullAuthToAdminUser($record);
+
+if($type == "create")
+    $return = $helper->AddTableFullAuthToAdminUser($record);
+else
+    $return = $helper->UpdateTableFullAuthToAdminUser($record);
 ?>'
 ];
 

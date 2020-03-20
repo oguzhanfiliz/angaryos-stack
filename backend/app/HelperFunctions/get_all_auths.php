@@ -3,6 +3,8 @@ $key = 'allAuths';
 
 return Cache::rememberForever($key, function()
 {      
+    $geometryColumnTypes = ['point', 'linestring', 'polygon', 'multipoint', 'multilinestring', 'multipolygon'];
+    
     $displays =
     [
         'creates' => 'Ekleme',
@@ -46,10 +48,40 @@ return Cache::rememberForever($key, function()
         $source = 'dashboards:RecordCount:'.$table->name.':0';
         $display = 'Göstergeler Kayıt Sayısı '.$table->display_name;
         $auths[$source] = $display;
-                
+        
+        
         $source = 'tables:'.$table->name.':option:0';
         $display = 'Tablolar ' . $table->display_name. ' Özellik Menü Gizle';
         $auths[$source] = $display;
+        
+        
+        $columnIds = json_decode($table->column_ids);
+        foreach($columnIds as $columnId)
+        {
+            $columnDbTypeId = get_attr_from_cache('columns', 'id', $columnId, 'column_db_type_id');
+            $columnDbType = get_attr_from_cache('column_db_types', 'id', $columnDbTypeId, 'name');
+            
+            if(!in_array($columnDbType, $geometryColumnTypes)) continue;
+
+            $source = 'tables:'.$table->name.':maps:0';
+            $display = 'Tablolar ' . $table->display_name. ' Harita Tüm Yetkiler';
+            $auths[$source] = $display;
+            
+            $source = 'tables:'.$table->name.':maps:1';
+            $display = 'Tablolar ' . $table->display_name. ' Harita Katman';
+            $auths[$source] = $display;
+            
+            $source = 'tables:'.$table->name.':maps:2';
+            $display = 'Tablolar ' . $table->display_name. ' Harita Arama';
+            $auths[$source] = $display;
+            
+            $source = 'tables:'.$table->name.':maps:3';
+            $display = 'Tablolar ' . $table->display_name. ' Harita Filtre';
+            $auths[$source] = $display;
+            
+            break;
+        }
+        
         
         $source = 'tables:'.$table->name.':delete:0';
         $display = 'Tablolar ' . $table->display_name. ' Kayıt Sil';
