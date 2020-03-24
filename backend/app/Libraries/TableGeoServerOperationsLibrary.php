@@ -19,6 +19,16 @@ class TableGeoServerOperationsLibrary
         return $this->{'TableEventFor'.ucfirst($params['type'])}($params);
     }
     
+    public function StyleEvent($params)
+    {
+        return $this->{'StyleEventFor'.ucfirst($params['type'])}($params);
+    }
+    
+    public function CustomLayerEvent($params)
+    {
+        return $this->{'CustomLayerEventFor'.ucfirst($params['type'])}($params);
+    }
+    
     
     
     /****    Events    ****/
@@ -48,6 +58,98 @@ class TableGeoServerOperationsLibrary
         return NULL; 
     }
     
+    public function StyleEventForCreate($params)
+    {
+        $helper = $this->GetGeoServerHelper();
+        
+        $SLD = $params['requests']['style_code'];
+        $styleName = $params['requests']['name'];
+        
+        $r = $helper->createStyle($styleName, $SLD);
+        if(!$r) custom_abort('style.not.created.on.geoserver');
+    }
+    
+    public function StyleEventForUpdate($params)
+    {
+        $oldStyleName = $params['record']->name;
+        $newStyleName = $params['requests']['name'];
+        $SLD = $params['requests']['style_code'];
+        
+        if($oldStyleName != $newStyleName)
+            custom_abort('style.name.not.changable');
+        
+        $helper = $this->GetGeoServerHelper();
+        
+        $r = $helper->updateStyle($oldStyleName, $SLD);
+        if(!$r) custom_abort('style.not.updated.on.geoserver');
+    }
+    
+    public function StyleEventForDelete($params)
+    {
+        $helper = $this->GetGeoServerHelper();
+        
+        $styleName = $params['record']->name;
+        
+        $r = $helper->deleteStyle($styleName);
+        if(strlen($r) != 0) custom_abort('style.not.deleted.on.geoserver');
+    }
+    
+    public function CustomLayerEventForCreate($params)
+    {
+        $table = get_model_from_cache('tables', 'id', $params['requests']['table_id']);
+        if(!$this->TableIsHasGeoColumn($table)) 
+            custom_abort('table.not.has.geo.column');
+        
+        $helper = $this->GetGeoServerHelper();
+        
+        $this->WorkspaceControl($helper);
+        $this->DataStoreControl($helper);
+        
+        $customLayerName = helper('seo', $params['requests']['name']);
+        $temp = $helper->createLayer(
+                                        'v_'.$table->name, 
+                                        $customLayerName, 
+                                        $helper->workspaceName, 
+                                        $helper->dataStoreName);
+        
+        if($temp != '') 
+        {
+            \Log::error('Geoserver layer oluşturulamadı! (Hata: ' . $temp . ')');
+            custom_abort('layer.not.created.on.geoserver');
+        }
+        
+        $styleName = get_attr_from_cache('layer_styles', 'id', $params['requests']['layer_style_id'], 'name');
+        
+        $r = $helper->addStyleToLayer($customLayerName, $styleName);
+        if($styleName != $r)
+            \Log::error('Geoserver layer oluşturuldu ama sitil atanamadı! (Hata: ' . $r . ')');
+    }
+    
+    public function CustomLayerEventForUpdate($params)
+    {
+        $oldLayerName = helper('seo', $params['record']->name);
+        $newLayerName = helper('seo', $params['requests']['name']);
+        
+        $helper = $this->GetGeoServerHelper();
+        
+        $r = $helper->deleteLayer($oldLayerName, $helper->workspaceName, $helper->dataStoreName);
+        if(strlen($r) != 0)
+            \Log::error('Geoserver layer silinemedi! (Hata: ' . $r . ')');
+        
+        $this->CustomLayerEventForCreate($params);
+    }
+    
+    public function CustomLayerEventForDelete($params)
+    {
+        $oldLayerName = helper('seo', $params['record']->name);
+        
+        $helper = $this->GetGeoServerHelper();
+        
+        $r = $helper->deleteLayer($oldLayerName, $helper->workspaceName, $helper->dataStoreName);
+        if(strlen($r) != 0)
+            custom_abort ('layer.not.deleted.on.geoserver');
+    }
+    
     
     
     /****    Common Functions    ****/
@@ -65,8 +167,13 @@ class TableGeoServerOperationsLibrary
         
         $this->CreateViewIfNotExistForLayer($params['table']);
         
-        $temp = $helper->createLayer('v_'.$params['table']->name, $helper->workspaceName, $helper->dataStoreName);
-        if($temp != '') \Log::error('Geoserver layer oluşturulamadı! (Hata: ' . $temp . ')');        
+        $name = 'v_'.$params['table']->name;
+        $temp = $helper->createLayer($name, $name, $helper->workspaceName, $helper->dataStoreName);
+        if($temp != '') 
+        {
+            \Log::error('Geoserver layer oluşturulamadı! (Hata: ' . $temp . ')');
+            custom_abort('layer.not.created.on.geoserver');
+        }
     }
     
     private function WorkspaceIsExist($helper)

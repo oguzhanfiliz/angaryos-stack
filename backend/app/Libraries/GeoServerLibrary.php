@@ -37,10 +37,14 @@ class GeoServerLibrary {
                 $ch = curl_init();
 		curl_setopt($ch, CURLOPT_URL, $this->serverUrl.'rest/'.$apiPath);
 		curl_setopt($ch, CURLOPT_USERPWD, $this->username.":".$this->password); 
-		if ($method == 'POST') {
+                curl_setopt($ch, CURLOPT_BINARYTRANSFER, false);
+                
+		if ($method == 'POST' || $method == 'PUT') {
 			curl_setopt($ch, CURLOPT_POST, true);
 			curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
-		} else if ($method == 'DELETE' || $method == 'PUT') {
+		}
+                
+                if ($method == 'DELETE' || $method == 'PUT') {
 			curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $method);
 		}
 
@@ -60,7 +64,7 @@ class GeoServerLibrary {
 		$rslt = curl_exec($ch);
 		$info = curl_getinfo($ch);
 		
-		if ($info['http_code'] == 401) {
+                if ($info['http_code'] == 401) {
 			return 'Access denied. Check login credentials.';
 		} else {
 			return $rslt;
@@ -141,7 +145,7 @@ class GeoServerLibrary {
 		return json_decode($this->runApi('workspaces/'.urlencode($workspaceName).'/datastores/'.urlencode($datastoreName).'/featuretypes.json'));
 	}
 
-	public function createLayer($layerName, $workspaceName, $datastoreName, $description = '') {
+	public function createLayer($layerName, $customLayerName, $workspaceName, $datastoreName, $description = '') {
 		// Add the store's feature type:
 		// If layerName is a shapefile, the shapefile should exist in store already; uploaded via external means
 		// If layerName is a postgis database table, that table should already exist
@@ -150,7 +154,7 @@ class GeoServerLibrary {
 		$layerName = str_replace('.shp', '', str_replace('.SHP', '', $layerName));
                 
                 return $this->runApi('workspaces/'.urlencode($workspaceName).'/datastores/'.urlencode($datastoreName).'/featuretypes.xml', 'POST', '<featureType>
-			<name>'.$layerName.'</name>
+			<name>'.$customLayerName.'</name>
 			<nativeName>'.$layerName.'</nativeName>
 			<description>'.htmlentities($description, ENT_COMPAT).'</description>
 			<store class="dataStore"><name>'.htmlentities($datastoreName, ENT_COMPAT).'</name></store>
@@ -211,17 +215,28 @@ class GeoServerLibrary {
 	}
 
 	public function createStyle($styleName, $SLD) {
-		$rv = $this->runApi('styles.xml', 'POST', '<style>
+		$rv = $this->runApi('styles', 'POST', '<style>
 			<name>'.htmlentities($styleName, ENT_COMPAT).'</name>
 			<filename>'.htmlentities($styleName, ENT_COMPAT).'.sld</filename>
 			</style>');
-		$this->runApi('styles/'.urlencode($styleName), 'PUT', stripslashes($SLD), 'application/vnd.ogc.sld+xml');
-		return $rv;
+                
+                $temp = $this->runApi('styles/'.urlencode($styleName), 'PUT', stripslashes($SLD), 'application/vnd.ogc.sld+xml');
+		
+                return ($rv == htmlentities($styleName, ENT_COMPAT)) && (strlen($temp) == 0);
+	}
+        
+        public function updateStyle($styleName, $SLD) {
+		$temp = $this->runApi('styles/'.urlencode($styleName), 'PUT', stripslashes($SLD), 'application/vnd.ogc.sld+xml');
+		return (strlen($temp) == 0);
 	}
 
-	public function addStyleToLayer($layerName, $workspaceName, $styleName) {
+	public function addStyleToLayer($layerName, $styleName) {
 		// Just adds style to the list of supported styles - then WMS requests can pass the desired style
 		return $this->runApi('layers/'.urlencode($layerName).'/styles', 'POST', '<style><name>'.htmlentities($styleName, ENT_COMPAT).'</name></style>');
+	}
+        
+        public function deleteStyleFromLayer($layerName, $styleName) {
+		return $this->runApi('layers/'.urlencode($layerName).'/styles', 'DELETE');
 	}
 
 	public function deleteStyle($styleName) {

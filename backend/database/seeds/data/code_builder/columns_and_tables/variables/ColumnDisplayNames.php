@@ -84,8 +84,8 @@ $column_name_display_name_map =
     
     
     'custom_layer_type_id' => 'Katman Tipi',
-    'layer_style_id' => 'Sitil',
-    'style_code' => 'Kod (sitil)',
+    'layer_style_id' => 'Stil',
+    'style_code' => 'Kod (stil)',
     'cql_filter' => 'Filtre (CQL)',
     'period' => 'Tekrar',
     'layer_base_url' => 'Katman URL',

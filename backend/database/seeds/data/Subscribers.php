@@ -192,6 +192,46 @@ $return = $helper->ColumnArrayEvent($params);
 ?>'
 ];
 
+$subscribers['table']['layer_styles'][0] =
+[
+    'name_basic' => 'Geoserver stil işlemleri için trigger',
+    'subscriber_type_id' => $subscriber_types['before']->id,
+    'php_code' => '<?php
+$params = 
+[
+    "type" => $type,
+    "table" => $table,
+    "column" => $column,
+    "subscriber" => $subscriber,
+    "requests" => $requests,
+    "user" => $user,
+    "record" => $record            
+];
+$helper = new App\Libraries\TableGeoServerOperationsLibrary();
+$return = $helper->StyleEvent($params);
+?>'
+];
+
+$subscribers['table']['custom_layers'][0] =
+[
+    'name_basic' => 'Geoserver revize katman işlemleri için trigger',
+    'subscriber_type_id' => $subscriber_types['before']->id,
+    'php_code' => '<?php
+$params = 
+[
+    "type" => $type,
+    "table" => $table,
+    "column" => $column,
+    "subscriber" => $subscriber,
+    "requests" => $requests,
+    "user" => $user,
+    "record" => $record            
+];
+$helper = new App\Libraries\TableGeoServerOperationsLibrary();
+$return = $helper->CustomLayerEvent($params);
+?>'
+];
+
 
 
 foreach($subscribers as $type => $set)

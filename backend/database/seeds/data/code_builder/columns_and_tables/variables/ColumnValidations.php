@@ -50,6 +50,7 @@ $columns_validations =
     'table_id' => [ $column_validations['required']->id, $column_validations['numeric']->id ],
     'column_array_ids' => [ $column_validations['required']->id ],
     'column_set_type_id' => [ $column_validations['required']->id, $column_validations['numeric']->id ],
+    'layer_style_id' => [ $column_validations['required']->id, $column_validations['numeric']->id ],
     'column_array_type_id' => [ $column_validations['required']->id, $column_validations['numeric']->id ],
     'color_id' => [ $column_validations['required']->id, $column_validations['numeric']->id ],
     'data_source_col_relation_ids' => [$column_validations['required']->id, $column_validations['select_updated_at']->id ],
