@@ -5,7 +5,9 @@ namespace App\Http\Controllers\Api\V1;
 use App\Http\Controllers\Controller;
 use App\Libraries\SessionLibrary;
 
-use \App\User;
+use DB;
+use Cache;
+use App\User;
 
 class MapController extends Controller
 {
@@ -14,9 +16,62 @@ class MapController extends Controller
         //\Cache::flush();
     }  
     
-    private function AddFilterInRequest($request) 
+    private function AddFilterInRequest($user, $request) 
     {
+        $tableName = explode(':', $request['LAYERS'])[1];
+        $tableName = substr($tableName, 2);
+        
+        $token = \Request::segment(3);
+        
+        if(!isset($user->auths['filters'][$tableName]['list'])) 
+        {
+            Cache::remember('userToken:'.$token.'.tableName:'.$tableName.'.mapFilters', 60 * 60, function()
+            {
+                return TRUE;
+            });
+            return $request;
+        }
+        
+        $filter = '';
+        $filterIds = $user->auths['filters'][$tableName]['list'];
+        foreach($filterIds as $filterId)
+        {
+            $sqlCode = get_attr_from_cache('data_filters', 'id', $filterId, 'sql_code');
+            $sqlCode = str_replace('TABLE.', '', $sqlCode); 
+            $sqlCode = urlencode($sqlCode);
+            
+            $filter .= '%20and%20'.$sqlCode;
+        }
+        $filter = substr($filter, 9);
+        
+        Cache::remember('userToken:'.$token.'.tableName:'.$tableName.'.mapFilters', 60 * 60, function() use($filter)
+        {
+            return $filter;
+        });
+                        
+        if(isset($request['CQL_FILTER']))
+            $request['CQL_FILTER'] .= '%20and%20'.$filter;
+        else
+            $request['CQL_FILTER'] = $filter;
+        
         return $request;
+    }
+    
+    private function AuthControl($user, $request) 
+    {
+        if(!isset($request['LAYERS'])) custom_abort ('undefined.LAYERS.data');
+        
+        $temp = explode(':', $request['LAYERS']);
+        if(count($temp) != 2) 
+            custom_abort ('undefined.LAYERS.data: ' . $request['LAYERS']);
+        
+        $layerName = substr($temp[1], 2);
+        if(!isset($user->auths['tables'][$layerName]['maps']))
+            custom_abort ('no.auth.for.layer: ' . $layerName);
+        
+        $temp = $user->auths['tables'][$layerName]['maps'];
+        if(!in_array(0, $temp) && !in_array(1, $temp))
+            custom_abort ('no.auth.for.layer: ' . $layerName);
     }
     
     private function GetAllRequest() 
@@ -30,9 +85,10 @@ class MapController extends Controller
         return $request;
     }
     
-    private function Control() 
+    private function Control($user) 
     {
         $request = $this->GetAllRequest();
+        $this->AuthControl($user, $request);
         $this->ServiceTypeControl($request);
         
         return $request;
@@ -49,7 +105,7 @@ class MapController extends Controller
     
     private function GetUrl($request)
     {
-        $url = 'http://geoserver:8080/geoserver/angaryos/';
+        $url = 'http://geoserver:8080/geoserver/'.env('GEOSERVER_WORKSPACE', 'angaryos').'/';
         $url .= strtolower($request['SERVICE']).'?';
                 
         foreach($request as $key => $value)       
@@ -67,8 +123,8 @@ class MapController extends Controller
     
     public function GetTile($user)
     {
-        $request = $this->Control();
-        $request = $this->AddFilterInRequest($request);
+        $request = $this->Control($user);
+        $request = $this->AddFilterInRequest($user, $request);
         
         $url = $this->GetUrl($request);
         return $this->GetImage($url);

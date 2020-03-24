@@ -235,7 +235,7 @@ export abstract class MapHelper
       source: new TileWMS(
       {
         url: url,
-        params: 
+        params:  
         {
           'LAYERS': tableAuth["workspace"]+':'+tableAuth["layer_name"],
           'TILED': true

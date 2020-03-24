@@ -143,6 +143,26 @@ class User extends Authenticatable
         return $info;
     }
     
+    private function getExternalLayerInfo($layer)
+    {
+        $info['base_url'] = $layer->layer_base_url;
+        $info['display_name'] = $layer->name;
+        
+        $temp = explode(':', $layer->layer_name);
+        
+        $info['workspace'] = $temp[0];
+        $info['layer_name'] = $temp[1];
+        $info['type'] = get_attr_from_cache('custom_layer_types', 'id', $layer->custom_layer_type_id, 'name');
+        
+        $info['period'] = $layer->period;
+        if(strlen($info['period']) == 0) $info['period'] = 0;
+        
+        $info['filter'] = FALSE;
+        $info['search'] = FALSE;
+        
+        return $info;
+    }
+    
     public function getMapArray()
     {
         if(!isset($this->auths['tables'])) return [];
@@ -150,9 +170,19 @@ class User extends Authenticatable
         $mapAuths = [];
         
         foreach($this->auths['tables'] as $tableName => $table)            
-            if(isset($table['map']))
-                $mapAuths[$tableName] = $this->getLayerInfo($tableName, $table['map']);
+            if(isset($table['maps']))
+                $mapAuths[$tableName] = $this->getLayerInfo($tableName, $table['maps']);
+       
+        foreach($this->auths['external_layers'] as $id => $temp)  
+        {
+            $layer = get_attr_from_cache('external_layers', 'id', $id, '*');
             
+            $temp = $this->getExternalLayerInfo($layer);
+            $name = explode(':', $layer->layer_name)[1];
+            
+            $mapAuths[$name] = $temp;
+        }
+        
         return $mapAuths;
     }
     

@@ -1,6 +1,8 @@
 <?php
 $key = 'allAuths';
 
+//Cache::flush();
+
 return Cache::rememberForever($key, function()
 {      
     $geometryColumnTypes = ['point', 'linestring', 'polygon', 'multipoint', 'multilinestring', 'multipolygon'];
@@ -126,6 +128,13 @@ return Cache::rememberForever($key, function()
     {
         $source = 'missions:'.$mission->id.':0:0';
         $display = 'Görevler ' . $mission->name. ' Tetikleme';
+        $auths[$source] = $display;
+    }
+    
+    foreach(\DB::table('external_layers')->where('state', TRUE)->get() as $layer)
+    {
+        $source = 'external_layers:'.$layer->id.':0:0';
+        $display = 'Ek Katman ' . $layer->name;
         $auths[$source] = $display;
     }
     

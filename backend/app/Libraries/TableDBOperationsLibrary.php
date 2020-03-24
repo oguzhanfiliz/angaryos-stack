@@ -65,7 +65,10 @@ class TableDBOperationsLibrary
         
         $geometryColumnTypes = ['point', 'linestring', 'polygon', 'multipoint', 'multilinestring', 'multipolygon'];
         
-        $columnIds = json_decode($table->column_ids);
+        $columnIds = $table->column_ids;
+        if(gettype($columnIds) == 'string')
+            $columnIds = json_decode($table->column_ids);
+        
         foreach($columnIds as $columnId)
         {
             $columnDbTypeId = get_attr_from_cache('columns', 'id', $columnId, 'column_db_type_id');
@@ -73,7 +76,7 @@ class TableDBOperationsLibrary
             
             if(!in_array($columnDbType, $geometryColumnTypes)) continue;
 
-            array_push($aurhs, 'tables:'.$table->name.':maps:0');
+            array_push($auths, 'tables:'.$table->name.':maps:0');
             break;
         }
         
