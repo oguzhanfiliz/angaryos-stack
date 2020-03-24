@@ -138,6 +138,13 @@ return Cache::rememberForever($key, function()
         $auths[$source] = $display;
     }
     
+    foreach(\DB::table('custom_layers')->where('state', TRUE)->get() as $layer)
+    {
+        $source = 'custom_layers:'.$layer->id.':0:0';
+        $display = 'Revize Katman ' . $layer->name;
+        $auths[$source] = $display;
+    }
+    
     foreach(\DB::table('auth_groups')->where('state', TRUE)->get() as $auth)
         $auths[$auth->id] = $auth->name_basic;
     

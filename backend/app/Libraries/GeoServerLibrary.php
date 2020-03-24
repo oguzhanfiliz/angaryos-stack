@@ -235,7 +235,7 @@ class GeoServerLibrary {
 		return $this->runApi('layers/'.urlencode($layerName).'/styles', 'POST', '<style><name>'.htmlentities($styleName, ENT_COMPAT).'</name></style>');
 	}
         
-        public function deleteStyleFromLayer($layerName, $styleName) {
+        public function deleteAllStylesFromLayer($layerName, $styleName) {
 		return $this->runApi('layers/'.urlencode($layerName).'/styles', 'DELETE');
 	}
 

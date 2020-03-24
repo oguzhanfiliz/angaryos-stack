@@ -17,8 +17,10 @@ foreach(explode('&', $temp[1]) as $req)
     $requests[strtoupper($set[0])] = $set[1];
 }
 
-if(!strstr($requests['LAYERS'], '%3Av_')) return;
-$temp = explode('%3Av_', $requests['LAYERS']);
+//if(!strstr($requests['LAYERS'], '%3Av_')) return;
+$temp = explode('%3A', $requests['LAYERS']);
+if(substr($temp[1], 0, 2) == 'v_')
+    $temp[1] = substr($temp[1], 2);
 
 return ['segments' => $segments, 'requests' =>  $requests, 'tableName' => $temp[1]];
 

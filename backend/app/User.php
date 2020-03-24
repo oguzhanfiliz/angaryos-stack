@@ -124,6 +124,7 @@ class User extends Authenticatable
         $info['workspace'] = env('GEOSERVER_WORKSPACE', 'angaryos');
         $info['layer_name'] = 'v_'.$tableName;
         $info['type'] = 'wms';
+        $info['style'] = '';
         $info['period'] = '0';
         
         $info['filter'] = FALSE;
@@ -153,6 +154,25 @@ class User extends Authenticatable
         $info['workspace'] = $temp[0];
         $info['layer_name'] = $temp[1];
         $info['type'] = get_attr_from_cache('custom_layer_types', 'id', $layer->custom_layer_type_id, 'name');
+        $info['style'] = '';
+        
+        $info['period'] = $layer->period;
+        if(strlen($info['period']) == 0) $info['period'] = 0;
+        
+        $info['filter'] = FALSE;
+        $info['search'] = FALSE;
+        
+        return $info;
+    }
+    
+    private function getCustomLayerInfo($layer)
+    {
+        $info['base_url'] = '';
+        $info['display_name'] = $layer->name;        
+        $info['workspace'] = env('GEOSERVER_WORKSPACE', 'angaryos');
+        $info['layer_name'] = helper('seo', $layer->name);
+        $info['type'] = get_attr_from_cache('custom_layer_types', 'id', $layer->custom_layer_type_id, 'name');
+        $info['style'] = get_attr_from_cache('layer_styles', 'id', $layer->layer_style_id, 'name');
         
         $info['period'] = $layer->period;
         if(strlen($info['period']) == 0) $info['period'] = 0;
@@ -183,6 +203,16 @@ class User extends Authenticatable
             $mapAuths[$name] = $temp;
         }
         
+        foreach($this->auths['custom_layers'] as $id => $temp)  
+        {
+            $layer = get_attr_from_cache('custom_layers', 'id', $id, '*');
+            
+            $temp = $this->getCustomLayerInfo($layer);
+            $name = helper('seo', $layer->name);
+            
+            $mapAuths[$name] = $temp;
+        }
+                
         return $mapAuths;
     }
     

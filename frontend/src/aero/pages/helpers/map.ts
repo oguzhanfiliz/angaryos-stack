@@ -230,16 +230,19 @@ export abstract class MapHelper
     var url = tableAuth["base_url"];
     if(url == "") url = BaseHelper["pipe"]["geoserverBaseUrl"];
 
+    var params = 
+    {
+      'LAYERS': tableAuth["workspace"]+':'+tableAuth["layer_name"],
+      'TILED': true,
+      'STYLES': tableAuth["style"]
+    };
+
     var layer = new TileLayer(
     {
       source: new TileWMS(
       {
         url: url,
-        params:  
-        {
-          'LAYERS': tableAuth["workspace"]+':'+tableAuth["layer_name"],
-          'TILED': true
-        },
+        params: params,
         serverType: 'geoserver',
         transition: 0
       })

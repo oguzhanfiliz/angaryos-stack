@@ -19,7 +19,9 @@ class MapController extends Controller
     private function AddFilterInRequest($user, $request) 
     {
         $tableName = explode(':', $request['LAYERS'])[1];
-        $tableName = substr($tableName, 2);
+        
+        if(substr($tableName, 0, 2) == 'v_')
+            $tableName = substr($tableName, 2);
         
         $token = \Request::segment(3);
         
@@ -65,13 +67,34 @@ class MapController extends Controller
         if(count($temp) != 2) 
             custom_abort ('undefined.LAYERS.data: ' . $request['LAYERS']);
         
-        $layerName = substr($temp[1], 2);
-        if(!isset($user->auths['tables'][$layerName]['maps']))
-            custom_abort ('no.auth.for.layer: ' . $layerName);
-        
-        $temp = $user->auths['tables'][$layerName]['maps'];
-        if(!in_array(0, $temp) && !in_array(1, $temp))
-            custom_abort ('no.auth.for.layer: ' . $layerName);
+        if(substr($temp[1], 0, 2) == 'v_')
+        {
+            $layerName = substr($temp[1], 2);
+            if(!isset($user->auths['tables'][$layerName]['maps']))
+                custom_abort ('no.auth.for.layer: ' . $layerName);
+
+            $temp = $user->auths['tables'][$layerName]['maps'];
+            if(!in_array(0, $temp) && !in_array(1, $temp))
+                custom_abort ('no.auth.for.layer: ' . $layerName);
+        }
+        else
+        {
+            $control = FALSE;
+            
+            foreach($user->auths['custom_layers'] as $id => $t)
+            {
+                $layerName = get_attr_from_cache('custom_layers', 'id', $id, 'name');
+                $layerName = helper('seo', $layerName);
+                
+                if($layerName == $temp[1])
+                {
+                    $control = TRUE;
+                    break;
+                }
+            }
+            
+            if(!$control) custom_abort ('no.auth.for.layer: ' . $temp[1]);
+        }
     }
     
     private function GetAllRequest() 
