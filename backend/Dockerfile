@@ -4,16 +4,20 @@ COPY composer.json composer.lock /var/www/
 
 WORKDIR /var/www
 
-RUN apt-get update && apt-get install -y \
-    libpq-dev \
-    libmemcached-dev \
-    zlib1g-dev \
-    curl \
-    git \
-    nano \ 
-    libxml2-dev \
-    libldap2-dev 
-    
+RUN apt-get update
+RUN apt-get install -y --no-install-recommends \ 
+    libpq-dev  libmemcached-dev  zlib1g-dev  curl  git  nano  libxml2-dev libldap2-dev \
+    python3 python3-pip libfreetype6-dev libjpeg62-turbo-dev libpng-dev \
+    gconf-service libasound2 libatk1.0-0 libcairo2 libcups2 libfontconfig1 \
+    libgdk-pixbuf2.0-0 libgtk-3-0 libnspr4 libpango-1.0-0 libxss1 fonts-liberation libappindicator1 \
+    libnss3 lsb-release xdg-utils wget docker.io 
+
+COPY google-chrome-80_amd64.deb /var/www/google-chrome-80_amd64.deb
+RUN dpkg -i google-chrome-80_amd64.deb; apt-get -fy install
+   
+RUN docker-php-ext-install -j$(nproc) iconv \
+    && docker-php-ext-configure gd --with-freetype-dir=/usr/include/ --with-jpeg-dir=/usr/include/ \
+    && docker-php-ext-install -j$(nproc) gd 
 
 RUN curl -L -o /tmp/memcached.tar.gz "https://github.com/php-memcached-dev/php-memcached/archive/php7.tar.gz" \
     && mkdir -p /usr/src/php/ext/memcached \
@@ -22,35 +26,23 @@ RUN curl -L -o /tmp/memcached.tar.gz "https://github.com/php-memcached-dev/php-m
     && docker-php-ext-install memcached \
     && rm /tmp/memcached.tar.gz
 
-RUN apt install -y --no-install-recommends \
-        libfreetype6-dev \
-        libjpeg62-turbo-dev \
-        libpng-dev \
-    && docker-php-ext-install -j$(nproc) iconv \
-    && docker-php-ext-configure gd --with-freetype-dir=/usr/include/ --with-jpeg-dir=/usr/include/ \
-    && docker-php-ext-install -j$(nproc) gd \
-    && rm -r /var/lib/apt/lists/*
+RUN docker-php-ext-configure ldap --with-libdir=lib/x86_64-linux-gnu/
+RUN docker-php-ext-install pgsql pdo pdo_pgsql sockets opcache zip xml ldap
 
-RUN docker-php-ext-install pgsql
-RUN docker-php-ext-install pdo pdo_pgsql
-RUN docker-php-ext-install sockets
-RUN docker-php-ext-install opcache
-RUN docker-php-ext-install zip
-RUN docker-php-ext-install xml
-
-RUN docker-php-ext-configure ldap --with-libdir=lib/x86_64-linux-gnu/ 
-RUN docker-php-ext-install ldap
-
-RUN apt-get clean && rm -rf /var/lib/apt/lists/*
+RUN pip3 install selenium beautifulsoup4 lxml
 
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
 RUN groupadd -g 1000 www
-RUN useradd -u 1000 -ms /bin/bash -g www www
+RUN useradd -u 1000 -ms /bin/bash -g www www && echo "www:www" | chpasswd
 
 COPY . /var/www
 
-COPY --chown=www:www . /var/www
+RUN chown www:www /var/www
+RUN chmod +x /var/www/chromedriver
+
+RUN apt-get -y install sudo
+RUN adduser www sudo
 
 USER www
 

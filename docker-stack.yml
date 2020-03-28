@@ -78,10 +78,12 @@ services:
     #######       BACKEND       #######
  
     laravel:
-        image: karapazar/laravel-php-fpm:0.45
+        image: karapazar/laravel-php-fpm:0.51
         volumes:
             - ./backend:/var/www 
             - ./backend/php.ini:/usr/local/etc/php/conf.d/local.ini
+            - ./services/geoserver/data:/var/geoserver
+            - /var/run/docker.sock:/var/run/docker.sock 
         environment:
             SERVICE_NAME: app
             SERVICE_TAGS: dev
