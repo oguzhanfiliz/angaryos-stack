@@ -38,37 +38,45 @@ export class MultiSelectElementComponent
 
     ngAfterViewInit()
     {
-        if(this.upFormId.length > 0)
-            this.baseElementSelector = '[ng-reflect-id="'+this.upFormId+'"] ';
+        //console.log(this.name  + ' ngAfterViewInit')//beki gecikme istiyodur. bazen bozuk çıkıyodu bu element filtre içinde bunu koyunca düzeldi
+        setTimeout(() => 
+        {            
+            if(this.upFormId.length > 0)
+                this.baseElementSelector = '[ng-reflect-id="'+this.upFormId+'"] ';
 
-        if(this.showClearDataButton == "false")
-            this.showClearDataButton = false;
+            if(this.showClearDataButton == "false")
+                this.showClearDataButton = false;
 
-        this.elementOperations();
+            this.elementOperations();    
+        }, 100);
     }
 
     ngOnChanges()
     {
-        if(this.valueJson.length > 0)
-        {
-            var key = "user:"+BaseHelper.loggedInUserInfo.user.id+"."+this.baseUrl+".data";
-            
-            this.val = [];
-            var temp = BaseHelper.jsonStrToObject(this.valueJson);
-            if(temp == null) return;
-            
-            for(var i = 0; i < temp.length; i++)
+        //console.log(this.name  +' ngOnChanges')//beki gecikme istiyodur. bazen bozuk çıkıyodu bu element filtre içinde bunu koyunca düzeldi
+        setTimeout(() => 
+        {            
+            if(this.valueJson.length > 0) 
             {
-                this.val.push(temp[i]['source']);
+                var key = "user:"+BaseHelper.loggedInUserInfo.user.id+"."+this.baseUrl+".data";
+                
+                this.val = [];
+                var temp = BaseHelper.jsonStrToObject(this.valueJson);
+                if(temp == null) return;
+                
+                for(var i = 0; i < temp.length; i++)
+                {
+                    this.val.push(temp[i]['source']);
 
-                var tempKey = key + ".selectQueryElementDataCache."+this.name+"."+temp[i]['source'];
-                BaseHelper.writeToLocal(tempKey, temp[i]['display']);
+                    var tempKey = key + ".selectQueryElementDataCache."+this.name+"."+temp[i]['source'];
+                    BaseHelper.writeToLocal(tempKey, temp[i]['display']);
+                }
             }
-        }
-        else if(this.value.substr(0,1) == '[')
-            this.val = BaseHelper.jsonStrToObject(this.value);
-        else
-            this.val = this.value.split(",");
+            else if(this.value.substr(0,1) == '[')
+                this.val = BaseHelper.jsonStrToObject(this.value);
+            else
+                this.val = this.value.split(",");    
+        }, 100);
     }
 
     async waitForSelect2Library()

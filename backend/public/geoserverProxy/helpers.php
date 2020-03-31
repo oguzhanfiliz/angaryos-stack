@@ -38,7 +38,7 @@ function getUrlWithCqlFilter($filter)
 {
     global $env, $data;
 
-    if($filter == 'true') $filter = '';
+    if($filter == 'OK') $filter = '';
     
     if(strlen($filter) > 0)
     {

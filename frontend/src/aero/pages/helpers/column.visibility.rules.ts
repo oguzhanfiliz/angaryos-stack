@@ -96,6 +96,14 @@ function columnDataSourceIdTrigger(tableName, columnName, elementId, data)
     setElementVisibility(elementId, "relation_sql", visible);
 }
 
+function customLayerTypeIdTrigger(tableName, columnName, elementId, data)
+{
+    var visible = false;
+    if(data[columnName] == "2") //wfs
+        visible = true;
+
+    setElementVisibility(elementId, "period", visible);
+}
 
 export const columnVisibilityRules = 
 {
@@ -108,5 +116,6 @@ export const columnVisibilityRules =
     "relation_display_column_id": relationDisplayColumnIdTrigger,
     "relation_source_column": relationSourceColumnTrigger,
     "relation_display_column": relationDisplayColumnTrigger,
-    "column_data_source_id": columnDataSourceIdTrigger
+    "column_data_source_id": columnDataSourceIdTrigger,
+    "custom_layer_type_id": customLayerTypeIdTrigger
 };

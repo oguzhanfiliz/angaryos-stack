@@ -193,25 +193,27 @@ class User extends Authenticatable
             if(isset($table['maps']))
                 $mapAuths[$tableName] = $this->getLayerInfo($tableName, $table['maps']);
        
-        foreach($this->auths['external_layers'] as $id => $temp)  
-        {
-            $layer = get_attr_from_cache('external_layers', 'id', $id, '*');
+        if(isset($this->auths['external_layers']))
+            foreach($this->auths['external_layers'] as $id => $temp)  
+            {
+                $layer = get_attr_from_cache('external_layers', 'id', $id, '*');
+
+                $temp = $this->getExternalLayerInfo($layer);
+                $name = explode(':', $layer->layer_name)[1];
+
+                $mapAuths[$name] = $temp;
+            }
             
-            $temp = $this->getExternalLayerInfo($layer);
-            $name = explode(':', $layer->layer_name)[1];
-            
-            $mapAuths[$name] = $temp;
-        }
-        
-        foreach($this->auths['custom_layers'] as $id => $temp)  
-        {
-            $layer = get_attr_from_cache('custom_layers', 'id', $id, '*');
-            
-            $temp = $this->getCustomLayerInfo($layer);
-            $name = helper('seo', $layer->name);
-            
-            $mapAuths[$name] = $temp;
-        }
+        if(isset($this->auths['custom_layers']))
+            foreach($this->auths['custom_layers'] as $id => $temp)  
+            {
+                $layer = get_attr_from_cache('custom_layers', 'id', $id, '*');
+
+                $temp = $this->getCustomLayerInfo($layer);
+                $name = helper('seo', $layer->name);
+
+                $mapAuths[$name] = $temp;
+            }
                 
         return $mapAuths;
     }

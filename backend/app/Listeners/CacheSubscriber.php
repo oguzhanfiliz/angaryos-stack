@@ -39,6 +39,9 @@ class CacheSubscriber
                 break;
             
             case 'data_filters':
+                $this->clearFilterCache($record);
+                break;
+            
             case 'data_filter_types':
             case 'column_sets':
             case 'column_arrays':
@@ -48,6 +51,19 @@ class CacheSubscriber
         }
         
         return TRUE;
+    }
+    
+    private function clearFilterCache($filter)
+    {
+        Cache::forget('allAuths');
+        
+        $filterTypeName = get_attr_from_cache('data_filter_types', 'id', $filter->data_filter_type_id, 'name');
+        if($filterTypeName != 'list') return;
+        
+        $keys = $this->getCacheKeys();
+        foreach($keys as $key)
+            if(strstr($key, 'userToken:'))
+                dd('clearFilterCache');//userToken:1111111111111111d1.tableName:test.mapFilters
     }
     
     private function getCacheKeys()
@@ -103,6 +119,11 @@ class CacheSubscriber
         $groups = \DB::table('auth_groups')->where('auths', '@>', $record->id)->get();
         foreach($groups as $group)
             $this->clearAuthGroupsCache($group);
+        
+        $keys = $this->getCacheKeys();
+        foreach($keys as $key)
+            if(strstr($key, 'userToken:'))
+                dd('clearFilterCache');//userToken:1111111111111111d1.tableName:test.mapFilters
     }
     
     private function clearRelationDataCache($tableName, $record, $type)
@@ -163,6 +184,11 @@ class CacheSubscriber
     {
         Cache::forget('tableName:users|id:'.$record->id.'|authTree');
         
+        $keys = $this->getCacheKeys();
+        foreach($keys as $key)
+            if(strstr($key, 'userToken:'))
+                dd('clearUserCache');//userToken:1111111111111111d1.tableName:test.mapFilters
+            
         if($record->id == PUBLIC_USER_ID)
             Cache::forget('publicUser');
     }
@@ -257,6 +283,9 @@ class CacheSubscriber
                 dd($key);
                 Cache::forget($key);
             }
+            
+            if(strstr($key, 'userToken:'))
+                dd('clearTablesAndColumnCommonCache2');//userToken:1111111111111111d1.tableName:test.mapFilters
         }
         
         $this->clearColumnSetsOrArraysCache($table);

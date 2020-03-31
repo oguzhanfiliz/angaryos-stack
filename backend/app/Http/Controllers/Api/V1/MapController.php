@@ -14,6 +14,7 @@ class MapController extends Controller
     public function __construct()
     {
         //\Cache::flush();
+        //dd(getMemcachedKeys());
     }  
     
     private function AddFilterInRequest($user, $request) 
@@ -29,8 +30,9 @@ class MapController extends Controller
         {
             Cache::remember('userToken:'.$token.'.tableName:'.$tableName.'.mapFilters', 60 * 60, function()
             {
-                return TRUE;
+                return 'OK';
             });
+            
             return $request;
         }
         

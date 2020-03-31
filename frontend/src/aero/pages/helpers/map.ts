@@ -4,7 +4,6 @@ import View from 'ol/View';
 import { WKT, GeoJSON} from 'ol/format';
 
 import { Tile as TileLayer, Vector as VectorLayer } from 'ol/layer';
-import TileLayer from 'ol/layer/Tile';
 import TileWMS from 'ol/source/TileWMS';
 
 import { OSM, Vector as VectorSource } from 'ol/source';

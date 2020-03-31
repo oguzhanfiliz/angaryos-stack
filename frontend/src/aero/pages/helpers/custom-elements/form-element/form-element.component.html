@@ -1,6 +1,15 @@
-<text-element *ngIf="type == 'text' || type == 'jsonb'" 
+<text-element *ngIf="type == 'text'" 
 (changed)="handleChanged($event)"
 value="{{ value }}"
+name="{{ name }}"
+placeholder="{{ placeholder }}"
+showFilterTypesSelect="{{ showFilterTypesSelect }}"
+filterType="{{ filterType }}"
+class="{{ class }}"></text-element>
+
+<text-element *ngIf="type == 'jsonb'" 
+(changed)="handleChanged($event)"
+value="{{ valueJson }}"
 name="{{ name }}"
 placeholder="{{ placeholder }}"
 showFilterTypesSelect="{{ showFilterTypesSelect }}"
