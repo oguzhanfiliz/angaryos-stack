@@ -20,7 +20,7 @@ class CreateTableGroupsTable extends Migration
             $table->jsonb('table_ids')->nullable();
             $table->jsonb('image')->nullable();
             $table->string('icon')->nullable();
-            $table->integer('order')->nullable();
+            //$table->integer('order')->nullable();
             
             $table->boolean('state')->default(TRUE)->nullable();
             $table->integer('own_id');

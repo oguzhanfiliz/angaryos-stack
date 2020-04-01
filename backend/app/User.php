@@ -36,20 +36,33 @@ class User extends Authenticatable
 
 
     
-    private function getTableGruops()
+    private function getTableGroups()
     {
         if($this->tableGroups == NULL)
-            $this->tableGroups = Cache::rememberForever('tableGroups', function()
+        {
+            $ids = $this->auths['table_groups'][0][0];
+            $cacheKey = 'user:'.$this->id.'|tableGroups';
+            
+            $this->tableGroups = Cache::rememberForever($cacheKey, function() use($ids)
             {
-                return DB::table('table_groups')->orderBy('order')->get();
+                $rt = [];
+                
+                $tableGroups = DB::table('table_groups')->whereIn('id', $ids)->get();
+                foreach($ids as $order => $id)
+                    foreach($tableGroups as $tableGroup)
+                        if($tableGroup->id == $id)
+                            $rt[$order] = $tableGroup;
+                        
+                return $rt;
             });
+        }
             
         return $this->tableGroups;
     }
     
     private function getTableGruop($tableId)
     {
-        foreach($this->getTableGruops() as $tableGroup)
+        foreach($this->getTableGroups() as $tableGroup)
         {
             $tableIds = json_decode($tableGroup->table_ids);
             if(in_array($tableId, $tableIds))
@@ -91,7 +104,7 @@ class User extends Authenticatable
     private function getTableGroupListForMenu()
     {
         $tableGroups = [];
-        foreach($this->getTableGruops() as $tableGroup)
+        foreach($this->getTableGroups() as $tableGroup)
         {
             $temp = 
             [

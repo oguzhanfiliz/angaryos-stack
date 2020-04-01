@@ -270,8 +270,8 @@ trait BaseModelGetDataColumnTrait
     {   
         $keys = array_keys(get_object_vars($columns));        
         $json = json_encode($keys);
-        $cacheName = 'tableName:'.$this->getTable().'|columnNames:'.$json.'|form:'.$form.'|filteredColumns';
         
+        $cacheName = 'tableName:'.$this->getTable().'|columnNames:'.$json.'|form:'.$form.'|filteredColumns';
         $return = Cache::rememberForever($cacheName, function() use($columns, $form)
         {   
             $disabledColumns = ['id', 'updated_at', 'created_at', 'user_id', 'own_id'];

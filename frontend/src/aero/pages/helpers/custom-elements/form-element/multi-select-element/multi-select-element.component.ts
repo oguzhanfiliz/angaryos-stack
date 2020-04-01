@@ -48,7 +48,7 @@ export class MultiSelectElementComponent
                 this.showClearDataButton = false;
 
             this.elementOperations();    
-        }, 100);
+        }, 500);
     }
 
     ngOnChanges()
@@ -76,7 +76,7 @@ export class MultiSelectElementComponent
                 this.val = BaseHelper.jsonStrToObject(this.value);
             else
                 this.val = this.value.split(",");    
-        }, 100);
+        }, 500);
     }
 
     async waitForSelect2Library()

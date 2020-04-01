@@ -120,6 +120,14 @@ class CacheSubscriber
         foreach($groups as $group)
             $this->clearAuthGroupsCache($group);
         
+        $users = \DB::table('users')
+                    ->where('auths', '@>', $record->id)
+                    ->orWhere('auths', '@>', '"'.$record->id.'"')
+                    ->get();
+        
+        foreach($users as $user)
+            $this->clearUserCache($user);
+        
         $keys = $this->getCacheKeys();
         foreach($keys as $key)
             if(strstr($key, 'userToken:'))
@@ -244,6 +252,7 @@ class CacheSubscriber
     {
         $tableModel = new BaseModel('tables');
         $tables = $tableModel->whereRaw('column_ids @> \''.$record->id.'\'::jsonb')->get();
+        
         foreach($tables as $table)
             $this->clearTablesAndColumnCommonCache($table);
     }
@@ -273,14 +282,12 @@ class CacheSubscriber
         {
             if(substr($key, -16, 16) != '|filteredColumns') continue;
                     
-            $prefix = 'tableName:'.$table->name.'|columnName:';
-            $prefixArchive = 'tableName:'.$table->name.'_archive|columnName:';
-            
+            $prefix = 'tableName:'.$table->name.'|columnNames:';
+            $prefixArchive = 'tableName:'.$table->name.'_archive|columnNames:';
+                        
             if(strstr($key, $prefix) || strstr($key, $prefixArchive))
             { 
-                dd('clearTablesAndColumnCommonCache');
                 $key = str_replace(explode($prefix, $key)[0], '', $key);
-                dd($key);
                 Cache::forget($key);
             }
             

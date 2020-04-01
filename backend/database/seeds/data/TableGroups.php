@@ -1,7 +1,7 @@
 <?php
 use App\BaseModel;
 
-$order = 1;
+//$order = 1;
 
 $table_groups = 
 [
@@ -16,7 +16,7 @@ $table_groups =
         ],
         'image' => json_decode('[{"disk": "uploads", "file_name": "settings.png", "destination_path": "uploads/2020/01/01/"}]'),
         'icon' => 'zmdi-settings',
-        'order' => $order++
+        //'order' => $order++
     ],
     [
         'name_basic' => 'İnsan Kaynakları',
@@ -27,7 +27,7 @@ $table_groups =
         ],
         'image' => json_decode('[{"disk": "uploads", "file_name": "hr.png", "destination_path": "uploads/2020/01/01/"}]'),
         'icon' => 'zmdi-accounts',
-        'order' => $order++
+        //'order' => $order++
     ],
     [
         'name_basic' => 'Tablolar ve Kolonlar',
@@ -50,7 +50,7 @@ $table_groups =
         ],
         'image' => json_decode('[{"disk": "uploads", "file_name": "tables.png", "destination_path": "uploads/2020/01/01/"}]'),
         'icon' => 'zmdi zmdi-grid',
-        'order' => $order++
+        //'order' => $order++
     ],
     [
         'name_basic' => 'Yetkiler',
@@ -66,7 +66,7 @@ $table_groups =
         ],
         'image' => json_decode('[{"disk": "uploads", "file_name": "auths.png", "destination_path": "uploads/2020/01/01/"}]'),
         'icon' => 'zmdi zmdi-lock',
-        'order' => $order++
+        //'order' => $order++
     ],
     [
         'name_basic' => 'Proje Alt Nesneleri',
@@ -82,7 +82,7 @@ $table_groups =
         ],
         'image' => json_decode('[{"disk": "uploads", "file_name": "subfeatures.png", "destination_path": "uploads/2020/01/01/"}]'),
         'icon' => 'zmdi-pin-drop',
-        'order' => $order++
+        //'order' => $order++
     ],
     [
         'name_basic' => 'Harita',
@@ -95,7 +95,7 @@ $table_groups =
         ],
         'image' => json_decode('[{"disk": "uploads", "file_name": "map.png", "destination_path": "uploads/2020/01/01/"}]'),
         'icon' => 'zmdi-map',
-        'order' => $order++
+        //'order' => $order++
     ],
     [
         'name_basic' => 'Veri Aktarıcı',
@@ -112,7 +112,7 @@ $table_groups =
         ],
         'image' => json_decode('[{"disk": "uploads", "file_name": "subfeatures.png", "destination_path": "uploads/2020/01/01/"}]'),
         'icon' => 'zmdi-repeat',
-        'order' => $order++
+        //'order' => $order++
     ],
 ];
 

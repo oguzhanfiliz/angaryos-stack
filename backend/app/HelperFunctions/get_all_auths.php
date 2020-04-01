@@ -145,8 +145,17 @@ return Cache::rememberForever($key, function()
         $auths[$source] = $display;
     }
     
+    foreach(\DB::table('table_groups')->where('state', TRUE)->get() as $group)
+    {
+        $source = 'table_groups:0:0:'.$group->id;
+        $display = 'Tablo Grubu ' . $group->name_basic;
+        $auths[$source] = $display;
+    }
+    
     foreach(\DB::table('auth_groups')->where('state', TRUE)->get() as $auth)
         $auths[$auth->id] = $auth->name_basic;
+    
+
     
     return $auths;        
 });

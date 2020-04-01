@@ -122,7 +122,7 @@ foreach($tables as $table)
     array_push($adminAuths, $tableAuths->id);
 }
 
-
+dd('menu grubu diye yetki grubu oluştur admin e ekle');
 
 array_push($adminAuths, 'admin:authWizard:0:0');
 array_push($adminAuths, 'admin:userImitation:0:0');
