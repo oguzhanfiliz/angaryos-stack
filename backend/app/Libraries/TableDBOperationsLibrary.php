@@ -45,7 +45,23 @@ class TableDBOperationsLibrary
     
     public function UpdateTableFullAuthToAdminUser($table)
     {
-        dd('UpdateTableFullAuthToAdminUser');//add map auth in auth group if geo column is exist; after archived
+        $geometryColumnTypes = ['point', 'linestring', 'polygon', 'multipoint', 'multilinestring', 'multipolygon'];
+        
+        $columnIds = $table->column_ids;
+        if(gettype($columnIds) == 'string')
+            $columnIds = json_decode($table->column_ids);
+        
+        foreach($columnIds as $columnId)
+        {
+            $columnDbTypeId = get_attr_from_cache('columns', 'id', $columnId, 'column_db_type_id');
+            $columnDbType = get_attr_from_cache('column_db_types', 'id', $columnDbTypeId, 'name');
+            
+            if(!in_array($columnDbType, $geometryColumnTypes)) continue;
+            
+            dd('UpdateTableFullAuthToAdminUser');//add map auth in auth group after archived
+            
+            break;
+        }
     }
     
     public function AddTableFullAuthToAdminUser($table)

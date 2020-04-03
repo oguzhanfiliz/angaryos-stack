@@ -20,6 +20,7 @@ class CreateExternalLayersTable extends Migration
             $table->integer('custom_layer_type_id')->nullable();
             $table->text('layer_base_url')->nullable();
             $table->string('layer_name')->nullable();
+            $table->integer('layer_style_id')->nullable();
             $table->integer('srid')->nullable();
             $table->text('cql_filter')->nullable();
             $table->integer('period')->nullable();

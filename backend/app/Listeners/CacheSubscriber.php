@@ -105,7 +105,10 @@ class CacheSubscriber
     
     private function clearTableGroupCache($record)
     {
-        Cache::forget('tableGroups');
+        $keys = $this->getCacheKeys();
+        foreach($keys as $key)
+            if(substr($key, -16, 16) == '|tableGroups')
+                Cache::forget($key);
     }
     
     private function clearAuthGroupsCache($record)
@@ -265,36 +268,51 @@ class CacheSubscriber
         $this->clearTablesAndColumnCommonCache($table);
     }
     
+    private function clearTableStandartCache($tableId, $tableName)
+    {
+        Cache::forget('tableName:'.$tableName.'|fillableColumns');
+        Cache::forget('tableName:'.$tableName.'|castsColumns');
+        Cache::forget('tableName:'.$tableName.'|allColumsFromDb');
+        Cache::forget('tableName:'.$tableName.'|allColumsFromDbWithTableAliasAndGuiType');
+        
+        if(strstr($tableName, '_archive')) return;
+        
+        $key = 'table:'.$tableName.'|type:column_arrays|id:';
+        $columnArrays = DB::table('column_arrays')->where('table_id', $tableId)->get();
+        foreach($columnArrays as $columnArray) Cache::forget($key.$columnArray->id);
+        Cache::forget($key.'0');
+    }
+    
     private function clearTablesAndColumnCommonCache($table)
     {
-        Cache::forget('tableName:'.$table->name.'|fillableColumns');
-        Cache::forget('tableName:'.$table->name.'|castsColumns');
-        Cache::forget('tableName:'.$table->name.'|allColumsFromDb');
-        Cache::forget('tableName:'.$table->name.'|allColumsFromDbWithTableAliasAndGuiType');
+        $this->clearTableStandartCache($table->id, $table->name);
+        $this->clearTableStandartCache($table->id, $table->name.'_archive');
         
-        Cache::forget('tableName:'.$table->name.'_archive|fillableColumns');
-        Cache::forget('tableName:'.$table->name.'_archive|castsColumns');
-        Cache::forget('tableName:'.$table->name.'_archive|allColumsFromDb');
-        Cache::forget('tableName:'.$table->name.'_archive|allColumsFromDbWithTableAliasAndGuiType');
+        $this->clearColumnSetsOrArraysCache($table);
         
         $keys = $this->getCacheKeys();
         foreach($keys as $key)
         {
-            if(substr($key, -16, 16) != '|filteredColumns') continue;
-                    
-            $prefix = 'tableName:'.$table->name.'|columnNames:';
-            $prefixArchive = 'tableName:'.$table->name.'_archive|columnNames:';
-                        
-            if(strstr($key, $prefix) || strstr($key, $prefixArchive))
-            { 
-                $key = str_replace(explode($prefix, $key)[0], '', $key);
+            if(substr($key, -16, 16) == '|filteredColumns')
+            {
+                $prefix = 'tableName:'.$table->name.'|columnNames:';
+                $prefixArchive = 'tableName:'.$table->name.'_archive|columnNames:';
+
+                if(strstr($key, $prefix) || strstr($key, $prefixArchive))
+                { 
+                    $key = str_replace(explode($prefix, $key)[0], '', $key);
+                    Cache::forget($key);
+                }
+            }
+            else if(strstr($key, 'userToken:'))
+            {
+                //userToken:1111111111111111d1.tableName:test.mapFilters
+                dd('clearTablesAndColumnCommonCache');
+            }
+            else if(substr($key, -16, 16) == '|tableGroups')
+            {
                 Cache::forget($key);
             }
-            
-            if(strstr($key, 'userToken:'))
-                dd('clearTablesAndColumnCommonCache2');//userToken:1111111111111111d1.tableName:test.mapFilters
         }
-        
-        $this->clearColumnSetsOrArraysCache($table);
     }
 }

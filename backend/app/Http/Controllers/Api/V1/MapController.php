@@ -17,18 +17,43 @@ class MapController extends Controller
         //dd(getMemcachedKeys());
     }  
     
-    private function AddFilterInRequest($user, $request) 
+    private function GetTableNameAndCacheNameFromRequestWMS($request)
     {
         $tableName = explode(':', $request['LAYERS'])[1];
         
         if(substr($tableName, 0, 2) == 'v_')
             $tableName = substr($tableName, 2);
         
+        return ['tableName' => $tableName, 'cacheName' => $tableName];
+    }
+    
+    private function GetTableNameAndCacheNameFromRequestWFS($request)
+    {
+        $seoName = explode(':', $request['TYPENAME'])[1];
+        $table =$this->getTableFromCustomLayerSeoName($seoName);
+        
+        return ['tableName' => $table->name, 'cacheName' => $seoName];
+    }
+    
+    private function GetTableNameAndCacheNameFromRequest($request)
+    {
+        $type = strtolower($request['SERVICE']);
+        switch($type)
+        {
+            case 'wms': return $this->GetTableNameAndCacheNameFromRequestWMS($request);
+            case 'wfs': return $this->GetTableNameAndCacheNameFromRequestWFS($request);
+            default: dd('buraya hiç düşmemeli!');
+        }
+    }
+    
+    private function AddFilterInRequest($user, $request) 
+    {
+        $names = $this->GetTableNameAndCacheNameFromRequest($request);   
         $token = \Request::segment(3);
         
-        if(!isset($user->auths['filters'][$tableName]['list'])) 
+        if(!isset($user->auths['filters'][$names['tableName']]['list'])) 
         {
-            Cache::remember('userToken:'.$token.'.tableName:'.$tableName.'.mapFilters', 60 * 60, function()
+            Cache::remember('userToken:'.$token.'.tableName:'.$names['cacheName'].'.mapFilters', 60 * 60, function()
             {
                 return 'OK';
             });
@@ -37,7 +62,7 @@ class MapController extends Controller
         }
         
         $filter = '';
-        $filterIds = $user->auths['filters'][$tableName]['list'];
+        $filterIds = $user->auths['filters'][$names['tableName']]['list'];
         foreach($filterIds as $filterId)
         {
             $sqlCode = get_attr_from_cache('data_filters', 'id', $filterId, 'sql_code');
@@ -48,11 +73,11 @@ class MapController extends Controller
         }
         $filter = substr($filter, 9);
         
-        Cache::remember('userToken:'.$token.'.tableName:'.$tableName.'.mapFilters', 60 * 60, function() use($filter)
+        Cache::remember('userToken:'.$token.'.tableName:'.$names['cacheName'].'.mapFilters', 60 * 60, function() use($filter)
         {
             return $filter;
         });
-                        
+        
         if(isset($request['CQL_FILTER']))
             $request['CQL_FILTER'] .= '%20and%20'.$filter;
         else
@@ -61,7 +86,55 @@ class MapController extends Controller
         return $request;
     }
     
-    private function AuthControl($user, $request) 
+    private function AuthControl($user, $request)
+    {
+        $type = strtolower($request['SERVICE']);
+        
+        switch($type)
+        {
+            case 'wms': return $this->AuthControlWms($user, $request);
+            case 'wfs': return $this->AuthControlWfs($user, $request);
+            default: custom_abort ('undefined.service.type.'.$type);
+        }
+    }
+    
+    private function getTableFromCustomLayerSeoName($seoName)
+    {
+        $key = 'customLayerSeoName:'.$seoName.'|returnData:table_id';
+        $tableId = (int)Cache::rememberForever($key, function() use($seoName)
+        {      
+            $customLayers = DB::table('custom_layers')->pluck('name', 'table_id');
+            foreach($customLayers as $tableId => $customLayer)
+                if(helper('seo', $customLayer) == $seoName)
+                    return $tableId;
+        });        
+        if($tableId == 0) custom_abort ('undefined.layer_name: ' . $seoName);
+        
+        $table = get_attr_from_cache('tables', 'id', $tableId, '*');
+        if(!$table) custom_abort ('undefined.layer_name: ' . $seoName);
+        
+        return $table;
+    }
+    
+    private function AuthControlWfs($user, $request) 
+    {
+        if(!isset($request['TYPENAME'])) custom_abort ('undefined.TYPENAME.data');
+        
+        $temp = explode(':', $request['TYPENAME']);
+        if(count($temp) != 2) 
+            custom_abort ('undefined.LAYERS.data: ' . $request['LAYERS']);
+        
+        $table = $this->getTableFromCustomLayerSeoName($temp[1]);
+        
+        if(!isset($user->auths['tables'][$table->name]['maps']))
+            custom_abort ('no.auth.for.layer: ' . $layerName);
+
+        $temp = $user->auths['tables'][$table->name]['maps'];
+        if(!in_array(0, $temp) && !in_array(1, $temp))
+            custom_abort ('no.auth.for.layer: ' . $layerName);
+    }
+    
+    private function AuthControlWms($user, $request) 
     {
         if(!isset($request['LAYERS'])) custom_abort ('undefined.LAYERS.data');
         
@@ -121,10 +194,12 @@ class MapController extends Controller
     
     private function ServiceTypeControl($request) 
     {
-        switch (strtoupper(@$request['SERVICE'])) 
+        $type = strtolower(strtoupper(@$request['SERVICE']));
+        switch ($type) 
         {
-            case 'WMS': break;
-            default: custom_abort('undefined.service.type: ' . @$request['SERVICE']);
+            case 'wms': break;
+            case 'wfs': break;
+            default: custom_abort('undefined.service.type: ' . $type);
         }
     }
     
@@ -133,25 +208,48 @@ class MapController extends Controller
         $url = 'http://geoserver:8080/geoserver/'.env('GEOSERVER_WORKSPACE', 'angaryos').'/';
         $url .= strtolower($request['SERVICE']).'?';
                 
-        foreach($request as $key => $value)       
+        foreach($request as $key => $value) 
+        {
+            if($key != 'CQL_FILTER')
+                $value = urlencode($value);
+            
             $url .= $key.'='.$value.'&';
+        }
         
         return $url;
     }
     
     private function GetImage($url)
     {
-        $imginfo = getimagesize( $url );
+        $imginfo = getimagesize($url);
+        
         header("Content-type: ".$imginfo['mime']);
-        return readfile( $url );
+        
+        return readfile($url);
     }
     
-    public function GetTile($user)
+    private function GetJsonData($url)
+    {
+        return file_get_contents($url);
+    }
+    
+    private function ProxyToUrl($request, $url)
+    {
+        $type = strtolower($request['SERVICE']);
+        switch($type)
+        {
+            case 'wms': return $this->GetImage($url);
+            case 'wfs': return $this->GetJsonData($url);
+        }
+    }
+    
+    public function GetData($user)
     {
         $request = $this->Control($user);
         $request = $this->AddFilterInRequest($user, $request);
         
-        $url = $this->GetUrl($request);
-        return $this->GetImage($url);
+        $url = $this->GetUrl($request);      
+        return $this->ProxyToUrl($request, $url);
+        
     }
 }

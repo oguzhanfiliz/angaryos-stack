@@ -1,5 +1,7 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 
+import {CdkDragDrop, moveItemInArray, transferArrayItem} from '@angular/cdk/drag-drop';
+
 import { BaseHelper } from './../../base';
 import { MapHelper } from './../../map';
 import { MessageHelper } from './../../message';
@@ -21,10 +23,13 @@ export class FullScreenMapElementComponent
 
     map = null;
     loggedInUserInfo = null;
+    layerList = [];
 
     constructor(private messageHelper: MessageHelper) 
     { 
-        
+        setTimeout(() => {
+            $('#layersModal').modal('show');
+        }, 100);
     }
 
     ngOnChanges()
@@ -41,14 +46,19 @@ export class FullScreenMapElementComponent
         this.changed.emit(event);
     }   
 
+
+
+
     createMapElement()
     {
         return new Promise((resolve) =>
         {
-            this.map = MapHelper.createFullScreenMap('fullScreenMap');
-            BaseHelper["pipe"]["geoserverBaseUrl"] = BaseHelper.backendUrl+this.token+"/getMapTile";
+            BaseHelper["pipe"]["geoserverBaseUrl"] = BaseHelper.backendUrl+this.token+"/getMapData";
 
-            resolve(this.map);
+            var task = MapHelper.createFullScreenMap('fullScreenMap')
+            .then((map) => this.map = map);
+
+            resolve(task);
         }); 
     }
 
@@ -66,5 +76,51 @@ export class FullScreenMapElementComponent
     {
         var layerAuths = this.getLayerAuhts(map);
         return MapHelper.addLayersFromMapAuth(map, layerAuths);
+    }
+
+    getBaseLayers()
+    {
+        return MapHelper.getBaseLayersFromMap(this.map);
+    }
+
+    getLayers()
+    {
+        var temp = MapHelper.getLayersFromMapWithoutBaseLayers(this.map);
+        this.layerList = temp.reverse();
+
+        return this.layerList;
+    }
+    
+    changeBaseLayer(e)
+    {
+        var val = parseInt(e.target.value);
+        MapHelper.changeBaseLayer(this.map, val);
+    }
+
+    getSelectedBaseLayerIndex()
+    {
+        var baseLayers = MapHelper.getBaseLayersFromMap(this.map);
+        for(var i = 0; i < baseLayers.length; i++)
+            if(baseLayers[i].getVisible())
+                return i;
+
+        return -1;
+    }
+
+    layerChanged(event: CdkDragDrop<string[]>) 
+    {
+        var len = this.layerList.length - 1;
+        var prev = len - event.previousIndex;
+        var curr = len - event.currentIndex;
+        
+        var diff = curr - prev;
+        if(diff == 0) return;
+
+        MapHelper.moveLayer(this.map, this.layerList[event.previousIndex], diff);
+    }
+
+    changeLayerVisibility(layer)
+    {
+        MapHelper.changeLayerVisibility(this.map, layer);
     }
 }

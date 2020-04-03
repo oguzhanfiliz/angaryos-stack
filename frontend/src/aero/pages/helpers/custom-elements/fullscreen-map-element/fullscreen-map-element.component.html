@@ -1,2 +1,49 @@
 <div style="width: 100%; min-height: 100%;"  id="fullScreenMap"></div>
 <div id="mouse-position-fullScreenMap" class="mouse-position"></div>
+
+<div class="modal fade" id="layersModal" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document" style="width: 350px;">
+        <div class="modal-content">
+            <div class="modal-body" style="padding: 5px !important;">
+                <h5 style="padding: 5; margin: 0; text-align: center;">Katmanlar</h5>
+                <hr style="margin-top: 0;">
+                
+                <div cdkDropListGroup>
+                    <div class="dragdrop-container">
+                        <div
+                            cdkDropList 
+                            cdkDropListData="getLayers()"
+                            class="dragdrop-list"
+                            (cdkDropListDropped)="layerChanged($event)">
+                
+                            <div 
+                                [attr.source]="layer['display_name']"
+                                class="dragdrop-box" 
+                                *ngFor="let layer of getLayers()" 
+                                cdkDrag>
+                                
+                                {{ layer['display_name'] }}
+
+                                <span 
+                                    style="cursor:pointer"
+                                    (click)="changeLayerVisibility(layer)"
+                                    [class]="'badge badge-sm badge-' + (layer.getVisible() ? 'warning' : 'default' )">
+
+                                    <i style="font-size: 11px;" *ngIf="layer.getVisible()" class="zmdi"></i>
+                                    <i style="font-size: 11px;" *ngIf="!layer.getVisible()" class="zmdi"></i>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <select class="select-2 form-control" (change)="changeBaseLayer($event)" value="{{ getSelectedBaseLayerIndex() }}">
+                    <option *ngFor="let baseLayer of getBaseLayers(); let i = index" [attr.value]="i">
+                        {{ baseLayer['display_name'] }}
+                    </option>
+                </select>
+               
+            </div>
+        </div>
+    </div>
+</div>

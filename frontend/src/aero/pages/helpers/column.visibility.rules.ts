@@ -103,6 +103,7 @@ function customLayerTypeIdTrigger(tableName, columnName, elementId, data)
         visible = true;
 
     setElementVisibility(elementId, "period", visible);
+    setElementVisibility(elementId, "layer_style_id", visible);
 }
 
 export const columnVisibilityRules = 

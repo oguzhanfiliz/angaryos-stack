@@ -21,7 +21,11 @@ class TableGeoServerOperationsLibrary
     
     public function StyleEvent($params)
     {
-        return $this->{'StyleEventFor'.ucfirst($params['type'])}($params);
+        $code = @$params['requests']['style_code'];
+        if(!$code)  @$code = $params['record']->style_code;
+        
+        if(strstr($code, '<?xml '))
+            return $this->{'StyleEventFor'.ucfirst($params['type'])}($params);
     }
     
     public function CustomLayerEvent($params)
@@ -84,6 +88,23 @@ class TableGeoServerOperationsLibrary
         if(!$r) custom_abort('style.not.updated.on.geoserver');
     }
     
+    public function StyleEventForRestore($params)
+    {
+        $old = get_attr_from_cache('layer_styles', 'id', $params['record']['record_id'], '*');
+        
+        $oldStyleName = $old->name;
+        $newStyleName = $params['record']->name;
+        $SLD = $params['record']->style_code;
+        
+        if($oldStyleName != $newStyleName)
+            custom_abort('style.name.not.changable');
+        
+        $helper = $this->GetGeoServerHelper();
+        
+        $r = $helper->updateStyle($oldStyleName, $SLD);
+        if(!$r) custom_abort('style.not.updated.on.geoserver');
+    }
+    
     public function StyleEventForDelete($params)
     {
         $helper = $this->GetGeoServerHelper();
@@ -115,10 +136,13 @@ class TableGeoServerOperationsLibrary
         if($temp != '') 
         {
             \Log::error('Geoserver layer oluşturulamadı! (Hata: ' . $temp . ')');
-            custom_abort('layer.not.created.on.geoserver');
+            custom_abort('layer.not.created.on.geoserver:'.$temp);
         }
         
         $styleName = get_attr_from_cache('layer_styles', 'id', $params['requests']['layer_style_id'], 'name');
+        
+        $type = get_attr_from_cache('custom_layer_types', 'id', $params['requests']['custom_layer_type_id'], 'name');
+        if($type == 'wfs') return;
         
         $r = $helper->addStyleToLayer($customLayerName, $styleName);
         if($styleName != $r)

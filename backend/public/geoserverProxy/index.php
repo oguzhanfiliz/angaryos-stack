@@ -12,7 +12,6 @@ $dbConnection = NULL;
 require 'helpers.php';
 
 
-
 /****  Main  ****/
 
 $data = require 'control.php';
@@ -24,7 +23,6 @@ $cqlFilter = getCqlFilterFromCache();
 if(!$cqlFilter) return;
 
 $url = getUrlWithCqlFilter($cqlFilter);
-
-return proxyToImage($url);
+return proxyToImage($url); 
 
 ?>

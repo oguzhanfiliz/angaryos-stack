@@ -4,6 +4,8 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { Injector, NgModule } from '@angular/core';
 import { createCustomElement } from '@angular/elements';
 
+import { DragDropModule } from '@angular/cdk/drag-drop';
+
 import { FormsModule } from '@angular/forms';
 
 import { HttpClientModule } from '@angular/common/http';
@@ -43,7 +45,8 @@ import { AeroThemeHelper } from './pages/helpers/aero.theme';
     BrowserModule,
     BrowserAnimationsModule,
     HttpClientModule,
-    FormsModule
+    FormsModule,
+    DragDropModule
   ],
   providers: 
   [

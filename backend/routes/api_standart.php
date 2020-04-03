@@ -23,7 +23,7 @@ Route::group(['prefix' => '{token}'], function ()
     
     
     
-    Route::get('getMapTile', 'MapController@GetTile');
+    Route::get('getMapData', 'MapController@GetData');
 
     
     

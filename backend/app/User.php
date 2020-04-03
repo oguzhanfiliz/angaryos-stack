@@ -167,7 +167,10 @@ class User extends Authenticatable
         $info['workspace'] = $temp[0];
         $info['layer_name'] = $temp[1];
         $info['type'] = get_attr_from_cache('custom_layer_types', 'id', $layer->custom_layer_type_id, 'name');
+        
         $info['style'] = '';
+        if(strlen($layer->layer_style_id) > 0) 
+            $info['style'] = get_attr_from_cache('layer_styles', 'id', $layer->layer_style_id, 'style_code');
         
         $info['period'] = $layer->period;
         if(strlen($info['period']) == 0) $info['period'] = 0;
@@ -187,6 +190,9 @@ class User extends Authenticatable
         $info['type'] = get_attr_from_cache('custom_layer_types', 'id', $layer->custom_layer_type_id, 'name');
         $info['style'] = get_attr_from_cache('layer_styles', 'id', $layer->layer_style_id, 'name');
         
+        if($info['type'] == 'wfs' && strlen($info['style']) > 0) 
+            $info['style'] = get_attr_from_cache('layer_styles', 'id', $layer->layer_style_id, 'style_code');
+        
         $info['period'] = $layer->period;
         if(strlen($info['period']) == 0) $info['period'] = 0;
         
@@ -201,18 +207,22 @@ class User extends Authenticatable
         if(!isset($this->auths['tables'])) return [];
         
         $mapAuths = [];
+        $workspace = env('GEOSERVER_WORKSPACE', 'angaryos');
         
         foreach($this->auths['tables'] as $tableName => $table)            
             if(isset($table['maps']))
-                $mapAuths[$tableName] = $this->getLayerInfo($tableName, $table['maps']);
+            {
+                $info = $this->getLayerInfo($tableName, $table['maps']);
+                $mapAuths[$info['workspace'].'__'.$info['layer_name']] = $info;
+            }
        
         if(isset($this->auths['external_layers']))
             foreach($this->auths['external_layers'] as $id => $temp)  
             {
                 $layer = get_attr_from_cache('external_layers', 'id', $id, '*');
-
+                
                 $temp = $this->getExternalLayerInfo($layer);
-                $name = explode(':', $layer->layer_name)[1];
+                $name = str_replace(':', '__', $layer->layer_name);
 
                 $mapAuths[$name] = $temp;
             }
@@ -223,7 +233,7 @@ class User extends Authenticatable
                 $layer = get_attr_from_cache('custom_layers', 'id', $id, '*');
 
                 $temp = $this->getCustomLayerInfo($layer);
-                $name = helper('seo', $layer->name);
+                $name = env('GEOSERVER_WORKSPACE', 'angaryos').'__'.helper('seo', $layer->name);
 
                 $mapAuths[$name] = $temp;
             }

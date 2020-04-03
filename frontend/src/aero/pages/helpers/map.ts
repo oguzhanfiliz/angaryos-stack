@@ -7,16 +7,17 @@ import { Tile as TileLayer, Vector as VectorLayer } from 'ol/layer';
 import TileWMS from 'ol/source/TileWMS';
 
 import { OSM, Vector as VectorSource } from 'ol/source';
+import BingMaps from 'ol/source/BingMaps';
 
 import {Draw, Modify, Snap} from 'ol/interaction';
 
-import { Circle as CircleStyle, Fill, Stroke, Style } from 'ol/style';
+import { Circle as CircleStyle, Fill, Stroke, Style, Icon, Text } from 'ol/style';
 
 import {defaults as defaultControls} from 'ol/control';
 import MousePosition from 'ol/control/MousePosition';
 import {createStringXY} from 'ol/coordinate';
 
-
+import {bbox as bboxStrategy} from 'ol/loadingstrategy';
 import { transform as transformProjection } from 'ol/proj';
 
 import {register} from 'ol/proj/proj4';
@@ -34,7 +35,7 @@ export abstract class MapHelper
   public static mapProjection = 'EPSG:3857';
   public static userProjection = ""
   public static customProjectionAdded = false;
-  
+  public static styleApplying = {};
 
 
   /****    Map Object Functions     ****/
@@ -96,27 +97,72 @@ export abstract class MapHelper
     return task;
   }
 
-  public static getMap(mapId, params = {})
+  public static getBaseLayersBing()
   {
-    var config = this.getMapConfig(mapId);
-
-    this.addCustomProjections();
-
-    var osmLayer = new TileLayer(
+    var styles = 
+    [
+        'RoadOnDemand',
+        'Aerial',
+        'AerialWithLabelsOnDemand',
+        'CanvasDark',
+        'OrdnanceSurvey'
+    ];
+      
+    var layers = [];
+    for (var i = 0; i < styles.length; ++i) 
     {
-      source: new OSM()
-    });
+      var layer = new TileLayer(
+      {
+        visible: false,
+        preload: Infinity,
+        source: new BingMaps(
+        {
+          key: 'AjVFELuOInhDWUKz3aMKA7crfg4SJ7W0x04FLscmgpo5cU98ntGNdK10reh4YGT7',
+          imagerySet: styles[i]
+        })
+      });
 
+      layer['name'] = "bing_"+styles[i].toLowerCase();
+      layer['display_name'] = styles[i];
+      layer['base_layer'] = true;
+
+      layers.push(layer);
+    }
+
+    return layers;
+  }
+
+  public static getBaseLayers(config = null)
+  {
+    var osmLayer = new TileLayer({ source: new OSM() });
+    osmLayer['name'] = 'osm';
+    osmLayer['display_name'] = 'Open Street Map';
+    osmLayer['base_layer'] = true;
+
+    var bingLayers = this.getBaseLayersBing();
+    
+    var baseLayers = [osmLayer].concat(bingLayers);
+
+    if(config != null)
+      baseLayers = this.updateBaseLayerVisibility(baseLayers, config);
+
+    return baseLayers;
+  }
+
+  public static getNewVectorLayer()
+  {
     var vector = new VectorLayer(
     {
-      source: new VectorSource(
-      {
-        features: []
-      })
+      source: new VectorSource({features: []})
     });
+    vector['name'] = "vector";
+    vector['display_name'] = "vector";
 
-    var layers = [ osmLayer, vector ];
+    return vector;
+  }
 
+  public static getNewView(config)
+  {
     var view = new View(
     {
       projection: this.mapProjection,
@@ -124,13 +170,34 @@ export abstract class MapHelper
       zoom: config.zoom
     });
 
-    var mousePositionControl = new MousePosition(
+    return view;
+  }
+
+  public static getNewMousePositionControl(mapId)
+  {
+    var control = new MousePosition(
     {
       coordinateFormat: createStringXY(4),
       projection: 'EPSG:'+BaseHelper.loggedInUserInfo.user.srid,
       className: 'custom-mouse-position',
       target: document.getElementById('mouse-position-'+mapId)
     });
+
+    return control;
+  }
+
+  public static getMap(mapId, params = {})
+  {
+    var config = this.getMapConfig(mapId);
+    
+    this.addCustomProjections();
+
+    var baseLayers = this.getBaseLayers(config);
+    var vector = this.getNewVectorLayer();
+    var layers = baseLayers.concat([vector]);
+
+    var view = this.getNewView(config);
+    var mousePositionControl = this.getNewMousePositionControl(mapId);
 
     var map = new Map(
     {
@@ -142,7 +209,7 @@ export abstract class MapHelper
 
     map.on('moveend', (event) =>
     {
-      this.updateMapConfigOnLocal(event);
+      this.updateMapConfigOnLocal(event.map);
     });
 
     return map;
@@ -153,7 +220,7 @@ export abstract class MapHelper
     var config = 
     {
       zoom: 8,
-      center: [3315149.9161305767, 4790835.90153615]
+      center: [3306283.2208494954, 4772491.014747706]
     }
 
     var temp = BaseHelper.readFromLocal('map.'+mapId+'.config');
@@ -219,9 +286,97 @@ export abstract class MapHelper
     {
       case 'wms':
         return this.getLayerFromMapAuthWms(map, tableAuth);
+      case 'wfs':
+        return this.getLayerFromMapAuthWfs(map, tableAuth);
 
       default: console.log("Undefined layer type: " + tableAuth['type']);
     }
+  }
+
+  public static fillMapObectsInThisObjectForStyle()
+  {
+    if(typeof this['Style'] != 'undefined') return;
+
+    this['Style'] = Style;
+    this['Icon'] = Icon;
+    this['Text'] = Text;
+    this['Fill'] = Fill;
+    this['Stroke'] = Stroke;
+    this['CircleStyle'] = CircleStyle;
+  }
+
+  public static getStyleCodeForEval(code)
+  {
+    code = BaseHelper.replaceAll(code, " CircleStyle(", " th.CircleStyle(");
+    code = BaseHelper.replaceAll(code, " Style(", " th.Style(");
+    code = BaseHelper.replaceAll(code, " Icon(", " th.Icon(");
+    code = BaseHelper.replaceAll(code, " Text(", " th.Text(");
+    code = BaseHelper.replaceAll(code, " Fill(", " th.Fill(");
+    code = BaseHelper.replaceAll(code, " Stroke(", " th.Stroke(");
+
+    return code;
+  }
+
+  public static removeSameFeaturesOnVectorSource(vectorSource, columnName = 'id')
+  {
+    var features = vectorSource.getFeatures();
+    var tempArray = {};
+    
+    for(var i = features.length - 1; i >= 0; i--)
+    {
+      var feature = features[i];
+      var id = feature.values_[columnName];
+
+      if(typeof tempArray[id] == "undefined") tempArray[id] = [];
+
+      tempArray[id].push(feature);
+    }
+
+    vectorSource.clear();
+    var ids = Object.keys(tempArray);
+
+    for(var i = 0; i < ids.length; i++)
+    {
+      var t = tempArray[ids[i]];
+      var order = 0;
+      
+      if(t.length > 1)
+        if(t[1].revision_ > t[0].revision_) 
+          order = 1;
+
+      vectorSource.addFeature(t[order]);
+    }
+  }
+
+  public static getLayerFromMapAuthWfs(map, tableAuth)
+  {
+    var url = tableAuth["base_url"];
+    if(url == "") url = BaseHelper["pipe"]["geoserverBaseUrl"];
+
+    var tempProjection = this.mapProjection;
+    url =   url +
+            '?service=WFS&' +
+            'version=1.1.0&request=GetFeature&typename='+tableAuth["workspace"]+':'+tableAuth["layer_name"]+'&' +
+            'outputFormat=application/json&srsname='+tempProjection+'&' + 'bbox=';
+
+    var vectorSource = new VectorSource(
+    {
+      format: new GeoJSON(),
+      url: function(extent) 
+      {
+        return url + extent.join(',') + ','+tempProjection;
+      },
+      strategy: bboxStrategy
+    });
+
+    var layer = new VectorLayer({ source: vectorSource });
+
+    this.addEventListenersOnVectorSource(map, vectorSource, tableAuth);
+    
+    layer['name'] = tableAuth["workspace"]+'__'+tableAuth["layer_name"];
+    layer['display_name'] = tableAuth["display_name"];
+
+    return layer;
   }
 
   public static getLayerFromMapAuthWms(map, tableAuth)
@@ -247,15 +402,58 @@ export abstract class MapHelper
       })
     });
 
+    layer['name'] = tableAuth["workspace"]+'__'+tableAuth["layer_name"];
     layer['display_name'] = tableAuth["display_name"];
 
     return layer;
+  }
+
+  public static orderLayers(map, layerAuths)
+  {
+    var config = this.getMapConfig(map.getTarget());
+    if(typeof config['layerInfos'] == "undefined") return layerAuths;
+
+    var tableNames = Object.keys(layerAuths);    
+    var layerNames = Object.keys(config.layerInfos);
+
+    var orderedLayers = {};
+
+    for(var i = 0; i < layerNames.length; i++)
+      if(typeof layerAuths[layerNames[i]] != "undefined")
+      {
+        orderedLayers[layerNames[i]] = layerAuths[layerNames[i]];
+
+        for(var j = 0; j < tableNames.length; j++)
+          if(tableNames[j] == layerNames[i])
+          {
+            tableNames.splice(j, 1);
+            break;
+          }
+        
+      }
+
+    for(var i = 0; i < tableNames.length; i++)
+      orderedLayers[tableNames[i]] = layerAuths[tableNames[i]];
+
+    return orderedLayers;
+  }
+
+  public static getLayerVisibilityFromConfig(map, layer)
+  {
+    var config = this.getMapConfig(map.getTarget());
+
+    if(typeof config['layerInfos'] == "undefined") return true;
+    if(typeof config['layerInfos'][layer['name']] == "undefined") return true;
+    if(typeof config['layerInfos'][layer['name']]['visible'] == "undefined") return true;
+
+    return config['layerInfos'][layer['name']]['visible'];
   }
 
   public static addLayersFromMapAuth(map, layerAuths)
   {
     return new Promise((resolve) =>
     {
+      layerAuths = this.orderLayers(map, layerAuths);
       var tableNames = Object.keys(layerAuths);
 
       for(var i = 0; i < tableNames.length; i++)
@@ -266,12 +464,109 @@ export abstract class MapHelper
         var layer = this.getLayerFromMapAuth(map, auth);
         if(layer == null) continue;
 
+        layer.setVisible(this.getLayerVisibilityFromConfig(map, layer));
+
         map.addLayer(layer);
       }
 
       resolve(map);
     });    
   }
+
+  public static getBaseLayersFromMap(map)
+  {
+    if(map == null) return [];
+
+    var baseLayers = [];
+
+    var layers = map.getLayers().array_;
+    for(var i = 0; i < layers.length; i++)
+        if(typeof layers[i]['base_layer'] != "undefined")
+            if(layers[i]['base_layer'])
+                baseLayers.push(layers[i]);
+
+    return baseLayers;
+  }
+
+  public static getLayersFromMap(map)
+  {
+    if(map == null) return [];
+
+    var layers = map.getLayers().array_;
+    return layers;
+  }
+
+  public static getLayersFromMapWithoutBaseLayers(map)
+  {
+    if(map == null) return [];
+
+    var layers = [];
+
+    var allLayers = map.getLayers().array_;
+    for(var i = 0; i < allLayers.length; i++)
+      if(typeof allLayers[i]['base_layer'] == "undefined")
+        if(allLayers[i]['name'] != 'vector')
+          layers.push(allLayers[i]);
+
+    return layers;
+  }
+
+  public static changeBaseLayer(map, layerIndex)
+  {
+    var layers = map.getLayers().array_;
+    for(var i = 0; i < layers.length; i++)
+        if(typeof layers[i]['base_layer'] != "undefined")
+            if(layers[i]['base_layer'])
+              layers[i].setVisible(i == layerIndex);
+
+      this.updateMapConfigOnLocal(map);
+  }
+
+  public static updateBaseLayerVisibility(baseLayers, config)
+  {
+    if(typeof config['layerInfos'] != "undefined")
+      for(var i = 0; i < baseLayers.length; i++)
+      {
+        if(typeof config.layerInfos[baseLayers[i]["name"]] == "undefined")
+          continue;
+
+        var v = config.layerInfos[baseLayers[i]["name"]].visible;
+        baseLayers[i].setVisible(v);
+      }
+
+    return baseLayers;
+  }
+
+  public static getLayerIndex(map, layer)
+  {
+    var layers = this.getLayersFromMap(map);
+    for(var i = 0; i < layers.length; i++)
+      if(layer['name'] == layers[i]['name'])
+        return i;
+
+      return -1;
+  }
+
+  public static moveLayer(map, layer, diff)
+  {
+    var index = this.getLayerIndex(map, layer);
+    if(index == -1)
+      index = this.getLayersFromMap(map).length;
+    else
+      index = index + diff;
+
+    map.removeLayer(layer);
+    map.getLayers().insertAt(index, layer);
+
+    this.updateMapConfigOnLocal(map);
+  }
+
+  public static changeLayerVisibility(map, layer)
+  {
+        layer.setVisible(!layer.getVisible());
+        this.updateMapConfigOnLocal(map);
+  }
+
 
 
   /****    Events     ****/
@@ -282,21 +577,81 @@ export abstract class MapHelper
     map.dispatchEvent(e);
   }
 
-  public static updateMapConfigOnLocal(event) 
+  public static updateMapConfigOnLocal(map) 
   {
-    var map = event.map;
-
     var name = map.getTarget();
     var center = map.getView().getCenter();
     var zoom = map.getView().getZoom();
 
+    var layerInfos = {};    
+    var layers = this.getLayersFromMap(map);
+    for(var i = 0; i < layers.length; i++)
+      layerInfos[layers[i]['name']] =
+      {
+        'name': layers[i]['name'],
+        'display_name': layers[i]['display_name'],
+        'visible': layers[i].getVisible()
+      };
+
     var config = 
     {
       zoom: zoom,
-      center: center
+      center: center,
+      layerInfos: layerInfos
     }
 
     BaseHelper.writeToLocal('map.'+name+'.config', config);
+  }
+
+  public static addEventListenersOnVectorSource(map, vectorSource, tableAuth)
+  {
+    this.fillMapObectsInThisObjectForStyle();
+    this.addEventListenersOnVectorSourceForStyle(map, vectorSource, tableAuth);
+    this.addEventListenersOnVectorSourceForRefresh(map, vectorSource, tableAuth)
+  }
+
+  public static addEventListenersOnVectorSourceForStyle(map, vectorSource, tableAuth)
+  {
+    var layerKey = tableAuth["workspace"]+'_'+tableAuth["layer_name"];
+    this.styleApplying[layerKey] = false;
+
+    var th = this;
+    var listenerKey = vectorSource.on('change', function(e) 
+    {
+      if(th.styleApplying[layerKey]) return;
+      th.styleApplying[layerKey] = true;
+
+      th.removeSameFeaturesOnVectorSource(vectorSource);
+
+      var features = vectorSource.getFeatures();
+      for(var i = 0; i < features.length; i++)
+      {
+        var style = null;
+        
+        var feature = features[i].values_;
+
+        var code = th.getStyleCodeForEval(tableAuth["style"]);        
+        eval(code);
+
+        if(typeof style == "undefined" || style == null) continue;
+        features[i].setStyle(style);
+      }
+
+      th.styleApplying[layerKey] = false;
+
+      //console.log(tableAuth["name"] + ": " + vectorSource.getFeatures().length);
+    });    
+  }
+
+  public static addEventListenersOnVectorSourceForRefresh(map, vectorSource, tableAuth)
+  {
+    if(tableAuth["period"] == 0) return;
+
+    setInterval(() => 
+    {
+      vectorSource.refresh();
+    }, 
+    tableAuth["period"] * 1000);
   }
 
 
