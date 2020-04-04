@@ -26,11 +26,7 @@ export class FullScreenMapElementComponent
     layerList = [];
 
     constructor(private messageHelper: MessageHelper) 
-    { 
-        setTimeout(() => {
-            $('#layersModal').modal('show');
-        }, 100);
-    }
+    {  }
 
     ngOnChanges()
     {
@@ -48,6 +44,10 @@ export class FullScreenMapElementComponent
 
 
 
+    menu()
+    {
+        $('#layersModal').modal('show');
+    }
 
     createMapElement()
     {

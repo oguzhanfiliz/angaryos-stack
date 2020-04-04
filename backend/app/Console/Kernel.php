@@ -13,6 +13,8 @@ class Kernel extends ConsoleKernel
 
     protected function schedule(Schedule $schedule)
     {
+        $schedule->command('temp:clear')->hourly();
+        
         //Data entegratör görevlerini de ekle
         
         

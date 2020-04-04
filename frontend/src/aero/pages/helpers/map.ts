@@ -414,7 +414,7 @@ export abstract class MapHelper
     if(typeof config['layerInfos'] == "undefined") return layerAuths;
 
     var tableNames = Object.keys(layerAuths);    
-    var layerNames = Object.keys(config.layerInfos);
+    var layerNames = Object.keys(config['layerInfos']);
 
     var orderedLayers = {};
 

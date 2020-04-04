@@ -41,6 +41,9 @@ class CacheSubscriber
             case 'data_filters':
                 $this->clearFilterCache($record);
                 break;
+            case 'customlayers':
+                $this->clearCustomLayerCache($record);
+                break;
             
             case 'data_filter_types':
             case 'column_sets':
@@ -51,6 +54,13 @@ class CacheSubscriber
         }
         
         return TRUE;
+    }
+    
+    private function clearCustomLayerCache($customLayer)
+    {
+        Cache::forget('allAuths');
+        dd('clearCustomLayerCache');
+        //$key = 'customLayerSeoName:'.$seoName.'|returnData:table_id';
     }
     
     private function clearFilterCache($filter)
@@ -310,6 +320,10 @@ class CacheSubscriber
                 dd('clearTablesAndColumnCommonCache');
             }
             else if(substr($key, -16, 16) == '|tableGroups')
+            {
+                Cache::forget($key);
+            }
+            else if(strstr($key, 'customLayerSeoName:'))
             {
                 Cache::forget($key);
             }
