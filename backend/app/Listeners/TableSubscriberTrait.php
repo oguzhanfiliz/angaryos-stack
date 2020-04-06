@@ -55,6 +55,52 @@ trait TableSubscriberTrait
         ];
     }
     
+    public function getDataForQuickSearch($model, $params, $words) 
+    {
+        $types = ['string', 'text', 'jsonb', 'integer', 'float', 'datetime', 'date', 'time'];
+        
+        $words = explode(' ', $words);
+        
+        $params->limit = 3;
+        $params->model = $model->getQuery();        
+        $params->columns = $model->getColumns($params->model, 'column_arrays', $params->column_array_id);
+        
+        foreach($params->columns as $column)
+        {
+            $dbTypeName = get_attr_from_cache('column_db_types', 'id', $column->column_db_type_id, 'name');
+            if(!in_array($dbTypeName, $types)) continue;
+            
+            $params->model->orWhere(function($query) use ($words, $column)
+            {
+                foreach($words as $word)
+                    $query->whereRaw('"'.$column->name.'"'.'::text ilike \'%'.$word.'%\'');
+            });
+        }
+        
+        $count = $params->model->count($params->table_name.'.id');
+        
+        $params->model->limit($params->limit);
+        $params->model->offset($params->limit * ($params->page - 1));
+        $records = $params->model->get();
+        
+        $records = $model->updataDataFromDataSource($records, $params->columns);
+        
+        $tableInfo = $model->getTableInfo($params->table_name);
+        
+        $columns = $model->getFilteredColumns($params->columns);
+        
+        $records = $this->fillRecordCanInfos($records, $params->table_name);
+        
+        return 
+        [
+            'table_info' => $tableInfo,
+            'records' => $records,
+            'columns' => $columns,
+            'pages' => (int)ceil($count / $params->limit),
+            'all_records_count' => $count
+        ];
+    }
+    
     public function getModelForList($model, $params)
     {
         $params->model = $model->getQuery();

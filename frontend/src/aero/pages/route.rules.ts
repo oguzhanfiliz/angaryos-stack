@@ -3,6 +3,7 @@ import { PagesComponent } from './pages.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { LinkPageComponent } from './link-page/link-page.component';
 import { ListComponent } from './list/list.component';
+import { SearchComponent } from './search/search.component';
 import { ArchiveComponent } from './archive/archive.component';
 import { DeletedComponent } from './deleted/deleted.component';
 import { FormComponent } from './form/form.component';
@@ -20,6 +21,10 @@ export const routeRules =
         {
             path: 'dashboard',
             component: DashboardComponent,
+        },          
+        {
+            path: 'search/:words',
+            component: SearchComponent 
         },          
         {
             path: 'table/:tableName',

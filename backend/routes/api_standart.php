@@ -57,4 +57,6 @@ Route::group(['prefix' => '{token}'], function ()
     
     Route::get('columnGuiTriggers/{table_name}/{column_name}/{triggerName}', 'ColumnGuiTriggerController@index');
     
+    Route::get('search/{table_name}/{words}', 'TableController@search');
+
 });

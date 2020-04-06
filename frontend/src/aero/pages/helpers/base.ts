@@ -10,7 +10,8 @@ export abstract class BaseHelper
   public static formSendMethod = 'POST';
   
   public static backendUrl:string = "https://"+environment.host+"/api/v1/";
-  public static baseUrl:string = "https://"+environment.host+"/#/"+environment.urlPath+"/dashboard";
+  public static dashboardUrl:string = "https://"+environment.host+"/#/"+environment.urlPath+"/dashboard";
+  public static baseUrl:string = "https://"+environment.host+"/#/"+environment.urlPath+"/";
   
   public static noImageUrl = 'assets/img/404.png';
 
@@ -34,6 +35,27 @@ export abstract class BaseHelper
 
 
   /****    General Function    ****/
+
+  public static getThemeClass()
+  {
+    var theme = 'theme-light';
+
+    var name = this.getTheme();
+    if(typeof name != "undefined" && name.length > 0)
+      theme = 'theme-'+name;
+    
+    return theme
+  }
+
+  /*public static applyTheme()
+  {
+    console.log("ok");
+
+    $('body').removeClass('theme-dark');
+    $('body').removeClass('theme-light');
+
+    $('body').addClass(this.getThemeClass());
+  }*/
 
   public static sleep(ms) 
   {
@@ -160,6 +182,16 @@ export abstract class BaseHelper
 
   /***   Data Functions    ****/
 
+  public static setTheme(name)
+  {
+    this.writeToLocal('theme', name);
+  }
+
+  public static getTheme()
+  {
+    return this.readFromLocal('theme');
+  }
+
   public static getFileUrl(file, prefix)
   {
     if(file == null) return this.noImageUrl;
@@ -234,8 +266,7 @@ export abstract class BaseHelper
   public static jsonStrToObject(jsonStr)
   {
     if(jsonStr == "") return "";
-    
-    return JSON.parse(jsonStr);
+    return JSON.parse(jsonStr);    
   }
 
   public static getCloneFromObject(obj)

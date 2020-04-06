@@ -339,4 +339,18 @@ class TableController extends Controller
         
         return helper('response_success', $data);
     }
+    
+    public function search(User $user, BaseModel $table, $words)
+    {
+        send_log('info', 'Request Quick Search In Table', [$table, $words]);
+        
+        $params = $this->getValidatedParamsForQuickSearch();       
+        if(Gate::denies('viewAny', $params)) $this->abort();
+        
+        $data = Event::dispatch('record.quickSearch.requested', [$table, $params, $words])[0];
+        
+        send_log('info', 'Response Quick Search In Table', $data);
+        
+        return helper('response_success', $data);
+    }
 }

@@ -54,6 +54,11 @@ input::placeholder, .select2-selection__placeholder, textarea::placeholder
     width: 40px;
 }
 
+.swal2-container 
+{
+    z-index: 9999999999 !important;
+}
+
 #close
 {
     position: absolute !important;
@@ -61,3 +66,4 @@ input::placeholder, .select2-selection__placeholder, textarea::placeholder
     right: 5px;
     z-index: 9999;
 }
+

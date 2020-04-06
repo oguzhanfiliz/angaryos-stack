@@ -5,6 +5,7 @@ import { CommonModule } from "@angular/common";
 import { environment } from './../../environments/environment';
 
 import { BaseHelper } from './helpers/base';
+import { MessageHelper } from './helpers/message';
 import { SessionHelper } from './helpers/session';
 import { GeneralHelper } from './helpers/general';
 import { AeroThemeHelper } from './helpers/aero.theme';
@@ -21,6 +22,7 @@ export class PagesComponent
   //searchIntervalId = -1;
 
   constructor(
+        public messageHelper: MessageHelper,
         public sessionHelper: SessionHelper,
         public generalHelper: GeneralHelper,
         public aeroThemeHelper: AeroThemeHelper
@@ -98,5 +100,23 @@ export class PagesComponent
   ngAfterViewInit() 
   {    
     this.aeroThemeHelper.loadPageScripts(); 
+  }
+
+  search()
+  {
+    var words = $('#searchWords').val();
+    if(words == null || words.length == 0)
+    {
+      this.messageHelper.toastMessage("Aramak için birşeyler yazmalısınız!");
+      return;
+    }
+
+    window.location.href = BaseHelper.baseUrl+"search/"+words;
+    window.location.reload();
+  }
+
+  changeTheme(name)
+  {
+    BaseHelper.setTheme(name);
   }
 } 

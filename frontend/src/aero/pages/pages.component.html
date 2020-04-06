@@ -1,10 +1,10 @@
-<body class="theme-blush">
+<body>
         
         <!-- Page Loader -->
         <div class="page-loader-wrapper">
             <div class="loader">
                 <div class="m-t-30"><img class="zmdi-hc-spin" src="assets/themes/aero/assets/images/loader.svg" width="48" height="48" alt="Aero"></div>
-                <p>Please wait...</p>
+                <p>Bekleyin...</p>
             </div>
         </div>
         
@@ -15,8 +15,8 @@
         <div id="search">
             <button id="close" type="button" class="close btn btn-primary btn-icon btn-icon-mini btn-round">x</button>
             <form>
-                <input type="search" value="" placeholder="Nasıl yardımcı olabilirim?" />
-                <button type="submit" class="btn btn-primary">Arama</button>
+                <input id="searchWords" type="search" value="" placeholder="Nasıl yardımcı olabilirim?" />
+                <button (click)="search()" type="submit" class="btn btn-primary">Arama</button>
             </form>
         </div>
         
@@ -115,29 +115,20 @@
         </aside>
         
         <!-- Right Sidebar -->
-        <aside id="rightsidebar" class="right-sidebar">
+        <aside id="rightsidebar" class="right-sidebar" style="z-index: 99999;">
             <div class="slim_scroll">
                 <div class="card">
                     <h6>Tema</h6>
                     <div class="light_dark">
                         <div class="radio">
-                            <input type="radio" name="radio1" id="lighttheme" value="light" checked="">
+                            <input (click)="changeTheme('light')" type="radio" name="radio1" id="lighttheme" value="light" checked="">
                             <label for="lighttheme">Açık Mod</label>
                         </div>
                         <div class="radio mb-0">
-                            <input type="radio" name="radio1" id="darktheme" value="dark">
+                            <input (click)="changeTheme('dark')" type="radio" name="radio1" id="darktheme" value="dark">
                             <label for="darktheme">Koyu Mod</label>
                         </div>
-                    </div>
-                    <br>
-                    <ul class="choose-skin list-unstyled">
-                        <li data-theme="purple"><div class="purple"></div></li>                   
-                        <li data-theme="blue"><div class="blue"></div></li>
-                        <li data-theme="cyan"><div class="cyan"></div></li>
-                        <li data-theme="green"><div class="green"></div></li>
-                        <li data-theme="orange"><div class="orange"></div></li>
-                        <li data-theme="blush" class="active"><div class="blush"></div></li>
-                    </ul>   
+                    </div>  
                 </div>
                 <div class="card">
                     <h6>Ayarlar</h6>

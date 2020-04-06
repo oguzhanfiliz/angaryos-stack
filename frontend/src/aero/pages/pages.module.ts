@@ -15,6 +15,7 @@ import { PagesComponent } from './pages.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { NotFoundComponent } from './not-found/not-found.component';
 import { ListComponent } from './list/list.component';
+import { SearchComponent } from './search/search.component';
 import { ArchiveComponent } from './archive/archive.component';
 import { DeletedComponent } from './deleted/deleted.component';
 import { ShowComponent } from './show/show.component';
@@ -55,6 +56,7 @@ import { GeoPreviewElementComponent } from './helpers/custom-elements/geo-previe
     PagesComponent,
     DashboardComponent,
     ListComponent,
+    SearchComponent,
     ArchiveComponent,
     DeletedComponent,
     ShowComponent,

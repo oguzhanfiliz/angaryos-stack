@@ -123,10 +123,11 @@ trait BaseModelGetDataSelectTrait
     {
         //{"1": {"source": 1, "display": "ID"}, "2": {"source": 3, "display": "Ad"}}
         
-        $temp = ' \'"\' || ' .$params->table_alias.'_lateral.ordinality::text || \'": {"source": "\' || '
+        $temp = '\'"\' || ' .$params->table_alias.'_lateral.ordinality::text || \'": {"source": "\' || '
                 .$params->relation_source_column_with_alias.' || \'", "display": "\' || ' 
-                .$params->column_with_alias . ' || \'"}\'';
+                .  "replace(".$params->column_with_alias.", '\"', ".'\'\"\''.")" . ' || \'"}\'';
         $temp = "'{' || string_agg(distinct ($temp), ', ') || '}'";
+          
         $temp .= ' as ' . $params->column->name;
         
         $params->model->addSelect(DB::raw($temp));

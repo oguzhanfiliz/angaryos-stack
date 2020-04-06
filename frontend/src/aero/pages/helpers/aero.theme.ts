@@ -68,8 +68,22 @@ export class AeroThemeHelper
         }
     }
 
+    public removeThemeClass()
+    {
+      $('body').removeClass('theme-dark');
+      $('body').removeClass('theme-light');
+    }
+
+    public addThemeClass()
+    {
+      $('body').addClass(BaseHelper.getThemeClass());
+    }
+
     public addStandartElementEvents()
     {
+      this.removeThemeClass();
+      this.addThemeClass();
+
       $('.tooltip-inner').remove();
       $('[data-toggle="tooltip"]').tooltip();
     }

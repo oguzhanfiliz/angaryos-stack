@@ -1,11 +1,20 @@
-.column-filter
+input.column-filter
 {
-    background-color: white !important;
     padding: 5px !important;
     margin: 5px !important;
     border-color: #ccc !important;
     font-size: 12px !important;
     height: 25px !important;
+}
+
+body.theme-light input.column-filter
+{
+    background-color: white !important;
+}
+
+body.theme-dark input.column-filter
+{
+    background-color: #383838 !important;
 }
 
 .column-filter::-webkit-input-placeholder

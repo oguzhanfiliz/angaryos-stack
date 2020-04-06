@@ -10,7 +10,7 @@ class UserPolicy
 {
     use HandlesAuthorization;
     use UserPolicyTrait;
-
+    
     public function viewAny($user, $params)
     {
         global $pipe;

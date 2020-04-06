@@ -111,4 +111,9 @@ class TableSubscriber
     {
         $this->authAssign($params);
     }
+    
+    public function quickSearch($model, $params, $words)
+    {
+        return $this->getDataForQuickSearch($model, $params, $words);
+    }
 }

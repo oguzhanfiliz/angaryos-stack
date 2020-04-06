@@ -35,7 +35,7 @@ trait TableTrait
             
             'columnIsPermittedForQuery',
             'columnIsPermittedForList',
-            'treeIsPermittedForRelationTableData'
+            'treeIsPermittedForRelationTableData',
         ];
         
         foreach($rules as $rule)
@@ -100,6 +100,22 @@ trait TableTrait
         
         global $pipe;
         $params->table_name = $pipe['table'].'_archive';
+        
+        return $params;
+    }
+    
+    private function getValidatedParamsForQuickSearch()
+    {
+        global $pipe;
+        
+        $params = helper('get_null_object');
+        $params->column_array_id = read_from_response_data('get', 'column_array_id');
+        
+        $params->page = (int)read_from_response_data('get', 'page');
+        if($params->page < 1) $params->page = 1;
+        
+        param_is_have($params, 'column_array_id');
+        $params->table_name = $pipe['table'];
         
         return $params;
     }

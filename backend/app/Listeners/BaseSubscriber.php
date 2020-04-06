@@ -52,6 +52,9 @@ class BaseSubscriber
         $events->listen('record.realtionTableData.requested', 'App\Listeners\TableSubscriber@realtionTableDataRequested');
         
         
+        $events->listen('record.quickSearch.requested', 'App\Listeners\TableSubscriber@quickSearch');
+        
+        
         
         /****    Report Subscribers    ****/
         

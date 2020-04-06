@@ -5,6 +5,7 @@ import { BaseHelper } from './../helpers/base';
 import { SessionHelper } from './../helpers/session';
 import { MessageHelper } from './../helpers/message';
 import { GeneralHelper } from './../helpers/general';
+import { AeroThemeHelper } from './../helpers/aero.theme';
 
 declare var $: any;
 
@@ -28,11 +29,14 @@ export class LoginComponent
         private messageHelper: MessageHelper,
         private sessionHelper: SessionHelper,
         private generalHelper: GeneralHelper,
+        private aeroThemeHelper: AeroThemeHelper,
         private router: Router
         )
     {
         if(BaseHelper.token.length > 0)
-            window.location.href = BaseHelper.baseUrl;
+            window.location.href = BaseHelper.dashboardUrl;
+
+        this.aeroThemeHelper.removeThemeClass();
     }
 
     validate()
@@ -65,7 +69,7 @@ export class LoginComponent
             .then((data) =>
             {
                 this.loading = false;
-                window.location.href = BaseHelper.baseUrl;
+                window.location.href = BaseHelper.dashboardUrl;
             })
             .catch((e) =>
             {
