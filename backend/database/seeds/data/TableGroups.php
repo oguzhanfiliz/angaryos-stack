@@ -85,7 +85,7 @@ $table_groups =
         //'order' => $order++
     ],
     [
-        'name_basic' => 'Harita',
+        'name_basic' => 'Harita İşlemleri',
         'table_ids' => 
         [            
             $tables['layer_styles']->id,

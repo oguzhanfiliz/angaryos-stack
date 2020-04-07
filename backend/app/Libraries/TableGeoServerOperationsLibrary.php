@@ -196,7 +196,7 @@ class TableGeoServerOperationsLibrary
         if($temp != '') 
         {
             \Log::error('Geoserver layer oluşturulamadı! (Hata: ' . $temp . ')');
-            custom_abort('layer.not.created.on.geoserver');
+            custom_abort('layer.not.created.on.geoserver:'.$temp);
         }
     }
     

@@ -19,11 +19,13 @@ trait ReportSubscriberTrait
     
     public function getDataForStandartList($model, $params) 
     {
+        global $pipe;
+        
         $except = ['tables', 'columns'];
         
         $params = $this->getModelForStandartList($model, $params);
         
-        if(in_array($model->getTable(), $except) && SHOW_DELETED_TABLES_AND_COLUMNS != '1')
+        if(in_array($model->getTable(), $except) && $pipe['SHOW_DELETED_TABLES_AND_COLUMNS'] != '1')
             $params->model->where($model->getTable().'.name', 'not ilike', 'deleted\_%');
         
         $collectiveInfos = $model->getCollectiveInfos($params->model, $params->columns);

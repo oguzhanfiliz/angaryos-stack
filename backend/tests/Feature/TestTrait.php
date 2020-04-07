@@ -27,7 +27,7 @@ trait TestTrait
         
         curl_close($ch);
         
-        if($json) $r = json_decode ($r);
+        if($json) $r = json_encode ($r);
         
         return $r;
     }

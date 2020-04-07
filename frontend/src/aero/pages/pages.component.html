@@ -121,11 +121,11 @@
                     <h6>Tema</h6>
                     <div class="light_dark">
                         <div class="radio">
-                            <input (click)="changeTheme('light')" type="radio" name="radio1" id="lighttheme" value="light" checked="">
+                            <input (click)="changeTheme('light')" type="radio" name="radio1" id="lighttheme" value="light" [checked]="isCurrentTheme('light')">
                             <label for="lighttheme">Açık Mod</label>
                         </div>
                         <div class="radio mb-0">
-                            <input (click)="changeTheme('dark')" type="radio" name="radio1" id="darktheme" value="dark">
+                            <input (click)="changeTheme('dark')" type="radio" name="radio1" id="darktheme" value="dark" [checked]="isCurrentTheme('dark')">
                             <label for="darktheme">Koyu Mod</label>
                         </div>
                     </div>  

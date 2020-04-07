@@ -6,3 +6,9 @@ Kod:                load_application_variables_from_db();
 Düzenleme:          .\app\Http\Kernel.php:36
 Açıklama:           GUI den post sorgular yapılabilmesi için token mismatch devre dışı bırakıldı
 Kod:                //\App\Http\Middleware\VerifyCsrfToken::class,
+
+
+
+Ekleme:             .\vendor\phpunit\phpunit\phpunit:12
+Açıklama:           Uygulamanın çalışması için gerekli preload.php dosyası import ediliyor.
+Kod:                include '/var/www/public/preload.php';

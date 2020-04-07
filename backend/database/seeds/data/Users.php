@@ -122,7 +122,19 @@ foreach($tables as $table)
     array_push($adminAuths, $tableAuths->id);
 }
 
-dd('menu grubu diye yetki grubu oluştur admin e ekle');
+$tempAuths = [];
+foreach(DB::table('table_groups')->get() as $group)
+    array_push($tempAuths, 'table_groups:0:0:'.$group->id);
+
+$temp = $this->get_base_record();
+$temp['name_basic'] = 'Admin tablo grupları (menü)';
+$temp['auths'] = $tempAuths;
+
+$tempAuths = new BaseModel('auth_groups', $temp);
+$tempAuths->fillVariables();
+$tempAuths->save();
+
+array_push($adminAuths, $tempAuths->id);
 
 array_push($adminAuths, 'admin:authWizard:0:0');
 array_push($adminAuths, 'admin:userImitation:0:0');

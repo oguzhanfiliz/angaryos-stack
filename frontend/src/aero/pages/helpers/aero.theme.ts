@@ -76,7 +76,7 @@ export class AeroThemeHelper
 
     public addThemeClass()
     {
-      $('body').addClass(BaseHelper.getThemeClass());
+      $('body').addClass(this.getThemeClass());
     }
 
     public addStandartElementEvents()
@@ -129,6 +129,31 @@ export class AeroThemeHelper
       });
 
       BaseHelper.addedScripts['leftSideBar'] = true;
+    }
+
+
+
+    /****    Current Theme Functions    ****/
+    
+    public getThemeClass()
+    {
+      var theme = 'theme-light';
+
+      var name = this.getTheme();
+      if(typeof name != "undefined" && name != null && name.length > 0)
+        theme = 'theme-'+name;
+      
+      return theme
+    }
+
+    public setTheme(name)
+    {
+      BaseHelper.writeToLocal('theme', name);
+    }
+
+    public getTheme()
+    {
+      return BaseHelper.readFromLocal('theme');
     }
 
 
@@ -238,13 +263,24 @@ export class AeroThemeHelper
 
     public getDashboardPageMenuItem()
     {
-      var homePage =
+      var page =
       {
         title: 'Göstergeler',
         icon: 'zmdi-copy',
         link: '/'+BaseHelper.angaryosUrlPath+'/dashboard',
       };
-      return homePage;
+      return page;
+    }
+
+    public getMapPageMenuItem()
+    {
+      var mapPage =
+      {
+        title: 'Harita',
+        icon: 'zmdi-map',
+        link: '/'+BaseHelper.angaryosUrlPath+'/map',
+      };
+      return mapPage;
     }
 
     public updateBaseMenu(search = "")
@@ -254,6 +290,7 @@ export class AeroThemeHelper
       if(search == "")
       {
         this.baseMenu.push(this.getHomePageMenuItem());
+        this.baseMenu.push(this.getMapPageMenuItem());
         this.baseMenu.push(this.getDashboardPageMenuItem());
       }
 

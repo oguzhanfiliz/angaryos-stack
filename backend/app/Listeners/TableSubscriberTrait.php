@@ -17,11 +17,13 @@ trait TableSubscriberTrait
     
     public function getDataForList($model, $params) 
     {
+        global $pipe;
+        
         $except = ['tables', 'columns'];
         
         $params = $this->getModelForList($model, $params);
         
-        if(in_array($model->getTable(), $except) && SHOW_DELETED_TABLES_AND_COLUMNS != '1')
+        if(in_array($model->getTable(), $except) && $pipe['SHOW_DELETED_TABLES_AND_COLUMNS'] != '1')
             $params->model->where($model->getTable().'.name', 'not ilike', 'deleted\_%');
         
         $count = $params->model->count($params->table_name.'.id');

@@ -15,6 +15,9 @@ $files =
     'DataFilters',
     'Settings',
     'Departments',
+    'TableGroups',    
+    'LogLevels',
+    
     'Users',
     
     'IdDependentRecordsUpdate',
@@ -22,9 +25,6 @@ $files =
     'DataEntegratorDatas',
     'CustomLayerDatas',
     
-    'LogLevels',
-    
-    'TableGroups',
     'Temp'
 ];
 

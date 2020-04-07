@@ -25,6 +25,8 @@ class LayerOperationOnGeoserver implements ShouldQueue
 
     public function handle()
     {
+        if(strstr($_SERVER['argv'][0], 'phpunit')) return;
+        
         $record = new BaseModel('tables');
         $record = $record->find($this->id);
         

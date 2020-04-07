@@ -32,6 +32,8 @@ trait BaseModelSelectColumnDataTrait
     
     public function getSelectColumnDataForJoinTableIds($params)
     {
+        global $pipe;
+        
         $relationTable = $params->column->getRelationData('column_table_relation_id');
         $table = $relationTable->getRelationData('relation_table_id');
         
@@ -62,7 +64,7 @@ trait BaseModelSelectColumnDataTrait
         if($sourceSpace != FALSE)
             $model->whereIn($source, $sourceSpace);
         
-        if(in_array($table->name, $this->deletables) && SHOW_DELETED_TABLES_AND_COLUMNS != '1')
+        if(in_array($table->name, $this->deletables) && $pipe['SHOW_DELETED_TABLES_AND_COLUMNS'] != '1')
             $model->where($table->name.'.name', 'not like', 'deleted\_%');
         
         $offset = ($params->page - 1) * $params->record_per_page;
@@ -83,7 +85,7 @@ trait BaseModelSelectColumnDataTrait
         $sql .= ' or '.$params->relation->relation_source_column.'::text ilike \'%'.$params->search.'%\' )';
         
         global $pipe;
-        if(($pipe['table'] == 'tables' || $pipe['table'] == 'columns') && SHOW_DELETED_TABLES_AND_COLUMNS != '1')
+        if(($pipe['table'] == 'tables' || $pipe['table'] == 'columns') && $pipe['SHOW_DELETED_TABLES_AND_COLUMNS'] != '1')
             $sql .= ' and name::text not like \'deleted\_%\' )';
         
         $sourceSpace = $this->getSourceSpaceFromUpColumn($params);
@@ -107,6 +109,8 @@ trait BaseModelSelectColumnDataTrait
     
     public function getSelectColumnDataForTableIdAndColumnIds($params)
     {
+        global $pipe;
+        
         $relationTable = $params->column->getRelationData('column_table_relation_id');
         
         $table = $relationTable->getRelationData('relation_table_id');
@@ -128,7 +132,7 @@ trait BaseModelSelectColumnDataTrait
         if($sourceSpace != FALSE)
             $model->whereIn($sourceColumn->name, $sourceSpace);
         
-        if(in_array($table->name, $this->deletables) && SHOW_DELETED_TABLES_AND_COLUMNS != '1')
+        if(in_array($table->name, $this->deletables) && $pipe['SHOW_DELETED_TABLES_AND_COLUMNS'] != '1')
             $model->where($table->name.'.name', 'not like', 'deleted\_%');
         
         $params->count = $model->count();

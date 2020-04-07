@@ -117,6 +117,12 @@ export class PagesComponent
 
   changeTheme(name)
   {
-    BaseHelper.setTheme(name);
+    this.aeroThemeHelper.setTheme(name);
+  }
+
+  isCurrentTheme(name)
+  {
+    var theme = this.aeroThemeHelper.getThemeClass(name);
+    return theme == ('theme-'+name)
   }
 } 

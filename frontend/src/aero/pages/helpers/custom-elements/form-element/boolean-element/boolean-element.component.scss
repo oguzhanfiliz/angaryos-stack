@@ -15,8 +15,17 @@ select.column-filter
     margin: 5px 0 0 5px !important;
     border: 1px solid #ccc !important;
     border-radius: 4px !important;
-    color: #666 !important;
     height: 25px !important;
+}
+
+.theme-light .column-filter
+{    
+    color: #666 !important;
+}
+
+.theme-dark .column-filter
+{
+    color: #ccc !important;
 }
 
 .column-filter::-webkit-input-placeholder

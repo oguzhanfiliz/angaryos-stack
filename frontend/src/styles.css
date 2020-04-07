@@ -59,6 +59,26 @@ input::placeholder, .select2-selection__placeholder, textarea::placeholder
     z-index: 9999999999 !important;
 }
 
+.theme-dark .column-filter, .theme-dark  table, .theme-dark  select, .theme-dark  input
+{
+    color: #aaa !important;
+}
+
+.theme-dark .select2-search__field, .theme-dark .select2-selection
+{
+    background-color: #313131 !important;
+}
+
+.theme-dark .modal-content
+{
+    background-color: #4c4c4c !important;
+}
+
+.theme-dark select
+{
+    border-color: #b3b3b5 !important;
+}
+
 #close
 {
     position: absolute !important;

@@ -121,7 +121,7 @@ class BaseSeeder extends Seeder
     
     private function geoServerClear()
     {   
-        $r = exec('sudo docker service scale angaryos_geoserver=0');
+        $r = exec('echo www | sudo -S docker service scale angaryos_geoserver=0');
         if($r != 'verify: Service converged')
         {
             echo 'Geoserver Stop Fail'."\n";
@@ -133,11 +133,11 @@ class BaseSeeder extends Seeder
         $files = ['.', '..', '.gitignore', 'logs', 'user_projections'];
         foreach(scandir($base) as $fileOrDir)
             if(!in_array($fileOrDir, $files))
-                exec('sudo rm -rf '.$base.$fileOrDir);
+                exec('echo www | sudo -S rm -rf '.$base.$fileOrDir);
         
         echo 'Geoserver Old Files Clear OK'."\n";
             
-        $r = exec('sudo docker service scale angaryos_geoserver=1');
+        $r = exec('echo www | sudo -S docker service scale angaryos_geoserver=1');
         if($r != 'verify: Service converged') 
         {
             echo 'Geoserver Start Fail'."\n";
@@ -164,7 +164,7 @@ class BaseSeeder extends Seeder
         $this->geoserverCreateDataStore($helper);
         
         
-        $exec = 'sudo python3 /var/www/geoserverbot.py';
+        $exec = 'echo www | sudo -S python3 /var/www/geoserverbot.py';
         $exec .= ' ' . $username;
         $exec .= ' ' . $password;
         $exec .= ' ' . $workspace;

@@ -58,7 +58,7 @@ class TableDBOperationsLibrary
             
             if(!in_array($columnDbType, $geometryColumnTypes)) continue;
             
-            dd('UpdateTableFullAuthToAdminUser');//add map auth in auth group after archived
+            //dd('UpdateTableFullAuthToAdminUser');//add map auth in auth group after archived
             
             break;
         }
@@ -601,8 +601,10 @@ class TableDBOperationsLibrary
     
     private function ReturnErrorIFTableHasDeletedRecord($columns)
     {
+        global $pipe;
+        
         foreach($columns as $column)
-            if(substr($column->name, 0, 8) == 'deleted_' && SHOW_DELETED_TABLES_AND_COLUMNS != '1')
+            if(substr($column->name, 0, 8) == 'deleted_' && $pipe['SHOW_DELETED_TABLES_AND_COLUMNS'] != '1')
                 $this->ReturnGeneralError('table.has.deleted.column: "'.$column->display_name.'"');
     }
     
