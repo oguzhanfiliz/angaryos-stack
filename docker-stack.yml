@@ -58,7 +58,7 @@ services:
     #######       FRONTEND       #######
 
     frontend: 
-        image: karapazar/angular-serve:0.15 
+        image: karapazar/angular-serve:0.16
         volumes:
             - ./frontend:/usr/src/app 
         networks:
@@ -78,7 +78,7 @@ services:
     #######       BACKEND       #######
  
     laravel:
-        image: karapazar/laravel-php-fpm:0.51
+        image: karapazar/laravel-php-fpm:0.52
         volumes:
             - ./backend:/var/www 
             - ./backend/php.ini:/usr/local/etc/php/conf.d/local.ini
@@ -96,7 +96,7 @@ services:
             - mq-nw
 
     laravelcron:
-        image: karapazar/laravel-cron:0.16
+        image: karapazar/laravel-cron:0.17
         volumes:
             - ./backend:/var/www 
             - ./backend/php.ini:/usr/local/etc/php/conf.d/local.ini
@@ -112,7 +112,7 @@ services:
             - mq-nw
             
     laraveljobs:
-        image: karapazar/laravel-jobs:0.3
+        image: karapazar/laravel-jobs:0.4
         volumes:
             - ./backend:/var/www 
             - ./backend/php.ini:/usr/local/etc/php/conf.d/local.ini
