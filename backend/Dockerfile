@@ -39,6 +39,7 @@ RUN useradd -u 1000 -ms /bin/bash -g www www && echo "www:www" | chpasswd
 COPY . /var/www
 
 RUN chown www:www /var/www
+
 RUN chmod +x /var/www/chromedriver
 
 RUN apt-get -y install sudo
