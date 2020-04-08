@@ -122,7 +122,7 @@ export class PagesComponent
 
   isCurrentTheme(name)
   {
-    var theme = this.aeroThemeHelper.getThemeClass(name);
+    var theme = this.aeroThemeHelper.getThemeClass();
     return theme == ('theme-'+name)
   }
 } 
