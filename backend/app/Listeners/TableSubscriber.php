@@ -69,7 +69,24 @@ class TableSubscriber
                 $temp = explode(':', $temp)[0];
                 
                 if($temp == 'unique')
-                    $dataArray[$columnName] = $dataArray[$columnName] . 'klon';
+                {
+                    $dbTypeId = get_attr_from_cache('columns', 'name', $columnName, 'column_db_type_id');
+                    $dbTypeName = get_attr_from_cache('column_db_types', 'id', $dbTypeId, 'name');
+                    
+                    switch($dbTypeName)
+                    {
+                        case 'string':
+                        case 'text':
+                            $dataArray[$columnName] = $dataArray[$columnName] . 'klon';
+                            break;
+                        case 'integer':
+                            $dataArray[$columnName] = $dataArray[$columnName] + 1000;
+                            break;
+                        default:
+                            custom_abort('db.type.'.$dbTypeName.'.not.clonable');
+                    }
+                    
+                }
             }
         }
         

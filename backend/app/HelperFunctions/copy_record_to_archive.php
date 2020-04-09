@@ -20,7 +20,11 @@ $record = new \App\BaseModel($tableName.'_archive', $record);
 $record->created_at = $record['updated_at'];
 $record->own_id = $record['user_id'];
 $record->updated_at = \Carbon\Carbon::now();
-$record->user_id = \Auth::user()->id;
+
+$user = \Auth::user();
+if($user == NULL) $user = \App\User::find(ROBOT_USER_ID);
+
+$record->user_id = $user->id;
 
 $geometryColumnTypes = ['point', 'linestring', 'polygon', 'multipoint', 'multilinestring', 'multipolygon'];
 

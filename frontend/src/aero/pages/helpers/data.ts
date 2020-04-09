@@ -371,7 +371,9 @@ export abstract class DataHelper
                 
                 if(data.length > 0 && guiType.indexOf("multi") > -1)
                     if(data.indexOf("MULTI") < 0)
+                    {
                         data = guiType.toUpperCase()+"("+data+")";
+                    }
                 break;
         }
 
@@ -385,7 +387,7 @@ export abstract class DataHelper
         var obj = BaseHelper.jsonStrToObject(data);
         if(obj == null) return null;
 
-        if(obj.length == 1) return obj[0];
+        if(guiType.indexOf("multi") < 0) return obj[0];
         else
         {
             var wkt = guiType.toUpperCase() + "(";

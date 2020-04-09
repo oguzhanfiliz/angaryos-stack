@@ -179,8 +179,8 @@ class BaseSeeder extends Seeder
     private function geoserverCreateWorkspace($helper)
     {
         echo "\n";
-        echo 'Wait For GeoServer Initialize 10 sec'."\n";
-        sleep(10);
+        echo 'Wait For GeoServer Initialize 15 sec'."\n";
+        sleep(15);
         
         $workspaces = $helper->listWorkspaces();
         if($workspaces == NULL) dd('Geoserver unavilable');

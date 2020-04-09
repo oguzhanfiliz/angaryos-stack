@@ -1,11 +1,9 @@
 <?php
 
 if($user == NULL) $user = \Auth::user();
-    
-//$now = \Carbon\Carbon::now();
+if($user == NULL) $user = \App\User::find(ROBOT_USER_ID);
 
 $record = new App\BaseModel($tableName);
-//\Cache::flush();
 
 $columns = $record->getAllColumnsFromDB();
 
@@ -17,8 +15,6 @@ $record = $helper->updateData($columns, $data, $record);
 
 $record->user_id = $user->id;
 $record->own_id = $user->id;
-//$record->created_at = $now;
-//$record->updated_at = $now;
 
 $record->save();
 

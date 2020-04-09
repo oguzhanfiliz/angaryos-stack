@@ -2,7 +2,9 @@
 
 send_log('error', 'Data entegrator log: ' . json_encode($params));
 
-$userId = \Auth::user()->id;
+$user = \Auth::user();
+if($user == NULL) $user = \App\User::find(ROBOT_USER_ID);
+$userId = $user->id;
 
 $log = new App\BaseModel('data_entegrator_logs');
 $log->user_id = $userId;

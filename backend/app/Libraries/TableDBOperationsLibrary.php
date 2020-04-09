@@ -6,6 +6,8 @@ use App\BaseModel;
 
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
+
+use Cache;
 use DB;
 
 class TableDBOperationsLibrary 
@@ -58,7 +60,7 @@ class TableDBOperationsLibrary
             
             if(!in_array($columnDbType, $geometryColumnTypes)) continue;
             
-            //dd('UpdateTableFullAuthToAdminUser');//add map auth in auth group after archived
+            dd('UpdateTableFullAuthToAdminUser');//add map auth in auth group after archived
             
             break;
         }
@@ -115,6 +117,23 @@ class TableDBOperationsLibrary
         $adminAuth->auths = $temp;
         
         $adminAuth->save();
+        
+        $cacheSubscriber = new \App\Listeners\CacheSubscriber();
+        $cacheSubscriber->recordChangedSuccess('auth_groups', $adminAuth, 'update');
+    }
+    
+    private function GetDisplayColumnIdForColumnRelation($table)
+    {
+        $names = ['name', 'no'];
+        
+        foreach($names as $name)
+            foreach($table->column_ids as $columnId)
+            {
+                $columnName = get_attr_from_cache('columns', 'id', $columnId, 'name');
+                if(strstr($columnName, $name)) return $columnId;
+            }
+            
+        return get_attr_from_cache('columns', 'name', 'id', 'id');
     }
     
     public function CreateRelationColumnsForTable($table)
@@ -125,7 +144,7 @@ class TableDBOperationsLibrary
         $relation->name_basic = $table->display_name . ' kolonu varsayılan tablo ilişkisi';
         $relation->relation_table_id = $table->id;
         $relation->relation_source_column_id = get_attr_from_cache('columns', 'name', 'id', 'id');
-        $relation->relation_display_column_id = get_attr_from_cache('columns', 'name', 'name', 'id');
+        $relation->relation_display_column_id = $this->GetDisplayColumnIdForColumnRelation($table);
         $relation->state = TRUE;
         $relation->own_id = $robotUserId;
         $relation->user_id = $robotUserId;

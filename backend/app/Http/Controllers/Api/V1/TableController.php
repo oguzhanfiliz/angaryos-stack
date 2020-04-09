@@ -26,7 +26,8 @@ class TableController extends Controller
         //\Cache::flush();
         
         global $pipe;
-        $pipe['table'] = helper('get_table_name_from_url');
+        if(!isset($pipe['table']))//For data entegrator
+            $pipe['table'] = helper('get_table_name_from_url');
         
         unset($pipe['overrideRequestDatas']);
         $this->fillAuthFunctions();  

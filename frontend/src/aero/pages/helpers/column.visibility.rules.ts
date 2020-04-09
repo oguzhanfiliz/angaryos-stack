@@ -99,11 +99,9 @@ function columnDataSourceIdTrigger(tableName, columnName, elementId, data)
 function customLayerTypeIdTrigger(tableName, columnName, elementId, data)
 {
     var visible = false;
-    if(data[columnName] == "2") //wfs
-        visible = true;
-
+    if(data[columnName] == "2") visible = true;//wfs
+    
     setElementVisibility(elementId, "period", visible);
-    setElementVisibility(elementId, "layer_style_id", visible);
 }
 
 export const columnVisibilityRules = 

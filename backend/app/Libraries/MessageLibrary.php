@@ -36,4 +36,81 @@ class MessageLibrary
         
         $connectionObject->channel->basic_publish($msg, '', $queue);
     }
+    
+    public static function curl($url, $method = 'GET', $data = NULL, $header = NULL)
+    {
+        send_log('info', 'Curl request starting', [$url]);
+        
+        $ch = curl_init(); 
+        curl_setopt($ch,CURLOPT_URL, $url);
+        
+        if($header != NULL)
+            curl_setopt($ch, CURLOPT_HTTPHEADER, $header);
+        
+        if($method == 'POST')
+        {
+            curl_setopt($ch, CURLOPT_POST, TRUE);
+            
+            if($data != NULL)
+                curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
+        }
+        
+        curl_setopt($ch,CURLOPT_RETURNTRANSFER,TRUE);
+        curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; SV1; .NET CLR 1.0.3705; .NET CLR 1.1.4322)');
+        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, FALSE);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
+        
+        $time = microtime(TRUE);
+        $response = curl_exec($ch);
+        $time = microtime(TRUE) - $time;
+        
+        $error = FALSE;
+        if($response === FALSE) $error = [curl_errno($ch), curl_error($ch)];
+        
+        curl_close($ch);
+        
+        send_log('info', 'Curl request end', [$url, $response, $error]);
+        
+        return ['response' => $response, 'error' => $error];
+    }
+    
+    public static function sendSms($tel, $message) 
+    {
+        send_log('info', 'Send sms request', [$tel, $message]);
+        
+        $url = str_replace('$TEL', $tel, SMS_URL);
+        $url = str_replace('$MESSAGE', $message, $url);
+        
+        $data = self::curl($url);
+        
+        send_log('info', 'Send sms end', [$data]);
+        
+        return $data['error'] != FALSE;
+    }
+    
+    public function fireBaseCloudMessaging($title, $text, $to = FB_BASE_TOPIC)
+    {
+        send_log('info', 'Send FCM request', [$to, $title, $text]);
+        
+        $o = (object)[];
+        $o->notification = (object)[];
+        $o->notification->title = $title;
+        $o->notification->body = $text;
+        $o->notification->sound = 'default';
+        $o->to = $to;
+        
+        $url = 'https://fcm.googleapis.com/fcm/send';
+        
+        $header =
+        [
+            'Content-Type: application/json',
+            'Authorization: key='.FB_AUTH_KEY
+        ];
+        
+        $data = self::curl($url, 'POST', json_encode($o), $header);
+        
+        send_log('info', 'Send FCM end', [$data]);
+        
+        return $data['error'] != FALSE;
+    }
 }

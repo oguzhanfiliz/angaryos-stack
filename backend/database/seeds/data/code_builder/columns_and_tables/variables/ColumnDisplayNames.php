@@ -4,8 +4,8 @@ $column_name_display_name_map =
 [
     'id' => 'ID',
     'tc' => 'TC No',
-    'name' => 'Ad',
-    'name_basic' => 'Ad.',
+    'name' => 'Ad*',
+    'name_basic' => 'Ad',
     'surname' => 'Soyad',
     'email' => 'Mail',
     'email_verified_at' => 'Mail doğrulanma zamanı',

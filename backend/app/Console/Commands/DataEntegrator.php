@@ -33,7 +33,6 @@ class DataEntegrator extends Command
         } 
         catch (\Exception $ex) 
         {
-            dd($ex);
             DB::rollBack();
             helper('data_entegrator_log', ['danger', 'Data entegrator exception', 
             [

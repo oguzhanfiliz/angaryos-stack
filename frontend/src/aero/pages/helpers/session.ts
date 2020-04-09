@@ -181,7 +181,16 @@ export class SessionHelper
 
     public login(email:string, password:string)
     {
-      return this.doHttpRequest("POST", BaseHelper.backendUrl+"login", {email: email, password: password});
+      return this.doHttpRequest("POST", BaseHelper.backendUrl+"login", 
+      {
+        email: email, 
+        password: password,
+        clientInfo: 
+        {
+          type: 'browser',
+          agent: navigator.userAgent
+        }
+      });
     }
 
     public userImitation(user)

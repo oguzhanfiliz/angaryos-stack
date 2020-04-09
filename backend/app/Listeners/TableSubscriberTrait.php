@@ -470,7 +470,10 @@ trait TableSubscriberTrait
             $record = $helper->updateData($columns, $dataArray, $record);
         }
         
-        $record->user_id = \Auth::user()->id;
+        $user = \Auth::user();
+        if($user == NULL) $user = \App\User::find(ROBOT_USER_ID);
+
+        $record->user_id = $user->id;
         
         $record->save();
         

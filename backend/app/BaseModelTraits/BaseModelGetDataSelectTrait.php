@@ -112,7 +112,7 @@ trait BaseModelGetDataSelectTrait
     
     public function addSelectForColumnsDBTypesStatusForOneToOne($params)
     {
-        $temp = "string_agg($params->column_with_alias, ',')";
+        $temp = "string_agg($params->column_with_alias::text, ',')";
         $temp = "split_part($temp, ',', 1)";
         $temp .= ' as ' . $params->column->name;
         
@@ -125,7 +125,7 @@ trait BaseModelGetDataSelectTrait
         
         $temp = '\'"\' || ' .$params->table_alias.'_lateral.ordinality::text || \'": {"source": "\' || '
                 .$params->relation_source_column_with_alias.' || \'", "display": "\' || ' 
-                .  "replace(".$params->column_with_alias.", '\"', ".'\'\"\''.")" . ' || \'"}\'';
+                .  "replace(".$params->column_with_alias."::text, '\"', ".'\'\"\''.")" . ' || \'"}\'';
         $temp = "'{' || string_agg(distinct ($temp), ', ') || '}'";
           
         $temp .= ' as ' . $params->column->name;

@@ -5,7 +5,8 @@ $token = Str::random(16).'d'.$params->id;
 $temp =
 [
     'token' => $token,
-    'time' => strtotime(date('Y-m-d H:i:s'))
+    'time' => strtotime(date('Y-m-d H:i:s')),
+    'clientInfo' => \Request::input('clientInfo')
 ];
 
 if($tokens == NULL) $tokens = [];

@@ -775,6 +775,18 @@ export abstract class MapHelper
     return this.getVectorSource(map).getFeatures();
   }
 
+  public static zoomToFeature(map, feature)
+  {
+    var extent = feature.getGeometry().getExtent();
+    
+    map.getView().fit(extent, map.getSize()); 
+    map.getView().setZoom(map.getView().getZoom()-1); 
+    
+    if(map.getView().getZoom() > 18)
+      map.getView().setZoom(18);
+      
+  }
+
   public static addFeatureByWkt(map, wkt, projection = null)
   {
     if(projection == null) projection = this.userProjection;
@@ -782,14 +794,10 @@ export abstract class MapHelper
     return new Promise((resolve) =>
     {
       var feature = this.getFeatureFromWkt(wkt, projection);
+
       this.getVectorSource(map).addFeature(feature);
 
-      var extent = feature.getGeometry().getExtent();
-      map.getView().animate(
-      {
-        center: this.getCenterOfExtent(extent),
-        duration: 500
-      });
+      this.zoomToFeature(map, feature);
 
       resolve(feature);
     }); 
