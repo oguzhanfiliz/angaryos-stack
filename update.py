@@ -93,14 +93,14 @@ try:
         write_log(1, "Save ignored files OK")
 
     def clone_ignored_files():  
-        write_log(1, "Clone ignored files starting")
+        write_log(1, "Clone ignored files from temp starting")
 
         f = open(".updateignore", "r")
         for item in f:
             clone_from_temp(item.strip())        
         f.close()
 
-        write_log(1, "Clone ignored files starting")
+        write_log(1, "Clone ignored files from temp OK")
 
     def stop_stack():
         os.popen("docker stack rm angaryos 2> /dev/null")
@@ -116,13 +116,16 @@ try:
 
         write_log(1, "Clone repo OK")
 
+    def remove_temp():
+        os.popen("rm -rf ./temp/").read()
+
     def main():
         pre_load()
         save_ignored_files()
         stop_stack()   
         clone_repo()     
-        #clone_ignored_files()
-        #remove_temp()
+        clone_ignored_files()
+        remove_temp()
 
     #Main
     if __name__ == "__main__":
