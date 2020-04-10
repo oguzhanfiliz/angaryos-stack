@@ -108,7 +108,7 @@ try:
         write_log(1, "Stop stack OK")
 
     def start_stack():
-        os.popen("docker stack deploy --compose-file ./../docker-stack.yml angaryos")
+        os.popen("docker stack deploy --compose-file ./docker-stack.yml angaryos").read()
 
         write_log(1, "Start stack OK")
     
