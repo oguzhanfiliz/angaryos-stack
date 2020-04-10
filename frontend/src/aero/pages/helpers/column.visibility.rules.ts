@@ -1,5 +1,8 @@
 import { BaseHelper } from './base';
 
+
+
+
 /****    Common Functions     *****/
 
 function getFormElementVisibilityBaseKey(elementId)
@@ -21,6 +24,7 @@ function setElementVisibility(elementId, column, visible)
 function elementIsNull(data, columnName)
 {
     if(typeof data[columnName] == "undefined") return true;
+    if(data[columnName] == null) return true;
     if(data[columnName] == "") return true;
     if(data[columnName] == "[]") return true;
 

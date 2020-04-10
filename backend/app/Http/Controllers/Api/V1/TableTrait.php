@@ -17,6 +17,16 @@ trait TableTrait
         custom_abort($message);
     }
     
+    private function pipeOperations()
+    {
+        global $pipe;
+        
+        unset($pipe['overrideRequestDatas']);
+        
+        if(@$pipe['testing'] || !isset($pipe['table']))//For data entegrator
+            $pipe['table'] = helper('get_table_name_from_url');
+    }
+    
     private function fillAuthFunctions()
     {
         $rules = 

@@ -60,7 +60,23 @@ class TableDBOperationsLibrary
             
             if(!in_array($columnDbType, $geometryColumnTypes)) continue;
             
-            dd('UpdateTableFullAuthToAdminUser');//add map auth in auth group after archived
+            $model = new BaseModel('auth_groups');
+            
+            $authGroup = $model->whereRaw('auths::text ilike \'%tables:'.$table->name.':delete:0%\' and auths::text ilike \'%tables:'.$table->name.':deleteds:0%\'')->orderBy('id')->first();
+            if($authGroup == NULL) break;
+            
+            $authGroup->fillVariables();
+            
+            copy_record_to_archive($authGroup);
+            
+            $auths = $authGroup->auths;
+            
+            $source = 'tables:'.$table->name.':maps:0';
+            if(!in_array($source, $auths)) array_push($auths, $source);
+            
+            $authGroup->auths = $auths;
+            
+            $authGroup->save();
             
             break;
         }
@@ -691,6 +707,28 @@ class TableDBOperationsLibrary
         if($old == $new) return;
         
         Schema::rename($old, $new);
+        
+        $this->RenameTableOnAuths($old, $new);
+    }
+    
+    public function RenameTableOnAuths($old, $new)
+    {
+        $model = new BaseModel('auth_groups');
+        $authGroups = $model->whereRaw('auths::text ilike \'%:'.$old.':%\'')->get();
+        
+        foreach($authGroups as $authGroup)
+        {
+            $authGroup->fillVariables();
+            copy_record_to_archive($authGroup);
+            
+            $auths = $authGroup->auths;
+            
+            foreach($auths as $i => $auth)
+                $auths[$i] = str_replace (':'.$old.':', ':'.$new.':', $auth);
+            
+            $authGroup->auths = $auths;
+            $authGroup->save();
+        }
     }
     
     public function GetRealColumnsFromColumnIds($columnIds)

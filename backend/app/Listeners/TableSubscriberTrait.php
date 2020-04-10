@@ -415,6 +415,36 @@ trait TableSubscriberTrait
         return $repository->getDataForSelectElement($params->record);
     }
     
+    public function getDataForSelectElementForJoinTableIds($params)
+    {
+        $model = new BaseModel($params->record->getTable());
+        $params->model = $model->getQuery();
+        
+        $model->addJoinsWithColumns($params->model, [$params->column], TRUE);
+        
+        $sourceColumn = $params->relation->relation_source_column;
+        if(!strstr($sourceColumn, '.'))
+                $sourceColumn = $params->record->getTable().'.'.$sourceColumn;
+        
+        $displayColumn = $params->relation->relation_display_column;
+        if(!strstr($sourceColumn, '.'))
+                $displayColumn = $params->record->getTable().'.'.$displayColumn;
+        
+        $params->model->addSelect(DB::raw($sourceColumn.' as source'));
+        $params->model->addSelect(DB::raw($displayColumn.' as display'));
+        
+        
+        $params->model->whereRaw($params->record->getTable().'.id = '.$params->record->id);
+        
+        $data = $params->model->first();
+        
+        return
+        [
+            'source' => $data->source,
+            'display' => $data->display
+        ];
+    }
+    
     
     
     /****    Store    ****/

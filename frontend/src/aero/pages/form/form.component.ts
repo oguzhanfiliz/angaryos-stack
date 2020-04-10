@@ -394,6 +394,8 @@ export class FormComponent
                 var val = $(this.getElementId(columnName)).val();
                 
                 if(typeof val == "undefined") continue;
+                
+                if(val == null) val = "";
 
                 data[columnName] = DataHelper.changeDataForFormByGuiType(guiType, val);
             }
@@ -445,6 +447,8 @@ export class FormComponent
                     var val = $(this.getElementId(columnName)).val();
 
                     if(typeof val == "undefined") continue;
+                    
+                    if(val == null) val = "";
 
                     var temp = DataHelper.changeDataForFormByGuiType(guiType, val);
                     data.append(columnName, temp);

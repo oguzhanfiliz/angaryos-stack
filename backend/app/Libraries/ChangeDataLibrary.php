@@ -80,4 +80,9 @@ class ChangeDataLibrary
     {
         return $params->value;
     }
+
+    public function ForJoinTableIds($params)
+    {
+        return $params->value;
+    }
 }

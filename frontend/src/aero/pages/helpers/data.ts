@@ -420,7 +420,9 @@ export abstract class DataHelper
         
         switch (data) 
         {
-            case null: return "";
+            case null:
+            case "":
+                return "";
             case "true": return "1";
             case "false": return "0";        
             default:

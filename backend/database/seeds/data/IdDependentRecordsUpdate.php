@@ -8,7 +8,6 @@ $data_source_rmt_table_id_join1->name_basic = 'Veri Kaynağı Uzak Kolon ve Veri
 $data_source_rmt_table_id_join1->join_table_id = $tables['data_source_remote_tables']->id;
 $data_source_rmt_table_id_join1->join_table_alias = 'data_source_remote_tables';
 $data_source_rmt_table_id_join1->connection_column_with_alias = 'data_source_rmt_table_id';
-//$data_source_rmt_table_id_join1->join_connection_type = '=';
 $data_source_rmt_table_id_join1->join_column_id = $columns['id']->id;
 $data_source_rmt_table_id_join1->state = TRUE;
 $data_source_rmt_table_id_join1->updated_at = $now;
@@ -21,8 +20,7 @@ $data_source_rmt_table_id_join2 = new BaseModel('join_tables');
 $data_source_rmt_table_id_join2->name_basic = 'Veri Kaynağı Uzak Tablo ve Veri Kaynağı bağlantısı';
 $data_source_rmt_table_id_join2->join_table_id = $tables['data_sources']->id;
 $data_source_rmt_table_id_join2->join_table_alias = 'data_sources';
-$data_source_rmt_table_id_join2->connection_column_with_alias = 'data_source_remote_tables.data_source_id';//'data_source_remote_tables.data_source_id';
-//$data_source_rmt_table_id_join2->join_connection_type = '=';
+$data_source_rmt_table_id_join2->connection_column_with_alias = 'data_source_remote_tables.data_source_id';
 $data_source_rmt_table_id_join2->join_column_id = $columns['id']->id;
 $data_source_rmt_table_id_join2->state = TRUE;
 $data_source_rmt_table_id_join2->updated_at = $now;
@@ -30,6 +28,39 @@ $data_source_rmt_table_id_join2->created_at = $now;
 $data_source_rmt_table_id_join2->user_id = ROBOT_USER_ID;
 $data_source_rmt_table_id_join2->own_id = ROBOT_USER_ID;
 $data_source_rmt_table_id_join2->save();
+
+
+
+
+
+$data_source_col_relation_ids_relation_join1 = new BaseModel('join_tables');
+$data_source_col_relation_ids_relation_join1->name_basic = 'Veri Kaynağı Tablo İlişkisi ve Veri Kaynağı Kolon İlişkisi bağlantısı';
+$data_source_col_relation_ids_relation_join1->join_table_id = $tables['data_source_col_relations']->id;
+$data_source_col_relation_ids_relation_join1->join_table_alias = 'data_source_col_relations';
+$data_source_col_relation_ids_relation_join1->connection_column_with_alias = 'data_source_tbl_relations.data_source_col_relation_ids';
+$data_source_col_relation_ids_relation_join1->join_column_id = $columns['id']->id;
+$data_source_col_relation_ids_relation_join1->state = TRUE;
+$data_source_col_relation_ids_relation_join1->updated_at = $now;
+$data_source_col_relation_ids_relation_join1->created_at = $now;
+$data_source_col_relation_ids_relation_join1->user_id = ROBOT_USER_ID;
+$data_source_col_relation_ids_relation_join1->own_id = ROBOT_USER_ID;
+$data_source_col_relation_ids_relation_join1->save();
+
+$data_source_col_relation_ids_relation_join2 = new BaseModel('join_tables');
+$data_source_col_relation_ids_relation_join2->name_basic = 'Veri Kaynağı Kolon İlişkisi ve Kolonlar bağlantısı';
+$data_source_col_relation_ids_relation_join2->join_table_id = $tables['columns']->id;
+$data_source_col_relation_ids_relation_join2->join_table_alias = 'kolonlar';
+$data_source_col_relation_ids_relation_join2->connection_column_with_alias = 'data_source_col_relations.column_id';
+$data_source_col_relation_ids_relation_join2->join_column_id = $columns['id']->id;
+$data_source_col_relation_ids_relation_join2->state = TRUE;
+$data_source_col_relation_ids_relation_join2->updated_at = $now;
+$data_source_col_relation_ids_relation_join2->created_at = $now;
+$data_source_col_relation_ids_relation_join2->user_id = ROBOT_USER_ID;
+$data_source_col_relation_ids_relation_join2->own_id = ROBOT_USER_ID;
+$data_source_col_relation_ids_relation_join2->save();
+        
+        
+        
 
 $update_data =
 [
@@ -196,15 +227,18 @@ $update_data =
         'relation_source_column' => NULL,
         'relation_display_column' => NULL
     ],
-    $data_source_col_relation_ids_relation['relation_sql'] =>
+    
+    $data_source_col_relation_ids_relation ['relation_sql'] =>
     [
         'relation_table_id' => $tables['data_source_col_relations']->id,
-        'relation_source_column_id' => $columns['id']->id,
-        'relation_display_column_id' => $columns['id']->id,
+        'relation_source_column_id' => NULL,
+        'relation_display_column_id' => NULL,
         'relation_sql' => NULL,
-        'relation_source_column' => NULL,
-        'relation_display_column' => NULL
-    ],
+        'join_table_ids' => [$data_source_col_relation_ids_relation_join1->id, $data_source_col_relation_ids_relation_join2->id],
+        'relation_source_column' => 'id',
+        'relation_display_column' => 'kolonlar.display_name'
+    ],    
+    
     $data_source_table_relation_ids_relation['relation_sql'] =>
     [
         'relation_table_id' => $tables['data_source_tbl_relations']->id,

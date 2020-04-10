@@ -189,7 +189,7 @@ export class DataTableElementComponent
         }
 
         this.messageHelper.swarmConfirm(title, message, "warning")
-        .then((r) =>
+        .then(async (r) =>
         {
             if(r != true) return;
 
@@ -202,7 +202,7 @@ export class DataTableElementComponent
             for(var i = 0; i < this.selectedRecordList.length; i++)
             {
                 this.deleteRecord(this.selectedRecordList[i]);
-                //BaseHelper.sleep(1000);
+                await BaseHelper.sleep(1000);
             }
             this.selectedRecordList = [];
             this.selectedRecord = null;

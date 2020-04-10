@@ -45,6 +45,10 @@ class CacheSubscriber
                 $this->clearCustomLayerCache($record);
                 break;
             
+            case 'column_table_relations':
+                $this->clearColumnTableRelationCache($record);
+                break;
+            
             case 'data_filter_types':
             case 'column_sets':
             case 'column_arrays':
@@ -54,6 +58,13 @@ class CacheSubscriber
         }
         
         return TRUE;
+    }
+
+    private function clearColumnTableRelationCache($relation)
+    {
+        $columns = DB::table('columns')->where('column_table_relation_id', $relation->id)->get(); 
+        foreach($columns as $column)
+            $this->clearColumnCache($column);
     }
     
     private function clearCustomLayerCache($customLayer)

@@ -18,6 +18,9 @@ class TableTest extends TestCase
     
     public function testGetTablesForm()
     {
+        global $pipe;
+        $pipe['testing'] = TRUE;
+        
         $url = 'tables/tables/create?params=%7B%22column_set_id%22:%220%22%7D&';
         $this->standartTest($url);
     }
@@ -28,8 +31,6 @@ class TableTest extends TestCase
         $response = $this->standartTest($url, FALSE);
         $this->controlResponseOrDataHasAttributes($response->getData(), ['results', 'pagination']);
     }
-    
-    
     
     public function testCreateTableTestType()
     {
@@ -220,8 +221,6 @@ class TableTest extends TestCase
         $this->createAndTest($url);
     }
     
-    
-    
     public function testColumnCanNotBeSameName()
     {
         $url = 'tables/columns/store?display_name=Test%20String&name=test_string&column_db_type_id=1&column_gui_type_id=1&up_column_id=&column_table_relation_id=&subscriber_ids=%5B%5D&column_validation_ids=%5B%5D&column_gui_trigger_ids=%5B%5D&column_collective_info_id=&default=&description=&state=1&column_set_id=2&';
@@ -232,6 +231,10 @@ class TableTest extends TestCase
     
     
     
+    
+    
+    /****    Create Releated Columns    ****/
+        
     public function testGetColumnTableRelationForm()
     {
         $url = 'tables/column_table_relations/create?params=%7B%22column_set_id%22:%220%22%7D&';
@@ -271,7 +274,7 @@ class TableTest extends TestCase
     }
     
     
-    //
+    
     public function testCreateUsersJoinTableForRelation()
     {
         $url = 'tables/join_tables/store?name_basic=users%20relation%20join&join_table_id=2&join_table_alias=users&connection_column_with_alias=test.test_relation_table_column&join_column_id=5&description=&state=1&column_set_id=0&in_form_column_name=join_table_ids&';
@@ -357,6 +360,10 @@ class TableTest extends TestCase
     
     
     
+    
+    
+    /****    Other Column Testing    ****/    
+    
     public function testCreateSubscriber()
     {
         $url = 'tables/subscribers/store?name_basic=Test%20Subscriber&subscriber_type_id=2&php_code=%3C?php%0A%5CDB::table(%27settings%27)-%3Ewhere(%27name%27,%20%27REC_COUNT_PER_PAGE%27)-%3Eupdate(%5B%27value%27%20=%3E%20%2712%27%5D);%0A?%3E&description=&state=1&column_set_id=0&in_form_column_name=subscriber_ids&';
@@ -414,6 +421,10 @@ class TableTest extends TestCase
     }
     
     
+    
+    
+    
+    /****    Create And Update Test Table    ****/
     
     public function testCraeteTestTable()
     {
@@ -491,6 +502,10 @@ class TableTest extends TestCase
         $this->createAndTest($url);
     }
     
+    
+    
+    
+    /****    Column Array and Set Testings    ****/
     
     public function testColumnSetForm()
     {
@@ -601,6 +616,11 @@ class TableTest extends TestCase
         $this->createAndTest($url);
     }
     
+    
+    
+    
+    
+    /**** Other Test Table Testing    ****/
     
     public function testDeleteColumnInTable()
     {
@@ -783,6 +803,10 @@ class TableTest extends TestCase
     
     
     
+    
+    
+    /****    Table Data Testing    ****/
+    
     public function testCreateRecordInTestTypesTable()
     {
         $url = 'tables/test_types/store?name=11&state=1&column_set_id=0&in_form_column_name=test_sql_relation_one_to_many&';
@@ -954,7 +978,11 @@ class TableTest extends TestCase
     }
     
     
-    /*
+    
+    
+    
+    /****    Table Auth Testing    ****/
+    
     public function testNoQueryWithAuthColumn()
     {
         $url = 'tables/test?params=%7B%22page%22:1,%22limit%22:3,%22column_array_id%22:%220%22,%22column_array_id_query%22:%220%22,%22sorts%22:%7B%7D,%22filters%22:%7B%22id%22:%7B%22type%22:4,%22guiType%22:%22numeric%22,%22filter%22:%220%22,%22columnName%22:%22id%22%7D,%22auths%22:%7B%22type%22:1,%22guiType%22:%22multiselect%22,%22filter%22:%5B%222%22%5D%7D,%22test_types_ids%22:%7B%22type%22:1,%22guiType%22:%22multiselect%22,%22filter%22:%5B%221%22,%223%22%5D%7D,%22test_text%22:%7B%22type%22:1,%22guiType%22:%22string%22,%22filter%22:%22text%22%7D,%22test_integer%22:%7B%22type%22:1,%22guiType%22:%22numeric%22,%22filter%22:%222%22%7D,%22test_float%22:%7B%22type%22:1,%22guiType%22:%22numeric%22,%22filter%22:%222.5%22%7D,%22test_datetime%22:%7B%22type%22:1,%22guiType%22:%22datetime%22,%22filter%22:%222020-10-10%2010:10:10%22%7D,%22test_time%22:%7B%22type%22:1,%22guiType%22:%22time%22,%22filter%22:%2210:10:10%22%7D,%22test_date%22:%7B%22type%22:1,%22guiType%22:%22date%22,%22filter%22:%222020-10-10%22%7D,%22test_sql_relation_one_to_one%22:%7B%22type%22:1,%22guiType%22:%22multiselect%22,%22filter%22:%5B%222%22%5D%7D,%22test_sql_relation_one_to_many%22:%7B%22type%22:2,%22guiType%22:%22multiselect%22,%22filter%22:%5B%221%22,%223%22%5D%7D,%22test_relation_table_column%22:%7B%22type%22:1,%22guiType%22:%22multiselect%22,%22filter%22:%5B%223%22%5D%7D,%22test_json%22:%7B%22type%22:1,%22guiType%22:%22jsonb%22,%22filter%22:%22value%22%7D,%22test_data_source%22:%7B%22type%22:1,%22guiType%22:%22multiselect%22,%22filter%22:%5B%221%22%5D%7D,%22test_up_column%22:%7B%22type%22:1,%22guiType%22:%22multiselect%22,%22filter%22:%5B%222%22%5D%7D,%22test_subscriber%22:%7B%22type%22:1,%22guiType%22:%22string%22,%22filter%22:%22aki%22%7D,%22test_validation%22:%7B%22type%22:1,%22guiType%22:%22string%22,%22filter%22:%222%22%7D,%22test_collective_info%22:%7B%22type%22:1,%22guiType%22:%22string%22,%22filter%22:%22say%22%7D,%22state%22:%7B%22type%22:1,%22guiType%22:%22boolean%22,%22filter%22:true%7D,%22test_point%22:%7B%22type%22:1,%22guiType%22:%22multipolygon%22,%22filter%22:%22%5B%5C%22POLYGON((29.840923192763963%2039.54199010206801,29.555278661513963%2039.2958617269567,30.060649755263963%2039.08724896056893,30.401225927138963%2039.31286399195005,30.247417333388963%2039.49471503828903,30.022197606826456%2039.62599926684226,29.840923192763963%2039.54199010206801))%5C%22%5D%22%7D,%22test_multipoint%22:%7B%22type%22:1,%22guiType%22:%22multipolygon%22,%22filter%22:%22%5B%5C%22POLYGON((30.37376010682646%2040.00218731463838,29.439922216201463%2039.44449145999397,30.088115575576467%2038.394629943559096,31.538310888076463%2038.77678320670171,31.164775731826467%2039.982591594864715,30.37376010682646%2040.00218731463838))%5C%22%5D%22%7D,%22test_linestring%22:%7B%22type%22:1,%22guiType%22:%22multipolygon%22,%22filter%22:%22%5B%5C%22POLYGON((29.714580419326463%2039.905337656872604,29.17625034120146%2038.929314926634504,31.082378270888967%2038.29836994619325,31.384502294326467%2039.896909467002644,29.714580419326463%2039.905337656872604))%5C%22%5D%22%7D,%22test_multilinestring%22:%7B%22type%22:1,%22guiType%22:%22multipolygon%22,%22filter%22:%22%5B%5C%22POLYGON((28.659892919326474%2042.02871507390867,26.57249057557647%2040.43422143299068,30.08811557557647%2037.76618191430528,32.90061557557647%2039.499616189260934,31.593242528701467%2041.1412515216102,28.659892919326474%2042.02871507390867))%5C%22%5D%22%7D,%22test_polygon%22:%7B%22type%22:1,%22guiType%22:%22multipolygon%22,%22filter%22:%22%5B%5C%22POLYGON((29.428935888076463%2039.94325168147171,29.417949559951463%2039.00192300154083,31.263652684951467%2038.91649401273952,30.945049169326463%2039.9474630547941,29.428935888076463%2039.94325168147171))%5C%22%5D%22%7D,%22test_multipolygon%22:%7B%22type%22:1,%22guiType%22:%22multipolygon%22,%22filter%22:%22%5B%5C%22POLYGON((30.066142919326463%2040.36729011589824,28.59397495057646%2039.27035058594265,30.67588413026396%2038.09547008146154,31.42844760682646%2038.59092539524093,31.400981786513963%2039.69009513242494,30.066142919326463%2040.36729011589824))%5C%22%5D%22%7D,%22test_string2%22:%7B%22type%22:1,%22guiType%22:%22string%22,%22filter%22:%22st%22%7D%7D,%22edit%22:true,%22columns%22:%5B%22id%22,%22test_types_id%22,%22test_types_ids%22,%22test_text%22,%22test_json%22,%22test_integer%22,%22test_float%22,%22test_boolean%22,%22test_date%22,%22test_time%22,%22test_datetime%22,%22test_sql_relation_one_to_one%22,%22test_sql_relation_one_to_many%22,%22test_relation_table_column%22,%22test_data_source%22,%22test_up_column%22,%22test_subscriber%22,%22test_validation%22,%22test_collective_info%22,%22state%22,%22own_id%22,%22user_id%22,%22created_at%22,%22updated_at%22,%22test_point%22,%22test_multipoint%22,%22test_linestring%22,%22test_multilinestring%22,%22test_polygon%22,%22test_multipolygon%22,%22test_string2%22%5D%7D&';
@@ -1333,6 +1361,10 @@ class TableTest extends TestCase
     
     
     
+    
+    
+    /****    Mission Testing    ****/
+    
     public function testMissionCreateForm()
     {
         $url = 'tables/missions/create?params=%7B%22column_set_id%22:%220%22%7D&';
@@ -1379,6 +1411,10 @@ class TableTest extends TestCase
     }
     
     
+    
+    
+    
+    /****    Test Related Info Page    ****/
     
     public function testCreateJoinForTestTypesShow()
     {
@@ -1449,5 +1485,5 @@ class TableTest extends TestCase
         
         $deletedTestId = get_attr_from_cache('tables', 'name', 'deleted_test', 'id');
         $this->assertEquals(is_numeric($deletedTestId), TRUE);
-    }*/
+    }
 }
