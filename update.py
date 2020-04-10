@@ -93,31 +93,42 @@ try:
         write_log(1, "Save ignored files OK")
 
     def clone_ignored_files():  
-        write_log(1, "Clone ignored files from temp starting")
+        write_log(1, "Clone ignored files starting")
 
         f = open(".updateignore", "r")
         for item in f:
             clone_from_temp(item.strip())        
         f.close()
 
-        write_log(1, "Clone ignored files from temp OK")
+        write_log(1, "Clone ignored files starting")
 
     def stop_stack():
         os.popen("docker stack rm angaryos 2> /dev/null")
 
         write_log(1, "Stop stack OK")
+
+    def start_stack():
+        os.popen("docker stack deploy --compose-file ./../docker-stack.yml angaryos")
+
+        write_log(1, "Start stack OK")
     
     def clone_repo():
         write_log(1, "Clone repo starting")
-
         os.popen("git clone https://github.com/karapazar/Angaryos").read()
-        os.popen("cp -rf ./Angaryos/ ./../").read()
-        os.popen("rm -rf ./Angaryos/").read()
-
         write_log(1, "Clone repo OK")
 
+        os.popen("cp -rf ./Angaryos/ ./../").read()
+        write_log(1, "Copy repo OK")
+
+        os.popen("rm -rf ./Angaryos/").read()
+        write_log(1, "Remove repo OK")
+
+        
+
     def remove_temp():
-        os.popen("rm -rf ./temp/").read()
+        os.popen("rm -rf ./temp")
+
+        write_log(1, "Temp file remove OK")
 
     def main():
         pre_load()
@@ -126,6 +137,7 @@ try:
         clone_repo()     
         clone_ignored_files()
         remove_temp()
+        start_stack() 
 
     #Main
     if __name__ == "__main__":
