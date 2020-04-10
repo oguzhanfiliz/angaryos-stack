@@ -85,6 +85,8 @@ try:
 
         temp_file_operatisons()
         
+        copy_to_temp("frontend/src/environments/")    
+
         f = open(".updateignore", "r")
         for item in f:
             copy_to_temp(item.strip())        
@@ -95,6 +97,8 @@ try:
     def clone_ignored_files():  
         write_log(1, "Clone ignored files starting")
 
+        copy_to_temp("frontend/src/environments/")  
+        
         f = open(".updateignore", "r")
         for item in f:
             clone_from_temp(item.strip())        
