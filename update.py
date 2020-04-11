@@ -112,8 +112,8 @@ try:
         write_log(1, "Stop stack OK")
 
     def start_stack():
+        write_log(1, "Start stack waiting...")
         os.popen("docker stack deploy --compose-file ./docker-stack.yml angaryos").read()
-
         write_log(1, "Start stack OK")
     
     def clone_repo():
