@@ -138,8 +138,7 @@ try:
     
     def set_permission():
         os.popen("chmod 777 -R frontend/").read()
-        os.popen("chmod 777 -R backend/storage/").read()
-        os.popen("chmod 777 -R backend/bootstrap/cache/").read()
+        os.popen("chmod 777 -R backend/").read()
 
         write_log(1, "Set permission OK")
 

@@ -47,7 +47,7 @@ $column_arrays['departments'] =
 $column_sets['departments'] =
 [
     [
-        'name_basic' => 'Müdürlükler Bilgi Kartı',
+        'name_basic' => 'Müdürlükler',
         'table_id' => 'departments',
         'column_set_type_id' => 'none',
         'column_array_ids' => [0, 1]
@@ -109,7 +109,7 @@ $column_arrays['columns'] =
 $column_sets['columns'] =
 [
     [
-        'name_basic' => 'Kolonlar Bilgi Kartı',
+        'name_basic' => 'Kolonlar',
         'table_id' => 'columns',
         'column_set_type_id' => 'none',
         'column_array_ids' => [0, 1]
