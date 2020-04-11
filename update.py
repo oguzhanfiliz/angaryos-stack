@@ -56,27 +56,27 @@ try:
     def copy_to_temp(path):
         write_log(1, "Copy to temp: " + path)
 
-        os.popen("mkdir -p ./temp/"+path)
+        os.popen("mkdir -p ./temp/"+path).read()
 
         if os.path.isfile("./"+path):
-            os.popen("rm -rf ./temp/"+path)
-            os.popen("cp ./"+path+" ./temp/"+path)
+            os.popen("rm -rf ./temp/"+path).read()
+            os.popen("cp ./"+path+" ./temp/"+path).read()
         else:
-            os.popen("cp -rf ./"+path+" ./temp/"+path+"/../")
+            os.popen("cp -rf ./"+path+" ./temp/"+path+"/../").read()
 
     def clone_from_temp(path):
         write_log(1, "Clone from temp: " + path)
 
         if os.path.isfile("./"+path):
-            os.popen("cp ./temp/"+path+" ./"+path)
+            os.popen("cp ./temp/"+path+" ./"+path).read()
         else:
-            os.popen("cp -rf ./temp/"+path+"/ ./"+path+"/../")
+            os.popen("cp -rf ./temp/"+path+"/ ./"+path+"/../").read()
 
         
 
     def temp_file_operatisons():
-        os.popen("rm -rf ./temp")
-        os.popen("mkdir ./temp")
+        os.popen("rm -rf ./temp").read()
+        os.popen("mkdir ./temp").read()
 
         write_log(1, "Temp file operations OK")
 
@@ -107,7 +107,7 @@ try:
         write_log(1, "Clone ignored files starting")
 
     def stop_stack():
-        os.popen("docker stack rm angaryos 2> /dev/null")
+        os.popen("docker stack rm angaryos 2> /dev/null").read()
 
         write_log(1, "Stop stack OK")
 
@@ -130,7 +130,7 @@ try:
         
 
     def remove_temp():
-        os.popen("rm -rf ./temp")
+        os.popen("rm -rf ./temp").read()
 
         write_log(1, "Temp file remove OK")
 
