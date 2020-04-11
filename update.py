@@ -86,7 +86,7 @@ try:
         temp_file_operatisons()
         
         copy_to_temp("frontend/src/environments/")    
-        copy_to_temp("services/postgresql/data")   
+        copy_to_temp("services/postgresql/data/")   
 
         f = open(".updateignore", "r")
         for item in f:
@@ -99,7 +99,7 @@ try:
         write_log(1, "Clone ignored files starting")
 
         clone_from_temp("frontend/src/environments/") 
-        clone_from_temp("services/postgresql/data")  
+        clone_from_temp("services/postgresql/data/")  
         
         f = open(".updateignore", "r")
         for item in f:
@@ -140,7 +140,6 @@ try:
         os.popen("chmod 777 -R frontend/").read()
         os.popen("chmod 777 -R backend/storage/").read()
         os.popen("chmod 777 -R backend/bootstrap/cache/").read()
-        os.popen("chmod 777 -R services/").read()
 
         write_log(1, "Set permission OK")
 
