@@ -192,20 +192,6 @@ export class DataEntegratorComponent
         });
     }
     
-    async waitForSelect2Library()
-    {
-        await BaseHelper.waitForSelect2Library(() => $('test').select2() );
-    }
-    
-    addSelect2()
-    {
-        var th = this;
-        setTimeout(async () => {
-            await th.waitForSelect2Library();
-            $('.remoteColumns').select2();
-        }, 100);
-    }
-    
     addSelect2()
     {
         setTimeout(async () => {
