@@ -97,7 +97,7 @@ try:
     def clone_ignored_files():  
         write_log(1, "Clone ignored files starting")
 
-        copy_to_temp("frontend/src/environments/")  
+        clone_from_temp("frontend/src/environments/")  
         
         f = open(".updateignore", "r")
         for item in f:
