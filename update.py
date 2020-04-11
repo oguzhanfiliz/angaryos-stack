@@ -140,6 +140,8 @@ try:
         os.popen("chmod 777 -R backend/bootstrap/cache/").read()
         os.popen("chmod 777 -R services/").read()
 
+        write_log(1, "Set permission OK")
+
     def main():
         pre_load()
         save_ignored_files()

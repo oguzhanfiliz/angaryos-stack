@@ -1,180 +1,395 @@
-import sys
-import os
-import logging
-import traceback
-    
+import { ActivatedRoute} from '@angular/router';
+import { Component } from '@angular/core';
 
+import { SessionHelper } from './../helpers/session';
+import { BaseHelper } from './../helpers/base';
+import { GeneralHelper } from './../helpers/general';
+import { MessageHelper } from './../helpers/message';
+import { AeroThemeHelper } from './../helpers/aero.theme';
 
-try:
-    
-    #Log Vars
-    log_file = "update.log"
-    
-    logger = logging.getLogger(__name__)
-    logger.setLevel(logging.INFO)
+import {CdkDragDrop, moveItemInArray, transferArrayItem} from '@angular/cdk/drag-drop';
 
-    handler = logging.FileHandler(log_file)
-    handler.setLevel(logging.INFO)
+declare var $: any; 
 
-    formatter = logging.Formatter("%(asctime)s - %(levelname)s - %(message)s")
-    handler.setFormatter(formatter)
+@Component(
+{
+    selector: 'data-entegrator',
+    styleUrls: ['./data-entegrator.component.scss'],
+    templateUrl: './data-entegrator.component.html',
+})
+export class DataEntegratorComponent 
+{
+    private tableName:string = "";
+    private tableId:number = 0;
+    private dataSourceId:number = 0;
 
-    logger.addHandler(handler)
-    
-    
-    
-    #General Vars
-    debug = True
-    error_trace = True
-    started = False
+    private remoteColumns = [];
+    private columnChanges = {};
+    private columns = [];
 
+    private loading = false;
     
-    
-    #Objects
-    
+    constructor(
+        private route: ActivatedRoute,
+        private sessionHelper: SessionHelper,
+        private generalHelper: GeneralHelper,
+        private aeroThemeHelper: AeroThemeHelper,
+        private messageHelper: MessageHelper
+        )
+    {
+        this.aeroThemeHelper.addEventForFeature("standartElementEvents"); 
+        this.aeroThemeHelper.addEventForFeature("layoutCommonEvents"); 
 
+        var th = this;
+        setTimeout(() => {
+            route.params.subscribe(val => 
+            {
+                th.tableName = val.tableName;
+                th.tableId = val.tableId;
 
-    #Fonctions    
-    def write_log(l, s):#l => 1: info, 2:warning, 3:error
-        global debug
+                th.fillColumns();
+            });
+        }, 100);
+    }
+
+    remoteTableChanged(event)
+    {
+        this.fillRemoteColumns(event.target.value);
+    }
+
+    isElementSelected(elementName)
+    {
+        var val = $("[name='"+elementName+"']").val();
         
-        logger.info('%s', str(s))
+        if(typeof val == "undefined") return false;
+        if(val == "") return false;
+
+        return true;
+    }
+
+    isDataEntegratable()
+    {
+        if(this.loading) return false;
+
+        if(!this.isElementSelected('data_source_id')) return false;
+        if(!this.isElementSelected('data_source_direction_id')) return false;
+        if(!this.isElementSelected('data_source_rmt_table_id')) return false;
         
-        if debug:
-            print("LOG -> level:" + str(l) + " - " + str(s))
+        return true;
+    }
 
-    def pre_load():
-        global started 
-        
-        with open(log_file, "a") as f:
-            f.write("\n")
+    cloneColumn(column)
+    {
+        for(var i = 0; i < this.columns.length; i++)
+            if(column['source'] == this.columns[i]['source'])
+            {
+                var clone = BaseHelper.getCloneFromObject(column);
+                clone['source'] = clone['source'] + '_klon';
 
-        write_log(1, "Started")
+                var temp = this.columns.splice(i+1);
+                this.columns = this.columns.concat(clone);
+                this.columns = this.columns.concat(temp);
 
-        started = True  
+                setTimeout(() => {
+                    this.addSelect2();
+                }, 100);
 
-    def copy_to_temp(path):
-        write_log(1, "Copy to temp: " + path)
+                return;
+            }
+    }
 
-        os.popen("mkdir -p ./temp/"+path).read()
+    fillColumns()
+    {
+        var url = this.sessionHelper.getBackendUrlWithToken()+"tables/"+this.tableName+"/create";
 
-        if os.path.isfile("./"+path):
-            os.popen("rm -rf ./temp/"+path).read()
-            os.popen("cp ./"+path+" ./temp/"+path).read()
-        else:
-            os.popen("cp -rf ./"+path+" ./temp/"+path+"/../").read()
+        this.sessionHelper.doHttpRequest("GET", url, {'params': BaseHelper.objectToJsonStr({column_set_id: 0})})
+        .then((data) => 
+        {
+            var keys = Object.keys(data['column_set']['column_arrays'][0]['columns']);
 
-    def clone_from_temp(path):
-        write_log(1, "Clone from temp: " + path)
+            // Tablo yada kolon eklenme sırası değişirse güncellenmesi gerekir
+            this.columns.push({
+                id: 5,
+                source: 'id',
+                display: 'Kayıt No',
+                gui_type_name: 'numeric'
+            });
 
-        if os.path.isfile("./"+path):
-            os.popen("cp ./temp/"+path+" ./"+path).read()
-        else:
-            os.popen("cp -rf ./temp/"+path+"/ ./"+path+"/../").read()
+            this.columns.push({
+                id: 13,
+                source: 'updated_at',
+                display: 'Güncellenme Zamanı (Zorunlu)',
+                gui_type_name: 'datetime'
+            });
 
-        
+            for (var i = 0; i < keys.length; i++)
+                this.columns.push({
+                    id: data['column_set']['column_arrays'][0]['columns'][keys[i]]['id'],
+                    source: keys[i],
+                    display: data['column_set']['column_arrays'][0]['columns'][keys[i]]['display_name'],
+                    gui_type_name: data['column_set']['column_arrays'][0]['columns'][keys[i]]['gui_type_name']
+                });
+            
+            // Tablo yada kolon eklenme sırası değişirse güncellenmesi gerekir
+            this.columns.push({
+                id: 10,
+                source: 'own_id',
+                display: 'Kaydın Sahibi',
+                gui_type_name: 'select'
+            });
 
-    def temp_file_operatisons():
-        os.popen("rm -rf ./temp").read()
-        os.popen("mkdir ./temp").read()
+            this.columns.push({
+                id: 11,
+                source: 'user_id',
+                display: 'Kaydı Güncelleyen',
+                gui_type_name: 'select'
+            });
 
-        write_log(1, "Temp file operations OK")
+            this.columns.push({
+                id: 12,
+                source: 'created_at',
+                display: 'Oluşturulma Zamanı',
+                gui_type_name: 'datatime'
+            });
 
-    def save_ignored_files():
-        write_log(1, "Save ignored files starting")
+            this.addSelect2()
+        });
+    }
 
-        temp_file_operatisons()
-        
-        copy_to_temp("frontend/src/environments/")    
+    fillRemoteColumns(remoteTableId)
+    {
+        var params = 
+        {
+            page: 1, 
+            limit: 500, 
+            column_array_id: "0", 
+            column_array_id_query: "0", 
+            sorts: {},
+            filters: 
+            {
+                data_source_rmt_table_id: 
+                {
+                    type: 1,
+                    guiType: "multiselect",
+                    filter: [remoteTableId]
+                }
+            }
+        };
 
-        f = open(".updateignore", "r")
-        for item in f:
-            copy_to_temp(item.strip())        
-        f.close()
-        
-        write_log(1, "Save ignored files OK")
+        var url = this.sessionHelper.getBackendUrlWithToken()+"tables/data_source_remote_columns";
 
-    def clone_ignored_files():  
-        write_log(1, "Clone ignored files starting")
+        this.sessionHelper.doHttpRequest("GET", url, {'params': BaseHelper.objectToJsonStr(params)})
+        .then((data) => 
+        {
+            for(var i = 0; i < data['records'].length; i++)
+                this.remoteColumns.push({
+                    id: data['records'][i]['id'],
+                    name: data['records'][i]['name_basic'],
+                    type: data['records'][i]['db_type_name'],
+                });
 
-        clone_from_temp("frontend/src/environments/")  
-        
-        f = open(".updateignore", "r")
-        for item in f:
-            clone_from_temp(item.strip())        
-        f.close()
-
-        write_log(1, "Clone ignored files starting")
-
-    def stop_stack():
-        os.popen("docker stack rm angaryos 2> /dev/null").read()
-
-        write_log(1, "Stop stack OK")
-
-    def start_stack():
-        os.popen("docker stack deploy --compose-file ./docker-stack.yml angaryos").read()
-
-        write_log(1, "Start stack OK")
+            this.addSelect2();
+        });
+    }
     
-    def clone_repo():
-        write_log(1, "Clone repo starting")
-        os.popen("git clone https://github.com/karapazar/Angaryos").read()
-        write_log(1, "Clone repo OK")
+    addSelect2()
+    {
+        setTimeout(async () => {
+            await BaseHelper.waitForOperation(() => $('test').select2() );
+            $('.remoteColumns').select2();
+        }, 100);
+    }
 
-        os.popen("cp -rf ./Angaryos/ ./../").read()
-        write_log(1, "Copy repo OK")
+    autoSelectColumns()
+    {
+        for(var i = 0; i < this.columns.length; i++)
+            for(var j = 0; j < this.remoteColumns.length; j++)
+                if(this.columns[i]['source'] == this.remoteColumns[j]['name'])
+                {
+                    if(this.columns[i]['source'] == 'id') continue;
 
-        os.popen("rm -rf ./Angaryos/").read()
-        write_log(1, "Remove repo OK")
+                    $('#remote_'+this.columns[i]['source']).val(this.remoteColumns[j]['id']);
 
+                    var display = this.remoteColumns[j]['name']+" "+this.remoteColumns[j]['type'];
+                    $('#select2-remote_'+this.columns[i]['source']+'-container').html(display);
+                }
+    }
+
+    removeRelation(column)
+    {
+        if(this.columnHasChanger(column))
+            delete this.columnChanges[column['source']];
+
+        $('#remote_'+column['source']).val("");
+        $('#select2-remote_'+column['source']+'-container').html("İlişki yok");
+    }
+
+    getColumnTrStyle(column)
+    {
+        var style = {};
+
+        if(this.columnHasChanger(column)) style['height'] = '140px';
+
+        if(!this.columnHasValue(column)) return style;
+
+        style['background-color'] = 'rgba(84, 208, 137, 0.3)';
+        return style;
+    }
+
+    columnHasValue(column)
+    {
+        if(typeof column['source'] == "undefined") return false;
+
+        var val = $('#remote_'+column['source']).val();
         
+        if(typeof val == "undefined") return false;
 
-    def remove_temp():
-        os.popen("rm -rf ./temp").read()
+        return val != "";
+    }
 
-        write_log(1, "Temp file remove OK")
-    
-    def set_permission():
-        os.popen("chmod 777 -R frontend/").read()
-        os.popen("chmod 777 -R backend/storage/").read()
-        os.popen("chmod 777 -R backend/bootstrap/cache/").read()
-        os.popen("chmod 777 -R services/").read()
+    columnHasChanger(column)
+    {
+        if(typeof column['source'] == "undefined") return false;
 
-        write_log(1, "Set permission OK")
+        return (typeof this.columnChanges[column['source']] != "undefined");
+    }
 
-    def main():
-        pre_load()
-        save_ignored_files()
-        stop_stack()   
-        clone_repo()     
-        clone_ignored_files()
-        remove_temp()
-        set_permission()
-        start_stack() 
+    addDataChanger(column)
+    {
+        this.columnChanges[column['source']] = true;
+    }
 
-    #Main
-    if __name__ == "__main__":
-        main()
+    async addRemoteColumn(columnFormData)
+    {
+        var url = this.sessionHelper.getBackendUrlWithToken()+"tables/data_source_col_relations/store";
+        
+        var id = 0;
+        await this.sessionHelper.doHttpRequest("GET", url, columnFormData) 
+        .then((data) => 
+        {            
+            if(typeof data['message'] == "undefined")
+                this.messageHelper.sweetAlert("Beklenmedik cevap geldi!", "Hata", "warning");
+            else if(data['message'] == 'error')
+                this.messageHelper.sweetAlert("Bir hata oluştu:" + BaseHelper.objectToJsonStr(data['errors']), "Hata", "warning");
+            else if(data['message'] == 'success')
+                id = data['in_form_data']['source'];
+            else
+                this.messageHelper.sweetAlert("Beklenmedik cevap geldi!", "Hata", "warning");
+        })
+        
+        return id;
+    }
 
+    formValidation()
+    {
+        var control = this.columnHasValue({source: 'updated_at'});
+        if(!control)
+        {
+            this.messageHelper.toastMessage("Güncellenme Zamanı kolonu boş geçilemez!");
+            return false;
+        }
 
-    
-except SystemExit as e:
-    sys.exit(e)
-    
-except Exception as e:
-    try:
-        write_log(3, "Error handled")
-    except Exception as ee:
-        def write_log(l, s):
-            m = "Level: " + str(l) + " - " + str(s)
-            print(m)
-            with open(log_file, "a") as f:
-                f.write(m)
-                
-        write_log(3, "Error handled")
-    
-    exc_type, exc_obj, exc_tb = sys.exc_info()    
-    write_log(3, "General error! " + str(e) + " (line: " + str(exc_tb.tb_lineno) + ")")
-    
-    if error_trace:
-        print(traceback.print_exc())
+        return true;
+    }
+
+    async addRemoteColumnRelations()
+    {
+        if(!this.formValidation()) return [];
+
+        var columns = [];
+        for(var i = 0; i < this.columns.length; i++)
+        {
+            if(!this.columnHasValue(this.columns[i])) continue;
+
+            var php_code = $('#'+this.columns[i]['source']+'_changer').val();
+            if(typeof php_code == "undefined") php_code = "";
+            else if(php_code == "null") php_code = "";
+            else php_code = BaseHelper.replaceAll(php_code, '+', '%2B');
+
+            var col = 
+            {
+                column_id: this.columns[i]['id'],
+                data_source_remote_column_id: $('#remote_'+this.columns[i]['source']).val(),
+                php_code: php_code,
+                state: 1,
+                column_set_id: 0,
+                in_form_column_name: "data_source_col_relation_ids",
+            };
+
+            col['id'] = await this.addRemoteColumn(col);
+
+            if(col['id'] == 0)
+            {
+                this.messageHelper.toastMessage("Bir sorun oluştu", "danger");
+                return [];
+            }
+
+            columns.push(col);
+        }
+
+        return columns;
+    }
+
+    addRemoteTableRelation(columns)
+    {
+        var columnIds = [];
+        for(var i = 0; i < columns.length; i++)
+            columnIds.push(columns[i]['id']);
+
+        var table = 
+        {
+            data_source_id: $('#data_source_id').val(),
+            table_id: this.tableId,
+            data_source_rmt_table_id: $('#data_source_rmt_table_id').val(),
+            data_source_direction_id: $('#data_source_direction_id').val(),
+            cron: $('#cron').val(),
+            data_source_col_relation_ids: BaseHelper.objectToJsonStr(columnIds),
+            state: 1,            
+            column_set_id: 0
+        }
+
+        var url = this.sessionHelper.getBackendUrlWithToken()+"tables/data_source_tbl_relations/store";
+        
+        this.sessionHelper.doHttpRequest("GET", url, table) 
+        .then((data) => 
+        {         
+            if(typeof data['message'] == "undefined")
+                this.messageHelper.sweetAlert("Beklenmedik cevap geldi!", "Hata", "warning");
+            else if(data['message'] == 'error')
+                this.messageHelper.sweetAlert("Bir hata oluştu:" + BaseHelper.objectToJsonStr(data['errors']), "Hata", "warning");
+            else if(data['message'] == 'success')
+                this.messageHelper.sweetAlert("Veri aktarma görevi başarı ile oluştutuldu!", "Başarı", "success");
+            else
+                this.messageHelper.sweetAlert("Beklenmedik cevap geldi!", "Hata", "warning");
+        });
+    }
+
+    async save()
+    {
+        if(!this.isDataEntegratable()) return;
+
+        this.startLoading();
+
+        var columns = await this.addRemoteColumnRelations()
+        if(columns.length == 0) 
+        {
+            this.stopLoading();
+            return;
+        }
+
+        this.addRemoteTableRelation(columns);
+        this.stopLoading();
+    }
+
+    startLoading()
+    {
+        this.loading = true;
+        this.generalHelper.startLoading();
+    }
+
+    stopLoading()
+    {
+        this.loading = false;
+        this.generalHelper.stopLoading(); 
+    }
+}
