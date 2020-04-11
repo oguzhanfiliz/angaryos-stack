@@ -133,6 +133,12 @@ try:
         os.popen("rm -rf ./temp").read()
 
         write_log(1, "Temp file remove OK")
+    
+    def set_permission():
+        os.popen("chmod 777 -R frontend/").read()
+        os.popen("chmod 777 -R backend/storage/").read()
+        os.popen("chmod 777 -R backend/bootstrap/cache/").read()
+        os.popen("chmod 777 -R services/").read()
 
     def main():
         pre_load()
@@ -141,6 +147,7 @@ try:
         clone_repo()     
         clone_ignored_files()
         remove_temp()
+        set_permission()
         start_stack() 
 
     #Main
