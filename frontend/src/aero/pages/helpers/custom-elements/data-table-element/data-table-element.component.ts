@@ -492,6 +492,19 @@ export class DataTableElementComponent
         return DataHelper.recordOperations;
     }
 
+    getOpperationLink(operation, record)
+    {
+        if(operation['link'] == "") return "#";
+
+        var url = window.location.href;
+        if(url.substr(url.length -1, 1) != '/')
+            url += "/";
+
+        url += operation['link'].replace("[id]", record['id']);
+
+        return url;
+    }
+    
     convertDataForGui(record, columnName)
     {
         var type = this.getData('columns.'+columnName+".gui_type_name");

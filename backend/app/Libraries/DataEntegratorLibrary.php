@@ -97,13 +97,18 @@ class DataEntegratorLibrary
         DB::statement('ALTER TABLE '.$table->name.' ADD COLUMN remote_record_id integer');
         DB::statement('ALTER TABLE '.$table->name.'_archive ADD COLUMN remote_record_id integer');
         
+        DB::statement('ALTER TABLE '.$table->name.' ADD COLUMN disable_entegrate boolean default false');
+        DB::statement('ALTER TABLE '.$table->name.'_archive ADD COLUMN disable_entegrate boolean default false');
+        
         $remoteRecordIdColumnId = get_attr_from_cache('columns', 'name', 'remote_record_id', 'id');
+        $disableEntegrateColumnId = get_attr_from_cache('columns', 'name', 'disable_entegrate', 'id');
         
         $temp = get_model_from_cache('tables', 'name', $table->name);
         $temp->fillVariables();
         
         $tempColumns = $temp->column_ids;
         array_push($tempColumns, $remoteRecordIdColumnId);
+        array_push($tempColumns, $disableEntegrateColumnId);
         $temp->column_ids = $tempColumns;
         
         $temp->save();

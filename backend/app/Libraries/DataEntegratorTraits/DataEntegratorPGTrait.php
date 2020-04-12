@@ -63,4 +63,17 @@ trait DataEntegratorPGTrait
         
         $newRecordId = $remoteConnection->table($remoteTable->name_basic)->where('id', $record->remote_record_id)->update($newRecord);
     }
+    
+    private function DeleteRecordOnDB($remoteConnection, $remoteTable, $columnRelations, $remoteRecord, $record)
+    {
+        dd('DeleteRecordOnDB');//önce arşive al sonra sil çünkü diğer taraftan silinmiş
+        if($this->CompareUpdatedAtTime($columnRelations, $remoteRecord, $record))
+            return;
+        
+        $newRecord = $this->GetNewRemoteRecordDataFromCurrentRecord($columnRelations, $record);
+        
+        $this->SaveOldDataToLocalFromDataSource($remoteRecord, $newRecord);
+        
+        $newRecordId = $remoteConnection->table($remoteTable->name_basic)->where('id', $record->remote_record_id)->update($newRecord);
+    }
 }

@@ -67,6 +67,19 @@ $temp = array_merge($tempColumn, $temp);
 $columns['remote_record_id'] = new BaseModel('columns', $temp);
 $columns['remote_record_id']->save();
 
+$tempColumn = 
+[
+    'name' => 'disable_entegrate',
+    'display_name' => 'Veri Aktarma Devre Dışı',
+    'column_db_type_id' => get_attr_from_cache('column_db_types', 'name', 'boolean', 'id'),
+    'column_gui_type_id' => get_attr_from_cache('column_gui_types', 'name', 'boolean', 'id')
+];
+$temp = $this->get_base_record();
+$temp = array_merge($tempColumn, $temp);
+
+$columns['disable_entegrate'] = new BaseModel('columns', $temp);
+$columns['disable_entegrate']->save();
+
 
 
 /*$requiredColumns = 

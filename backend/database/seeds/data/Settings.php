@@ -18,6 +18,8 @@ $settings['SMS_URL'] = 'https://your.sms.send.url/?someData=data&gsmno=$TEL&mess
 $settings['FB_AUTH_KEY'] = 'FirebaseAuthKey';
 $settings['FB_BASE_TOPIC'] = '/topics/angaryos';
 
+$settings['DATA_ENTEGRATOR_STATES'] = '{}';
+
 
 
 

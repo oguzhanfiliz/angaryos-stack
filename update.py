@@ -137,8 +137,10 @@ try:
         write_log(1, "Temp file remove OK")
     
     def set_permission():
-        os.popen("chmod 777 -R frontend/").read()
-        os.popen("chmod 777 -R backend/").read()
+        os.popen("chmod 755 -R frontend/").read()
+        os.popen("chmod 755 -R backend/").read()
+        os.popen("chmod 777 -R backend/storage/").read()
+        os.popen("chmod 777 -R backend/bootstrap/cache/").read()
 
         write_log(1, "Set permission OK")
 

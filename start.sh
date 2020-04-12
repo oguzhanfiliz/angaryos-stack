@@ -7,7 +7,7 @@ git clone https://github.com/karapazar/Angaryos
 
 cd Angaryos/
 
-chmod 777 -R frontend/
+chmod 755 -R frontend/
 chmod 777 -R backend/storage/
 chmod 777 -R backend/bootstrap/cache/
 chmod 777 -R services/

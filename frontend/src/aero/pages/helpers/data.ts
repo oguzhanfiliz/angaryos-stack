@@ -8,36 +8,42 @@ export abstract class DataHelper
 
     public static recordOperations = 
     [
-    {
-        'type': 'show',
-        'icon': 'info-alt',
-        'display_name' : 'Detay Göster'
-    },
-    {
-        'type': 'edit',
-        'icon': 'pencil-alt2',
-        'display_name' : 'Düzenle'
-    }, 
-    {
-        'type': 'delete',
-        'icon': 'trash',
-        'display_name' : 'Sil'
-    },
-    {
-        'type': 'archive',
-        'icon': 'reload',
-        'display_name' : 'Kaydın Geçmişi'
-    },
-    {
-        'type': 'clone',
-        'icon': 'files',
-        'display_name' : 'Klonla'
-    },
-    {
-        'type': 'export',
-        'icon': 'export',
-        'display_name' : 'Dışa Aktar'
-    }
+        {
+            'type': 'show',
+            'icon': 'info-alt',
+            'display_name' : 'Detay Göster',
+            'link': '[id]'
+        },
+        {
+            'type': 'edit',
+            'icon': 'pencil-alt2',
+            'display_name' : 'Düzenle',
+            'link': '[id]/edit'
+        }, 
+        {
+            'type': 'delete',
+            'icon': 'trash',
+            'display_name' : 'Sil',
+            'link': ''
+        },
+        {
+            'type': 'archive',
+            'icon': 'reload',
+            'display_name' : 'Kaydın Geçmişi',
+            'link': '[id]/archive'
+        },
+        {
+            'type': 'clone',
+            'icon': 'files',
+            'display_name' : 'Klonla',
+            'link': ''
+        },
+        {
+            'type': 'export',
+            'icon': 'export',
+            'display_name' : 'Dışa Aktar',
+            'link': ''
+        }
     ]; 
 
 

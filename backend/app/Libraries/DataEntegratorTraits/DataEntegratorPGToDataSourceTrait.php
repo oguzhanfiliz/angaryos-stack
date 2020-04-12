@@ -35,7 +35,7 @@ trait DataEntegratorPGToDataSourceTrait
         {
             $remoteRecord = $this->GetRecordFromPGDataSourceById($remoteConnection, $remoteTable, $record);
             if($remoteRecord == NULL)
-                $this->CreateRecordOnPGDataSource($remoteConnection, $remoteTable, $columnRelations, $table, $record);
+                $this->DeleteRecordOnDB($remoteConnection, $remoteTable, $columnRelations, $table, $record);
             else
                 $this->UpdateRecordOnPGDataSource($remoteConnection, $remoteTable, $columnRelations, $remoteRecord, $record);
         }

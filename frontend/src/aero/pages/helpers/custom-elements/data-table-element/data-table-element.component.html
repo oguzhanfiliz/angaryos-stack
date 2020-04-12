@@ -245,7 +245,7 @@
                                                                     (click)="doOperation(operation.type,record)"
                                                                     role="menuitem">
                                                                     
-                                                                    <a class="dropdown-item">                                                        
+                                                                    <a class="dropdown-item" [href]="getOpperationLink(operation, record)">                                                        
                                                                         <span style="margin-right: 5px;" [class]="'ti-' + operation.icon"></span>
                                                                         {{ operation.display_name }}
                                                                     </a>
