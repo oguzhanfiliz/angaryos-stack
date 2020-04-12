@@ -16,7 +16,8 @@ trait DataEntegratorPGToDataSourceTrait
             $start += 100;
             
             foreach($records as $record)
-                $this->EntegratePostgresqlToDataSourceUpdateRecord(
+                if(!$record->disable_entegrate)
+                    $this->EntegratePostgresqlToDataSourceUpdateRecord(
                                                                     $remoteConnection, 
                                                                     $table,
                                                                     $remoteTable, 
@@ -26,7 +27,7 @@ trait DataEntegratorPGToDataSourceTrait
     }
     
     private function EntegratePostgresqlToDataSourceUpdateRecord($remoteConnection, $table, $remoteTable, $columnRelations, $record)
-    {    
+    { 
         if(strlen($record->remote_record_id) == 0)
         {
             $this->CreateRecordOnPGDataSource($remoteConnection, $remoteTable, $columnRelations, $table, $record);
@@ -35,7 +36,13 @@ trait DataEntegratorPGToDataSourceTrait
         {
             $remoteRecord = $this->GetRecordFromPGDataSourceById($remoteConnection, $remoteTable, $record);
             if($remoteRecord == NULL)
-                $this->DeleteRecordOnDB($remoteConnection, $remoteTable, $columnRelations, $table, $record);
+            {
+                global $pipe;
+                $tableId = get_attr_from_cache('data_source_tbl_relations', 'id', $pipe['dataEntegratorCurrentTableRelationId'], 'table_id');
+                $tableName = get_attr_from_cache('tables', 'id', $tableId, 'name');
+        
+                $this->DeleteRecordOnDB($tableName, $record);
+            }
             else
                 $this->UpdateRecordOnPGDataSource($remoteConnection, $remoteTable, $columnRelations, $remoteRecord, $record);
         }

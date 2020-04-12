@@ -140,6 +140,7 @@ try:
         os.popen("chmod 755 -R frontend/").read()
         os.popen("chmod 755 -R backend/").read()
         os.popen("chmod 777 -R backend/storage/").read()
+        os.popen("chmod 777 -R backend/public/").read()
         os.popen("chmod 777 -R backend/bootstrap/cache/").read()
 
         write_log(1, "Set permission OK")

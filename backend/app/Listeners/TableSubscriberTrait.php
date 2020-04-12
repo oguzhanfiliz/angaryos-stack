@@ -362,6 +362,23 @@ trait TableSubscriberTrait
     {
         return $this->getDataForSelectElementForBasicColumn($params);
     }
+
+    public function getDataForSelectElementSingleForRelationSql($params)
+    {
+        $source = $params->record->{$params->column->name};
+        if(strlen($source) == 0) return['source' => '', 'display' => ''];
+
+        $sql = $params->relation->relation_sql;
+        $sql = 'select * from ('.$sql.') as data where '.$params->relation->relation_source_column.' = ' .$source;
+        
+        $record = DB::select($sql)[0];
+        
+        return
+        [
+            'source' => $record->{$params->relation->relation_source_column},
+            'display' => $record->{$params->relation->relation_display_column}
+        ];
+    }
     
     public function getDataForSelectElementForTableIdAndColumnIds($params)
     {
@@ -732,9 +749,11 @@ trait TableSubscriberTrait
                     ->first()->created_at;
             $data['created_at'] = $createdAt;
             
+            if(isset($data['remote_record_id'])) unset($data['remote_record_id']);
+
             $record = new BaseModel($tableName, $data);
         }
-        
+
         $record->save();
         return $record;
     }   

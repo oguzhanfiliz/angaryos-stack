@@ -20,6 +20,9 @@ class DataEntegratorLibrary
     
     public function __construct($tableRelationId) 
     {
+        global $pipe;
+        $pipe['dataEntegratorCurrentTableRelationId'] = $tableRelationId;
+        
         $this->tableRelation = get_attr_from_cache('data_source_tbl_relations', 'id', $tableRelationId, '*');
         $this->dataEntegratorDirection = get_attr_from_cache('data_source_directions', 'id', $this->tableRelation->data_source_direction_id, '*');
         $this->dataSource = get_attr_from_cache('data_sources', 'id', $this->tableRelation->data_source_id, '*');
@@ -97,8 +100,8 @@ class DataEntegratorLibrary
         DB::statement('ALTER TABLE '.$table->name.' ADD COLUMN remote_record_id integer');
         DB::statement('ALTER TABLE '.$table->name.'_archive ADD COLUMN remote_record_id integer');
         
-        DB::statement('ALTER TABLE '.$table->name.' ADD COLUMN disable_entegrate boolean default false');
-        DB::statement('ALTER TABLE '.$table->name.'_archive ADD COLUMN disable_entegrate boolean default false');
+        DB::statement('ALTER TABLE '.$table->name.' ADD COLUMN disable_entegrate boolean');
+        DB::statement('ALTER TABLE '.$table->name.'_archive ADD COLUMN disable_entegrate boolean');
         
         $remoteRecordIdColumnId = get_attr_from_cache('columns', 'name', 'remote_record_id', 'id');
         $disableEntegrateColumnId = get_attr_from_cache('columns', 'name', 'disable_entegrate', 'id');
@@ -230,6 +233,13 @@ class DataEntegratorLibrary
         
         $this->UpdateRecordStaticColumns($record, $data);
     }
+
+    private function DeleteRecordOnDB($tableName, $record)
+    {
+        copy_record_to_archive($record, $tableName); 
+
+        DB::table($tableName)->where('id', $record->id)->delete();
+    }
     
     private function UpdateRecordStaticColumns($record, $data)
     {
@@ -246,6 +256,7 @@ class DataEntegratorLibrary
     private function SaveOldDataToLocalFromDataSource($remoteRecord, $newRecord)
     {
         $disk = env('FILESYSTEM_DRIVER', 'uploads');
+        
         Storage::disk($disk)
             ->put(
                 'dataEntegratorDatas/'

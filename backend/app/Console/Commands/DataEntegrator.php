@@ -43,5 +43,7 @@ class DataEntegrator extends Command
         }
         
         DB::commit();
+
+        $this->info('OK');
     }
 }

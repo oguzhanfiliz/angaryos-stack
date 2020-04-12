@@ -48,16 +48,27 @@ class CacheSubscriber
             case 'column_table_relations':
                 $this->clearColumnTableRelationCache($record);
                 break;
-            
-            case 'data_filter_types':
+
             case 'column_sets':
             case 'column_arrays':
+                $this->clearColumnSetOrArrayCache($record);
+                break;
+            
+            case 'data_filter_types':
             case 'missions':
                 Cache::forget('allAuths');
                 break;
         }
         
         return TRUE;
+    }
+
+    private function clearColumnSetOrArrayCache($setOrArray)
+    {
+        Cache::forget('allAuths');
+        
+        $table = get_attr_from_cache('tables', 'id', $setOrArray->table_id, '*');
+        $this->clearTableCache($table);
     }
 
     private function clearColumnTableRelationCache($relation)

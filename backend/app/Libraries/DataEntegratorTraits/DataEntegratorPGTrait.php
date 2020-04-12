@@ -39,7 +39,10 @@ trait DataEntegratorPGTrait
             'schema' => $params[1]
         ]]);
         
-        return DB::connection('currentDataSource');  
+        $connection = DB::connection('currentDataSource');
+        $connection->dataSourceRecord = $dataSource;
+
+        return $connection;  
     } 
     
     private function CreateRecordOnPGDataSource($remoteConnection, $remoteTable, $columnRelations, $table, $record)
@@ -63,17 +66,41 @@ trait DataEntegratorPGTrait
         
         $newRecordId = $remoteConnection->table($remoteTable->name_basic)->where('id', $record->remote_record_id)->update($newRecord);
     }
-    
-    private function DeleteRecordOnDB($remoteConnection, $remoteTable, $columnRelations, $remoteRecord, $record)
+
+    private function DeleteRecordOnPGDataSource($remoteConnection, $remoteTable, $remoteRecord)
     {
-        dd('DeleteRecordOnDB');//önce arşive al sonra sil çünkü diğer taraftan silinmiş
-        if($this->CompareUpdatedAtTime($columnRelations, $remoteRecord, $record))
-            return;
+        $this->SaveOldDataToLocalFromDataSource($remoteRecord, 'delete');
         
-        $newRecord = $this->GetNewRemoteRecordDataFromCurrentRecord($columnRelations, $record);
-        
-        $this->SaveOldDataToLocalFromDataSource($remoteRecord, $newRecord);
-        
-        $newRecordId = $remoteConnection->table($remoteTable->name_basic)->where('id', $record->remote_record_id)->update($newRecord);
+        $remoteConnection->table($remoteTable->name_basic)
+                            ->where('id', $remoteRecord->id)
+                            ->delete();
     }
+
+    private function UpdateDataEntegratorStates($remoteConnection, $remoteTable, $lastId)
+    {
+        global $pipe;
+
+        $dataSourceId = $remoteConnection->dataSourceRecord->id;
+        $tableRelationId = $pipe['dataEntegratorCurrentTableRelationId'];
+        
+        $json = DB::table('settings')->where('name', 'DATA_ENTEGRATOR_STATES')->first()->value;
+        $states = json_decode($json, TRUE);
+        
+        if(!isset($states['DataSources'])) 
+            $states['DataSources'] = [];
+
+        if(!isset($states['DataSources'][$dataSourceId])) 
+            $states['DataSources'][$dataSourceId] = [];
+
+        if(!isset($states['DataSources'][$dataSourceId][$tableRelationId ])) 
+            $states['DataSources'][$dataSourceId][$tableRelationId] = [];
+
+        $states['DataSources'][$dataSourceId][$tableRelationId]['lastId'] =  $lastId;
+
+        DB::table('settings')->where('name', 'DATA_ENTEGRATOR_STATES')->update(
+        [
+            'value' => json_encode($states)
+        ]);
+    }
+
 }
