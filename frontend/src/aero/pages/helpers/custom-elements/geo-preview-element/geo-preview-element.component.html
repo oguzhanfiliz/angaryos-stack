@@ -1,1 +1,1 @@
-<a style="color: #0c7ce6" (click)="preview()">{{ this.getDisplayName(type)  }}</a>
+<a *ngIf="!isElementNull()" style="color: #0c7ce6" (click)="preview()">{{ this.getDisplayName(type)  }}</a>

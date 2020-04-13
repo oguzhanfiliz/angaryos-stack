@@ -232,6 +232,19 @@ $return = $helper->CustomLayerEvent($params);
 ?>'
 ];
 
+$subscribers['table']['data_source_tbl_relations'][0] =
+[
+    'name_basic' => 'Tekrarsız bir ilişki ise veri tek sefer entegre etme işi oluşturma trigger',
+    'subscriber_type_id' => $subscriber_types['after']->id,
+    'php_code' => '<?php
+if($type == \'delete\') return;
+if($record->state != TRUE) return;
+if(strlen($record->cron) > 0) return;
+
+\App\Jobs\DoSingleEntegrate::dispatch($record->id);
+?>'
+];
+
 
 
 foreach($subscribers as $type => $set)

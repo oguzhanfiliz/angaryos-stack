@@ -54,4 +54,12 @@ export class GeoPreviewElementComponent
             MapHelper.addFeatureByWkt(map, this.wkt, "EPSG:"+this.srid);
         });
     }
+
+    isElementNull()
+    {
+        if(this.wkt == null) return true;
+        if(this.wkt.length == 0) return true;
+
+        return false;
+    }
 }

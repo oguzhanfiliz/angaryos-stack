@@ -494,14 +494,12 @@ export class DataTableElementComponent
 
     getOpperationLink(operation, record)
     {
-        if(operation['link'] == "") return "#";
-
         var url = window.location.href;
-        if(url.substr(url.length -1, 1) != '/')
-            url += "/";
 
+        if(operation['link'] == "") return url;
+
+        if(url.substr(url.length -1, 1) != '/') url += "/";
         url += operation['link'].replace("[id]", record['id']);
-
         return url;
     }
     

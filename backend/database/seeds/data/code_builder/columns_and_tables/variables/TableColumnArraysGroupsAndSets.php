@@ -18,7 +18,7 @@ $join_tables['departments'] =
 $column_arrays['departments'] =
 [
     [
-        'name_basic' => 'Dizi',
+        'name_basic' => 'Müdürlükler Kolon Dizisi',
         'column_array_type_id' => $column_array_types['direct_data']->id,
         'table_id' => 'departments',
         'column_ids' => ['id', 'name_basic', 'manager_id', 'description', 'state', 'own_id', 'created_at', 'user_id', 'updated_at'],
