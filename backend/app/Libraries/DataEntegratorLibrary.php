@@ -4,6 +4,7 @@ namespace App\Libraries;
 
 use App\Libraries\DataEntegratorTraits\DataEntegratorPGTrait;
 use App\Libraries\DataEntegratorTraits\DataEntegratorLdapTrait;
+use App\Libraries\DataEntegratorTraits\DataEntegratorExcelTrait;
 
 use App\Listeners\CacheSubscriber;
 
@@ -15,6 +16,7 @@ class DataEntegratorLibrary
 {
     use DataEntegratorPGTrait;
     use DataEntegratorLdapTrait;
+    use DataEntegratorExcelTrait;
     
     public $tableRelation, $dataSource, $dataSourceType, $dataEntegratorDirection;
     
@@ -37,6 +39,9 @@ class DataEntegratorLibrary
                 break;
             case 'ldap':
                 $this->EntegrateLdap($this->dataSource, $this->tableRelation, $this->dataEntegratorDirection);
+                break;
+            case 'excel':
+                $this->EntegrateExcel($this->dataSource, $this->tableRelation, $this->dataEntegratorDirection);
                 break;
 
             default: 
@@ -107,6 +112,7 @@ class DataEntegratorLibrary
     
     private function AddDataEntegratorColumn($table, $columnName)
     {
+        
         DB::statement('ALTER TABLE '.$table->name.' ADD COLUMN '.$columnName.' jsonb');
         DB::statement('ALTER TABLE '.$table->name.'_archive ADD COLUMN '.$columnName.' jsonb');
         
@@ -203,21 +209,8 @@ class DataEntegratorLibrary
         return $currentRecord->updated_at >= $remoteRecord->{$remoteUpdatedAtColumnName};        
     }
     
+   
     
-    
-    
-    
-    
-    private function GetRemoteRecordObjectFromLdapRemoteRecord($remoteConnection, $columnRelations, $remoteRecord)
-    {
-        $remoteIdColumnName = $this->getRelatedColumnName($columnRelations, 'id');
-        $updatedAt = $remoteConnection->getModifyTime($remoteRecord['dn']);
-        
-        $remoteRecord['id'] = $remoteRecord[$remoteIdColumnName];
-        $remoteRecord['updated_at'] = $updatedAt->toDateTimeString();
-        
-        return (Object)$remoteRecord;
-    }
     
     private function GetRecordFromDBByRemoteRecordId($tableRelation, $table, $remoteRecord)
     {

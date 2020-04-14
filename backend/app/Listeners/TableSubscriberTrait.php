@@ -362,6 +362,13 @@ trait TableSubscriberTrait
     {
         return $this->getDataForSelectElementForBasicColumn($params);
     }
+    
+    public function getDataForSelectElementSingleForJoinTableIds($params)
+    {
+        dd('getDataForSelectElementSingleForJoinTableIds');
+        dd($this->getDataForSelectElementForBasicColumn($params));
+        return $this->getDataForSelectElementForBasicColumn($params);
+    }
 
     public function getDataForSelectElementSingleForRelationSql($params)
     {

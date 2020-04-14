@@ -11,7 +11,6 @@ trait DataEntegratorLdapTrait
 {    
     use DataEntegratorLdapFromDataSourceTrait;
     use DataEntegratorLdapToDataSourceTrait;
-    //use DataEntegratorLdapTwoWayTrait;
     
     private function EntegrateLdap($dataSource, $tableRelation, $direction)
     {
@@ -76,5 +75,16 @@ trait DataEntegratorLdapTrait
     {
         $this->SaveOldDataToLocalFromDataSource($remoteRecord, 'delete');
         $remoteConnection->delete($remoteRecord->dn);
+    }
+    
+    private function GetRemoteRecordObjectFromLdapRemoteRecord($remoteConnection, $columnRelations, $remoteRecord)
+    {
+        $remoteIdColumnName = $this->getRelatedColumnName($columnRelations, 'id');
+        $updatedAt = $remoteConnection->getModifyTime($remoteRecord['dn']);
+        
+        $remoteRecord['id'] = $remoteRecord[$remoteIdColumnName];
+        $remoteRecord['updated_at'] = $updatedAt->toDateTimeString();
+        
+        return (Object)$remoteRecord;
     }
 }

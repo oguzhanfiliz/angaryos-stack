@@ -69,7 +69,6 @@ export class MultiSelectDragDropElementComponent
     {
         if(this.valueJson.length > 0)
             this.fillSelectedElements();
-        else alert("kontrol et");
 
         this.selectedChanged();
     }

@@ -1,7 +1,7 @@
 <?php
 use App\BaseModel;
 
-$data_source_types = ['postgresql', 'ldap'];
+$data_source_types = ['postgresql', 'ldap', 'excel'];
 
 foreach($data_source_types as $name)
 {

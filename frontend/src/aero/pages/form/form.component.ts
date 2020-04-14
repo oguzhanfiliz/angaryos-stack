@@ -275,7 +275,7 @@ export class FormComponent
             params = this.getElementsDataForUpload(); 
         else
             params = this.getElementsData();
-
+        
         if(this.inFormColumnName.length > 0)
         {
             if(BaseHelper.formSendMethod == "POST")

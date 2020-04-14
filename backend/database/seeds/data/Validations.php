@@ -13,7 +13,7 @@ $validations['no_change']['display_name'] = 'Data değiştirilemez';
 $validations['valid_validations']['display_name'] = 'Olmayan doğrulama kuralı yazılamaz!';
 $validations['column_table_relation_control']['display_name'] = 'İlişkili kolon ilişki kontrolü';
 $validations['cron']['display_name'] = 'Crontab sözdizimi kontrolü';
-$validations['select_updated_at']['display_name'] = 'Güncellenme zamanı kolonu kontrolü';
+$validations['select_updated_at']['display_name'] = 'Zorunlu kolon kontrolü';
 
 
 
@@ -131,7 +131,6 @@ $return  = (count($matches) == 2);
 ?>';
 
 $validations['select_updated_at']['php_code'] = '<?php
-
 $return = FALSE;
 
 if($value == \'[]\') return;
@@ -143,8 +142,31 @@ foreach($value as $columnRelationId)
     $columnName = get_attr_from_cache(\'columns\', \'id\', $columnId, \'name\');
     if($columnName == \'updated_at\')
     {
-        $return = TRUE;
-        break;
+        $remoteTableId = (int)\Request::input(\'data_source_rmt_table_id\');
+        if($remoteTableId < 1) return;
+
+        $dataSourceId = get_attr_from_cache(\'data_source_remote_tables\', \'id\', $remoteTableId, \'data_source_id\');
+        $dataSourceTypeId = get_attr_from_cache(\'data_sources\', \'id\', $dataSourceId, \'data_source_type_id\');
+        $dataSourceTypeName = get_attr_from_cache(\'data_source_types\', \'id\', $dataSourceTypeId, \'name\');
+
+        if($dataSourceTypeName == \'excel\' || $dataSourceTypeName == \'ldap\')
+        {
+            foreach($value as $columnRelationId)
+            {
+                $columnId = get_attr_from_cache(\'data_source_col_relations\', \'id\', $columnRelationId, \'column_id\');
+                $columnName = get_attr_from_cache(\'columns\', \'id\', $columnId, \'name\');
+                if($columnName == \'id\')
+                {
+                    $return = TRUE;
+                    return;
+                }
+            }
+        }
+        else
+        {
+            $return = TRUE;
+            return;
+        }
     }
 }
 ?>';
@@ -158,7 +180,7 @@ $validations['no_change']['error_message'] = 'Bu veri değiştirilemez.';
 $validations['valid_validations']['error_message'] = 'Böyle bir doğrulama kuralı yok!';
 $validations['column_table_relation_control']['error_message'] = 'İlişkili kolon için bir data ilişkisi seçmelisiniz!';
 $validations['cron']['error_message'] = 'Geçerisiz bir zamanlayıcı girdiniz! (cron syntax)';
-$validations['select_updated_at']['error_message'] = 'Güncellenme zamanı kolonu seçilmelidir!';
+$validations['select_updated_at']['error_message'] = 'Güncellenme zamanı ve id kolonu seçilmelidir!';
         
 
 $temp = $this->get_base_record();

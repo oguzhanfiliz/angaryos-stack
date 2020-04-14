@@ -418,6 +418,8 @@ export abstract class DataHelper
     public static changeDataForFormByGuiTypeMultiSelect(data)
     {
         if(typeof data == "undefined") return "";
+        if(data.length == 1 && data[0] == "") return "[]";
+        
         return BaseHelper.objectToJsonStr(data);
     }
 

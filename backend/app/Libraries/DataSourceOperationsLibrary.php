@@ -94,7 +94,7 @@ class DataSourceOperationsLibrary
         return $return;
     }
     
-    private function columnsSyncOnDB($connection, $dataSource, $table, $columns)
+    private function columnsSyncOnDB($dataSource, $table, $columns)
     {
         $userId = \Auth::user()->id;
         
@@ -197,7 +197,7 @@ class DataSourceOperationsLibrary
         foreach($tables as $tableName => $tableId)
         {
             $temp = $this->getColumnsFromPGDB($connection, $dataSource, [$tableName, $tableId]);
-            $columns[$tableName] = $this->columnsSyncOnDB($connection, $dataSource, [$tableName, $tableId], $temp);
+            $columns[$tableName] = $this->columnsSyncOnDB($dataSource, [$tableName, $tableId], $temp);
         }
         
         helper('data_entegrator_log', 
@@ -209,6 +209,60 @@ class DataSourceOperationsLibrary
                 'columns' => $columns
             ]
         ]);
+    }
+    
+    
+    
+    /****    Excel    ****/
+    private function UpdateRemoteTablesAndColumnsForExcel($dataSource)
+    {
+        helper('data_entegrator_log', 
+        [
+            'info',
+            'Update remote tables and columns for excel started', 
+            $dataSource
+        ]);
+        
+        $filePath = storage_path('app').'/'.$dataSource->params;
+        if(!file_exists($filePath))
+            custom_abort('file.not.found: '.$filePath);
+        
+        $data = helper('get_data_from_excel_file', $filePath);
+        
+        $tableNames = array_keys($data);
+        $tables = $this->tablesSyncOnDB($dataSource, $tableNames);
+        
+        $columns = [];
+        foreach($tables as $tableName => $tableId)
+        {
+            $temp = $this->getColumnsFromExcel($data[$tableName]['columns']);
+            $columns[$tableName] = $this->columnsSyncOnDB($dataSource, [$tableName, $tableId], $temp);
+        }
+        
+        helper('data_entegrator_log', 
+        [
+            'info',
+            'Update remote tables and columns for pg finished',
+            [
+                'tables' => $tables, 
+                'columns' => $columns
+            ]
+        ]);
+    }
+    
+    private function getColumnsFromExcel($columns)
+    {
+        $rt = [];
+        foreach ($columns as $column) 
+        {
+            $temp = helper('get_null_object');
+            $temp->name = $column;
+            $temp->type = 'mixed';
+            
+            array_push($rt, $temp);
+        }
+        
+        return $rt; 
     }
     
     
@@ -233,7 +287,7 @@ class DataSourceOperationsLibrary
         foreach($tables as $tableName => $tableId)
         {
             $temp = $this->getColumnsFromLdapDB($connection, $dataSource, [$tableName, $tableId]);
-            $columns[$tableName] = $this->columnsSyncOnDB($connection, $dataSource, [$tableName, $tableId], $temp);
+            $columns[$tableName] = $this->columnsSyncOnDB($dataSource, [$tableName, $tableId], $temp);
         }
         
         helper('data_entegrator_log', 
