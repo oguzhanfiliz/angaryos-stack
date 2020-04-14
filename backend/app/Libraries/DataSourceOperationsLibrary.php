@@ -252,6 +252,8 @@ class DataSourceOperationsLibrary
     
     private function getColumnsFromExcel($columns)
     {
+        array_push($columns, 'updated_at');
+        
         $rt = [];
         foreach ($columns as $column) 
         {
