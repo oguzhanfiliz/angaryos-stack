@@ -6,57 +6,65 @@ use DB;
 
 trait DataEntegratorPGToDataSourceTrait 
 {    
-    private function EntegratePostgresqlToDataSourceUpdateRecords($remoteConnection, $table, $remoteTable, $columnRelations)
+    private function EntegratePostgresqlToDataSourceUpdateRecords($remoteConnection, $tableRelation, $table, $remoteTable, $columnRelations, $direction)
     {
         $start = 0;
         while(TRUE)
         {
-            $records = DB::table($table->name)->limit(100)->offset($start)->get();
+            $records = DB::table($table->name)->orderBy('id')->limit(100)->offset($start)->get();
             if(count($records) == 0) break;
             $start += 100;
             
+            $records = $this->UpdateDataEntegratorColumnsData($records);
+            
             foreach($records as $record)
-                if(!$record->disable_entegrate)
+                if(!@$record->disable_data_entegrates->{$tableRelation->id})
                     $this->EntegratePostgresqlToDataSourceUpdateRecord(
                                                                     $remoteConnection, 
+                                                                    $tableRelation,
                                                                     $table,
                                                                     $remoteTable, 
                                                                     $columnRelations, 
-                                                                    $record);
+                                                                    $record,
+                                                                    $direction);
         }
     }
     
-    private function EntegratePostgresqlToDataSourceUpdateRecord($remoteConnection, $table, $remoteTable, $columnRelations, $record)
+    private function EntegratePostgresqlToDataSourceUpdateRecord($remoteConnection, $tableRelation, $table, $remoteTable, $columnRelations, $record, $direction)
     { 
-        if(strlen($record->remote_record_id) == 0)
+        if(strlen(@$record->remote_record_ids->{$tableRelation->id}) == 0)
         {
-            $this->CreateRecordOnPGDataSource($remoteConnection, $remoteTable, $columnRelations, $table, $record);
+            if($direction == 'twoWay' || $direction == 'toDataSource')
+                $this->CreateRecordOnPGDataSource($remoteConnection, $tableRelation, $remoteTable, $columnRelations, $table, $record);
         }
         else
         {
-            $remoteRecord = $this->GetRecordFromPGDataSourceById($remoteConnection, $remoteTable, $record);
+            $remoteRecord = $this->GetRecordFromPGDataSourceById($remoteConnection, $tableRelation, $remoteTable, $record);
             if($remoteRecord == NULL)
             {
-                global $pipe;
-                $tableId = get_attr_from_cache('data_source_tbl_relations', 'id', $pipe['dataEntegratorCurrentTableRelationId'], 'table_id');
+                if(@$record->disable_data_entegrates->{$tableRelation->id}) return;
+                
+                $tableId = get_attr_from_cache('data_source_tbl_relations', 'id', $tableRelation->id, 'table_id');
                 $tableName = get_attr_from_cache('tables', 'id', $tableId, 'name');
-        
-                $this->DeleteRecordOnDB($tableName, $record);
+
+                if($direction == 'twoWay' || $direction == 'fromDataSource')
+                    $this->DeleteRecordOnDB($tableName, $record);
             }
             else
-                $this->UpdateRecordOnPGDataSource($remoteConnection, $remoteTable, $columnRelations, $remoteRecord, $record);
+            {
+                if($direction == 'twoWay' || $direction == 'toDataSource')
+                    $this->UpdateRecordOnPGDataSource($remoteConnection, $tableRelation, $remoteTable, $columnRelations, $remoteRecord, $record);
+            }   
         }
     }
     
-    private function GetRecordFromPGDataSourceById($remoteConnection, $remoteTable, $record)
+    private function GetRecordFromPGDataSourceById($remoteConnection, $tableRelation, $remoteTable, $record)
     {
-        $remoteRecord = $remoteConnection->table($remoteTable->name_basic)->where('id', $record->remote_record_id)->get();
+        $remoteRecord = $remoteConnection->table($remoteTable->name_basic)
+                            ->where('id', $record->remote_record_ids->{$tableRelation->id})
+                            ->get();
         
-        if(count($remoteRecord) == 0) 
-        {
-            helper('data_entegrator_log', ['info', 'There is remote_record_id but there isnt remote record', $remoteTable->name_basic.':'.$record->remote_record_id]);
-            return NULL;
-        }
+        if(count($remoteRecord) == 0) return NULL;
         
         return $remoteRecord[0];
     }

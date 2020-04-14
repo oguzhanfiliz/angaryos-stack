@@ -298,6 +298,7 @@ export abstract class DataHelper
 
     public static convertDataByGuiTypeJsonb(guiType, data)
     {
+        if(typeof data == "string") return data;
         return BaseHelper.objectToJsonStr(data);
     }
 

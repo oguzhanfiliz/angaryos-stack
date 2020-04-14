@@ -13,7 +13,7 @@ $validations['no_change']['display_name'] = 'Data değiştirilemez';
 $validations['valid_validations']['display_name'] = 'Olmayan doğrulama kuralı yazılamaz!';
 $validations['column_table_relation_control']['display_name'] = 'İlişkili kolon ilişki kontrolü';
 $validations['cron']['display_name'] = 'Crontab sözdizimi kontrolü';
-$validations['select_updated_at']['display_name'] = 'Güncelleyen kullanıcı kolonu kontrolü';
+$validations['select_updated_at']['display_name'] = 'Güncellenme zamanı kolonu kontrolü';
 
 
 
@@ -158,7 +158,7 @@ $validations['no_change']['error_message'] = 'Bu veri değiştirilemez.';
 $validations['valid_validations']['error_message'] = 'Böyle bir doğrulama kuralı yok!';
 $validations['column_table_relation_control']['error_message'] = 'İlişkili kolon için bir data ilişkisi seçmelisiniz!';
 $validations['cron']['error_message'] = 'Geçerisiz bir zamanlayıcı girdiniz! (cron syntax)';
-$validations['select_updated_at']['error_message'] = 'Güncelleyen kullanıcı kolonu seçilmelidir!';
+$validations['select_updated_at']['error_message'] = 'Güncellenme zamanı kolonu seçilmelidir!';
         
 
 $temp = $this->get_base_record();

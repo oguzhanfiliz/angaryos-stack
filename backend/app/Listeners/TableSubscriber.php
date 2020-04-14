@@ -93,6 +93,9 @@ class TableSubscriber
         $errors = $this->validateRecordData($dataArray);
         if($errors != []) return $errors;
         
+        unset($dataArray['remote_record_ids']);
+        unset($dataArray['disable_data_entegrates']);
+        
         return $this->createNewRecord($dataArray);
     }
     

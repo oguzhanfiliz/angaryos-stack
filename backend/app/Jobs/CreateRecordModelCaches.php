@@ -28,6 +28,7 @@ class CreateRecordModelCaches implements ShouldQueue
     {
         $model = new BaseModel($this->tableName);
         $model = $model->find($this->recordId);
+        if($model == NULL) return;
         
         foreach($model->toArray() as $columnName => $value)
         {

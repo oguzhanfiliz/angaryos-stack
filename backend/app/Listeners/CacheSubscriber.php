@@ -14,7 +14,10 @@ class CacheSubscriber
     
     public function recordChangedSuccess($tableName, $record, $type)
     {
-        $this->clearRecordCache($record);
+        if(strstr(get_class($record), 'BaseModel')) $data = $record->toArray();
+        else $data = (array)$record;
+        $this->clearRecordCache($tableName, $data);
+        
         $this->clearRelationDataCache($tableName, $record, $type);
         
         switch($tableName)
@@ -257,11 +260,8 @@ class CacheSubscriber
         }
     }
     
-    private function clearRecordCache($record)
+    private function clearRecordCache($tableName, $data)
     {
-        $tableName = $record->getTable();
-        $data = $record->toArray();
-        
         foreach($data as $columnName => $value)
         {
             if(is_array($value)) $value = json_encode($value);

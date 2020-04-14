@@ -56,29 +56,29 @@ $columns['record_id']->save();
 
 $tempColumn = 
 [
-    'name' => 'remote_record_id',
-    'display_name' => 'Uzak Kayıt ID',
-    'column_db_type_id' => get_attr_from_cache('column_db_types', 'name', 'integer', 'id'),
-    'column_gui_type_id' => get_attr_from_cache('column_gui_types', 'name', 'numeric', 'id')
+    'name' => 'remote_record_ids',
+    'display_name' => 'Uzak Kayıt ID(ler)i',
+    'column_db_type_id' => get_attr_from_cache('column_db_types', 'name', 'jsonb', 'id'),
+    'column_gui_type_id' => get_attr_from_cache('column_gui_types', 'name', 'jsonb', 'id')
 ];
 $temp = $this->get_base_record();
 $temp = array_merge($tempColumn, $temp);
 
-$columns['remote_record_id'] = new BaseModel('columns', $temp);
-$columns['remote_record_id']->save();
+$columns['remote_record_ids'] = new BaseModel('columns', $temp);
+$columns['remote_record_ids']->save();
 
 $tempColumn = 
 [
-    'name' => 'disable_entegrate',
-    'display_name' => 'Veri Aktarma Devre Dışı',
-    'column_db_type_id' => get_attr_from_cache('column_db_types', 'name', 'boolean', 'id'),
-    'column_gui_type_id' => get_attr_from_cache('column_gui_types', 'name', 'boolean', 'id')
+    'name' => 'disable_data_entegrates',
+    'display_name' => 'Veri Aktarmayı Devre Dışı Bırak',
+    'column_db_type_id' => get_attr_from_cache('column_db_types', 'name', 'jsonb', 'id'),
+    'column_gui_type_id' => get_attr_from_cache('column_gui_types', 'name', 'jsonb', 'id')
 ];
 $temp = $this->get_base_record();
 $temp = array_merge($tempColumn, $temp);
 
-$columns['disable_entegrate'] = new BaseModel('columns', $temp);
-$columns['disable_entegrate']->save();
+$columns['disable_data_entegrates'] = new BaseModel('columns', $temp);
+$columns['disable_data_entegrates']->save();
 
 
 

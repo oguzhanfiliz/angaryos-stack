@@ -6,7 +6,7 @@ use DB;
 
 trait DataEntegratorPGFromDataSourceTrait 
 {    
-    private function EntegratePostgresqlFromDataSourceUpdateRecords($remoteConnection, $table, $remoteTable, $columnRelations)
+    private function EntegratePostgresqlFromDataSourceUpdateRecords($remoteConnection, $tableRelation, $table, $remoteTable, $columnRelations, $direction)
     {
         $start = 0;
         while(TRUE)
@@ -18,81 +18,49 @@ trait DataEntegratorPGFromDataSourceTrait
             foreach($remoteRecords as $remoteRecord)
                 $this->EntegratePostgresqlFromDataSourceUpdateRecord(
                                                                     $remoteConnection, 
+                                                                    $tableRelation,
                                                                     $table,
                                                                     $remoteTable, 
                                                                     $columnRelations, 
-                                                                    $remoteRecord);
+                                                                    $remoteRecord,
+                                                                    $direction);
 
             $lastId = $remoteRecords[count($remoteRecords) -1]->id;
-            $this->UpdateDataEntegratorStates($remoteConnection, $remoteTable, $lastId);
+            
+            if($direction == 'twoWay' || $direction == 'fromDataSource')
+                $this->UpdateDataEntegratorStates($remoteConnection, $tableRelation, $lastId);
         }
     }
     
-    private function EntegratePostgresqlFromDataSourceUpdateRecord($remoteConnection, $table, $remoteTable, $columnRelations, $remoteRecord)
-    {    
-        $currentRecords = $this->GetRecordsFromDBByRemoteRecordId($table, $remoteRecord);
-        if($currentRecords === FALSE) return;
+    private function EntegratePostgresqlFromDataSourceUpdateRecord($remoteConnection, $tableRelation, $table, $remoteTable, $columnRelations, $remoteRecord, $direction)
+    {
+        $record = $this->GetRecordFromDBByRemoteRecordId($tableRelation, $table, $remoteRecord);
+        if($record === FALSE) return;
       
-        $count = count($currentRecords);
-        if($count == 1)
-        {
-            if($currentRecords[0]->disable_entegrate)
-                return;
-
-            if($this->CompareUpdatedAtTime($columnRelations, $currentRecords[0], $remoteRecord))
-                return;
-        }
-        
         $newRecord = $this->GetNewRecordDataFromRemoteRecord($columnRelations, $remoteRecord);
         
-        if($count == 0)
+        if($record == NULL)
         {
-            if($this->RemoteRecordIdIsSmallerThanLastId($remoteConnection, $remoteRecord->id))
+            if($this->RemoteRecordIdIsSmallerThanLastId($remoteConnection, $tableRelation, $remoteRecord->id))
             {
-                if($this->DeletedRecordIsDisableEntegrate($remoteRecord)) return;
+                if($this->DeletedRecordIsDisableEntegrate($tableRelation, $remoteRecord->id)) return;
 
-                $this->DeleteRecordOnPGDataSource($remoteConnection, $remoteTable, $remoteRecord);
+                if($direction == 'twoWay' || $direction == 'toDataSource') 
+                    $this->DeleteRecordOnPGDataSource($remoteConnection, $remoteTable, $remoteRecord);
             }
             else
-                $this->CreateRecordOnDB($table->name, $newRecord);
+            {
+                if($direction == 'twoWay' || $direction == 'fromDataSource')
+                    $this->CreateRecordOnDB($tableRelation, $table->name, $newRecord);
+            }
         }
-        else if($count == 1)
-            $this->UpdateRecordOnDB($currentRecords[0], $table->name, $newRecord);
-    }
-
-    private function RemoteRecordIdIsSmallerThanLastId($remoteConnection, $id)
-    {
-        global $pipe;
-
-        $dataSourceId = $remoteConnection->dataSourceRecord->id;
-        $tableRelationId = $pipe['dataEntegratorCurrentTableRelationId'];
+        else 
+        {
+            if(@$record->disable_data_entegrates->{$tableRelation->id}) return;
+            if($this->CompareUpdatedAtTime($columnRelations, $record, $remoteRecord)) return;
         
-        $json = DB::table('settings')->where('name', 'DATA_ENTEGRATOR_STATES')->first()->value;
-        $states = json_decode($json, TRUE);
-        
-        if(!isset($states['DataSources'])) return FALSE;
-        if(!isset($states['DataSources'][$dataSourceId])) return FALSE;
-        if(!isset($states['DataSources'][$dataSourceId][$tableRelationId ])) return FALSE;
-
-        $lastId = $states['DataSources'][$dataSourceId][$tableRelationId]['lastId'];
-
-        return $id <= $lastId;
-    }
-
-    private function DeletedRecordIsDisableEntegrate($remoteRecord)
-    {
-        global $pipe;
-        $tableRelationId = $pipe['dataEntegratorCurrentTableRelationId'];
-        $tableId = get_attr_from_cache('data_source_tbl_relations', 'id', $tableRelationId, 'table_id');
-        $tableName = get_attr_from_cache('tables', 'id', $tableId, 'name');
-
-        $archive = DB::table($tableName.'_archive')
-                        ->where('remote_record_id', $remoteRecord->id)
-                        ->orderBy('id', 'desc')->first();
-
-        if($archive == NULL)
-            throw new \Exception('Not found deleted record archive! tableName: '.$tableName.', remoteRecord: ' . json_encode($remoteRecord));
-        
-        return $archive->disable_entegrate;
+            if($direction == 'twoWay' || $direction == 'fromDataSource')
+                $this->UpdateRecordOnDB($tableRelation, $record, $table->name, $newRecord);
+        }
     }
 }

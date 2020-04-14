@@ -236,6 +236,7 @@ export class ColumnArrayFormElementComponent
 
     getJson(obj)
     {
+        if(typeof obj == "string") return obj;
         return BaseHelper.objectToJsonStr(obj);
     }
 

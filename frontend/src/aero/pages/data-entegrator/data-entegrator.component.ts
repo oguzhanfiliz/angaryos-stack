@@ -109,14 +109,14 @@ export class DataEntegratorComponent
 
             // Tablo yada kolon eklenme sırası değişirse güncellenmesi gerekir
             this.columns.push({
-                id: 5,
+                id: 6,
                 source: 'id',
                 display: 'Kayıt No',
                 gui_type_name: 'numeric'
             });
 
             this.columns.push({
-                id: 13,
+                id: 14,
                 source: 'updated_at',
                 display: 'Güncellenme Zamanı (Zorunlu)',
                 gui_type_name: 'datetime'
@@ -132,21 +132,21 @@ export class DataEntegratorComponent
             
             // Tablo yada kolon eklenme sırası değişirse güncellenmesi gerekir
             this.columns.push({
-                id: 10,
+                id: 11,
                 source: 'own_id',
                 display: 'Kaydın Sahibi',
                 gui_type_name: 'select'
             });
 
             this.columns.push({
-                id: 11,
+                id: 12,
                 source: 'user_id',
                 display: 'Kaydı Güncelleyen',
                 gui_type_name: 'select'
             });
 
             this.columns.push({
-                id: 12,
+                id: 13,
                 source: 'created_at',
                 display: 'Oluşturulma Zamanı',
                 gui_type_name: 'datatime'

@@ -20,6 +20,8 @@ $settings = \Cache::rememberForever('settings', function()
     }
 });
 
+if(count($settings) == 0) \Cache::forget('settings');
+
 if(is_array($settings))
     foreach($settings as $key => $value)
         @define($key, $value);

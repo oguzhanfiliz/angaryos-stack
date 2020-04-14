@@ -749,7 +749,8 @@ trait TableSubscriberTrait
                     ->first()->created_at;
             $data['created_at'] = $createdAt;
             
-            if(isset($data['remote_record_id'])) unset($data['remote_record_id']);
+            if(isset($data['remote_record_ids'])) unset($data['remote_record_ids']);
+            if(isset($data['disable_data_entegrates'])) unset($data['disable_data_entegrates']);
 
             $record = new BaseModel($tableName, $data);
         }

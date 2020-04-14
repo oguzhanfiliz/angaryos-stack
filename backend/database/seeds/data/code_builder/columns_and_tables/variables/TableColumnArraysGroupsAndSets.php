@@ -11,7 +11,7 @@ $join_tables['departments'] =
         
         'connection_column_with_alias' => 'departments.id',
         //'join_connection_type' => '=',
-        'join_column_id' => 17//'department_id' Tablo yada kolon eklenme sırası değişirse güncellenmesi gerekir
+        'join_column_id' => 18//'department_id' Tablo yada kolon eklenme sırası değişirse güncellenmesi gerekir
     ],
 ];
 
@@ -29,7 +29,7 @@ $column_arrays['departments'] =
         'name_basic' => 'Bu müdürlüğün personelleri',
         'column_array_type_id' => $column_array_types['table_from_data']->id,
         'table_id' => 'departments',
-        'column_ids' => ['id', 'name_basic', /*'surname'*/16, 'state'],//Tablo yada kolon eklenme sırası değişirse güncellenmesi gerekir
+        'column_ids' => ['id', 'name_basic', /*'surname'*/17, 'state'],//Tablo yada kolon eklenme sırası değişirse güncellenmesi gerekir
         'join_table_ids' => [0],
         'join_columns' => '',
     ],
@@ -67,7 +67,7 @@ $join_tables['columns'] =
         
         'connection_column_with_alias' => 'columns.id',
         //'join_connection_type' => '@>',
-        'join_column_id' => 58//'column_ids' Tablo yada kolon eklenme sırası değişirse güncellenmesi gerekir
+        'join_column_id' => 59//'column_ids' Tablo yada kolon eklenme sırası değişirse güncellenmesi gerekir
     ],
 ];
 

@@ -30,6 +30,8 @@ class AuthsRepository
         $return = [];
         foreach($list as $item)
         {
+            if(strlen($item) == 0) continue;
+            
             $temp = helper('get_null_object');
             $temp->_source_column = $item;
             
