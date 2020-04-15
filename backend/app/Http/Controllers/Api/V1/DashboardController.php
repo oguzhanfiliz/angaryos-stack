@@ -11,7 +11,7 @@ use Event;
 use Gate;
 use DB;
 
-class DashboardnController extends Controller
+class DashboardController extends Controller
 {
     private function ControlDashboardAuth($auth)
     {

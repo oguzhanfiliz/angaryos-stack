@@ -13,6 +13,7 @@ $columns_validations =
     //'tokens' => 'Jetonlar',
     'auths' => [$column_validations['nullable']->id, $column_validations['no_self']->id ],
     'srid' => [ $column_validations['nullable']->id, $column_validations['numeric']->id ],
+    'data_source_direction_id' => [ $column_validations['required']->id, $column_validations['numeric_min:1']->id, $column_validations['only_fromdatasource_for_excel_type']->id ],
     //'remember_token' => 'Şifre Hatırlatma Jetonu',
     //'state' => 'Durum',
     //'user_id' => 'Kaydı Güncelleyen',

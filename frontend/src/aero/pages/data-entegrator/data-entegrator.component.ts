@@ -265,7 +265,7 @@ export class DataEntegratorComponent
         
         var id = 0;
         await this.sessionHelper.doHttpRequest("GET", url, columnFormData) 
-        .then((data) => 
+        .then(async (data) => 
         {            
             if(typeof data['message'] == "undefined")
                 this.messageHelper.sweetAlert("Beklenmedik cevap geldi!", "Hata", "warning");
@@ -275,6 +275,8 @@ export class DataEntegratorComponent
                 id = data['in_form_data']['source'];
             else
                 this.messageHelper.sweetAlert("Beklenmedik cevap geldi!", "Hata", "warning");
+                
+            await BaseHelper.sleep(500);
         })
         
         return id;

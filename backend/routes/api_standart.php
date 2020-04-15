@@ -31,7 +31,7 @@ Route::group(['prefix' => '{token}'], function ()
     
     Route::get('missions/{mission}', 'MissionController@DoMission');
     
-    Route::get('dashboards/getData/{auth}', 'DashboardnController@GetData');
+    Route::get('dashboards/getData/{auth}', 'DashboardController@GetData');
     
     Route::get('tables/{table_name}', 'TableController@index');
     Route::get('tables/{table_name}/deleted', 'TableController@deleted');

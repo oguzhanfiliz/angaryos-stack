@@ -13,7 +13,8 @@ $validations['no_change']['display_name'] = 'Data değiştirilemez';
 $validations['valid_validations']['display_name'] = 'Olmayan doğrulama kuralı yazılamaz!';
 $validations['column_table_relation_control']['display_name'] = 'İlişkili kolon ilişki kontrolü';
 $validations['cron']['display_name'] = 'Crontab sözdizimi kontrolü';
-$validations['select_updated_at']['display_name'] = 'Zorunlu kolon kontrolü';
+$validations['select_updated_at']['display_name'] = 'Veri aktarma ilişkisi için zorunlu kolon kontrolü';
+$validations['only_fromdatasource_for_excel_type']['display_name'] = 'Excel veri kaynağı için sadece fromDataSource yönü seçilsin kontrolü';
 
 
 
@@ -142,14 +143,13 @@ foreach($value as $columnRelationId)
     $columnName = get_attr_from_cache(\'columns\', \'id\', $columnId, \'name\');
     if($columnName == \'updated_at\')
     {
-        $remoteTableId = (int)\Request::input(\'data_source_rmt_table_id\');
-        if($remoteTableId < 1) return;
+        $dataSourceId = (int)\Request::input(\'data_source_id\');
+        if($dataSourceId < 1) return;
 
-        $dataSourceId = get_attr_from_cache(\'data_source_remote_tables\', \'id\', $remoteTableId, \'data_source_id\');
         $dataSourceTypeId = get_attr_from_cache(\'data_sources\', \'id\', $dataSourceId, \'data_source_type_id\');
         $dataSourceTypeName = get_attr_from_cache(\'data_source_types\', \'id\', $dataSourceTypeId, \'name\');
 
-        if($dataSourceTypeName == \'excel\' || $dataSourceTypeName == \'ldap\')
+        if($dataSourceTypeName != \'postgresql\')
         {
             foreach($value as $columnRelationId)
             {
@@ -171,6 +171,26 @@ foreach($value as $columnRelationId)
 }
 ?>';
 
+$validations['only_fromdatasource_for_excel_type']['php_code'] = '<?php
+$return = TRUE;
+
+$dataSourceId = (int)\Request::input(\'data_source_id\');
+if($dataSourceId < 1) return;
+
+$dataSourceTypeId = get_attr_from_cache(\'data_sources\', \'id\', $dataSourceId, \'data_source_type_id\');
+$dataSourceTypeName = get_attr_from_cache(\'data_source_types\', \'id\', $dataSourceTypeId, \'name\');
+
+if($dataSourceTypeName == \'excel\')
+{
+	$dataSourceDirectionName = get_attr_from_cache(\'data_source_directions\', \'id\', $value, \'name\');
+	if($dataSourceDirectionName != \'fromDataSource\')
+	{
+		$return = FALSE;
+		return;
+	}
+}
+?>';
+
 $validations['numeric_min']['error_message'] = 'Değer en az :parameters[0] olmalıdır';
 $validations['files_type']['error_message'] = 'Dosya tipi yalnızca :parameters[0] olabilir.';
 $validations['files_count']['error_message'] = 'Dosya sayısı yalnızca :parameters[0] olabilir.';
@@ -181,6 +201,7 @@ $validations['valid_validations']['error_message'] = 'Böyle bir doğrulama kura
 $validations['column_table_relation_control']['error_message'] = 'İlişkili kolon için bir data ilişkisi seçmelisiniz!';
 $validations['cron']['error_message'] = 'Geçerisiz bir zamanlayıcı girdiniz! (cron syntax)';
 $validations['select_updated_at']['error_message'] = 'Güncellenme zamanı ve id kolonu seçilmelidir!';
+$validations['only_fromdatasource_for_excel_type']['error_message'] = 'Excel tipi için yalnızca fromDataSource seçilebilir';
         
 
 $temp = $this->get_base_record();
@@ -228,6 +249,7 @@ $column_validations['valid_validations'] = NULL;
 $column_validations['column_table_relation_control'] = NULL;
 $column_validations['cron'] = NULL;
 $column_validations['select_updated_at'] = NULL;
+$column_validations['only_fromdatasource_for_excel_type'] = NULL;
 
 $temp = $this->get_base_record();
 

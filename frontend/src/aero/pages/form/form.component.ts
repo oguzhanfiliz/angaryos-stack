@@ -391,12 +391,16 @@ export class FormComponent
                 var columnName = columnNames[k];
                 var guiType = columnArray.columns[columnName]['gui_type_name'];
 
-                var val = $(this.getElementId(columnName)).val();
+                var val = "";
+                if(this.columnIsVisible(columnName))
+                {
+                    var temp = $(this.getElementId(columnName)).val();
+                    if(typeof temp == "undefined") continue;
+                    if(temp == null) temp = "";
+                    
+                    val = temp;
+                }
                 
-                if(typeof val == "undefined") continue;
-                
-                if(val == null) val = "";
-
                 data[columnName] = DataHelper.changeDataForFormByGuiType(guiType, val);
             }
                 
@@ -409,6 +413,16 @@ export class FormComponent
         data['column_set_id'] = BaseHelper.loggedInUserInfo.auths.tables[this.tableName][type][0];
 
         return data;
+    }
+    
+    columnIsVisible(columnName)
+    {
+        var key = "formElementVisibility." + this.id + "." + columnName;
+        var temp = BaseHelper.readFromPipe(key);
+
+        if(temp == null) return true;
+        
+        return temp;
     }
 
     getElementsDataForUpload()
@@ -432,24 +446,29 @@ export class FormComponent
 
                 if(guiType == 'files')
                 {
-                    var files = $(this.getElementId(columnName))[0].files;
-                    for(var l = 0; l < files.length; l++)
-                        data.append(columnName+"[]", files[l]);
-
+                    if(this.columnIsVisible(columnName))
+                    {
+                        var files = $(this.getElementId(columnName))[0].files;
+                        for(var l = 0; l < files.length; l++)
+                            data.append(columnName+"[]", files[l]);
+                    }
+                    
                     var val = $(this.getElementId(columnName+"_old")).val();
-
                     if(typeof val == "undefined") continue;
-
                     data.append(columnName+"_old", val);
                 }
                 else
                 {
-                    var val = $(this.getElementId(columnName)).val();
-
-                    if(typeof val == "undefined") continue;
+                    var val = "";
+                    if(this.columnIsVisible(columnName))
+                    {
+                        var temp = $(this.getElementId(columnName)).val();
+                        if(typeof temp == "undefined") continue;
+                        if(temp == null) temp = "";
+                        
+                        val = temp;
+                    }
                     
-                    if(val == null) val = "";
-
                     var temp = DataHelper.changeDataForFormByGuiType(guiType, val);
                     data.append(columnName, temp);
                 }

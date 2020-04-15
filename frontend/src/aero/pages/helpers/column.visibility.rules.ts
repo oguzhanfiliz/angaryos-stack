@@ -61,6 +61,9 @@ function relationSqlTrigger(tableName, columnName, elementId, data)
     
     setElementVisibility(elementId, "relation_table_id", visible);
     setElementVisibility(elementId, "column_data_source_id", visible);
+    setElementVisibility(elementId, "relation_source_column_id", visible);
+    setElementVisibility(elementId, "relation_display_column_id", visible);
+    setElementVisibility(elementId, "join_table_ids", visible);
 }
 
 function relationSourceColumnIdTrigger(tableName, columnName, elementId, data)
@@ -89,6 +92,9 @@ function relationDisplayColumnTrigger(tableName, columnName, elementId, data)
 
 function columnDataSourceIdTrigger(tableName, columnName, elementId, data)
 {
+    if(!elementIsNull(data, 'relation_table_id')) return;
+    if(!elementIsNull(data, 'relation_sql')) return;
+    
     var visible = elementIsNull(data, columnName); 
        
     setElementVisibility(elementId, "relation_table_id", visible);
@@ -108,6 +114,16 @@ function customLayerTypeIdTrigger(tableName, columnName, elementId, data)
     setElementVisibility(elementId, "period", visible);
 }
 
+function dataSourceTypeIdTrigger(tableName, columnName, elementId, data)
+{
+    var visible = true;
+    if(data[columnName] == "3") visible = false;//excel
+    
+    setElementVisibility(elementId, "host", visible);
+    setElementVisibility(elementId, "user_name", visible);
+    setElementVisibility(elementId, "passw", visible);
+}
+
 export const columnVisibilityRules = 
 {
     "column_db_type_id": columnDbTypeIdTrigger,
@@ -120,5 +136,6 @@ export const columnVisibilityRules =
     "relation_source_column": relationSourceColumnTrigger,
     "relation_display_column": relationDisplayColumnTrigger,
     "column_data_source_id": columnDataSourceIdTrigger,
-    "custom_layer_type_id": customLayerTypeIdTrigger
+    "custom_layer_type_id": customLayerTypeIdTrigger,
+    "data_source_type_id": dataSourceTypeIdTrigger
 };

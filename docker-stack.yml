@@ -96,7 +96,7 @@ services:
             - mq-nw
 
     laravelcron:
-        image: karapazar/laravel-cron:0.17
+        image: karapazar/laravel-cron:0.18
         volumes:
             - ./backend:/var/www 
             - ./backend/php.ini:/usr/local/etc/php/conf.d/local.ini

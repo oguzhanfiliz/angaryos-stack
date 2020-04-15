@@ -8,6 +8,8 @@ use App\Libraries\DataEntegratorTraits\DataEntegratorExcelTrait;
 
 use App\Listeners\CacheSubscriber;
 
+use App\BaseModel;
+
 use Storage;
 use Event;
 use DB;
@@ -118,7 +120,8 @@ class DataEntegratorLibrary
         
         $columnId = get_attr_from_cache('columns', 'name', $columnName, 'id');
         
-        $temp = get_model_from_cache('tables', 'name', $table->name);
+        $temp = new BaseModel('tables');
+        $temp = $temp->where('name', $table->name)->first();
         $temp->fillVariables();
         
         $tempColumns = $temp->column_ids;
@@ -128,7 +131,7 @@ class DataEntegratorLibrary
         $temp->save(); 
         
         $cacheSubscriber = new CacheSubscriber();
-        $cacheSubscriber->recordChangedSuccess($table->name, $temp, 'update');
+        $cacheSubscriber->recordChangedSuccess('tables', $temp, 'update');
     }
     
     
