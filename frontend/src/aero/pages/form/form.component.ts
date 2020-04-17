@@ -444,6 +444,7 @@ export class FormComponent
                 var columnName = columnNames[k];
                 var guiType = columnArray.columns[columnName]['gui_type_name'];
 
+                var val = "";
                 if(guiType == 'files')
                 {
                     if(this.columnIsVisible(columnName))
@@ -453,13 +454,12 @@ export class FormComponent
                             data.append(columnName+"[]", files[l]);
                     }
                     
-                    var val = $(this.getElementId(columnName+"_old")).val();
+                    val = $(this.getElementId(columnName+"_old")).val();
                     if(typeof val == "undefined") continue;
                     data.append(columnName+"_old", val);
                 }
                 else
                 {
-                    var val = "";
                     if(this.columnIsVisible(columnName))
                     {
                         var temp = $(this.getElementId(columnName)).val();
