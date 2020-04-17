@@ -2,6 +2,8 @@
 
 namespace App\Listeners;
 
+use App\Jobs\ClearCache;
+
 use App\BaseModel;
 use Cache;
 use DB;
@@ -59,7 +61,7 @@ class CacheSubscriber
             
             case 'data_filter_types':
             case 'missions':
-                Cache::forget('allAuths');
+                ClearCache::dispatch('allAuths');
                 break;
         }
         
@@ -68,7 +70,7 @@ class CacheSubscriber
 
     private function clearColumnSetOrArrayCache($setOrArray)
     {
-        Cache::forget('allAuths');
+        ClearCache::dispatch('allAuths');
         
         $table = get_attr_from_cache('tables', 'id', $setOrArray->table_id, '*');
         $this->clearTableCache($table);
@@ -83,14 +85,14 @@ class CacheSubscriber
     
     private function clearCustomLayerCache($customLayer)
     {
-        Cache::forget('allAuths');
+        ClearCache::dispatch('allAuths');
         dd('clearCustomLayerCache');
         //$key = 'customLayerSeoName:'.$seoName.'|returnData:table_id';
     }
     
     private function clearFilterCache($filter)
     {
-        Cache::forget('allAuths');
+        ClearCache::dispatch('allAuths');
         
         $filterTypeName = get_attr_from_cache('data_filter_types', 'id', $filter->data_filter_type_id, 'name');
         if($filterTypeName != 'list') return;
@@ -143,12 +145,12 @@ class CacheSubscriber
         $keys = $this->getCacheKeys();
         foreach($keys as $key)
             if(substr($key, -16, 16) == '|tableGroups')
-                Cache::forget($key);
+                ClearCache::dispatch($key);
     }
     
     private function clearAuthGroupsCache($record)
     {
-        Cache::forget('allAuths');
+        ClearCache::dispatch('allAuths');
         
         $users = \DB::table('users')->where('auths', '@>', $record->id)->get();
         foreach($users as $user)
@@ -219,7 +221,7 @@ class CacheSubscriber
                     if(strstr($key, $prefix))
                     { 
                         $key = str_replace(explode($prefix, $key)[0], '', $key);
-                        Cache::forget($key);
+                        ClearCache::dispatch($key);
                     }
                 }
             }
@@ -228,7 +230,7 @@ class CacheSubscriber
     
     private function clearUserCache($record)
     {
-        Cache::forget('tableName:users|id:'.$record->id.'|authTree');
+        ClearCache::dispatch('tableName:users|id:'.$record->id.'|authTree');
         
         $keys = $this->getCacheKeys();
         foreach($keys as $key)
@@ -236,17 +238,17 @@ class CacheSubscriber
                 dd('clearUserCache');//userToken:1111111111111111d1.tableName:test.mapFilters
             
         if($record->id == PUBLIC_USER_ID)
-            Cache::forget('publicUser');
+            ClearCache::dispatch('publicUser');
     }
     
     private function clearSettingCache($record)
     {
-        Cache::forget('settings');
+        ClearCache::dispatch('settings');
     }
     
     private function clearColumnSetsOrArraysCache($table)
     {
-        Cache::forget('allAuths');
+        ClearCache::dispatch('allAuths');
         
         $ts = ['column_sets', 'column_arrays'];        
         foreach($ts as $t)
@@ -255,7 +257,7 @@ class CacheSubscriber
             foreach($temp as $rec)
             {
                 $key = 'table:'.$table->name.'|type:'.$t.'|id:'.$rec->id; 
-                Cache::forget($key);
+                ClearCache::dispatch($key);
             }
         }
     }
@@ -267,18 +269,18 @@ class CacheSubscriber
             if(is_array($value)) $value = json_encode($value);
             
             $cacheKey = 'tableName:'.$tableName.'|columnName:'.$columnName.'|columnData:'.$value.'|returnData:BaseModel';
-            Cache::forget($cacheKey);
+            ClearCache::dispatch($cacheKey);
             
             $cacheKey = 'tableName:'.$tableName.'|columnName:'.$columnName.'|columnData:'.$value.'|returnData:*';
-            Cache::forget($cacheKey);
+            ClearCache::dispatch($cacheKey);
             
             $cacheKey = 'tableName:'.$tableName.'|columnName:'.$columnName.'|columnData:'.$value.'|relationData';
-            Cache::forget($cacheKey);
+            ClearCache::dispatch($cacheKey);
             
             foreach($data as $returnColumnName => $v)
             {
                 $cacheKey = 'tableName:'.$tableName.'|columnName:'.$columnName.'|columnData:'.$value.'|returnData:'.$returnColumnName;
-                Cache::forget($cacheKey);
+                ClearCache::dispatch($cacheKey);
             }
         }
     }
@@ -294,25 +296,29 @@ class CacheSubscriber
     
     public function clearTableCache($table)
     {
-        Cache::forget('allAuths');
-        Cache::forget('tableName:'.$table->name.'|tableInfo');
+        ClearCache::dispatch('allAuths');
+        ClearCache::dispatch('tableName:'.$table->name.'|tableInfo');
         
         $this->clearTablesAndColumnCommonCache($table);
     }
     
     private function clearTableStandartCache($tableId, $tableName)
     {
-        Cache::forget('tableName:'.$tableName.'|fillableColumns');
-        Cache::forget('tableName:'.$tableName.'|castsColumns');
-        Cache::forget('tableName:'.$tableName.'|allColumsFromDb');
-        Cache::forget('tableName:'.$tableName.'|allColumsFromDbWithTableAliasAndGuiType');
+        ClearCache::dispatch('tableName:'.$tableName.'|fillableColumns');
+        ClearCache::dispatch('tableName:'.$tableName.'|castsColumns');
+        ClearCache::dispatch('tableName:'.$tableName.'|allColumsFromDb');
+        ClearCache::dispatch('tableName:'.$tableName.'|allColumsFromDbWithTableAliasAndGuiType');
         
         if(strstr($tableName, '_archive')) return;
         
         $key = 'table:'.$tableName.'|type:column_arrays|id:';
         $columnArrays = DB::table('column_arrays')->where('table_id', $tableId)->get();
-        foreach($columnArrays as $columnArray) Cache::forget($key.$columnArray->id);
-        Cache::forget($key.'0');
+        foreach($columnArrays as $columnArray) 
+        {
+            ClearCache::dispatch($key.$columnArray->id);
+            $this->clearRecordCache('column_arrays', $columnArray);
+        }
+        ClearCache::dispatch($key.'0');
     }
     
     private function clearTablesAndColumnCommonCache($table)
@@ -333,7 +339,7 @@ class CacheSubscriber
                 if(strstr($key, $prefix) || strstr($key, $prefixArchive))
                 { 
                     $key = str_replace(explode($prefix, $key)[0], '', $key);
-                    Cache::forget($key);
+                    ClearCache::dispatch($key);
                 }
             }
             else if(strstr($key, 'userToken:'))
@@ -343,11 +349,11 @@ class CacheSubscriber
             }
             else if(substr($key, -16, 16) == '|tableGroups')
             {
-                Cache::forget($key);
+                ClearCache::dispatch($key);
             }
             else if(strstr($key, 'customLayerSeoName:'))
             {
-                Cache::forget($key);
+                ClearCache::dispatch($key);
             }
         }
     }

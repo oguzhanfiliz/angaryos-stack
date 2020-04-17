@@ -1,6 +1,15 @@
-Ekleme:             .\app\Providers\RouteServiceProvider.php@boot:30
-Açıklama:           Uygulama için gerekli ayarlar db den çekilerek sabitlere dolduruluyor
-Kod:                load_application_variables_from_db();
+Ekleme:             .\app\Providers\AppServiceProvider.php@boot:30
+Açıklama:           [1] Uygulama için gerekli değişkenler ve sabitler dolduruluyor
+                    [2] "Veritabanı kullanılablir mi?" kontrolü yapılıyor
+                    [3] Excel kütüphanesi için gerekli bi makro ekleniyor
+
+Kod:                helper('load_application_variables');
+                    helper('db_control');
+
+                    Maatwebsite\Excel\Sheet::macro('styleCells', function (Sheet $sheet, string $cellRange, array $style) {
+                        $sheet->getDelegate()->getStyle($cellRange)->applyFromArray($style);
+                    });
+
 
 
 Düzenleme:          .\app\Http\Kernel.php:36
@@ -12,3 +21,9 @@ Kod:                //\App\Http\Middleware\VerifyCsrfToken::class,
 Ekleme:             .\vendor\phpunit\phpunit\phpunit:12
 Açıklama:           Uygulamanın çalışması için gerekli preload.php dosyası import ediliyor.
 Kod:                include '/var/www/public/preload.php';
+
+
+
+Ekleme:             artisan:4
+Açıklama:           Uygulamanın çalışması için gerekli preload.php dosyası import ediliyor.
+Kod:                require 'public/preload.php';

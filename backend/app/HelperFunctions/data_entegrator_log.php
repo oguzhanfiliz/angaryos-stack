@@ -1,6 +1,9 @@
 <?php
 
-send_log('error', 'Data entegrator log: ' . json_encode($params));
+$logLevelName = $params[0];
+$logLevelId = get_attr_from_cache('log_levels', 'id', $params[0], 'id');
+
+send_log($logLevelName, 'Data entegrator log: ' . json_encode($params));
 
 $user = \Auth::user();
 if($user == NULL) $user = \App\User::find(ROBOT_USER_ID);
@@ -10,7 +13,7 @@ $log = new App\BaseModel('data_entegrator_logs');
 $log->user_id = $userId;
 $log->own_id = $userId;
 $log->state = TRUE;
-$log->log_level_id = get_attr_from_cache('log_levels', 'name', $params[0], 'id');
+$log->log_level_id = $logLevelId;
 $log->name_basic = $params[1];
 $log->log = $params[2];
 

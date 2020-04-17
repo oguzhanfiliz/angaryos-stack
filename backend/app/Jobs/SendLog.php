@@ -23,12 +23,25 @@ class SendLog implements ShouldQueue
         $this->object = json_decode($object);
     }
 
+    public function getLogLevelForLaravel()
+    {
+        switch($this->level)
+        {
+            case 'debug':
+            case 'info':
+            case 'warning':
+                return $this->level;
+            case 'danger':
+                return 'alert';
+        }
+    }
+
     public function handle()
     {
         $log = helper('get_null_object');
         $log->message = $this->message;
         $log->obj = json_encode($this->object);
-   
-        \Log::{$this->level}(json_encode($log));
+
+        \Log::{$this->getLogLevelForLaravel()}(json_encode($log));
     }
 }

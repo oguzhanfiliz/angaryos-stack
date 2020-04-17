@@ -79,25 +79,15 @@ class LdapLibrary
     public function add($entry, $dn = '')
     {
         if($dn == '') $dn = $this->baseDn;
-        $dn = 'cn='.$entry['cn'].','.$dn;
-        
+
+        if(isset($entry['cn']))
+            $dn = 'cn='.$entry['cn'].','.$dn;
+        else if(isset($entry['uid']))
+            $dn = 'uid='.$entry['uid'].','.$dn;
+        else
+            throw new \Exception('Entry mush has cn or uid column: '.json_encode($entry));
+            
         unset($entry['updated_at']);
-        
-        
-        /*$new["uidnumber"] = $entry['uidnumber'];
-        $new["gidnumber"] = $entry['gidnumber'];
-        $new["cn"] = $entry['cn'];
-        $new["sn"] = $entry['sn'];
-        $new["mail"] = $entry['mail'];
-        $new["uid"] = $entry['uid'];
-        $new["objectclass"] = $entry['objectclass'];
-        $new["userpassword"] = $entry["userpassword"];//'{md5}' . base64_encode(pack('H*', md5('1234d')));
-        //$new["businesscategory"] = getAttributeWithCache('internet_yetkileri', $user->internet_yetki_id, 'name');
-        $new["homedirectory"] = $entry["homedirectory"];
-        
-        //dd($this->connection, $dn, $new, $entry);
-        
-        //dd($this->connection, $dn, $entry);*/
         
         return ldap_add($this->connection, $dn, $entry);
     }

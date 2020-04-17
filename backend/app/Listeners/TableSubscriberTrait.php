@@ -342,10 +342,22 @@ trait TableSubscriberTrait
         $val = $params->record{$params->column->name};
         
         $tableName = get_attr_from_cache('tables', 'id', $params->relation->relation_table_id, 'name');
-        $sourceColumnName = get_attr_from_cache('columns', 'id', $params->relation->relation_source_column_id, 'name');
+        $sourceColumn = get_attr_from_cache('columns', 'id', $params->relation->relation_source_column_id, '*');
         $displayColumnName = get_attr_from_cache('columns', 'id', $params->relation->relation_display_column_id, 'name');
-                
-        $rec = DB::table($tableName)
+               
+
+        $params->tableName = $tableName;
+        $params->sourceColumn = $sourceColumn;
+        $params->displayColumnName = $displayColumnName;
+        $params->val = $val;
+
+        return ColumnClassificationLibrary::relationDbTypes(
+                                                            $this, 
+                                                            __FUNCTION__, 
+                                                            $sourceColumn, 
+                                                            $params->column, 
+                                                            $params);
+        /*$rec = DB::table($tableName)
                 ->select($sourceColumnName)
                 ->addSelect($displayColumnName)
                 ->where($sourceColumnName, $val)
@@ -355,6 +367,52 @@ trait TableSubscriberTrait
         [
             'source' => $rec->{$sourceColumnName},
             'display' => $rec->{$displayColumnName}
+        ];*/
+    }
+
+    public function getDataForSelectElementSingleForTableIdAndColumnIdsForOneToOne($params)
+    {
+        $rec = DB::table($params->tableName)
+                ->select($params->sourceColumn->name)
+                ->addSelect($params->displayColumnName)
+                ->where($params->sourceColumn->name, $params->val)
+                ->first();
+        
+        return
+        [
+            'source' => $rec->{$params->sourceColumn->name},
+            'display' => $rec->{$params->displayColumnName}
+        ];
+    }
+
+    public function getDataForSelectElementSingleForTableIdAndColumnIdsForManyToOne($params)
+    {
+        $recs = DB::table($params->tableName)
+                ->select(DB::raw($params->sourceColumn->name . ' as source'))
+                ->addSelect(DB::raw($params->displayColumnName . ' as display'))
+                ->whereIn($params->sourceColumn->name, $params->val)
+                ->get();
+           
+        $r = [];
+        foreach($params->val as $i => $id)
+        {
+            foreach($recs as $rec)
+            {
+                
+                if($rec->source == $id)
+                {
+                    $r[(string)($i+1)] = $rec;
+                    break;
+                }
+            }
+        }
+
+        $r = json_encode($r);
+
+        return
+        [
+            'source' => $r,
+            'display' => $r
         ];
     }
     

@@ -27,9 +27,8 @@ if(is_array($settings))
         @define($key, $value);
 
 /* Required Vars (If Not Exist) */
-@define('DB_PROJECTION', 7932);
-
 try 
 {
+    @define('DB_PROJECTION', 7932);
     $pipe['SHOW_DELETED_TABLES_AND_COLUMNS'] = SHOW_DELETED_TABLES_AND_COLUMNS;
 } catch (\Exception $exc) {}
