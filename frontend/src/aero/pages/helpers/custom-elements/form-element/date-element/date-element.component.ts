@@ -12,6 +12,7 @@ declare var $: any;
 })
 export class DateElementComponent
 {
+    @Input() default: string;
     @Input() value: string;
     @Input() name: string;
     @Input() class: string;

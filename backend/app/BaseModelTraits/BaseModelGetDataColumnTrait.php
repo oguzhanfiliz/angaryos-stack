@@ -275,7 +275,7 @@ trait BaseModelGetDataColumnTrait
         $return = Cache::rememberForever($cacheName, function() use($columns, $form)
         {   
             $disabledColumns = ['id', 'updated_at', 'created_at', 'user_id', 'own_id'];
-            $filteredFields = ['id', 'name', 'display_name', 'table_name', 'gui_type_name', 'column_table_relation_id', 'srid'];
+            $filteredFields = ['id', 'name', 'display_name', 'table_name', 'gui_type_name', 'column_table_relation_id', 'srid', 'default'];
             
             $return = helper('get_null_object');
             foreach($columns as $name => $column)
@@ -288,7 +288,7 @@ trait BaseModelGetDataColumnTrait
                 {
                     if(@is_object($column->{$f}))
                     {
-                        dd('object data?');
+                        dd('getFilteredColumns object data?');
                         $temp = helper('get_column_data_for_joined_column', $name);
                         $return[$name][$f] = $temp[1];
                     }                    

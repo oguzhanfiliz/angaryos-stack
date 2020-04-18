@@ -14,6 +14,7 @@ export class FormElementComponent
     @Input() baseUrl: string;
     @Input() name: string;
     @Input() guiType: string;
+    @Input() default: string;
     @Input() value: string;
     @Input() valueJson: string;
     @Input() class: string;

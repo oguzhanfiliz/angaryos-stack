@@ -14,6 +14,7 @@ declare var $: any;
 })
 export class MapElementComponent
 {
+    @Input() default: string;
     @Input() value: string;
     @Input() type: string;
     @Input() name: string;

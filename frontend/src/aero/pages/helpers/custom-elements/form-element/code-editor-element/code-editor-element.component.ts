@@ -11,6 +11,7 @@ declare var $: any;
 })
 export class CodeEditorElementComponent
 {
+    @Input() default: string;
     @Input() value: string;
     @Input() name: string;
     @Input() class: string;

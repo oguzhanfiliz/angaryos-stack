@@ -30,7 +30,8 @@ $columns = Cache::rememberForever($cache_name, function() use($params)
         [
             'name' => $column->name,
             'type' => $column->type,
-            'srid' => $srid
+            'srid' => $srid,
+            'default' =>get_attr_from_cache('columns', 'name', $column->name, 'default')
         ];
     }
 

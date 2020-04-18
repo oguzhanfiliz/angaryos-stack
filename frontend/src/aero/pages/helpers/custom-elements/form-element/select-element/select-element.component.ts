@@ -11,6 +11,7 @@ declare var $: any;
 })
 export class SelectElementComponent
 {
+    @Input() default: string;
     @Input() baseUrl: string;
     @Input() value: string;
     @Input() valueJson: string;

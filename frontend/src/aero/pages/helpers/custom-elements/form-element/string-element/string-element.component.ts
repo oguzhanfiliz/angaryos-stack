@@ -8,6 +8,7 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
 })
 export class StringElementComponent
 {
+    @Input() default: string;
     @Input() value: string;
     @Input() name: string;
     @Input() class: string;

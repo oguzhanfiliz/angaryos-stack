@@ -9,6 +9,7 @@ import { DataHelper } from './../../../data';
 })
 export class BooleanElementComponent
 {
+    @Input() default: string;
     @Input() value: string;
     @Input() guiType: string;
     @Input() class: string;
@@ -39,6 +40,19 @@ export class BooleanElementComponent
         {
             this.displayNameForTrue = DataHelper.convertDataByGuiTypeBoolean(this.guiType, true);
             this.displayNameForFalse = DataHelper.convertDataByGuiTypeBoolean(this.guiType, false);
+
+            if(this.value.length > 0) return;
+            if(this.default.length == 0) return;
+
+            this.setDefaultData();
         }, 50);
+    }
+
+    setDefaultData()
+    {
+        if(this.default === "true")
+            this.value = "true";
+        else if(this.default === "false")
+            this.value = "false";
     }
 }

@@ -18,6 +18,7 @@ declare var $: any;
 })
 export class MultiSelectDragDropElementComponent
 {
+    @Input() default: string;
     @Input() baseUrl: string;
     @Input() value: string;
     @Input() valueJson: string = "";

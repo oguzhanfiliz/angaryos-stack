@@ -12,6 +12,7 @@ declare var $: any;
 })
 export class MultiSelectElementComponent
 {
+    @Input() default: string;
     @Input() baseUrl: string;
     @Input() value: string;
     @Input() valueJson: string = "";
