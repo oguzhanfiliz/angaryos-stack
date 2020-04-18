@@ -31,7 +31,7 @@ class CreateUsersTable extends Migration
             
             $table->rememberToken();
             
-            $table->boolean('state')->default(TRUE)->nullable();
+            $table->boolean('state')->nullable();
             $table->integer('own_id')->nullable();
             $table->integer('user_id')->nullable();
             $table->timestamps();

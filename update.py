@@ -90,7 +90,8 @@ try:
 
         f = open(".updateignore", "r")
         for item in f:
-            copy_to_temp(item.strip())        
+            if len(item.strip()) > 0:
+                copy_to_temp(item.strip())        
         f.close()
         
         write_log(1, "Save ignored files OK")

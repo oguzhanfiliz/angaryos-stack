@@ -19,7 +19,7 @@ class CreateDataSourceRemoteTablesTable extends Migration
             $table->integer('data_source_id')->nullable();
             $table->string('name_basic')->nullable();
             
-            $table->boolean('state')->default(TRUE)->nullable();
+            $table->boolean('state')->nullable();
             $table->integer('own_id');
             $table->integer('user_id');
             $table->timestamps();

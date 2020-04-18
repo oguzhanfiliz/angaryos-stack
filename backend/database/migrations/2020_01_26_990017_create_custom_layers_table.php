@@ -23,7 +23,7 @@ class CreateCustomLayersTable extends Migration
             $table->text('cql_filter')->nullable();
             $table->integer('period')->nullable();
             
-            $table->boolean('state')->default(TRUE)->nullable();
+            $table->boolean('state')->nullable();
             $table->integer('own_id');
             $table->integer('user_id');
             $table->timestamps();

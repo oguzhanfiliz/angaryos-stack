@@ -20,7 +20,7 @@ class CreateSubLinestringsTable extends Migration
             $table->integer('source_record_id')->nullable();
             $table->integer('sub_linestring_type_id')->nullable();
             
-            $table->boolean('state')->default(TRUE)->nullable();
+            $table->boolean('state')->nullable();
             $table->integer('own_id');
             $table->integer('user_id');
             $table->timestamps();

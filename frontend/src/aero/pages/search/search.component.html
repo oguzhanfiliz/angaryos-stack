@@ -38,11 +38,11 @@
                                 <tr (click)="showInfoPage(tableName, record)" *ngFor="let record of getRecords(tableName); let recordIndex = index;">
                                     <td style="cursor: pointer;" class="max_ellipsis">
                                         <h5 class="title">
-                                            <a href="javascript:void(0);">
+                                            <a href="{{ getInfoPageURL(tableName, record) }}">
                                                 Tablo: {{ getTableDisplayName(tableName) }}, ID: {{ record.id }}
                                             </a>
                                         </h5>
-                                        <a class="link" href="javascript:void(0);">
+                                        <a class="link" href="{{ getInfoPageURL(tableName, record) }}">
                                             {{ getInfoPageURL(tableName, record) }}
                                         </a>
                                         <span class="details" [innerHTML] = "getRecordSummary(tableName, recordIndex)"></span>

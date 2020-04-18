@@ -40,7 +40,9 @@ class User extends Authenticatable
     {
         if($this->tableGroups == NULL)
         {
-            $ids = $this->auths['table_groups'][0][0];
+            $ids = @$this->auths['table_groups'][0][0];
+            if($ids == NULL) $ids = [];
+            
             $cacheKey = 'user:'.$this->id.'|tableGroups';
             
             $this->tableGroups = Cache::rememberForever($cacheKey, function() use($ids)

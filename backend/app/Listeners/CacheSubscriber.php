@@ -235,7 +235,16 @@ class CacheSubscriber
         $keys = $this->getCacheKeys();
         foreach($keys as $key)
             if(strstr($key, 'userToken:'))
-                dd('clearUserCache');//userToken:1111111111111111d1.tableName:test.mapFilters
+            {
+                //userToken:1111111111111111d1.tableName:test.mapFilters
+
+                $token = explode('.', explode('userToken:', $key)[1])[0];
+                $user = helper('get_user_from_token', $token);
+                if($user == NULL)
+                    ClearCache::dispatch($key);
+                else if($record->id == $user->id);
+                    ClearCache::dispatch($key);
+            }
             
         if($record->id == PUBLIC_USER_ID)
             ClearCache::dispatch('publicUser');
@@ -345,7 +354,16 @@ class CacheSubscriber
             else if(strstr($key, 'userToken:'))
             {
                 //userToken:1111111111111111d1.tableName:test.mapFilters
-                dd('clearTablesAndColumnCommonCache');
+                $temp = explode('.', explode('tableName:', $key)[1])[0];
+                if($temp == $table->name)
+                    ClearCache::dispatch($key);
+                else
+                {
+                    dd('clearTablesAndColumnCommonCache');
+                    //$temp custom layer yada external layer adı olaiblir
+                    //onların masıl isimlendirildiğini inceleyip
+                    //bunların cache i var ise sil
+                }
             }
             else if(substr($key, -16, 16) == '|tableGroups')
             {

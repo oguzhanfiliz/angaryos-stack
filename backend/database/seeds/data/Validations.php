@@ -136,39 +136,44 @@ $return = FALSE;
 
 if($value == \'[]\') return;
 
-$value = json_decode($value);
+$columnNames = [];
+$value = json_decode($value); 
 foreach($value as $columnRelationId)
 {
     $columnId = get_attr_from_cache(\'data_source_col_relations\', \'id\', $columnRelationId, \'column_id\');
     $columnName = get_attr_from_cache(\'columns\', \'id\', $columnId, \'name\');
-    if($columnName == \'updated_at\')
-    {
-        $dataSourceId = (int)\Request::input(\'data_source_id\');
-        if($dataSourceId < 1) return;
-
-        $dataSourceTypeId = get_attr_from_cache(\'data_sources\', \'id\', $dataSourceId, \'data_source_type_id\');
-        $dataSourceTypeName = get_attr_from_cache(\'data_source_types\', \'id\', $dataSourceTypeId, \'name\');
-
-        if($dataSourceTypeName != \'postgresql\')
-        {
-            foreach($value as $columnRelationId)
-            {
-                $columnId = get_attr_from_cache(\'data_source_col_relations\', \'id\', $columnRelationId, \'column_id\');
-                $columnName = get_attr_from_cache(\'columns\', \'id\', $columnId, \'name\');
-                if($columnName == \'id\')
-                {
-                    $return = TRUE;
-                    return;
-                }
-            }
-        }
-        else
-        {
-            $return = TRUE;
-            return;
-        }
-    }
+	array_push($columnNames, $columnName);
 }
+
+if(!in_array(\'updated_at\', $columnNames)) return;
+
+$singleColumn = \Request::input(\'single_column\');
+if(strlen($singleColumn) > 0)
+{
+    $recId = (int)\Request::segment(6);
+    if($recId < 1) return;
+    
+    $dataSourceId = get_attr_from_cache(\'data_source_tbl_relations\', \'id\', $recId, \'data_source_id\');
+}
+else
+{
+    $dataSourceId = (int)\Request::input(\'data_source_id\');
+    if($dataSourceId < 1) return;
+}
+
+$dataSourceTypeId = get_attr_from_cache(\'data_sources\', \'id\', $dataSourceId, \'data_source_type_id\');
+$dataSourceTypeName = get_attr_from_cache(\'data_source_types\', \'id\', $dataSourceTypeId, \'name\');
+
+if($dataSourceTypeName == \'postgresql\')
+{
+	$return = TRUE;
+	return;
+}      
+
+if(!in_array(\'id\', $columnNames)) return;
+
+$return = TRUE;
+        
 ?>';
 
 $validations['only_fromdatasource_for_excel_type']['php_code'] = '<?php

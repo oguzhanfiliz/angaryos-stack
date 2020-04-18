@@ -59,6 +59,11 @@ input::placeholder, .select2-selection__placeholder, textarea::placeholder
     z-index: 9999999999 !important;
 }
 
+.theme-light .open
+{
+    background-color: rgba(228,114,151,0.9) !important;
+}
+
 .theme-dark .column-filter, .theme-dark  table, .theme-dark  select, .theme-dark  input
 {
     color: #aaa !important;

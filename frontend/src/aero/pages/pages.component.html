@@ -89,7 +89,15 @@
                     </li>
 
                     <li>
-                        <input placeholder="Filtrele" (input)="searchInMenuInputChanged($event)" class="form-control">
+                        <table style="padding: 0; margin: 0;width: 100%;">
+                            <tr>
+                                <td><input id="menuFilter" placeholder="Filtrele" (input)="searchInMenuInputChanged($event)" class="form-control"></td>
+                                <td style="padding: 0 0 0 5px;">
+                                    <a style="padding: 0;" (click)="clearMenuFilter()">x</a>
+                                </td>
+                            </tr>
+                        </table>
+                        
                     </li>
                     
                     <li *ngFor="let menuItem of aeroThemeHelper.baseMenu">

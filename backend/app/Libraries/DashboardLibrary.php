@@ -9,14 +9,18 @@ class DashboardLibrary
 {
     public function RecordCount($param1, $param2)
     {
+        Cache::forget('sumAllTablesCounts');
         $sumAllTablesCounts = Cache::remember('sumAllTablesCounts', 60 * 60 * 24, function()
         {
+            $except = ['migrations', 'password_resets', 'sessions', 'jobs', 'failed_jobs'];
+
             $sum = 0;
             
             $tableNames = DB::connection()->getDoctrineSchemaManager()->listTableNames();
             foreach($tableNames as $tableName)
-                if(!strstr($tableName, '_archive'))
-                    $sum += DB::table($tableName)->count();
+                if(!in_array($tableName, $except))
+                    if(!strstr($tableName, '_archive'))
+                        $sum += DB::table($tableName)->count();
                 
             return $sum;
         });

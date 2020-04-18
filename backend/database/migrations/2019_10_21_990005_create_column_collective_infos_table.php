@@ -21,7 +21,7 @@ class CreateColumnCollectiveInfosTable extends Migration
             //$table->text('php_code')->nullable();//php code or sql code
             $table->text('description')->nullable();
             
-            $table->boolean('state')->default(TRUE)->nullable();
+            $table->boolean('state')->nullable();
             $table->integer('own_id');
             $table->integer('user_id');
             $table->timestamps();

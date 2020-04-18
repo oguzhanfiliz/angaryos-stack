@@ -241,7 +241,7 @@ class TableDBOperationsLibrary
         {
             if(in_array($type, $geoColumns))
             {
-                dd('ChangeColumn');
+                dd('ChangeColumn Geo');
                 DB::statement('ALTER TABLE '
                                     .$tableName.' ALTER COLUMN '
                                     .$newColumn['name'].' geometry('. ucfirst($type).', '.$newColumn['srid'].')');
@@ -254,14 +254,15 @@ class TableDBOperationsLibrary
                 
                 DB::statement($baseSql.' type '.$type);  
                 
-                if(strlen($newColumn['default']) > 0) 
+                /*if(strlen($newColumn['default']) > 0) 
                     DB::statement($baseSql.' set default '.$newColumn['default']);  
                 else 
-                    DB::statement($baseSql.' drop default'); 
+                    DB::statement($baseSql.' drop default'); */
             }
         } 
         catch (\Exception $exc) 
         {
+            dd('ChangeColumn exception');
             dd($exc);
             $this->ReturnError('column_db_type_id', [$exc->getMessage()]);
         }
@@ -356,11 +357,11 @@ class TableDBOperationsLibrary
     {
         if(!isset($new['name'])) $new['name'] = $old['name'];
         if(!isset($new['column_db_type_id'])) $new['column_db_type_id'] = $old['column_db_type_id'];
-        if(!isset($new['default'])) $new['default'] = $old['default'];
+        //if(!isset($new['default'])) $new['default'] = $old['default'];
         
         if( $old['name'] == $new['name'] 
             && $old['column_db_type_id'] == $new['column_db_type_id']
-            && $old['default'] == $new['default'])
+            /*&& $old['default'] == $new['default']*/)
             
             return;
         
@@ -374,7 +375,7 @@ class TableDBOperationsLibrary
                 $this->RenameColumn($table->name.'_archive', $old['name'], $new['name']);
             }
             
-            if($old['column_db_type_id'] != $new['column_db_type_id'] || $old['default'] != $new['default'])
+            if($old['column_db_type_id'] != $new['column_db_type_id'] /*|| $old['default'] != $new['default']*/)
             {
                 $this->ChangeColumn($table->name, $new);
                 $this->ChangeColumn($table->name.'_archive', $new);
@@ -464,13 +465,13 @@ class TableDBOperationsLibrary
                 $dbType = get_attr_from_cache('column_db_types', 'id', $column->column_db_type_id, '*');
                 if(in_array($dbType->name, $geoColumns)) continue;
                 
-                if(strlen($column->default) > 0)
+                /*if(strlen($column->default) > 0)
                     $table->{$dbType->schema_code}($column->name)->default($column->default);
-                else
+                else*/
                     $table->{$dbType->schema_code}($column->name)->nullable();
             }
 
-            $table->boolean('state')->default(TRUE)->nullable();
+            $table->boolean('state')/*->default(TRUE)*/->nullable();
             $table->integer('own_id')->nullable();
             $table->integer('user_id')->nullable();
             $table->timestamps();

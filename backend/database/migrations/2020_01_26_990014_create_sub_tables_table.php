@@ -20,7 +20,7 @@ class CreateSubTablesTable extends Migration
             $table->jsonb('table_ids')->nullable();
             $table->text('description')->nullable();
             
-            $table->boolean('state')->default(TRUE)->nullable();
+            $table->boolean('state')->nullable();
             $table->integer('own_id');
             $table->integer('user_id');
             $table->timestamps();

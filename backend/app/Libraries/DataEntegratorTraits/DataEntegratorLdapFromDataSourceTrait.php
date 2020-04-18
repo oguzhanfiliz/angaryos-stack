@@ -40,7 +40,8 @@ trait DataEntegratorLdapFromDataSourceTrait
         $record = $this->GetRecordFromDBByRemoteRecordId($tableRelation, $table, $remoteRecord);
         if($record === FALSE) return;
       
-        $newRecord = $this->GetNewRecordDataFromRemoteRecord($columnRelations, $remoteRecord);
+        if($direction == 'twoWay' || $direction == 'fromDataSource')
+            $newRecord = $this->GetNewRecordDataFromRemoteRecord($columnRelations, $remoteRecord);
         
         if($record == NULL)
         {

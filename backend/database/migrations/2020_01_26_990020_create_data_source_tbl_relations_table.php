@@ -23,7 +23,7 @@ class CreateDataSourceTblRelationsTable extends Migration
             $table->string('cron')->nullable();
             $table->jsonb('data_source_col_relation_ids')->nullable();
             
-            $table->boolean('state')->default(TRUE)->nullable();
+            $table->boolean('state')->nullable();
             $table->integer('own_id');
             $table->integer('user_id');
             $table->timestamps();

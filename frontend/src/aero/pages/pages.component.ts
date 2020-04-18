@@ -78,7 +78,13 @@ export class PagesComponent
         params.th.aeroThemeHelper.updateBaseMenu(params.event.target.value);
     }
 
-    return BaseHelper.doInterval('searchInBaseMenu', func, params, 1000);
+    return BaseHelper.doInterval('searchInBaseMenu', func, params, 500);
+  }
+
+  clearMenuFilter()
+  {
+    $('#menuFilter').val("");
+    this.aeroThemeHelper.updateBaseMenu("");
   }
 
   logout()

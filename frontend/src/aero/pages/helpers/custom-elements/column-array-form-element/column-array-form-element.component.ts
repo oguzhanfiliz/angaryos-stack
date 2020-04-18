@@ -84,6 +84,7 @@ export class ColumnArrayFormElementComponent
 
     editRelationRecord(columnName)
     {
+        console.log("asd");
         this.inFormTableName = this.getDataFromColumnArray('columns.'+columnName+'.relation.table_name');
         this.inFormColumnName = columnName;
         
@@ -159,29 +160,33 @@ export class ColumnArrayFormElementComponent
         else if(val.length == 1) return parseInt(val[0]);
         else
         {
-            //var selected = $(elementId+'-group .selected-option');
             var selected = $(modalId+" #"+columnName+'-group .selected-option');
             if(selected.length != 1) return 0;
 
-            var control = false;
+            var count = -1;
+            var all = $(modalId+" #"+columnName+'-group .select2-selection__choice');
+            for(var i = 0; i < all.length; i++)
+                if(all[i] == selected[0])
+                {
+                    count = i;
+                    break;
+                }
+
+            if(count == -1)
+            {
+                this.messageHelper.toastMessage(selectedItem+" bulunamadı!");
+                return 0;
+            }
 
             var selectedItem = selected.html().split('</span>')[1];
             var data = $(elementId).select2("data");
             for(var i = 0; i < data.length; i++)
                 if(data[i].text == selectedItem)
                 {
-                    val = data[i].id;
-                    control = true;
-                    break;
-                }
-                
-            if(!control)
-            {
-                this.messageHelper.toastMessage(selectedItem+" bulunamadı!");
-                val = 0;
-            }
+                    if(count-- > 0) continue;
 
-            return val;
+                    return data[i].id;
+                }
         }
     }
 

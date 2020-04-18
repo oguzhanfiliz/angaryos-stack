@@ -395,17 +395,12 @@ trait TableSubscriberTrait
            
         $r = [];
         foreach($params->val as $i => $id)
-        {
-            foreach($recs as $rec)
-            {
-                
+            foreach($recs as $rec)   
                 if($rec->source == $id)
                 {
                     $r[(string)($i+1)] = $rec;
                     break;
                 }
-            }
-        }
 
         $r = json_encode($r);
 
@@ -424,7 +419,43 @@ trait TableSubscriberTrait
     public function getDataForSelectElementSingleForJoinTableIds($params)
     {
         dd('getDataForSelectElementSingleForJoinTableIds');
-        dd($this->getDataForSelectElementForBasicColumn($params));
+        $model = new BaseModel($params->record->getTable());
+        $params->model = $model->getQuery();
+        
+        $model->addJoinsWithColumns($params->model, [$params->column], TRUE);
+        
+        $sourceColumn = $params->relation->relation_source_column;
+        if(!strstr($sourceColumn, '.'))
+                $sourceColumn = $params->record->getTable().'.'.$sourceColumn;
+        
+        $displayColumn = $params->relation->relation_display_column;
+        if(!strstr($sourceColumn, '.'))
+                $displayColumn = $params->record->getTable().'.'.$displayColumn;
+        
+        $params->model->addSelect(DB::raw($sourceColumn.' as source'));
+        $params->model->addSelect(DB::raw($displayColumn.' as display'));
+        
+        
+        $params->model->whereRaw($params->record->getTable().'.id = '.$params->record->id);
+        dd($params->model->toSql());
+        $data = $params->model->get();
+        dd($data);
+        return
+        [
+            'source' => $data->source,
+            'display' => $data->display
+        ];
+
+
+
+
+
+
+
+        dd($this->getDataForSelectElementForJoinTableIds);
+        //data $params->record->{$params->column->name}
+dd($params->column);
+        dd(array_keys((array)$params));
         return $this->getDataForSelectElementForBasicColumn($params);
     }
 
