@@ -110,7 +110,7 @@ $table_groups =
             $tables['data_source_tbl_relations']->id,
             $tables['data_entegrator_logs']->id
         ],
-        'image' => json_decode('[{"disk": "uploads", "file_name": "subfeatures.png", "destination_path": "uploads/2020/01/01/"}]'),
+        'image' => json_decode('[{"disk": "uploads", "file_name": "dataentegrator.png", "destination_path": "uploads/2020/01/01/"}]'),
         'icon' => 'zmdi-repeat',
         //'order' => $order++
     ],
