@@ -567,6 +567,17 @@ export abstract class MapHelper
         this.updateMapConfigOnLocal(map);
   }
 
+  public static zoom(map, direction)
+  {
+    var temp = 1;
+    if(!direction) temp = -1;
+
+    map.getView().animate(
+    {
+      zoom: map.getView().getZoom() + temp
+    });
+  }
+
 
 
   /****    Events     ****/

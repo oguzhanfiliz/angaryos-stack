@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { BaseHelper } from './base';
+import { SessionHelper } from './session';
 
 declare var $: any;
 
@@ -8,7 +9,7 @@ export class AeroThemeHelper
 {     
   public baseMenu = [];
 
-    constructor( ) { }
+    constructor(private sessionHelper: SessionHelper) { }
 
 
 
@@ -44,7 +45,17 @@ export class AeroThemeHelper
         });
 
         $.getScript('assets/ext_modules/select2/select2.min.js');
-        //$.getScript('https://cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js');//index.aero da yükleniyor
+      }, 10);
+    }
+
+    public loadPageScriptsLight()
+    {
+      setTimeout(() => 
+      {
+        $.getScript('assets/themes/aero/assets/bundles/libscripts.bundle.js', function()
+        {
+          $.getScript('assets/themes/aero/assets/bundles/vendorscripts.bundle.js');
+        });
       }, 10);
     }
     
@@ -290,7 +301,10 @@ export class AeroThemeHelper
       if(search == "")
       {
         this.baseMenu.push(this.getHomePageMenuItem());
-        this.baseMenu.push(this.getMapPageMenuItem());
+        
+        if(this.sessionHelper.mapAuthControl())
+          this.baseMenu.push(this.getMapPageMenuItem());
+        
         this.baseMenu.push(this.getDashboardPageMenuItem());
       }
 

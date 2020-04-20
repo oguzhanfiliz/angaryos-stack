@@ -38,6 +38,10 @@ return Cache::rememberForever($key, function()
     $auths['admin:dataEntegrator:0:0'] = 'Veri Aktarıcı';
 
     
+    $auths['map:0:0:0'] = 'Harita';    
+    $auths['map:kmz:upload:0'] = 'Upload KMZ';
+
+    
     
     /****        ****/
     

@@ -1,10 +1,69 @@
 <div style="width: 100%; min-height: 100%;"  id="fullScreenMap"></div>
-<div id="mouse-position-fullScreenMap" class="mouse-position"></div>
 
 
-<button (click)="menu()" class="btn btn-sm btn-primary btn-icon" id="menu-button">
-    <span style="font-size: 15px;" class="ti-menu" ></span>
+
+<button (click)="zoomIn()" class="btn btn-sm btn-primary btn-icon" type="button" id="zoom-in-button">
+    <span style="font-size: 12px;" class="ti-plus" ></span>
 </button>
+<button (click)="zoomOut()" class="btn btn-sm btn-primary btn-icon" type="button" id="zoom-out-button">
+    <span style="font-size: 12px;" class="ti-minus" ></span>
+</button>
+
+
+
+<div id="tools-bar" [hidden]="!toolsBarVisible">
+    <table id="light-table" style="width: 100%">
+        <tr>
+            <td width="5px">
+                <div class="dropdown">
+                    <button class="btn btn-primary dropdown-toggle" type="button" id="drawButtom" 
+                        data-toggle="dropdown" aria-haspopup="true" 
+                        aria-expanded="false">
+            
+                        Çiz
+                    </button>
+                    <div class="dropdown-menu" aria-labelledby="drawButtom">
+                        <a class="dropdown-item" href="#">Nokta</a>
+                        <a class="dropdown-item" href="#">Noktalar</a>
+                        <a class="dropdown-item" href="#">Çizgi</a>
+                        <a class="dropdown-item" href="#">Çizgiler</a>
+                        <a class="dropdown-item" href="#">Poligon</a>
+                        <a class="dropdown-item" href="#">Poligonlar</a>
+                    </div>
+                </div>
+            </td><td width="5px">
+                <button (click)="openKmzModal()" class="btn btn-primary" type="button">
+                    KMZ Yükle   
+                </button>
+            </td>
+            <td>
+
+            </td><td align="right">
+                <button (click)="setToolsBarVisible(false)" class="btn btn-sm btn-danger" type="button">
+                    &nbsp;X&nbsp;    
+                </button>
+            </td>
+        </tr>
+    </table>
+</div>
+
+
+
+<div class="dropdown" id="menu-button">
+    <button class="btn btn-sm btn-primary btn-icon" type="button" 
+        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        
+        <span style="font-size: 15px;" class="ti-menu" ></span>
+    </button>
+    <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+        <a (click)="layers()" class="dropdown-item">Katmanlar</a>
+        <a (click)="setToolsBarVisible(true)" class="dropdown-item">Araç Çubuğu</a>
+    </div>
+</div>
+
+
+
+<div id="mouse-position-fullScreenMap" class="mouse-position"></div>
 
 
 
@@ -44,11 +103,48 @@
                     </div>
                 </div>
 
-                <select class="select-2 form-control" (change)="changeBaseLayer($event)" value="{{ getSelectedBaseLayerIndex() }}">
+                <select class="form-control" (change)="changeBaseLayer($event)" value="{{ getSelectedBaseLayerIndex() }}">
                     <option *ngFor="let baseLayer of getBaseLayers(); let i = index" [attr.value]="i">
                         {{ baseLayer['display_name'] }}
                     </option>
                 </select>
+               
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<div class="modal fade" id="kmzModal" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document" >
+        <div class="modal-content">
+            <div class="modal-body" style="padding: 5px !important;">
+                <h5 style="padding: 5; margin: 0; text-align: center;">Kmz Yükle</h5>
+                <hr style="margin-top: 0;">
+                
+                <form>
+                    <table class="semi-light-table">
+                        <tr>
+                            <td>Dosya: </td>
+                            <td>
+                                <input class="form-control" name="file" type="file">
+                            </td>
+                        </tr><tr>
+                            <td>Projeksiyon: </td>
+                            <td>
+                                <input class="form-control" name="srid" placeholder="EPSG:">
+                            </td>
+                        </tr><tr>
+                            <td></td>
+                            <td>
+                                <button (click)="uploadKmz()" class="btn btn-block btn-primary" type="button">
+                                    Yükle
+                                </button>
+                            </td>
+                        </tr>
+                    </table>
+                </form>
                
             </div>
         </div>

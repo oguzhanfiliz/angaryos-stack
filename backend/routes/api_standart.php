@@ -24,6 +24,7 @@ Route::group(['prefix' => '{token}'], function ()
     
     
     Route::get('getMapData', 'MapController@GetData');
+    Route::post('translateKmzToJson', 'MapController@TranslateKmzToJson');
 
     
     

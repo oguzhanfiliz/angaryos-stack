@@ -97,7 +97,7 @@ $table_groups =
         'icon' => 'zmdi-map',
         //'order' => $order++
     ],
-    [
+    [ 
         'name_basic' => 'Veri Aktarıcı',
         'table_ids' => 
         [            

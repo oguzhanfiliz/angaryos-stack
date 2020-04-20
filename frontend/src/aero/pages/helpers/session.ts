@@ -273,6 +273,23 @@ export class SessionHelper
       return this.doHttpRequest("GET", this.getBackendUrlWithToken(), null);  
     }
 
+    public mapAuthControl()
+    {
+      if(BaseHelper.loggedInUserInfo == null) return false;
+      if(typeof BaseHelper.loggedInUserInfo['auths'] == "undefined") return false;
+      if(typeof BaseHelper.loggedInUserInfo['auths']['map'] == "undefined") return false;
+
+      return true;
+    }
+
+    public kmzAuthControl()
+    {
+      if(!this.mapAuthControl()) return false;
+      if(typeof BaseHelper.loggedInUserInfo['auths']['map']['kmz'] == "undefined") return false;
+
+      return true;
+    }
+
     public getLoggedInUserInfo()
     {
       if(BaseHelper.loggedInUserInfo == null) 
