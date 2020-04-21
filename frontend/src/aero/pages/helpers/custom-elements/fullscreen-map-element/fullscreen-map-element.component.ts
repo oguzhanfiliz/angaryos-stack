@@ -6,6 +6,8 @@ import { BaseHelper } from './../../base';
 import { AeroThemeHelper } from './../../aero.theme';
 import { MapHelper } from './../../map';
 import { MessageHelper } from './../../message';
+import { SessionHelper } from './../../session';
+import { GeneralHelper } from './../../general';
 
 declare var $: any;
 
@@ -26,12 +28,15 @@ export class FullScreenMapElementComponent
     loggedInUserInfo = null;
     layerList = [];
     toolsBarVisible = true;
+    vectorFeaturesTree = {};
 
     /****    Defaul Functions     ****/
 
     constructor(
         private messageHelper: MessageHelper,
-        private aeroThemeHelper: AeroThemeHelper) 
+        private aeroThemeHelper: AeroThemeHelper,
+        private sessionHelper: SessionHelper,
+        private generalHelper: GeneralHelper) 
     {  }
 
     ngAfterViewInit() 
@@ -78,9 +83,29 @@ export class FullScreenMapElementComponent
         this.toolsBarVisible = visible;
     }
 
-    openKmzModal()
+    selectKmzFile()
     {
-        $('#kmzModal').modal('show');
+        $('#kmzFile').click();
+
+        var th = this;
+        $('#kmzFile').change(function ()
+        {
+            var exts = ['kml', 'kmz'];
+
+            var path = $('#kmzFile').val();
+            var arr = path.split('.');
+            var ext = arr[arr.length-1];
+
+            if(exts.includes(ext))
+                th.uploadKmz();
+            else
+                th.messageHelper.sweetAlert("Geçersiz doya tipi!", "Hata", "warning");
+        });
+    }
+
+    kmzAuthControl()
+    {
+        return this.sessionHelper.kmzAuthControl();
     }
 
 
@@ -162,58 +187,88 @@ export class FullScreenMapElementComponent
         MapHelper.zoom(this.map, true);
     }
 
+    uploadKmzValidation()
+    {
+        if($('#kmzFile').val() == "")
+        {
+            this.messageHelper.sweetAlert("Dosya boş geçilemez!", "Hata", "warning");
+            return false;
+        }
+
+        return true;
+    }
+
+    deleteKmlOrKmzFileFeatures(name)
+    {
+        console.log("delete: " + name);
+    }
+
+    addFeaturesFromKmzOrKmlFile(tree)
+    {
+        var name = $('#kmzFile')[0].files[0].name;
+
+        if(typeof this.vectorFeaturesTree[name] != "undefined")
+            this.deleteKmlOrKmzFileFeatures(name);
+
+        this.vectorFeaturesTree[name] = tree;
+        
+        var tempFeatures = [];
+
+        var layers = Object.keys(tree);
+        for(var i = 0; i < layers.length; i++)
+        {
+            var layer = layers[i];
+            var types = Object.keys(tree[layer]);
+
+            for(var j = 0; j < types.length; j++)
+            {
+                var type = types[j];
+                var features = tree[layer][type];
+
+                for(var k = 0; k < features.length; k++)
+                {
+                    var featureObject = tree[layer][type][k];
+                    
+                    var feature = MapHelper.getFeatureFromWkt(featureObject['wkt']);
+                    feature['featureObject'] = featureObject;
+
+                    tempFeatures.push(feature);
+                }
+            }
+        }
+
+        MapHelper.addFeatures(this.map, tempFeatures)
+        .then((features) => MapHelper.zoomToFeatures(this.map, features));
+    }
+
     uploadKmz()
     {
-        /*var url = this.sessionHelper.getBackendUrlWithToken()+"uploadKmz/"+this.tableName+"/";
-        if(this.recordId == 0)
-            url += "store";
-        else
-            url += this.recordId + "/update";
+        if($('#kmzFile').val() == "") return;
 
-        var params = null;
-
-        if(BaseHelper.formSendMethod == "POST")
-            params = this.getElementsDataForUpload(); 
-        else
-            params = this.getElementsData();
+        var url = this.sessionHelper.getBackendUrlWithToken()+"translateKmzOrKmlToJson";
         
-        if(this.inFormColumnName.length > 0)
-        {
-            if(BaseHelper.formSendMethod == "POST")
-                params.append('in_form_column_name', this.inFormColumnName);
-            else
-                params['in_form_column_name'] = this.inFormColumnName;
-        }
+        if(!this.uploadKmzValidation()) return;
 
-        if(this.singleColumn)
-        {
-            if(BaseHelper.formSendMethod == "POST")
-                params.append('single_column', this.inFormColumnName);
-            else
-                params['single_column'] = this.inFormColumnName;
-        }
+        var params = new FormData();
+        params.append("file", $('#kmzFile')[0].files[0]);
 
-        this.startLoading();
+        this.generalHelper.startLoading();
         
-        if(BaseHelper.formSendMethod == "POST")
-            var request = this.sessionHelper.doHttpRequest("POST", url, params) 
-        else
-            var request = this.sessionHelper.doHttpRequest("GET", url, params) 
-        
-        request.then((data) => 
+        this.sessionHelper.doHttpRequest("POST", url, params) 
+        .then((data) => 
         {
-            this.stopLoading();
+            this.generalHelper.stopLoading();
             
-            if(typeof data['message'] == "undefined")
+            if(data == null)
                 this.messageHelper.sweetAlert("Beklenmedik cevap geldi!", "Hata", "warning");
-            else if(data['message'] == 'error')
-                this.writeErrors(data['errors']);
-            else if(data['message'] == 'success')
-                this.saveSuccess(data);
-            else
-                this.messageHelper.sweetAlert("Beklenmedik cevap geldi!", "Hata", "warning");
+            else 
+            {
+                this.addFeaturesFromKmzOrKmlFile(data);
+                $('#kmzFile').val("");
+            }
+                
         })
-        .catch((e) => { this.stopLoading(); });*/
+        .catch((e) => { this.generalHelper.stopLoading(); });
     }
 
     

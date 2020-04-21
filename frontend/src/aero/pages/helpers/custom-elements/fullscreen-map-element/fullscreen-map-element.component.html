@@ -31,8 +31,8 @@
                         <a class="dropdown-item" href="#">Poligonlar</a>
                     </div>
                 </div>
-            </td><td width="5px">
-                <button (click)="openKmzModal()" class="btn btn-primary" type="button">
+            </td><td *ngIf="kmzAuthControl()" width="5px">
+                <button (click)="selectKmzFile()" class="btn btn-primary" type="button">
                     KMZ Yükle   
                 </button>
             </td>
@@ -114,39 +114,4 @@
     </div>
 </div>
 
-
-
-<div class="modal fade" id="kmzModal" role="dialog" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered" role="document" >
-        <div class="modal-content">
-            <div class="modal-body" style="padding: 5px !important;">
-                <h5 style="padding: 5; margin: 0; text-align: center;">Kmz Yükle</h5>
-                <hr style="margin-top: 0;">
-                
-                <form>
-                    <table class="semi-light-table">
-                        <tr>
-                            <td>Dosya: </td>
-                            <td>
-                                <input class="form-control" name="file" type="file">
-                            </td>
-                        </tr><tr>
-                            <td>Projeksiyon: </td>
-                            <td>
-                                <input class="form-control" name="srid" placeholder="EPSG:">
-                            </td>
-                        </tr><tr>
-                            <td></td>
-                            <td>
-                                <button (click)="uploadKmz()" class="btn btn-block btn-primary" type="button">
-                                    Yükle
-                                </button>
-                            </td>
-                        </tr>
-                    </table>
-                </form>
-               
-            </div>
-        </div>
-    </div>
-</div>
+<input style="display: none;" name="kmzFile" id="kmzFile" type="file" accept=".kmz,.kml">

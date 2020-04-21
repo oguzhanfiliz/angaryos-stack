@@ -702,8 +702,10 @@ export abstract class MapHelper
       featureProjection: featureProjection
     });
 
-    feature.setStyle(this.getDefaultStyle('Point'));
+    var type = wkt.split('(')[0].toLowerCase();
+    type = type.substr(0, 1).toUpperCase() + type.substr(1, type.length);
 
+    feature.setStyle(this.getDefaultStyle(type));
     return feature;
   }
 
@@ -786,6 +788,36 @@ export abstract class MapHelper
     return this.getVectorSource(map).getFeatures();
   }
 
+  public static zoomToFeatures(map, features)
+  {
+    return new Promise((resolve) =>
+    {
+      var extent = [Number.MAX_SAFE_INTEGER, Number.MAX_SAFE_INTEGER, 0, 0];
+      
+      for(var i = 0; i < features.length; i++)
+      {
+        var feature = features[i];
+        var temp = feature.getGeometry().getExtent();
+
+        if(temp[0] < extent[0]) extent[0] = temp[0];
+        if(temp[1] < extent[1]) extent[1] = temp[1];
+        if(temp[2] > extent[2]) extent[2] = temp[2];
+        if(temp[3] > extent[3]) extent[3] = temp[3];
+      }
+
+      map.getView().fit(extent, map.getSize()); 
+      map.getView().setZoom(map.getView().getZoom()-1); 
+    
+      if(map.getView().getZoom() > 18)
+      map.getView().setZoom(18);
+      resolve(extent);
+    });
+    
+    
+    
+      
+  }
+
   public static zoomToFeature(map, feature)
   {
     var extent = feature.getGeometry().getExtent();
@@ -811,6 +843,15 @@ export abstract class MapHelper
       this.zoomToFeature(map, feature);
 
       resolve(feature);
+    }); 
+  }
+
+  public static addFeatures(map, features)
+  {
+    return new Promise((resolve) =>
+    {
+      this.getVectorSource(map).addFeatures(features);
+      resolve(features);
     }); 
   }
 
