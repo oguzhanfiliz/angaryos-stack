@@ -6,7 +6,7 @@ Merhaba. Bu, yazılımcıları yazılımın angarya kısmından kurtarıp esas i
 
 Bu uygulama içerisinde bir çok servisi barındırır. Bu sebeple önerilen sanal bir işletim sistemi[1] üzerinde kurulum yapılmasıdır. 
 
-[1] Testler UbuntuServer19.20 işletim sistemi üzerinde yapıldığı için önerilmektedir.
+[1] Testler UbuntuServer16.04 (X64) işletim sistemi üzerinde yapıldığı için önerilmektedir.
 
 ### Linux
 ```
