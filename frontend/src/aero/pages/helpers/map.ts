@@ -703,7 +703,7 @@ export abstract class MapHelper
     });
 
     var type = wkt.split('(')[0].toLowerCase();
-    type = type.substr(0, 1).toUpperCase() + type.substr(1, type.length);
+    type = BaseHelper.ucfirst(type);
 
     feature.setStyle(this.getDefaultStyle(type));
     return feature;
@@ -970,6 +970,60 @@ export abstract class MapHelper
         fill: new Fill(
         {
           color: 'red'
+        })
+      })
+    });
+  }
+
+
+  public static getInvisibleStyle(type)
+  {
+    switch(type)
+    {
+      case 'Polygon': return this.getInvisibleStylePolygon();
+      case 'Linestring': return this.getInvisibleStyleLinestring();
+      case 'Point': return this.getInvisibleStylePoint();
+    }
+  }
+
+  public static getInvisibleStyleLinestring()
+  {
+    return new Style(
+    {
+      stroke: new Stroke(
+      {
+        color: 'rgba(0, 0, 0, 0)',
+        width: 0
+      })
+    });
+  }
+
+  public static getInvisibleStylePolygon()
+  {
+    return new Style(
+    {
+      stroke: new Stroke(
+      {
+        color: 'rgba(0, 0, 0, 0)',
+        width: 0
+      }),
+      fill: new Fill(
+      {
+        color: 'rgba(0, 0, 0, 0)'
+      })
+    });
+  }
+
+  public static getInvisibleStylePoint()
+  {
+    return new Style(
+    {
+      image: new CircleStyle(
+      {
+        radius: 0,
+        fill: new Fill(
+        {
+          color: 'rgba(0, 0, 0, 0)'
         })
       })
     });

@@ -28,6 +28,7 @@ export class FullScreenMapElementComponent
     loggedInUserInfo = null;
     layerList = [];
     toolsBarVisible = true;
+    featuresTreeVisible = false;
     vectorFeaturesTree = {};
 
     /****    Defaul Functions     ****/
@@ -81,6 +82,17 @@ export class FullScreenMapElementComponent
     setToolsBarVisible(visible)
     {
         this.toolsBarVisible = visible;
+    }
+
+    setFeaturesTreeVisible(visible)
+    {
+        this.featuresTreeVisible = visible;
+    }
+
+    isVectorFeaturesTreeNull()
+    {
+        var keys = Object.keys(this.vectorFeaturesTree);
+        return keys.length == 0;
     }
 
     selectKmzFile()
@@ -210,7 +222,9 @@ export class FullScreenMapElementComponent
         if(typeof this.vectorFeaturesTree[name] != "undefined")
             this.deleteKmlOrKmzFileFeatures(name);
 
-        this.vectorFeaturesTree[name] = tree;
+        this.vectorFeaturesTree[name] = {};
+        this.vectorFeaturesTree[name]['visible'] = true;
+        this.vectorFeaturesTree[name]['data'] = {};
         
         var tempFeatures = [];
 
@@ -218,20 +232,33 @@ export class FullScreenMapElementComponent
         for(var i = 0; i < layers.length; i++)
         {
             var layer = layers[i];
-            var types = Object.keys(tree[layer]);
+            this.vectorFeaturesTree[name]['data'][layer] = {};
+            this.vectorFeaturesTree[name]['data'][layer]['visible'] = true;
+            this.vectorFeaturesTree[name]['data'][layer]['data'] = {};
 
+            var types = Object.keys(tree[layer]);
             for(var j = 0; j < types.length; j++)
             {
                 var type = types[j];
-                var features = tree[layer][type];
+                this.vectorFeaturesTree[name]['data'][layer]['data'][type] = {};
+                this.vectorFeaturesTree[name]['data'][layer]['data'][type]['visible'] = true;
+                this.vectorFeaturesTree[name]['data'][layer]['data'][type]['data'] = [];
 
+                var features = tree[layer][type];
                 for(var k = 0; k < features.length; k++)
                 {
                     var featureObject = tree[layer][type][k];
-                    
+
                     var feature = MapHelper.getFeatureFromWkt(featureObject['wkt']);
                     feature['featureObject'] = featureObject;
+                    feature['selected'] = false;
+                    feature['visible'] = true;
+                    feature['className'] = name;
+                    feature['subClassName'] = layer;
+                    feature['typeName'] = type;
+                    feature['index'] = k;
 
+                    this.vectorFeaturesTree[name]['data'][layer]['data'][type]['data'].push(feature);
                     tempFeatures.push(feature);
                 }
             }
@@ -264,12 +291,168 @@ export class FullScreenMapElementComponent
             else 
             {
                 this.addFeaturesFromKmzOrKmlFile(data);
+                
                 $('#kmzFile').val("");
+
+                MapHelper.addModify(this.map, true);
+                MapHelper.addSnap(this.map, true);
+
+                this.setFeaturesTreeVisible(true);
             }
                 
         })
         .catch((e) => { this.generalHelper.stopLoading(); });
     }
 
-    
+    getClassNames()
+    {
+        return Object.keys(this.vectorFeaturesTree);
+    }
+
+    toogleClassVisible(className)
+    {
+        var temp = this.vectorFeaturesTree[className]['visible'];
+        this.vectorFeaturesTree[className]['visible'] = !temp;
+
+        var data = this.vectorFeaturesTree[className]['data'];
+        var subClassNames = this.getSubClassNames(className);
+        for(var i = 0; i < subClassNames.length; i++)
+        {
+            var subClassName = subClassNames[i];
+            this.vectorFeaturesTree[className]['data'][subClassName]['visible'] = temp;
+            this.toogleSubClassVisible(className, subClassName);
+        }
+    }
+
+    selectAllFeatureInClass(className)
+    {
+        var temp = null;
+
+        var subClassNames = this.getSubClassNames(className);
+        for(var i = 0; i < subClassNames.length; i++)
+        {
+            var subClassName = subClassNames[i];
+
+            if(temp == null)
+            {
+                var types = this.getTypeNames(className, subClassName);
+                var typeName = types[0];
+                temp = this.vectorFeaturesTree[className]['data'][subClassName]['data'][typeName]['data'][0].selected;
+
+            }
+                
+            var types = this.getTypeNames(className, subClassName);
+            var typeName = types[0];
+            this.vectorFeaturesTree[className]['data'][subClassName]['data'][typeName]['data'][0].selected = temp;
+            this.selectAllFeatureInSubClass(className, subClassName);
+        }
+    }
+
+    getSubClassNames(className)
+    {
+        return Object.keys(this.vectorFeaturesTree[className]['data']);
+    }
+
+    toogleSubClassVisible(className, subClassName)
+    {
+        var temp = !this.vectorFeaturesTree[className]['data'][subClassName]['visible'];
+        this.vectorFeaturesTree[className]['data'][subClassName]['visible'] = temp;
+
+        var data = this.vectorFeaturesTree[className]['data'][subClassName]['data'];
+        var types = this.getTypeNames(className, subClassName);
+        for(var i = 0; i < types.length; i++)
+        {
+            var typeName = types[i];
+            this.vectorFeaturesTree[className]['data'][subClassName]['data'][typeName]['visible'] = !temp;
+            this.toogleTypeVisible(className, subClassName, typeName);
+        }
+    }
+
+    selectAllFeatureInSubClass(className, subClassName)
+    {
+        var temp = null;
+
+        var types = this.getTypeNames(className, subClassName);
+        for(var i = 0; i < types.length; i++)
+        {
+            var typeName = types[i];
+
+            if(temp == null)
+                temp = this.vectorFeaturesTree[className]['data'][subClassName]['data'][typeName]['data'][0].selected;
+
+            this.vectorFeaturesTree[className]['data'][subClassName]['data'][typeName]['data'][0].selected = temp;
+            this.selectAllFeatureInType(className, subClassName, typeName)
+        }
+    }
+
+    getTypeNames(className, subClassName)
+    {
+        return Object.keys(this.vectorFeaturesTree[className]['data'][subClassName]['data']);
+    }
+
+    toogleTypeVisible(className, subClassName, typeName)
+    {
+        var temp = !this.vectorFeaturesTree[className]['data'][subClassName]['data'][typeName]['visible'];
+        this.vectorFeaturesTree[className]['data'][subClassName]['data'][typeName]['visible'] = temp;
+
+        var data = this.vectorFeaturesTree[className]['data'][subClassName]['data'][typeName]['data'];
+        for(var i = 0; i < data.length; i++)
+            data[i].visible = temp;
+        
+        this.updateFeatureStyles();
+    }
+
+    selectAllFeatureInType(className, subClassName, typeName)
+    {
+        var data = this.vectorFeaturesTree[className]['data'][subClassName]['data'][typeName]['data'];
+        var temp = !data[0].selected;
+        for(var i = 0; i < data.length; i++)
+            data[i].selected = temp;
+        
+        this.updateFeatureStyles();
+    }
+
+    getFeatures(className, subClassName, typeName)
+    {
+        return this.vectorFeaturesTree[className]['data'][subClassName]['data'][typeName]['data'];
+    }
+
+    toggleFeatureSelected(className, subClassName, typeName, i)
+    {
+        var temp = !this.vectorFeaturesTree[className]['data'][subClassName]['data'][typeName]['data'][i]['selected'];
+        this.vectorFeaturesTree[className]['data'][subClassName]['data'][typeName]['data'][i]['selected'] = temp;
+
+        this.updateFeatureStyles();
+    }
+
+    updateFeatureStyles()
+    {
+        var tempFeatures = [];
+
+        var features = MapHelper.getAllFeatures(this.map);
+        for(var i = 0; i < features.length; i++)
+        {
+            var className = features[i].className;
+            var subClassName = features[i].subClassName;
+            var typeName = features[i].typeName;
+            var index = features[i].index;
+            
+            var temp = this.vectorFeaturesTree[className]["data"][subClassName]["data"][typeName]["data"][index];
+
+            var type = BaseHelper.ucfirst(typeName);
+
+            var style = null;
+            if(!temp.visible)
+                style = MapHelper.getInvisibleStyle(type);
+            else
+            {
+                if(temp.selected)
+                    style = MapHelper.getSelectedStyle(type);
+                else
+                    style = MapHelper.getDefaultStyle(type);
+            }
+
+            features[i].setStyle(style);
+        }
+    }
 }

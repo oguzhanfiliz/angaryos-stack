@@ -16,7 +16,7 @@
         <tr>
             <td width="5px">
                 <div class="dropdown">
-                    <button class="btn btn-primary dropdown-toggle" type="button" id="drawButtom" 
+                    <button class="btn btn-sm btn-primary dropdown-toggle" type="button" id="drawButtom" 
                         data-toggle="dropdown" aria-haspopup="true" 
                         aria-expanded="false">
             
@@ -31,15 +31,19 @@
                         <a class="dropdown-item" href="#">Poligonlar</a>
                     </div>
                 </div>
-            </td><td *ngIf="kmzAuthControl()" width="5px">
-                <button (click)="selectKmzFile()" class="btn btn-primary" type="button">
+            </td>
+            <td width="5000px">
+
+            </td>
+            <td *ngIf="kmzAuthControl()" width="5px">
+                <button (click)="selectKmzFile()" class="btn btn-sm btn-primary" type="button">
                     KMZ Yükle   
                 </button>
             </td>
             <td>
 
             </td><td align="right">
-                <button (click)="setToolsBarVisible(false)" class="btn btn-sm btn-danger" type="button">
+                <button (click)="setToolsBarVisible(false)" class="btn btn-sm btn-secondary" type="button">
                     &nbsp;X&nbsp;    
                 </button>
             </td>
@@ -47,6 +51,148 @@
     </table>
 </div>
 
+
+
+<div [hidden]="!featuresTreeVisible" id="feature-tree">
+    <table class="light-table">
+        <tr>
+            <td>
+                <h6 style="padding: 0; margin: 5 0 5 10;">Nesneler</h6>
+            </td><td align="right">
+                <button style="margin-right: 3px;" 
+                    (click)="setFeaturesTreeVisible(false)" 
+                    class="btn btn-sm btn-secondary" type="button">
+                    &nbsp;X&nbsp;    
+                </button>
+            </td>
+        </tr>
+    </table>
+    
+    <hr style="margin: 0 0 3 0;">
+
+    <div style="height: 310px !important;overflow-y: auto !important;">
+        <div *ngFor="let className of getClassNames()">
+            <div style="padding: 3px; background-color: bisque;border: 1px solid #ccc;">
+                <table class="light-table">
+                    <tr>
+                        <td>{{ className }}</td>
+                        <td align="right">
+                            <button style="margin-right: 1px;margin: 0px !important;border-radius: 6px;" 
+                                (click)="selectAllFeatureInClass(className)" 
+                                class="btn btn-sm btn-primary" type="button"
+                                [hidden]="!vectorFeaturesTree[className]['visible']" >
+                                
+                                <i class="zmdi zmdi-hc-fw"></i>    
+                            </button>
+                                            
+                            <button style="margin-right: 2px;margin: 0px !important;border-radius: 6px;" 
+                                (click)="toogleClassVisible(className)" 
+                                [class]="'btn btn-sm btn-' + (vectorFeaturesTree[className]['visible'] ? 'primary' : 'secondary')" type="button">
+                                
+                                <i [hidden]="vectorFeaturesTree[className]['visible']" class="zmdi zmdi-hc-fw"></i>
+
+                                <i [hidden]="!vectorFeaturesTree[className]['visible']" class="zmdi zmdi-hc-fw"></i>
+                            </button>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            <div style="padding-left: 10px;" *ngIf="vectorFeaturesTree[className]['visible']">
+                
+                
+                
+
+
+
+                <div *ngFor="let subClassName of getSubClassNames(className)">
+                    <div style="padding: 3px; background-color: aquamarine;border:1px solid #81eac8">
+                        <table class="light-table">
+                            <tr>
+                                <td>{{ subClassName }}</td>
+                                <td align="right">
+                                    <button style="padding: 0;margin-right: 1px;margin: 0px !important;border-radius: 6px;" 
+                                        (click)="selectAllFeatureInSubClass(className, subClassName)" 
+                                        class="btn btn-sm btn-primary" type="button"
+                                        [hidden]="!vectorFeaturesTree[className]['data'][subClassName]['visible']" >
+                                        
+                                        <i class="zmdi zmdi-hc-fw"></i>    
+                                    </button>
+                                            
+                                    <button style="padding: 1;margin-right: 2px;margin: 0px !important;border-radius: 6px;" 
+                                        (click)="toogleSubClassVisible(className, subClassName)" 
+                                        [class]="'btn btn-sm btn-' + (vectorFeaturesTree[className]['data'][subClassName]['visible'] ? 'primary' : 'secondary')" type="button">
+                                        
+                                        <i [hidden]="vectorFeaturesTree[className]['data'][subClassName]['visible']" class="zmdi zmdi-hc-fw"></i>
+        
+                                        <i [hidden]="!vectorFeaturesTree[className]['data'][subClassName]['visible']" class="zmdi zmdi-hc-fw"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                    <div style="padding-left: 20px;" *ngIf="vectorFeaturesTree[className]['data'][subClassName]['visible']">
+                        
+        
+        
+        
+        
+                        
+
+                        <div *ngFor="let typeName of getTypeNames(className, subClassName)">
+                            <div style="padding: 3px; background-color: lavender;border: 1px solid #ccc;">
+                                <table class="light-table">
+                                    <tr>
+                                        <td>{{ typeName }}</td>
+                                        <td align="right">
+                                            <button style="padding: 0;margin-right: 1px;margin: 0px !important;border-radius: 6px;" 
+                                                (click)="selectAllFeatureInType(className, subClassName, typeName)" 
+                                                class="btn btn-sm btn-primary" type="button"
+                                                [hidden]="!vectorFeaturesTree[className]['data'][subClassName]['data'][typeName]['visible']" >
+                                                
+                                                <i class="zmdi zmdi-hc-fw"></i>    
+                                            </button>
+
+                                            <button style="padding: 0;margin-right: 1px;margin: 0px !important;border-radius: 6px;" 
+                                                (click)="toogleTypeVisible(className, subClassName, typeName)" 
+                                                [class]="'btn btn-sm btn-' + (vectorFeaturesTree[className]['data'][subClassName]['data'][typeName]['visible'] ? 'primary' : 'secondary')" type="button">
+                                                
+                                                <i [hidden]="vectorFeaturesTree[className]['data'][subClassName]['data'][typeName]['visible']" class="zmdi zmdi-hc-fw"></i>
+                
+                                                <i [hidden]="!vectorFeaturesTree[className]['data'][subClassName]['data'][typeName]['visible']" class="zmdi zmdi-hc-fw"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
+                            <div style="padding-left: 24px;" *ngIf="vectorFeaturesTree[className]['data'][subClassName]['data'][typeName]['visible']">
+                                
+
+
+                                <div *ngFor="let feature of getFeatures(className, subClassName, typeName); let i = index"
+                                    (click)="toggleFeatureSelected(className, subClassName, typeName, i)"
+                                    [class]="'feature-item ' + (feature['selected'] ? 'feature-item-selected' : '') ">
+
+                                    {{ feature['selected'] }}
+                                </div>
+                                
+                
+                                
+                            </div>
+                        </div>
+
+
+        
+                        
+                    </div>
+                </div>
+                
+
+
+
+            </div>
+        </div>
+    </div>
+</div>
 
 
 <div class="dropdown" id="menu-button">
@@ -58,6 +204,10 @@
     <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
         <a (click)="layers()" class="dropdown-item">Katmanlar</a>
         <a (click)="setToolsBarVisible(true)" class="dropdown-item">Araç Çubuğu</a>
+        <a  [hidden]="isVectorFeaturesTreeNull()"
+            (click)="setFeaturesTreeVisible(true)" 
+            class="dropdown-item">Nesne Ağacı</a>
+        
     </div>
 </div>
 

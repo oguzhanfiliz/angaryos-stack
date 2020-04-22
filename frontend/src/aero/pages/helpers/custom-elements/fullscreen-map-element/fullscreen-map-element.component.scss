@@ -7,6 +7,12 @@
 }
 
 
+button
+{
+    border: 1px solid #a2b6ca !important;
+}
+
+
 
 .ol-zoom
 {
@@ -153,6 +159,26 @@ transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
     left: -40px !important;
 }
 
+.dropdown-menu .dropdown-item {
+    font-size: 12px !important; 
+    padding: 4px 14px !important;
+}
+
+.feature-item
+{
+    cursor: pointer;
+}
+
+.feature-item:hover
+{
+    background-color: #f5f2ed;
+}
+
+.feature-item-selected
+{
+    background-color: #f5f2ed;
+}
+
 
 
 #menu-button
@@ -171,7 +197,6 @@ transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
     min-width: 25;
     height: 25;
     min-height: 25;
-    border: 1px solid #a2b6ca;
 }
 
 #zoom-out-button
@@ -183,7 +208,6 @@ transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
     min-width: 25;
     height: 25;
     min-height: 25;
-    border: 1px solid #a2b6ca;
 }
 
 #tools-bar
@@ -191,10 +215,11 @@ transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
     position: absolute;
     right: 12.5%;
     width: 75%;
-    top: 70;
+    top: 40;
     background: #ffffff;
     padding: 2;
-    border-radius: 2px;
+    border-radius: 3px;
+    opacity: 0.86;
 
     button
     {
@@ -203,3 +228,17 @@ transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
     }
 }
 
+#feature-tree
+{
+    position: absolute;
+    right: 20;
+    top: 140;
+    width: 250px;
+    height: 350px;
+    z-index: 999999999999999;
+    background-color: white;
+    border-radius: 3px;
+    box-shadow: 0px 0px 10px #bdbaba;
+    border: 1px solid #ccc;
+    opacity: 0.86;
+}

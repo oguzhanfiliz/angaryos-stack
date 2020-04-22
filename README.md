@@ -16,9 +16,14 @@ sudo ./start.sh
 ```
 
 ### Windows
-
+```
+hazırlanıyor...
+```
 
 ### Mac
+```
+hazırlanıyor...
+```
 
 ardından  "Angaryos/frontend/src/environments" dizini içindeki dosyaları düzenleyiniz. Bu dosyalar IP vb ayarlarınızı içerir.
 
