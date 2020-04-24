@@ -1,4 +1,10 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { intersect as turfIntersect, polygon as turfPolygon } from '@turf/turf';
+
+import Swal from 'sweetalert2'
+import 'sweetalert2/dist/sweetalert2.min.css'
+
+import { WKT, GeoJSON} from 'ol/format';
 
 import {CdkDragDrop, moveItemInArray, transferArrayItem} from '@angular/cdk/drag-drop';
 
@@ -28,8 +34,14 @@ export class FullScreenMapElementComponent
     loggedInUserInfo = null;
     layerList = [];
     toolsBarVisible = true;
-    featuresTreeVisible = false;
+    featuresTreeVisible = true;
     vectorFeaturesTree = {};
+    mapClickMode = "getClickedFeatureInfo";
+    waitDrawSingleFeature = false;
+    drawingInteraction = null;
+    ctrlPressed = false;
+    altPressed = false;
+    selectAreaStartPixel = null;
 
     /****    Defaul Functions     ****/
 
@@ -52,6 +64,7 @@ export class FullScreenMapElementComponent
 
         this.createMapElement()
         .then((map) => this.addLayers(map))
+        .then((map) => this.addEvents(map))
         .then((map) => $('.ol-zoom').css('display', 'none'));
     }
 
@@ -135,6 +148,306 @@ export class FullScreenMapElementComponent
 
             resolve(task);
         }); 
+    }
+
+    addEvents(map)
+    {
+        var th = this;
+        return new Promise((resolve) =>
+        {
+            th.addEventForClick(map);
+            th.addEventForDataChanged(map);
+            th.addEventForSelectArea(map);
+
+            resolve(map);
+        }); 
+    }
+
+    addEventForClick(map)
+    {
+        var th = this;
+        map.on('click', (event) =>
+        {
+            if(th.drawingInteraction != null) 
+                return;
+            else if(th.featuresTreeVisible)
+                th.selectClickedFeatureOnVectorSourceTree(event);
+            else
+                console.log(th.mapClickMode);
+        });
+    }
+
+    addEventForDataChanged(map)
+    {
+        var th = this;
+        map.on('dataChanged', (event) =>
+        {
+            switch(event.constructor.name)
+            {
+                case 'DrawEvent':
+                    th.endDrawIsSingleFeatureDrawed(event);
+                    th.addFeatureOnVectorFeaturesTree(event.feature);
+                    break;
+            }
+        });
+    }
+
+    addEventForSelectArea(map)
+    {
+        
+        var th = this;
+
+        $(document).on('keyup keydown', function(e)
+        {
+            th.ctrlPressed = e.ctrlKey;
+            th.altPressed = e.altKey;
+        } );
+
+        map.on('pointerdown', function(e) 
+        {        
+            if(!th.featuresTreeVisible) return;
+            if(!th.ctrlPressed || !th.altPressed) return;
+
+            th.selectAreaStartPixel = e.pixel;
+        });
+
+        map.on('pointerup', function(e) 
+        {        
+            if(th.selectAreaStartPixel == null) return;
+
+            th.areaSelected(th.selectAreaStartPixel, e.pixel);
+            th.selectAreaStartPixel = null;
+        });
+
+        map.on('pointermove', function(e) 
+        {        
+            if(th.selectAreaStartPixel == null) return;
+            if(!th.featuresTreeVisible) return;
+            if(!th.ctrlPressed || !th.altPressed) return;
+
+            th.drawSelectArea(e.pixel);
+        });
+
+        $(document).on("mousemove", "#selectArea", function(e) 
+        {
+            if(th.selectAreaStartPixel == null) return;
+            if(!th.featuresTreeVisible) return;
+            if(!th.ctrlPressed || !th.altPressed) return;
+
+            th.drawSelectArea([e.clientX, e.clientY]);
+        });
+    }
+
+    async areaSelected(selectAreaStartPixel, selectAreaEndPixel)
+    {
+        $('#selectArea').remove();
+
+        const { value: type } = await Swal.fire(
+        {
+            title: 'Seçmek istediğiniz tip',
+            input: 'select',
+            inputOptions: 
+            {
+                point: 'Nokta',
+                linestring: 'Çizgi',
+                polygon: 'Alan'
+            },
+            inputPlaceholder: 'Tip seçiniz',
+            showCancelButton: false
+        });
+
+        if (typeof type == "undefined") return;
+        if (type == "") return;
+
+        this.selectIntectsFeatureWithArea(type, selectAreaStartPixel, selectAreaEndPixel);
+    }
+
+    getTurfPolygonFromStartAndEndPixel(selectAreaStartPixel, selectAreaEndPixel)
+    {
+        var start = this.map.getCoordinateFromPixel(selectAreaStartPixel);
+        var end = this.map.getCoordinateFromPixel(selectAreaEndPixel);
+
+        return turfPolygon(
+        [
+            [
+                [start[0], start[1]],
+                [end[0], start[1]],
+                [end[0], end[1]],
+                [start[0], end[1]],
+                [start[0], start[1]]
+            ]
+        ]);
+    }
+
+    getTurfPolygonFromExtent(extent)
+    {
+        return turfPolygon(
+        [
+            [
+                [extent[0], extent[1]],
+                [extent[2], extent[1]],
+                [extent[2], extent[3]],
+                [extent[0], extent[3]],
+                [extent[0], extent[1]]
+            ]
+        ]);
+    }
+
+    selectIntectsFeatureWithArea(type, selectAreaStartPixel, selectAreaEndPixel)
+    {
+        var turfPolygon = this.getTurfPolygonFromStartAndEndPixel(selectAreaStartPixel, selectAreaEndPixel);
+        
+        var control = false;
+
+        var classNames = this.getClassNames();
+        for(var i = 0; i < classNames.length; i++)
+        {
+            var className = classNames[i];
+            if(!this.vectorFeaturesTree[className]['visible']) continue;
+
+            var subClassNames = this.getSubClassNames(className);
+            for(var j = 0; j < subClassNames.length; j++)
+            {
+                var subClassName = subClassNames[j];
+                if(!this.vectorFeaturesTree[className]['data'][subClassName]['visible']) continue;
+
+                var subClassData = this.vectorFeaturesTree[className]['data'][subClassName]['data'];
+
+                if(typeof subClassData[type] == "undefined") continue;
+                if(!subClassData[type]['visible']) continue;
+
+                var data = subClassData[type]['data'];
+                for(var k = 0; k < data.length; k++)
+                {
+                    var ext = data[k].getGeometry().getExtent();
+
+                    if(ext[0] == ext[2])//Point to poly
+                    {
+                        ext[2] += 1;
+                        ext[3] += 1;
+                    }
+
+                    var poly = this.getTurfPolygonFromExtent(ext);
+
+                    if(turfIntersect(turfPolygon, poly))
+                    {
+                        control = true;
+                        data[k].selected = true;
+                    } 
+                }
+            }
+        }
+
+        if(control) this.updateFeatureStyles();
+    }
+
+    drawSelectArea(selectAreaEndPixel)
+    {
+        if(this.selectAreaStartPixel == null) return;
+
+        var x1, x2, y1, y2;
+        
+        if(selectAreaEndPixel[0] > this.selectAreaStartPixel[0])
+            x1 = this.selectAreaStartPixel[0];
+        else
+            x1 = selectAreaEndPixel[0];
+        
+        if(selectAreaEndPixel[1] > this.selectAreaStartPixel[1])
+            y1 = this.selectAreaStartPixel[1];
+        else
+            y1 = selectAreaEndPixel[1];
+        
+        var fW = selectAreaEndPixel[0] - this.selectAreaStartPixel[0];
+        var fH = selectAreaEndPixel[1] - this.selectAreaStartPixel[1];
+        
+        if(fW < 0) fW = -1 * fW;
+        if(fH < 0) fH = -1 * fH;
+        
+        var o = $('canvas').offset();
+        
+        $('#selectArea').remove();
+        
+        var html = "<div id='selectArea' style='top:"+(y1+o.top)+"px;left:"+(x1+o.left)+"px;";
+        html += "position: absolute; z-index: 3999999999;border:3px solid #cf6729;";
+        html += "width:"+fW+"px;height:"+fH+"px'></div>";
+
+        $('body').append(html);
+    }
+
+    selectClickedFeatureOnVectorSourceTree(event)
+    {
+        MapHelper.getFeaturesAtPixel(this.map, event.pixel)
+        .then((data) =>
+        {
+            if(typeof data['vector'] == "undefined") return;
+
+            for(var i = 0; i < data['vector'].length; i++)
+                if(data['vector'][i].visible)
+                    data['vector'][i].selected = true;
+            
+            this.updateFeatureStyles();
+        });
+    }
+
+    createIfNotExistClassOnVectorSourceTree(className)
+    {
+        if(typeof this.vectorFeaturesTree[className] == "undefined")
+        {
+            this.vectorFeaturesTree[className] = {};
+            this.vectorFeaturesTree[className]['visible'] = true;
+            this.vectorFeaturesTree[className]['data'] = {};        
+        }
+    }
+
+    createIfNotExistSubClassOnVectorSourceTree(className, subClassName)
+    {
+        if(typeof this.vectorFeaturesTree[className]['data'][subClassName] == "undefined")
+        {
+            this.vectorFeaturesTree[className]['data'][subClassName] = {};
+            this.vectorFeaturesTree[className]['data'][subClassName]['visible'] = true;
+            this.vectorFeaturesTree[className]['data'][subClassName]['data'] = {};        
+        }
+    }
+
+    createIfNotExistTypeOnVectorSourceTree(className, subClassName, typeName)
+    {
+        if(typeof this.vectorFeaturesTree[className]['data'][subClassName]['data'][typeName] == "undefined")
+        {
+            this.vectorFeaturesTree[className]['data'][subClassName]['data'][typeName] = {};
+            this.vectorFeaturesTree[className]['data'][subClassName]['data'][typeName]['visible'] = true;
+            this.vectorFeaturesTree[className]['data'][subClassName]['data'][typeName]['data'] = [];            
+        }
+    }
+
+    addFeatureOnVectorFeaturesTree(feature)
+    {
+        var className = "Yerel Nesneler";
+        var subClassName = "Çizimler";
+        var typeName = feature.getGeometry().getType().toLowerCase();
+
+        feature['featureObject'] = {'type': 'drawed'};
+        feature['selected'] = false;
+        feature['visible'] = true;
+        feature['className'] = className;
+        feature['subClassName'] = subClassName;
+        feature['typeName'] = typeName;
+
+        this.createIfNotExistClassOnVectorSourceTree(className);
+        this.createIfNotExistSubClassOnVectorSourceTree(className, subClassName);
+        this.createIfNotExistTypeOnVectorSourceTree(className, subClassName, typeName);
+
+        var i = this.vectorFeaturesTree[className]['data'][subClassName]['data'][typeName]['data'].length;
+        feature['index'] = i;
+
+        this.vectorFeaturesTree[className]['data'][subClassName]['data'][typeName]['data'].push(feature);
+
+        this.featuresTreeVisible = true;
+    }
+
+    endDrawIsSingleFeatureDrawed(event)
+    {
+        if(!this.waitDrawSingleFeature) return;
+        this.drawEnd();
     }
 
     addLayers(map)
@@ -222,27 +535,21 @@ export class FullScreenMapElementComponent
         if(typeof this.vectorFeaturesTree[name] != "undefined")
             this.deleteKmlOrKmzFileFeatures(name);
 
-        this.vectorFeaturesTree[name] = {};
-        this.vectorFeaturesTree[name]['visible'] = true;
-        this.vectorFeaturesTree[name]['data'] = {};
+        this.createIfNotExistClassOnVectorSourceTree(name);
         
         var tempFeatures = [];
 
         var layers = Object.keys(tree);
         for(var i = 0; i < layers.length; i++)
         {
-            var layer = layers[i];
-            this.vectorFeaturesTree[name]['data'][layer] = {};
-            this.vectorFeaturesTree[name]['data'][layer]['visible'] = true;
-            this.vectorFeaturesTree[name]['data'][layer]['data'] = {};
+            var layer = layers[i];            
+            this.createIfNotExistSubClassOnVectorSourceTree(name, layer);
 
             var types = Object.keys(tree[layer]);
             for(var j = 0; j < types.length; j++)
             {
-                var type = types[j];
-                this.vectorFeaturesTree[name]['data'][layer]['data'][type] = {};
-                this.vectorFeaturesTree[name]['data'][layer]['data'][type]['visible'] = true;
-                this.vectorFeaturesTree[name]['data'][layer]['data'][type]['data'] = [];
+                var type = types[j];                   
+                this.createIfNotExistTypeOnVectorSourceTree(name, layer, type);
 
                 var features = tree[layer][type];
                 for(var k = 0; k < features.length; k++)
@@ -295,7 +602,6 @@ export class FullScreenMapElementComponent
                 $('#kmzFile').val("");
 
                 MapHelper.addModify(this.map, true);
-                MapHelper.addSnap(this.map, true);
 
                 this.setFeaturesTreeVisible(true);
             }
@@ -454,5 +760,26 @@ export class FullScreenMapElementComponent
 
             features[i].setStyle(style);
         }
+    }
+
+    drawEnd()
+    {
+        MapHelper.removeInteraction(this.map, this.drawingInteraction)
+        .then((map) =>
+        {
+            this.drawingInteraction = null;
+            this.waitDrawSingleFeature = false;
+        })
+
+    }
+
+    drawPoint(multi = false)
+    {
+        MapHelper.addDraw(this.map, "Point", true)
+        .then((drawingInteraction) =>
+        {
+            this.waitDrawSingleFeature = !multi;
+            this.drawingInteraction = drawingInteraction;        
+        })
     }
 }

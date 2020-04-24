@@ -72,7 +72,7 @@ export class LinkPageComponent
     for(var i = 0; i < tables.length; i++)
       if(tables[i]['id'] == tableId)
         return BaseHelper.baseUrl+"table/"+tables[i]['name'];
-  } 
+  }
 
   openDropDown(i)
   {

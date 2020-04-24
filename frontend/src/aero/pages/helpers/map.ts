@@ -250,6 +250,15 @@ export abstract class MapHelper
     });     
   }
 
+  public static removeInteraction(map, interaction)
+  {
+    return new Promise((resolve) =>
+    {
+      map.removeInteraction(interaction);
+      resolve(map);
+    });     
+  }
+
   public static addModify(map, multiple)
   {
     return new Promise((resolve) =>
@@ -575,6 +584,30 @@ export abstract class MapHelper
     map.getView().animate(
     {
       zoom: map.getView().getZoom() + temp
+    });
+  }
+
+  public static getFeaturesAtPixel(map, pixel)
+  {
+    return new Promise(async (resolve) =>
+    {
+      var data = {};
+
+      var i = 0;
+      await map.forEachFeatureAtPixel(pixel, function (feature, layer) 
+      {
+        var layerName = "layer"+(i++);
+        if(layer != null)
+          if(typeof layer['name'] != "undefined")
+            layerName = layer.name;
+
+        if(typeof data[layerName] == "undefined")
+          data[layerName] = [];
+
+        data[layerName].push(feature);
+      });
+
+      resolve(data);
     });
   }
 

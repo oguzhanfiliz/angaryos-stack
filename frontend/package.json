@@ -24,6 +24,7 @@
     "@angular/platform-browser": "~8.2.11",
     "@angular/platform-browser-dynamic": "~8.2.11",
     "@angular/router": "~8.2.11",
+    "@turf/turf": "^5.1.6",
     "bootstrap": "^4.4.1",
     "document-register-element": "^1.7.2",
     "dotenv": "^8.2.0",

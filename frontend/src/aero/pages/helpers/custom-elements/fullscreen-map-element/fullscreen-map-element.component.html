@@ -15,7 +15,7 @@
     <table id="light-table" style="width: 100%">
         <tr>
             <td width="5px">
-                <div class="dropdown">
+                <div [hidden]="drawingInteraction != null" class="dropdown">
                     <button class="btn btn-sm btn-primary dropdown-toggle" type="button" id="drawButtom" 
                         data-toggle="dropdown" aria-haspopup="true" 
                         aria-expanded="false">
@@ -23,14 +23,20 @@
                         Çiz
                     </button>
                     <div class="dropdown-menu" aria-labelledby="drawButtom">
-                        <a class="dropdown-item" href="#">Nokta</a>
-                        <a class="dropdown-item" href="#">Noktalar</a>
+                        <a class="dropdown-item" (click)="drawPoint()">Nokta</a>
+                        <a class="dropdown-item" (click)="drawPoint(true)">Noktalar</a>
                         <a class="dropdown-item" href="#">Çizgi</a>
                         <a class="dropdown-item" href="#">Çizgiler</a>
                         <a class="dropdown-item" href="#">Poligon</a>
                         <a class="dropdown-item" href="#">Poligonlar</a>
                     </div>
                 </div>
+
+                <button [hidden]="drawingInteraction == null" class="btn btn-sm btn-primary" 
+                    type="button" (click)="drawEnd()" id="drawEndButtom" >
+        
+                    Çizimi Bitir
+                </button>
             </td>
             <td width="5000px">
 
