@@ -88,7 +88,7 @@ export class SessionHelper
       Swal.fire(
       {
         title: 'İlk kurulum',
-        text: "Veritabanı daha önce kurulmamış. Şimdi ilk kurulumu yapmak ister misiniz?",
+        text: "Veritabanı daha önce kurulmamış. Şimdi ilk kurulumu yapmak ister misiniz? Dikkat edin! bu işlem tüm veritabanını siler yeniden oluşturur!",
         icon: 'warning',
         showCancelButton: true,
         confirmButtonColor: '#3085d6',

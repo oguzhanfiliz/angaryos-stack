@@ -36,6 +36,8 @@ export abstract class MapHelper
   public static userProjection = ""
   public static customProjectionAdded = false;
   public static styleApplying = {};
+  public static drawingFeatures = {};
+  public static escKeyListening = false;
 
 
   /****    Map Object Functions     ****/
@@ -242,12 +244,114 @@ export abstract class MapHelper
         source: this.getVectorSource(map),
         type: type
       });
-      draw.on('drawend', (e) => this.featuresChanged(map, multiple, e));
+
+      draw['multiple'] = multiple;
+      
+      draw.on('drawstart', (e) => 
+      {
+        this.drawingFeatures[map.getTarget()] = e.feature;
+      });
+      
+      draw.on('drawend', (e) => 
+      {
+        this.featuresChanged(map, multiple, e);
+        this.drawingFeatures[map.getTarget()] = null;
+      });
+
+      var th = this;
+
+      if(type != "Point" && !this.escKeyListening)
+      {
+        this.escKeyListening = true;
+
+        $(document).on('keyup', function(e)
+        {
+          if(e.key == "Escape")
+            draw.set('escKey', Math.random());
+        });
+      }
+
+      draw.on('change:escKey', (e) => 
+      {
+        if(typeof this.drawingFeatures[map.getTarget()] == "undefined") return;
+        if(this.drawingFeatures[map.getTarget()] == null) return;
+
+        this.escapeLastNodeOnDrawingFeature(map, draw, e);
+      });
+      
+      
 
       map.addInteraction(draw);
 
       resolve(draw);
     });     
+  }
+
+  /*ublic static keyTimeOutControl(key)
+  {
+    if(typeof this.keyPressedTime[key] != "undefined")
+    {
+      var now = new Date();
+      var timeOut = (now.getTime() - this.keyPressedTime[key].getTime());
+      if(timeOut < 1000) 
+      {
+        console.log("no time out" + timeOut);
+        return false;
+      }
+    }
+
+    this.keyPressedTime[key] = new Date();
+    return true;
+  }*/
+
+  public static escapeLastNodeOnDrawingFeatureControl(map, draw)
+  {
+    var feature = this.drawingFeatures[map.getTarget()];
+
+    var geom = feature.getGeometry();
+    var coords = geom.getCoordinates();
+    var typeName = feature.getGeometry().getType();
+    switch (typeName) 
+    {
+      case 'LineString':
+        if(coords.length > 2) return true;
+        break;
+      case 'Polygon':
+        if(coords[0].length > 3) return true;
+        break;
+    }
+
+    return false;  
+  }
+
+  public static escapeLastNodeOnDrawingFeature(map, draw, e)
+  {
+    var control = this.escapeLastNodeOnDrawingFeatureControl(map, draw);
+    if(!control) return;
+
+    var feature = this.drawingFeatures[map.getTarget()];
+
+    var geom = feature.getGeometry();
+    var coords = geom.getCoordinates();
+
+    var typeName = feature.getGeometry().getType();
+    switch (typeName) 
+    {
+      case 'LineString':
+        var newCoordinates = coords.slice(0, coords.length - 1);
+        geom.setCoordinates(newCoordinates);
+        console.log(e.target);
+        //e.target.sketchCoords_ = newCoordinates;
+        //e.target.sketchFeature_ = feature;
+        break;
+      case 'Polygon':
+        var newCoordinates = coords[0].slice(0, coords[0].length - 1);
+        geom.setCoordinates([newCoordinates]); 
+        console.log(e.target);
+        //e.target.sketchFeature_ = feature;
+        //e.target.sketchCoords_ = [e.target.sketchCoords_[0].splice(0, e.target.sketchCoords_[0].length - 1)];
+        break;
+    }     
   }
 
   public static removeInteraction(map, interaction)

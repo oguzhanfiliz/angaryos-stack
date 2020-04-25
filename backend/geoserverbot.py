@@ -118,7 +118,7 @@ try:
     def check_and_save_workspace_form():
         global browser
 
-        checks = ["settings:enabled", "services:services:1:enabled", "services:services:2:enabled"]
+        checks = ["settings:enabled", "services:services:0:enabled", "services:services:1:enabled", "services:services:2:enabled", "services:services:3:enabled"]
 
         for check in checks:
             temp = browser.find_elements_by_css_selector("input[name='"+check+"']")[0]

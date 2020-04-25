@@ -34,7 +34,7 @@ export class FullScreenMapElementComponent
     loggedInUserInfo = null;
     layerList = [];
     toolsBarVisible = true;
-    featuresTreeVisible = true;
+    featuresTreeVisible = false;
     vectorFeaturesTree = {};
     mapClickMode = "getClickedFeatureInfo";
     waitDrawSingleFeature = false;
@@ -43,7 +43,7 @@ export class FullScreenMapElementComponent
     altPressed = false;
     selectAreaStartPixel = null;
 
-    /****    Defaul Functions     ****/
+    /****    Default Functions     ****/
 
     constructor(
         private messageHelper: MessageHelper,
@@ -131,6 +131,38 @@ export class FullScreenMapElementComponent
     kmzAuthControl()
     {
         return this.sessionHelper.kmzAuthControl();
+    }
+    
+    isUpTableRecordSelected()
+    {
+        var loggedInUserId = BaseHelper.loggedInUserInfo['user']['id'];
+        var key = 'user:'+loggedInUserId+'.dataTransport';
+        
+        var temp = BaseHelper.readFromLocal(key);
+        
+        return temp != null;
+    }
+    
+    async selectTypeAndDo(func)
+    {
+        const { value: typeName } = await Swal.fire(
+        {
+            title: 'Seçmek istediğiniz tip',
+            input: 'select',
+            inputOptions: 
+            {
+                point: 'Nokta',
+                linestring: 'Çizgi',
+                polygon: 'Alan'
+            },
+            inputPlaceholder: 'Tip seçiniz',
+            showCancelButton: false
+        });
+
+        if (typeof typeName == "undefined") return;
+        if (typeName == "") return;
+
+        func(typeName);
     }
 
 
@@ -238,28 +270,14 @@ export class FullScreenMapElementComponent
         });
     }
 
-    async areaSelected(selectAreaStartPixel, selectAreaEndPixel)
+    areaSelected(selectAreaStartPixel, selectAreaEndPixel)
     {
         $('#selectArea').remove();
 
-        const { value: type } = await Swal.fire(
+        this.selectTypeAndDo((typeName) =>
         {
-            title: 'Seçmek istediğiniz tip',
-            input: 'select',
-            inputOptions: 
-            {
-                point: 'Nokta',
-                linestring: 'Çizgi',
-                polygon: 'Alan'
-            },
-            inputPlaceholder: 'Tip seçiniz',
-            showCancelButton: false
+            this.selectIntectsFeatureWithArea(typeName, selectAreaStartPixel, selectAreaEndPixel);
         });
-
-        if (typeof type == "undefined") return;
-        if (type == "") return;
-
-        this.selectIntectsFeatureWithArea(type, selectAreaStartPixel, selectAreaEndPixel);
     }
 
     getTurfPolygonFromStartAndEndPixel(selectAreaStartPixel, selectAreaEndPixel)
@@ -773,13 +791,51 @@ export class FullScreenMapElementComponent
 
     }
 
-    drawPoint(multi = false)
+    drawStart(featureType, multi = false)
     {
-        MapHelper.addDraw(this.map, "Point", true)
+        MapHelper.addDraw(this.map, featureType, true)
         .then((drawingInteraction) =>
         {
             this.waitDrawSingleFeature = !multi;
             this.drawingInteraction = drawingInteraction;        
         })
     }
+    
+    getSelectedFeatures()
+    {
+        var selectedFeatures = {};
+
+        var features = MapHelper.getAllFeatures(this.map);
+        for(var i = 0; i < features.length; i++)
+        {
+            if(!features[i].selected) continue;
+            
+            var typeName = features[i].typeName;
+            
+            if(typeof selectedFeatures[typeName] == "undefined") 
+                selectedFeatures[typeName] = [];
+                
+            selectedFeatures[typeName].push(features[i]);
+        }
+        
+        return selectedFeatures;
+    }
+    
+    dataTransport()
+    {
+        if(!this.isUpTableRecordSelected()) 
+            return this.messageHelper.toastMessage('Önce bir kaydı veri aktarılacak kayıt olarak belirlemelisiniz!');
+        
+        var selectedFeatures = this.getSelectedFeatures();
+        var types = Object.keys(selectedFeatures);
+        if(types.length == 0)
+            return this.messageHelper.toastMessage('Aktarmak için seçilmiş nesne yok!');
+            
+        this.selectTypeAndDo((typeName) =>
+        {
+            alert('sunucudan '+typeName+' tipinin aktarılabileceği alt tabloları getir. zaten üst tablo belli');
+        });
+    }
+    
+    
 }

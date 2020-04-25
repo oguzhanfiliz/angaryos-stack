@@ -20,15 +20,17 @@
                         data-toggle="dropdown" aria-haspopup="true" 
                         aria-expanded="false">
             
-                        Çiz
+                        Ekle
                     </button>
                     <div class="dropdown-menu" aria-labelledby="drawButtom">
-                        <a class="dropdown-item" (click)="drawPoint()">Nokta</a>
-                        <a class="dropdown-item" (click)="drawPoint(true)">Noktalar</a>
-                        <a class="dropdown-item" href="#">Çizgi</a>
-                        <a class="dropdown-item" href="#">Çizgiler</a>
-                        <a class="dropdown-item" href="#">Poligon</a>
-                        <a class="dropdown-item" href="#">Poligonlar</a>
+                        <a class="dropdown-item" (click)="drawStart('Point')">Nokta</a>
+                        <a class="dropdown-item" (click)="drawStart('Point', true)">Noktalar</a>
+                        <a class="dropdown-item" (click)="drawStart('LineString')">Çizgi</a>
+                        <a class="dropdown-item" (click)="drawStart('LineString', true)">Çizgiler</a>
+                        <a class="dropdown-item" (click)="drawStart('Polygon')">Poligon</a>
+                        <a class="dropdown-item" (click)="drawStart('Polygon', true)">Poligonlar</a>
+                        <div class="divider"></div>
+                        <a class="dropdown-item" (click)="aaFeatureFromNetcad()">Netcad 'den Al</a>
                     </div>
                 </div>
 
@@ -44,6 +46,11 @@
             <td *ngIf="kmzAuthControl()" width="5px">
                 <button (click)="selectKmzFile()" class="btn btn-sm btn-primary" type="button">
                     KMZ Yükle   
+                </button>
+            </td>
+            <td width="5px">
+                <button (click)="dataTransport()" [class]="'btn btn-sm btn-primary ' + (isUpTableRecordSelected() ? '' : ' disabled')" type="button">
+                    Data Aktar  
                 </button>
             </td>
             <td>

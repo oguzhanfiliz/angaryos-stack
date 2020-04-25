@@ -17,6 +17,11 @@ $column_gui_type_override =
     'auths' => $column_gui_types['multiselect']->id
 ];
 
+$columnDefaults =
+[
+    'state' => 'true'
+];
+
 $columns[$column->name] = 
 [
     'name' => $column->name,
@@ -58,6 +63,11 @@ if(isset($subscribers['column'][$column->name]))
     $columns[$column->name]['subscriber_ids'] = [];
     foreach($subscribers['column'][$column->name] as $sub)
         array_push ($columns[$column->name]['subscriber_ids'], $sub->id);
+}
+
+if(isset($columnDefaults[$column->name]))
+{
+    $columns[$column->name]['default'] = $columnDefaults[$column->name];
 }
 
 if(isset($column_gui_type_override[$column->name]))

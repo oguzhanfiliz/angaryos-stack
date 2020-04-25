@@ -194,7 +194,7 @@
                                         <tr 
                                             *ngFor="let record of getData('records'); let i = index"
                                             role="row" (contextmenu)="selectRecord($event, record, i)"
-                                            [class]="'odd operations ' + getRecordRowClass(i)">
+                                            [class]="getRecordRowClass(i, record)">
 
                                             <td>
                                                 <button *ngIf="archiveTable"
@@ -210,6 +210,14 @@
                                                     (click)="userImitation(record)"> 
                                                     
                                                     <span class="ti-user"></span>
+                                                </button>
+                                                
+                                                <button *ngIf="can('selectAsUpTable') && !archiveTable"
+                                                    data-toggle="tooltip" title="Data aktarma kaydı olarak belirle"
+                                                    class="btn btn-sm float-right btn-primary btn-icon pull-right" 
+                                                    (click)="selectAsUpTableRecord(record)"> 
+                                                    
+                                                    <i class="zmdi zmdi-hc-fw"></i>
                                                 </button>
 
                                                 <button *ngIf="can('authWizard', record) && !archiveTable"

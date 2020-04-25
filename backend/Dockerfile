@@ -45,6 +45,10 @@ RUN chmod +x /var/www/chromedriver
 RUN apt-get -y install sudo
 RUN adduser www sudo
 
+
+
+############################################################
+
 USER www
 
 EXPOSE 9000

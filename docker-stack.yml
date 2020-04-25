@@ -96,10 +96,12 @@ services:
             - mq-nw
 
     laravelcron:
-        image: karapazar/laravel-cron:0.18
+        image: karapazar/laravel-cron:0.19
         volumes:
             - ./backend:/var/www 
             - ./backend/php.ini:/usr/local/etc/php/conf.d/local.ini
+            - ./services/geoserver/data:/var/geoserver
+            - /var/run/docker.sock:/var/run/docker.sock 
         environment:
             SERVICE_NAME: app
             SERVICE_TAGS: dev
@@ -112,10 +114,12 @@ services:
             - mq-nw
             
     laraveljobs:
-        image: karapazar/laravel-jobs:0.4
+        image: karapazar/laravel-jobs:0.10
         volumes:
             - ./backend:/var/www 
             - ./backend/php.ini:/usr/local/etc/php/conf.d/local.ini
+            - ./services/geoserver/data:/var/geoserver
+            - /var/run/docker.sock:/var/run/docker.sock 
         environment:
             SERVICE_NAME: app
             SERVICE_TAGS: dev

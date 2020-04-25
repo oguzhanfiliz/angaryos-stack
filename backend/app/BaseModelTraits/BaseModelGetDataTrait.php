@@ -4,6 +4,7 @@ namespace App\BaseModelTraits;
 
 use \App\BaseModel;
 use Cache;
+use DB;
 
 trait BaseModelGetDataTrait 
 {   
@@ -93,12 +94,21 @@ trait BaseModelGetDataTrait
     
     public function getTableInfo($name)
     {
-        $cacheName = 'tableName:'.$name.'|tableInfo';        
+        $cacheName = 'tableName:'.$name.'|tableInfo'; 
         $tableInfo = Cache::rememberForever($cacheName, function() use($name)
         {      
             $tableInfo = helper('get_null_object');
             $tableInfo->name = $name;
             $tableInfo->display_name = get_attr_from_cache('tables', 'name', $name, 'display_name');
+            $tableInfo->up_table = false;
+            
+            $tableId = get_attr_from_cache('tables', 'name', $name, 'id');
+            
+            $control = DB::table('sub_tables')
+                            ->whereRaw('table_ids @> \''.$tableId.'\'::jsonb or table_ids @> \'"'.$tableId.'"\'::jsonb')
+                            ->first();
+            
+            if($control) $tableInfo->up_table = TRUE;
 
             return $tableInfo;
         });

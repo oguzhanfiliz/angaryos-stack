@@ -73,7 +73,7 @@ export class DataTableElementComponent
 
     /****    Operation Functions    *****/
 
-    can(policyType, record)
+    can(policyType, record = null)
     {
         var columnName = '';
         switch(policyType)
@@ -95,12 +95,29 @@ export class DataTableElementComponent
             case 'userImitation': return this.canUserImitation(record);
             case 'authWizard': return this.canAuthWizard(record);
             case 'dataEntegrator': return this.canDataEntegrator(record);
+            case 'selectAsUpTable': return this.canSelectUpTable();
+            case 'isRecordDataTransportTarget': return this.isRecordDataTransportTarget(record);
+            
             default: alert(policyType + ': not have can function'); return true;
         }
 
         if(typeof record[columnName] == "undefined" || record[columnName]) return true;
         
         return false;
+    }
+    
+    isRecordDataTransportTarget(record)
+    {
+        var loggedInUserId = BaseHelper.loggedInUserInfo['user']['id'];
+        var key = 'user:'+loggedInUserId+'.dataTransport';
+        
+        var temp = BaseHelper.readFromLocal(key);
+        if(temp == null) return false;
+        
+        if(temp['tableName'] != this.tableName) return false;
+        if(temp['recordId'] != record.id) return false;
+        
+        return true;
     }
 
     canDataEntegrator(record)
@@ -133,10 +150,30 @@ export class DataTableElementComponent
         
         return true;
     }
+    
+    canSelectUpTable()
+    {
+        var data = BaseHelper.readFromPipe(this.getLocalKey("data"));
+        return data[this.params.page]['table_info']['up_table'];
+    }
 
     userImitation(user)
     {
         this.sessionHelper.userImitation(user);
+    }
+    
+    selectAsUpTableRecord(record)
+    {
+        var loggedInUserId = BaseHelper.loggedInUserInfo['user']['id'];
+        var key = 'user:'+loggedInUserId+'.dataTransport';
+        
+        BaseHelper.writeToLocal(key, 
+        {
+            'tableName': this.tableName,
+            'recordId' : record.id
+        });
+        
+        this.messageHelper.toastMessage('Veri aktarılacak kayıt olarak belirlendi');
     }
 
     authWizard(table)
@@ -619,13 +656,20 @@ export class DataTableElementComponent
         };
     }
 
-    getRecordRowClass(index)
+    getRecordRowClass(index, record)
     {
+        var cls = "odd operations";
         for(var i = 0; i < this.selectedRecordList.length; i++)
             if(index == this.selectedRecordList[i].index)
-                return "selected-row";
-
-        return "";
+            {
+                cls += " selected-row";
+                break;
+            }
+            
+        var control = this.can('isRecordDataTransportTarget', record);
+        if(control) cls += " data-transport";
+        
+        return cls;
     }
 
     /****   Gui Action Functions   ****/

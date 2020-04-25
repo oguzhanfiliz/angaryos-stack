@@ -51,6 +51,8 @@ class BaseSeeder extends Seeder
     
     private function clear()
     {
+        Artisan::call('config:clear');
+        
         $this->clear_cache();
         $this->clear_db();
         
@@ -75,13 +77,7 @@ class BaseSeeder extends Seeder
         require('data/index.php');
         echo 'Data Insert Finished'."\n";
     }
-    
-    public function confirmation()
-    {
-        $onay = $this->command->ask('Bu işlem tüm veri tabanını siler! Eminseniz "ONAYLIYORUM" yazın?', "NO");
-        if($onay != "ONAYLIYORUM") exit(0);
-    }
-    
+        
     private function get_base_record()
     {
         //$now = new Carbon();
@@ -119,120 +115,9 @@ class BaseSeeder extends Seeder
         $this->host = 'omertest.kozid.local';
     }
     
-    private function geoServerClear()
-    {   
-        $r = exec('echo www | sudo -S docker service scale angaryos_geoserver=0');
-        if($r != 'verify: Service converged')
-        {
-            echo 'Geoserver Stop Fail'."\n";
-            return;
-        }
-        echo 'Geoserver Stop OK'."\n";
-        
-        $base = '/var/geoserver/';
-        $files = ['.', '..', '.gitignore', 'logs', 'user_projections'];
-        foreach(scandir($base) as $fileOrDir)
-            if(!in_array($fileOrDir, $files))
-                exec('echo www | sudo -S rm -rf '.$base.$fileOrDir);
-        
-        echo 'Geoserver Old Files Clear OK'."\n";
-            
-        $r = exec('echo www | sudo -S docker service scale angaryos_geoserver=1');
-        if($r != 'verify: Service converged') 
-        {
-            echo 'Geoserver Start Fail'."\n";
-            return;
-        }
-        echo 'Geoserver Start OK'."\n";
-    }
-    
-    private function geoServerSetDefault()
-    {
-        $username = env('GEOSERVER_USER', 'admin');
-        $password = env('GEOSERVER_PASSWORD', 'geoserver');
-        $workspace = env('GEOSERVER_WORKSPACE', 'angaryos');
-        
-        $helper = new \App\Libraries\GeoServerLibrary(
-                                                env('GEOSERVER_URL', 'http://geoserver:8080/geoserver/'),
-                                                $username,
-                                                $password);
-        
-        $helper->workspaceName = $workspace;
-        $helper->dataStoreName = env('GEOSERVER_DATA_STORE', 'angaryos');
-        
-        $this->geoserverCreateWorkspace($helper);
-        $this->geoserverCreateDataStore($helper);
-        
-        
-        $exec = 'echo www | sudo -S python3 /var/www/geoserverbot.py';
-        $exec .= ' ' . $username;
-        $exec .= ' ' . $password;
-        $exec .= ' ' . $workspace;
-        
-        $r = exec($exec);
-        if($r != 'LOG -> level:1 - Browser closed')
-            echo 'GeoServer Set Default Fail'."\n";
-        else
-            echo 'GeoServer Set Default OK'."\n";
-    }
-    
-    private function geoserverCreateWorkspace($helper)
-    {
-        echo "\n";
-        echo 'Wait For GeoServer Initialize 15 sec'."\n";
-        sleep(15);
-        
-        $workspaces = $helper->listWorkspaces();
-        if($workspaces == NULL) dd('Geoserver unavilable');
-        
-        $control = TRUE;
-        if($workspaces->workspaces != '')
-            foreach($workspaces->workspaces->workspace as $w)
-                if($w->name == $helper->workspaceName)
-                {
-                    $control = FALSE;
-                    break;
-                }
-
-        if($control)
-            $helper->createWorkspace($helper->workspaceName);
-        
-        echo 'GeoServer Workspace Create OK'."\n";
-    }
-    
-    private function geoserverCreateDataStore($helper)
-    {        
-        $dataStores = $helper->listDatastores($helper->workspaceName);
-        if($dataStores == NULL) dd('Geoserver unavilable');
-        
-        $control = TRUE;
-        if($dataStores->dataStores != '')
-            foreach($dataStores->dataStores->dataStore as $d)
-                if($d->name == $helper->dataStoreName)
-                {
-                    $control = FALSE;
-                    break;
-                }
-                
-        if($control)
-            $helper->createPostGISDataStore(
-                    $helper->dataStoreName, 
-                    $helper->workspaceName, 
-                    env('DB_DATABASE', 'postgres'), 
-                    env('DB_USERNAME', 'postgres'), 
-                    env('DB_PASSWORD', '1234Aa.'), 
-                    env('DB_HOST', '1234Aa.'));
-        
-        echo 'GeoServer Data Store Create OK'."\n";
-    }
-
     public function run()
     {
         if (!defined('ROBOT_USER_ID')) define('ROBOT_USER_ID', 3); 
-        
-        //$this->confirmation();        
-        
-        $this->geoServerClear();
         
         $this->fill_infos();
         
@@ -244,8 +129,8 @@ class BaseSeeder extends Seeder
         
         $this->insert_data();
         
-        $this->geoServerSetDefault();
+        \App\Jobs\ClearGeoserver::dispatch();
         
-        DB::commit();
+        DB::commit(); 
     }
 }

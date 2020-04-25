@@ -165,8 +165,13 @@ form-element
 
 .edit-td:hover
 {
-  span
+  span.edit-button
   {
     visibility: visible !important;
   }
+}
+
+.data-transport
+{
+    background-color: #ffffe0 !important;
 }

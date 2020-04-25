@@ -147,6 +147,10 @@ array_push($adminAuths, 'dashboards:RecordCount:users:0');
 array_push($adminAuths, 'dashboards:RecordCount:departments:0');
 
 
+array_push($adminAuths, 'map:0:0:0');
+array_push($adminAuths, 'map:kmz:upload:0');
+
+
 
 $adminAuth->auths = $adminAuths;
 $adminAuth->save();
