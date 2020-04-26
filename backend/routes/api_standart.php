@@ -25,6 +25,7 @@ Route::group(['prefix' => '{token}'], function ()
     
     Route::get('getMapData', 'MapController@GetData');
     Route::post('translateKmzOrKmlToJson', 'MapController@TranslateKmzOrKmlToJson');
+    Route::get('getSubTables/{upTableName}/{type}', 'MapController@GetSubTables');
 
     
     

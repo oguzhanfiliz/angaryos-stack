@@ -47,7 +47,7 @@ class AuthController extends Controller
             'menu' => $user->getMenuArray(),
             'map' => $user->getMapArray(),
             'dashboards' => $user->getDashboardArray(),
-            'auths' => $user->auths,
+            'auths' => $user->auths
         ];
         
         send_log('info', 'Response Logged In User Info', $data);

@@ -318,7 +318,8 @@ class User extends Authenticatable
             'created_at',
             'updated_at',
             'location',
-            'state'
+            'state',
+            'auths'
         ];
         
         $user = $this->toArray();

@@ -833,9 +833,63 @@ export class FullScreenMapElementComponent
             
         this.selectTypeAndDo((typeName) =>
         {
-            alert('sunucudan '+typeName+' tipinin aktarılabileceği alt tabloları getir. zaten üst tablo belli');
+            this.getTargetTableAndColumnForDataTransport(typeName)
+            .then((target) =>
+            {
+                if(target.length == 0) return;
+                
+                console.log(target);
+            })
         });
     }
     
-    
+    getTargetTableAndColumnForDataTransport(typeName)
+    {
+        return new Promise((resolve) =>
+        {
+            var loggedInUserId = BaseHelper.loggedInUserInfo['user']['id'];
+            var key = 'user:'+loggedInUserId+'.dataTransport';
+
+            var temp = BaseHelper.readFromLocal(key);
+        
+            var url = this.sessionHelper.getBackendUrlWithToken()+"getSubTables/"+temp['tableName']+"/"+typeName;
+            
+            console.log(url);
+            
+            this.generalHelper.startLoading();
+            this.sessionHelper.doHttpRequest("GET", url)
+            .then(async (data) => 
+            {
+                this.generalHelper.stopLoading();
+                if(data.length == 0)
+                {
+                    this.messageHelper.toastMessage("Bu tür için yetiniz bulunan bir tablo yok");
+                    resolve([]);
+                }
+                else if(data.length == 1)
+                    resolve(data);
+                else
+                {
+                    var inputOptions = {};
+                    for(var i = 0; i < data.length; i++)
+                        inputOptions[i] = data[i]['tableDisplayName'] + ' tablosunun ' + data[i]['columnDisplayName'] + ' kolonuna';
+                    
+                    const { value: id } = await Swal.fire(
+                    {
+                        title: 'Aktarmak istediğiniz tablo ve kolon',
+                        input: 'select',
+                        inputOptions: inputOptions,
+                        inputPlaceholder: 'Seçiniz',
+                        showCancelButton: false
+                    });
+
+                    if (typeof id == "undefined") return;
+                    if (id == "") return;
+
+                    resolve(data[id]);
+                }
+            })
+            .catch((e) => { this.generalHelper.stopLoading(); });
+        }); 
+    }
 }

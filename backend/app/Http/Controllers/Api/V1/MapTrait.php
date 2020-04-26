@@ -435,4 +435,45 @@ trait MapTrait
 
         return $tree;
     }
+    
+    private function geoTypeControl($type)
+    {
+        $types = ['point', 'linestring', 'polygon'];
+        if(!in_array($type, $types))
+            custom_abort ('invalid.geo.type:'.$type);
+    }
+
+
+    private function GetUserSubTables($user, $upTableName, $type)
+    {
+        $upTable = get_attr_from_cache('tables', 'name', $upTableName, '*');
+        $subTables = DB::table('sub_tables')
+                            ->whereRaw('table_ids @> \''.$upTable->id.'\'::jsonb or table_ids @> \'"'.$upTable->id.'"\'::jsonb')
+                            ->get();
+        
+        $return = [];
+        foreach($subTables as $subTable)
+        {
+            $table = get_model_from_cache('tables', 'id', $subTable->sub_table_id);
+            $columns = $table->getRelationData('column_ids');
+            foreach($columns as $column)
+            {
+                $columnTypeName = $column->getRelationData('column_db_type_id')->name;
+                if(!strstr($columnTypeName, $type)) continue;
+                
+                array_push($return, 
+                [
+                    'tableId' => $table->id,
+                    'tableName' => $table->name,
+                    'tableDisplayName' => $table->display_name,
+                    'columnid' => $column->id,
+                    'columnName' => $column->name,
+                    'columnDisplayName' => $column->display_name,
+                    
+                ]);
+            }
+        }
+     
+        return $return;   
+    }
 }

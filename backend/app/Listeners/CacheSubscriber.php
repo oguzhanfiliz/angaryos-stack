@@ -169,6 +169,19 @@ class CacheSubscriber
             $this->clearUserCache($user);
         
         $keys = $this->getCacheKeys();
+        $tables = [];
+        foreach($record->auths as $auth)
+            if(!is_int($auth))
+            {
+                $temp = explode(':', $auth);
+                if($temp[0] != 'tables') continue;
+                if(in_array($temp[1], $tables)) continue;
+                
+                array_push($tables, $temp[1]);
+            }
+        
+        if(count($tables) == 0) return;
+        
         foreach($keys as $key)
             if(strstr($key, 'userToken:'))
                 dd('clearFilterCache');//userToken:1111111111111111d1.tableName:test.mapFilters
@@ -359,10 +372,19 @@ class CacheSubscriber
                     ClearCache::dispatch($key);
                 else
                 {
-                    dd('clearTablesAndColumnCommonCache');
-                    //$temp custom layer yada external layer adı olaiblir
-                    //onların masıl isimlendirildiğini inceleyip
-                    //bunların cache i var ise sil
+                    if($table->name == $temp) 
+                    {
+                        ClearCache::dispatch($key);
+                        return;
+                    }
+                    
+                    $customLayers = DB::table('custom_layers')->where('table_id', $table->id)->pluck('name', 'table_id');
+                    foreach($customLayers as $tableId => $customLayer)
+                        if(helper('seo', $customLayer) == $temp)
+                        {
+                            ClearCache::dispatch($key);
+                            return;
+                        }
                 }
             }
             else if(substr($key, -16, 16) == '|tableGroups')

@@ -38,4 +38,18 @@ class MapController extends Controller
 
         return helper('response_success', $tree);
     }
+    
+    public function GetSubTables($user, $upTableName, $type)
+    {
+        send_log('info', 'Request Sub Tables '.$upTableName.':'.$type);
+        
+        $this->userMapAuthControl($user);
+        $this->geoTypeControl($type);
+        
+        $subTables = $this->GetUserSubTables($user, $upTableName, $type);
+        
+        send_log('info', 'Response Sub Tables ', json_encode($subTables));
+
+        return helper('response_success', $subTables);
+    }
 }
