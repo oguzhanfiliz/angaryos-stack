@@ -84,7 +84,6 @@ export class ColumnArrayFormElementComponent
 
     editRelationRecord(columnName)
     {
-        console.log("asd");
         this.inFormTableName = this.getDataFromColumnArray('columns.'+columnName+'.relation.table_name');
         this.inFormColumnName = columnName;
         

@@ -1,6 +1,8 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
+import { PagesModule } from './pages/pages.module';
+
 import { Injector, NgModule } from '@angular/core';
 import { createCustomElement } from '@angular/elements';
 
@@ -22,6 +24,9 @@ import { FullScreenMapElementComponent } from './pages/helpers/custom-elements/f
 
 import { LoginComponent } from './pages/login/login.component';
 import { LinkPageComponent } from './pages/link-page/link-page.component';
+
+import { FormComponent } from './pages/form/form.component';
+import { ColumnArrayFormElementComponent } from './pages/helpers/custom-elements/column-array-form-element/column-array-form-element.component';
 
 import { GuiTriggerHelper } from './pages/helpers/gui-trigger';
 import { MessageHelper } from './pages/helpers/message';
@@ -46,7 +51,8 @@ import { AeroThemeHelper } from './pages/helpers/aero.theme';
     BrowserAnimationsModule,
     HttpClientModule,
     FormsModule,
-    DragDropModule
+    DragDropModule,
+    PagesModule,
   ],
   providers: 
   [
@@ -62,6 +68,8 @@ import { AeroThemeHelper } from './pages/helpers/aero.theme';
   ],
   entryComponents: 
   [
+    FormComponent,
+    ColumnArrayFormElementComponent,
     FullScreenMapElementComponent
   ],
 })
@@ -69,13 +77,10 @@ export class AeroModule
 {
   customElementList =
   {
-    'fullscreen-map-element': FullScreenMapElementComponent
+    'fullscreen-map-element': FullScreenMapElementComponent    
   };
 
-  constructor(private injector: Injector) 
-  {
-    
-  }
+  constructor(private injector: Injector) { }
 
   ngDoBootstrap()
   {

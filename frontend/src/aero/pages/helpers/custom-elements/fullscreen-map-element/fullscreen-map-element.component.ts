@@ -29,6 +29,11 @@ export class FullScreenMapElementComponent
     @Input() loggedInUserInfoJson: string = "";
     
     @Output() changed = new EventEmitter();
+    
+    inFormColumnName = "";
+    inFormTableName = "";
+    inFormRecordId = 0;
+    inFormElementId = "";
 
     map = null;
     loggedInUserInfo = null;
@@ -42,6 +47,13 @@ export class FullScreenMapElementComponent
     ctrlPressed = false;
     altPressed = false;
     selectAreaStartPixel = null;
+    
+    typesMatch = 
+    {
+        point: 'Nokta',
+        linestring: 'Çizgi',
+        polygon: 'Alan'
+    };
 
     /****    Default Functions     ****/
 
@@ -54,7 +66,7 @@ export class FullScreenMapElementComponent
 
     ngAfterViewInit() 
     {  
-        this.aeroThemeHelper.loadPageScriptsLight();
+        this.aeroThemeHelper.loadPageScripts();
     }
 
     ngOnChanges()
@@ -143,18 +155,13 @@ export class FullScreenMapElementComponent
         return temp != null;
     }
     
-    async selectTypeAndDo(func)
+    async selectTypeAndDo(types, func)
     {
         const { value: typeName } = await Swal.fire(
         {
             title: 'Seçmek istediğiniz tip',
             input: 'select',
-            inputOptions: 
-            {
-                point: 'Nokta',
-                linestring: 'Çizgi',
-                polygon: 'Alan'
-            },
+            inputOptions: types, 
             inputPlaceholder: 'Tip seçiniz',
             showCancelButton: false
         });
@@ -274,7 +281,7 @@ export class FullScreenMapElementComponent
     {
         $('#selectArea').remove();
 
-        this.selectTypeAndDo((typeName) =>
+        this.selectTypeAndDo(this.typesMatch, (typeName) =>
         {
             this.selectIntectsFeatureWithArea(typeName, selectAreaStartPixel, selectAreaEndPixel);
         });
@@ -401,7 +408,7 @@ export class FullScreenMapElementComponent
 
             for(var i = 0; i < data['vector'].length; i++)
                 if(data['vector'][i].visible)
-                    data['vector'][i].selected = true;
+                    data['vector'][i].selected = !data['vector'][i].selected;
             
             this.updateFeatureStyles();
         });
@@ -830,17 +837,49 @@ export class FullScreenMapElementComponent
         var types = Object.keys(selectedFeatures);
         if(types.length == 0)
             return this.messageHelper.toastMessage('Aktarmak için seçilmiş nesne yok!');
+        else if(types.length == 1)
+            return this.dataTransportByTypeName(types[0]);
             
-        this.selectTypeAndDo((typeName) =>
+        var temp = {};
+        for(var i = 0; i < types.length; i++)
+            temp[types[i]] = this.typesMatch[types[i]];            
+            
+            
+        this.selectTypeAndDo(temp, (typeName) =>
         {
-            this.getTargetTableAndColumnForDataTransport(typeName)
-            .then((target) =>
-            {
-                if(target.length == 0) return;
-                
-                console.log(target);
-            })
+            this.dataTransportByTypeName(typeName);
         });
+    }
+    
+    dataTransportByTypeName(typeName)
+    {
+        this.getTargetTableAndColumnForDataTransport(typeName)
+        .then((target) =>
+        {
+            if(target['length'] == 0) return;
+
+            this.openDataTransformForm(target);
+        })
+    }
+    
+    openDataTransformForm(target)
+    {
+        this.inFormTableName = target.tableName;
+        this.inFormColumnName = target.columnName;
+        
+        var loggedInUserId = BaseHelper.loggedInUserInfo['user']['id'];
+        var key = 'user:'+loggedInUserId+'.dataTransport';
+        var temp = BaseHelper.readFromLocal(key);
+
+        this.inFormRecordId = 0;
+
+        var rand = Math.floor(Math.random() * 10000) + 1;
+        this.inFormElementId = "ife-"+rand;
+        
+        setTimeout(() => 
+        {
+            $('#'+this.inFormElementId+'inFormModal').modal('show');
+        }, 100);
     }
     
     getTargetTableAndColumnForDataTransport(typeName)
@@ -854,24 +893,22 @@ export class FullScreenMapElementComponent
         
             var url = this.sessionHelper.getBackendUrlWithToken()+"getSubTables/"+temp['tableName']+"/"+typeName;
             
-            console.log(url);
-            
             this.generalHelper.startLoading();
             this.sessionHelper.doHttpRequest("GET", url)
             .then(async (data) => 
             {
                 this.generalHelper.stopLoading();
-                if(data.length == 0)
+                if(data['length'] == 0)
                 {
                     this.messageHelper.toastMessage("Bu tür için yetiniz bulunan bir tablo yok");
                     resolve([]);
                 }
-                else if(data.length == 1)
-                    resolve(data);
+                else if(data['length'] == 1)
+                    resolve(data[0]);
                 else
                 {
                     var inputOptions = {};
-                    for(var i = 0; i < data.length; i++)
+                    for(var i = 0; i < data['length']; i++)
                         inputOptions[i] = data[i]['tableDisplayName'] + ' tablosunun ' + data[i]['columnDisplayName'] + ' kolonuna';
                     
                     const { value: id } = await Swal.fire(

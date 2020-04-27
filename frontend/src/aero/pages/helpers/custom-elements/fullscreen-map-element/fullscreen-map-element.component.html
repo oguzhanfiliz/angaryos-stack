@@ -48,11 +48,6 @@
                     KMZ Yükle   
                 </button>
             </td>
-            <td width="5px">
-                <button (click)="dataTransport()" [class]="'btn btn-sm btn-primary ' + (isUpTableRecordSelected() ? '' : ' disabled')" type="button">
-                    Data Aktar  
-                </button>
-            </td>
             <td>
 
             </td><td align="right">
@@ -71,7 +66,13 @@
         <tr>
             <td>
                 <h6 style="padding: 0; margin: 5 0 5 10;">Nesneler</h6>
-            </td><td align="right">
+            </td>
+            <td width="65px" align="right">
+                <button (click)="dataTransport()" [class]="'btn btn-sm btn-primary ' + (isUpTableRecordSelected() ? '' : ' disabled')" type="button">
+                    Data Aktar  
+                </button>
+            </td>
+            <td width="5px" align="right">
                 <button style="margin-right: 3px;" 
                     (click)="setFeaturesTreeVisible(false)" 
                     class="btn btn-sm btn-secondary" type="button">
@@ -278,3 +279,26 @@
 </div>
 
 <input style="display: none;" name="kmzFile" id="kmzFile" type="file" accept=".kmz,.kml">
+    
+<!--<div class="modal fade" id="{{ inFormElementId }}inFormModal" role="dialog" [attr.aria-labelledby]="inFormTableName+'inFormModalLabel'" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-body" style="padding: 0px !important;">
+                <in-form-element  
+                    *ngIf="inFormTableName.length > 0"
+                    id="{{ inFormElementId }}" 
+                    (formSaved)="inFormSavedSuccess($event)"
+                    [attr.inFormTableName]="inFormTableName"
+                    [attr.inFormColumnName]="inFormColumnName" 
+                    [attr.inFormRecordId]="inFormRecordId">
+                
+                </in-form-element>
+                <button class="btn btn-danger btn-block" 
+                    style="position: absolute; margin: -35 20 0 20; width: -webkit-fill-available;"
+                    (click)="closeModal(inFormElementId+'inFormModal')"
+                    type="button">İptal
+                </button>
+            </div>
+        </div>
+    </div>
+</div>-->

@@ -19,13 +19,13 @@ import { SearchComponent } from './search/search.component';
 import { ArchiveComponent } from './archive/archive.component';
 import { DeletedComponent } from './deleted/deleted.component';
 import { ShowComponent } from './show/show.component';
-import { FormComponent } from './form/form.component';
+//import { FormComponent } from './form/form.component';
 import { AuthWizardComponent } from './auth-wizard/auth-wizard.component';
 import { DataEntegratorComponent } from './data-entegrator/data-entegrator.component';
 
 
 
-import { FormElementComponent } from './helpers/custom-elements/form-element/form-element.component';
+/*import { FormElementComponent } from './helpers/custom-elements/form-element/form-element.component';
 import { TextElementComponent } from './helpers/custom-elements/form-element/text-element/text-element.component';
 import { StringElementComponent } from './helpers/custom-elements/form-element/string-element/string-element.component';
 import { PasswordElementComponent } from './helpers/custom-elements/form-element/password-element/password-element.component';
@@ -39,12 +39,12 @@ import { MapElementComponent } from './helpers/custom-elements/form-element/map-
 import { DateTimeElementComponent } from './helpers/custom-elements/form-element/date-time-element/date-time-element.component';
 import { DateElementComponent } from './helpers/custom-elements/form-element/date-element/date-element.component';
 import { TimeElementComponent } from './helpers/custom-elements/form-element/time-element/time-element.component';
-import { CodeEditorElementComponent } from './helpers/custom-elements/form-element/code-editor-element/code-editor-element.component';
+import { CodeEditorElementComponent } from './helpers/custom-elements/form-element/code-editor-element/code-editor-element.component';*/
 
 import { DataTableElementComponent } from './helpers/custom-elements/data-table-element/data-table-element.component';
 import { DetailFilterElementComponent } from './helpers/custom-elements/data-table-element/detail-filter-element/detail-filter-element.component';
 import { ColumnArrayElementComponent } from './helpers/custom-elements/column-array-element/column-array-element.component';
-import { ColumnArrayFormElementComponent } from './helpers/custom-elements/column-array-form-element/column-array-form-element.component';
+//import { ColumnArrayFormElementComponent } from './helpers/custom-elements/column-array-form-element/column-array-form-element.component';
 
 import { GeoPreviewElementComponent } from './helpers/custom-elements/geo-preview-element/geo-preview-element.component';
 
@@ -60,13 +60,13 @@ import { GeoPreviewElementComponent } from './helpers/custom-elements/geo-previe
     ArchiveComponent,
     DeletedComponent,
     ShowComponent,
-    FormComponent,
+    //FormComponent,
     AuthWizardComponent,
     DataEntegratorComponent,
 
     NotFoundComponent,
 
-    FormElementComponent,
+    /*FormElementComponent,
     TextElementComponent,
     StringElementComponent,
     PasswordElementComponent,
@@ -80,13 +80,13 @@ import { GeoPreviewElementComponent } from './helpers/custom-elements/geo-previe
     DateTimeElementComponent,
     DateElementComponent,
     TimeElementComponent,
-    CodeEditorElementComponent,
+    CodeEditorElementComponent,*/
 
     DataTableElementComponent,
     DetailFilterElementComponent,
 
     ColumnArrayElementComponent,
-    ColumnArrayFormElementComponent,
+    //ColumnArrayFormElementComponent,
 
     GeoPreviewElementComponent
   ],
@@ -101,8 +101,8 @@ import { GeoPreviewElementComponent } from './helpers/custom-elements/geo-previe
   bootstrap: [PagesComponent],
   entryComponents: 
   [
-    FormComponent,
-    FormElementComponent,
+    //FormComponent,
+    /*FormElementComponent,
     TextElementComponent,
     StringElementComponent,
     PasswordElementComponent,
@@ -116,13 +116,13 @@ import { GeoPreviewElementComponent } from './helpers/custom-elements/geo-previe
     DateTimeElementComponent,
     DateElementComponent,
     TimeElementComponent,
-    CodeEditorElementComponent,
+    CodeEditorElementComponent,*/
 
     DataTableElementComponent,
     DetailFilterElementComponent,
 
     ColumnArrayElementComponent,
-    ColumnArrayFormElementComponent,
+    //ColumnArrayFormElementComponent,
 
     GeoPreviewElementComponent
   ],
@@ -131,7 +131,7 @@ export class PagesModule
 {
   customElementList =
   {
-    'form-element': FormElementComponent,
+    /*'form-element': FormElementComponent,
     'text-element': TextElementComponent,
     'string-element': StringElementComponent,
     'password-element': PasswordElementComponent,
@@ -147,15 +147,17 @@ export class PagesModule
     'date-element': DateElementComponent,
     'time-element': TimeElementComponent,
     
-    'code-editor-element': CodeEditorElementComponent,
+    'code-editor-element': CodeEditorElementComponent,*/
     
     'data-table-element': DataTableElementComponent,
     'detail-filter-element': DetailFilterElementComponent,
     'column-array-element': ColumnArrayElementComponent,
-    'column-array-form-element': ColumnArrayFormElementComponent,
+    //'column-array-form-element': ColumnArrayFormElementComponent,
     'geo-preview-element': GeoPreviewElementComponent,
     
-    'in-form-element': FormComponent
+    
+
+    //'in-form-element': FormComponent
   };
 
   constructor(private injector: Injector) 

@@ -10,7 +10,7 @@ import { MessageHelper } from './../helpers/message';
 import { AeroThemeHelper } from './../helpers/aero.theme';
 
 declare var $: any;
-
+ 
 @Component(
 {
     selector: 'in-form-element',
@@ -20,7 +20,7 @@ declare var $: any;
 export class FormComponent 
 {
     @Input() id: string = "";
-    @Input() inFormTableName: string = "";
+    @Input() inFormTableName: string = ""; 
     @Input() inFormColumnName: string = "";
     @Input() inFormRecordId: number = 0;
     
