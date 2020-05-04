@@ -39,6 +39,7 @@ class Kernel extends ConsoleKernel
 
     protected function schedule(Schedule $schedule)
     {
+        $schedule->command('system:rutine')->daily();
         $schedule->command('temp:clear')->hourly();
         
         $this->dataEntegratorSchedule($schedule);

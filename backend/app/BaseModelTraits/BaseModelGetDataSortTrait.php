@@ -18,7 +18,7 @@ trait BaseModelGetDataSortTrait
             $this->addSort($model, $columns->{$name}, $direction);
         }
         
-        if(!$added) $model->orderBy($this->getTable().'.id');
+        if(!$added) $model->orderBy($this->getTable().'.id', 'desc');
     }
     
     private function addSort($model, $column, $direction)

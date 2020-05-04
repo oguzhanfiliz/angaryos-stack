@@ -89,7 +89,7 @@ export class ColumnArrayFormElementComponent
         
         this.inFormRecordId = this.getSelectedOptionValue(columnName);
         if(this.inFormRecordId < 1) return;
-
+   
         var rand = Math.floor(Math.random() * 10000) + 1;
         this.inFormElementId = "ife-"+rand;
         
@@ -177,15 +177,18 @@ export class ColumnArrayFormElementComponent
                 return 0;
             }
 
-            var selectedItem = selected.html().split('</span>')[1];
+            var data = $(elementId).select2("data");
+            return data[count].id;
+            /*var selectedItem = selected.html().split('</span>')[1];
             var data = $(elementId).select2("data");
             for(var i = 0; i < data.length; i++)
-                if(data[i].text == selectedItem)
-                {
-                    if(count-- > 0) continue;
+            {
+                if(count-- > 0) continue;
 
+                if(data[i].text == selectedItem)
                     return data[i].id;
-                }
+            }*/
+                
         }
     }
 
