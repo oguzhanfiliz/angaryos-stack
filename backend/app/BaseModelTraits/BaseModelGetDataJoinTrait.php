@@ -88,7 +88,10 @@ trait BaseModelGetDataJoinTrait
                                                                     $pipe['table'].'_archive.',
                                                                     $params->join->connection_column_with_alias);
         }
-                
+        
+        if(!strstr($params->join->connection_column_with_alias, '.')) 
+            $params->join->connection_column_with_alias = $this->getTable().'.'.$params->join->connection_column_with_alias;
+    
         $params->model->leftJoin($params->joinTable->name . ' as ' . $params->join->join_table_alias, 
         function($join) use($params)
         {
