@@ -104,7 +104,8 @@ try:
         
         f = open(".updateignore", "r")
         for item in f:
-            clone_from_temp(item.strip())        
+            if len(item.strip()) > 0:
+                clone_from_temp(item.strip())        
         f.close()
 
         write_log(1, "Clone ignored files starting")

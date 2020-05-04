@@ -78,19 +78,33 @@ class BaseModel extends Model
         return $return;
     }
     
+    private function IsWkt($str)
+    {
+        $str = strtolower($str);
+        if(substr($str, 0, 5) == 'point') return TRUE;
+        if(substr($str, 0, 10) == 'linestring') return TRUE;
+        if(substr($str, 0, 7) == 'polygon') return TRUE; 
+
+        return FALSE;
+    }
+
     public function save(array $options = [])
     {
         $this->fillVariables();
+
+        
         
         $orj = [];
         foreach($this->getAllColumnsFromDB() as $columnName => $column)
             if(strlen($column['srid']) > 0)
                 if(strlen($this->{$column['name']}) > 0)
                     if(!is_object($this->{$column['name']}))
-                    {
-                        $orj[$column['name']] = $this->{$column['name']} ;
-                        $this->{$column['name']} = DB::raw('ST_GeomFromText(\''.$this->{$column['name']}.'\', '.$column['srid'].')');
-                    }
+                        if($this->IsWkt($this->{$column['name']}))
+                        {
+                            $orj[$column['name']] = $this->{$column['name']};
+                            $this->{$column['name']} = DB::raw('ST_GeomFromText(\''.$this->{$column['name']}.'\', '.$column['srid'].')');
+                        }
+                
          
         foreach(array_keys($this->toArray()) as $columnName)
             if(substr($columnName, -15) == '__relation_data')

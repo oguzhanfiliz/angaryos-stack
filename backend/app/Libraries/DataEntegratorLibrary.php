@@ -130,7 +130,7 @@ class DataEntegratorLibrary
         
         $temp->save(); 
         
-        $cacheSubscriber = new CacheSubscriber();
+        $cacheSubscriber = new CacheSubscriber(TRUE);
         $cacheSubscriber->recordChangedSuccess('tables', $temp, 'update');
     }
     
@@ -301,7 +301,7 @@ class DataEntegratorLibrary
         
         $this->UpdateRecordStaticColumns($record, $data);
         
-        $cacheSubscriber = new CacheSubscriber();
+        $cacheSubscriber = new CacheSubscriber(TRUE);
         $cacheSubscriber->recordChangedSuccess($tableName, $record, 'update');
     }
     
@@ -313,7 +313,7 @@ class DataEntegratorLibrary
         
         $record = $this->ReverseUpdateDataEntegratorColumnsData([$record])[0];
         
-        $cacheSubscriber = new CacheSubscriber();
+        $cacheSubscriber = new CacheSubscriber(TRUE);
         $cacheSubscriber->recordChangedSuccess($tableName, $record, 'delete');
     }
     

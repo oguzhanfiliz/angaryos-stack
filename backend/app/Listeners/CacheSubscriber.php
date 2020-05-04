@@ -10,9 +10,14 @@ use DB;
 
 class CacheSubscriber 
 {
+    private $dispatchType = 'dispatch';
     private $cacheKeys = NULL;
     
-    public function __construct() { }
+    public function __construct($dispatchNow = FALSE) 
+    {
+        if($dispatchNow)
+            $this->dispatchType = 'dispatchNow';
+    }
     
     public function recordChangedSuccess($tableName, $record, $type)
     {
@@ -61,7 +66,7 @@ class CacheSubscriber
             
             case 'data_filter_types':
             case 'missions':
-                ClearCache::dispatch('allAuths');
+                ClearCache::{$this->dispatchType}('allAuths');
                 break;
         }
         
@@ -70,7 +75,7 @@ class CacheSubscriber
 
     private function clearColumnSetOrArrayCache($setOrArray)
     {
-        ClearCache::dispatch('allAuths');
+        ClearCache::{$this->dispatchType}('allAuths');
         
         $table = get_attr_from_cache('tables', 'id', $setOrArray->table_id, '*');
         $this->clearTableCache($table);
@@ -85,14 +90,14 @@ class CacheSubscriber
     
     private function clearCustomLayerCache($customLayer)
     {
-        ClearCache::dispatch('allAuths');
+        ClearCache::{$this->dispatchType}('allAuths');
         dd('clearCustomLayerCache');
         //$key = 'customLayerSeoName:'.$seoName.'|returnData:table_id';
     }
     
     private function clearFilterCache($filter)
     {
-        ClearCache::dispatch('allAuths');
+        ClearCache::{$this->dispatchType}('allAuths');
         
         $filterTypeName = get_attr_from_cache('data_filter_types', 'id', $filter->data_filter_type_id, 'name');
         if($filterTypeName != 'list') return;
@@ -145,12 +150,12 @@ class CacheSubscriber
         $keys = $this->getCacheKeys();
         foreach($keys as $key)
             if(substr($key, -16, 16) == '|tableGroups')
-                ClearCache::dispatch($key);
+                ClearCache::{$this->dispatchType}($key);
     }
     
     private function clearAuthGroupsCache($record)
     {
-        ClearCache::dispatch('allAuths');
+        ClearCache::{$this->dispatchType}('allAuths');
         
         $users = \DB::table('users')->where('auths', '@>', $record->id)->get();
         foreach($users as $user)
@@ -169,22 +174,9 @@ class CacheSubscriber
             $this->clearUserCache($user);
         
         $keys = $this->getCacheKeys();
-        $tables = [];
-        foreach($record->auths as $auth)
-            if(!is_int($auth))
-            {
-                $temp = explode(':', $auth);
-                if($temp[0] != 'tables') continue;
-                if(in_array($temp[1], $tables)) continue;
-                
-                array_push($tables, $temp[1]);
-            }
-        
-        if(count($tables) == 0) return;
-        
         foreach($keys as $key)
             if(strstr($key, 'userToken:'))
-                dd('clearFilterCache');//userToken:1111111111111111d1.tableName:test.mapFilters
+                dd('clearFilterCache');//acaba bu clear user token içine alınabilir mi?//userToken:1111111111111111d1.tableName:test.mapFilters
     }
     
     private function clearRelationDataCache($tableName, $record, $type)
@@ -234,7 +226,7 @@ class CacheSubscriber
                     if(strstr($key, $prefix))
                     { 
                         $key = str_replace(explode($prefix, $key)[0], '', $key);
-                        ClearCache::dispatch($key);
+                        ClearCache::{$this->dispatchType}($key);
                     }
                 }
             }
@@ -243,7 +235,8 @@ class CacheSubscriber
     
     private function clearUserCache($record)
     {
-        ClearCache::dispatch('tableName:users|id:'.$record->id.'|authTree');
+        ClearCache::{$this->dispatchType}('tableName:users|id:'.$record->id.'|authTree');
+        ClearCache::{$this->dispatchType}('user:'.$record->id.'|tableGroups');
         
         $keys = $this->getCacheKeys();
         foreach($keys as $key)
@@ -254,23 +247,23 @@ class CacheSubscriber
                 $token = explode('.', explode('userToken:', $key)[1])[0];
                 $user = helper('get_user_from_token', $token);
                 if($user == NULL)
-                    ClearCache::dispatch($key);
+                    ClearCache::{$this->dispatchType}($key);
                 else if($record->id == $user->id);
-                    ClearCache::dispatch($key);
+                    ClearCache::{$this->dispatchType}($key);
             }
             
         if($record->id == PUBLIC_USER_ID)
-            ClearCache::dispatch('publicUser');
+            ClearCache::{$this->dispatchType}('publicUser');
     }
     
     private function clearSettingCache($record)
     {
-        ClearCache::dispatch('settings');
+        ClearCache::{$this->dispatchType}('settings');
     }
     
     private function clearColumnSetsOrArraysCache($table)
     {
-        ClearCache::dispatch('allAuths');
+        ClearCache::{$this->dispatchType}('allAuths');
         
         $ts = ['column_sets', 'column_arrays'];        
         foreach($ts as $t)
@@ -279,7 +272,7 @@ class CacheSubscriber
             foreach($temp as $rec)
             {
                 $key = 'table:'.$table->name.'|type:'.$t.'|id:'.$rec->id; 
-                ClearCache::dispatch($key);
+                ClearCache::{$this->dispatchType}($key);
             }
         }
     }
@@ -291,18 +284,18 @@ class CacheSubscriber
             if(is_array($value)) $value = json_encode($value);
             
             $cacheKey = 'tableName:'.$tableName.'|columnName:'.$columnName.'|columnData:'.$value.'|returnData:BaseModel';
-            ClearCache::dispatch($cacheKey);
+            ClearCache::{$this->dispatchType}($cacheKey);
             
             $cacheKey = 'tableName:'.$tableName.'|columnName:'.$columnName.'|columnData:'.$value.'|returnData:*';
-            ClearCache::dispatch($cacheKey);
+            ClearCache::{$this->dispatchType}($cacheKey);
             
             $cacheKey = 'tableName:'.$tableName.'|columnName:'.$columnName.'|columnData:'.$value.'|relationData';
-            ClearCache::dispatch($cacheKey);
+            ClearCache::{$this->dispatchType}($cacheKey);
             
             foreach($data as $returnColumnName => $v)
             {
                 $cacheKey = 'tableName:'.$tableName.'|columnName:'.$columnName.'|columnData:'.$value.'|returnData:'.$returnColumnName;
-                ClearCache::dispatch($cacheKey);
+                ClearCache::{$this->dispatchType}($cacheKey);
             }
         }
     }
@@ -318,18 +311,18 @@ class CacheSubscriber
     
     public function clearTableCache($table)
     {
-        ClearCache::dispatch('allAuths');
-        ClearCache::dispatch('tableName:'.$table->name.'|tableInfo');
+        ClearCache::{$this->dispatchType}('allAuths');
+        ClearCache::{$this->dispatchType}('tableName:'.$table->name.'|tableInfo');
         
         $this->clearTablesAndColumnCommonCache($table);
     }
     
     private function clearTableStandartCache($tableId, $tableName)
     {
-        ClearCache::dispatch('tableName:'.$tableName.'|fillableColumns');
-        ClearCache::dispatch('tableName:'.$tableName.'|castsColumns');
-        ClearCache::dispatch('tableName:'.$tableName.'|allColumsFromDb');
-        ClearCache::dispatch('tableName:'.$tableName.'|allColumsFromDbWithTableAliasAndGuiType');
+        ClearCache::{$this->dispatchType}('tableName:'.$tableName.'|fillableColumns');
+        ClearCache::{$this->dispatchType}('tableName:'.$tableName.'|castsColumns');
+        ClearCache::{$this->dispatchType}('tableName:'.$tableName.'|allColumsFromDb');
+        ClearCache::{$this->dispatchType}('tableName:'.$tableName.'|allColumsFromDbWithTableAliasAndGuiType');
         
         if(strstr($tableName, '_archive')) return;
         
@@ -337,10 +330,10 @@ class CacheSubscriber
         $columnArrays = DB::table('column_arrays')->where('table_id', $tableId)->get();
         foreach($columnArrays as $columnArray) 
         {
-            ClearCache::dispatch($key.$columnArray->id);
+            ClearCache::{$this->dispatchType}($key.$columnArray->id);
             $this->clearRecordCache('column_arrays', $columnArray);
         }
-        ClearCache::dispatch($key.'0');
+        ClearCache::{$this->dispatchType}($key.'0');
     }
     
     private function clearTablesAndColumnCommonCache($table)
@@ -361,7 +354,7 @@ class CacheSubscriber
                 if(strstr($key, $prefix) || strstr($key, $prefixArchive))
                 { 
                     $key = str_replace(explode($prefix, $key)[0], '', $key);
-                    ClearCache::dispatch($key);
+                    ClearCache::{$this->dispatchType}($key);
                 }
             }
             else if(strstr($key, 'userToken:'))
@@ -369,31 +362,22 @@ class CacheSubscriber
                 //userToken:1111111111111111d1.tableName:test.mapFilters
                 $temp = explode('.', explode('tableName:', $key)[1])[0];
                 if($temp == $table->name)
-                    ClearCache::dispatch($key);
+                    ClearCache::{$this->dispatchType}($key);
                 else
                 {
-                    if($table->name == $temp) 
-                    {
-                        ClearCache::dispatch($key);
-                        return;
-                    }
-                    
-                    $customLayers = DB::table('custom_layers')->where('table_id', $table->id)->pluck('name', 'table_id');
-                    foreach($customLayers as $tableId => $customLayer)
-                        if(helper('seo', $customLayer) == $temp)
-                        {
-                            ClearCache::dispatch($key);
-                            return;
-                        }
+                    dd('clearTablesAndColumnCommonCache');
+                    //$temp custom layer yada external layer adı olaiblir
+                    //onların masıl isimlendirildiğini inceleyip
+                    //bunların cache i var ise sil
                 }
             }
             else if(substr($key, -16, 16) == '|tableGroups')
             {
-                ClearCache::dispatch($key);
+                ClearCache::{$this->dispatchType}($key);
             }
             else if(strstr($key, 'customLayerSeoName:'))
             {
-                ClearCache::dispatch($key);
+                ClearCache::{$this->dispatchType}($key);
             }
         }
     }
