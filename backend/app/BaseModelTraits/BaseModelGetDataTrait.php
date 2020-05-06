@@ -36,7 +36,7 @@ trait BaseModelGetDataTrait
         $params->model->limit($params->limit);
         $params->model->offset($params->limit * ($params->page - 1));
         $records = $params->model->get();
-        $records = $this->updataDataFromDataSource($records, $params->columns);
+        $records = $this->updateRecordsDataForResponse($records, $params->columns);
         
         return 
         [
@@ -116,48 +116,55 @@ trait BaseModelGetDataTrait
         return $tableInfo;
     }
     
-    public function updataDataFromDataSource($records, $columns)
+    private function updateRecordsDataForResponseGuiTypeRichText($data)
+    {
+        return helper('reverse_clear_string_for_db', $data);
+    }
+    
+    private function updateRecordsDataForResponseFromDataSource($record, $column, $relation)
+    {
+        $dataSource = get_attr_from_cache('column_data_sources', 'id', $relation->column_data_source_id, '*');
+        $repository = NULL;
+        eval(helper('clear_php_code', $dataSource->php_code));
+
+        return $repository->getRecordsForListBySourceData($record, $column);
+    }
+    
+    private function updateRecordsDataForResponseSingleData($record, $column)
+    {
+        if(strlen($column->column_table_relation_id) > 0) 
+        {
+            $relation = get_attr_from_cache('column_table_relations', 'id', $column->column_table_relation_id, '*');
+            
+            if(strlen($relation->column_data_source_id) > 0)
+                return $this->updateRecordsDataForResponseFromDataSource($record, $column, $relation);
+        }
+        
+        $data = $record->{$column->name};
+        $guiTypeName = get_attr_from_cache('column_gui_types', 'id', $column->column_gui_type_id, 'name');
+        switch ($guiTypeName) 
+        {
+            case 'password': return NULL;
+            case 'rich_text': return $this->updateRecordsDataForResponseGuiTypeRichText($data);
+            default: return $data;
+        }
+    }
+    
+    public function updateRecordsDataForResponse($records, $columns)
     {
         if(is_array($records)) $records = (Object)$records;
         
         foreach($columns as $column)
         {
-            if(!isset($column->column_gui_type_id)) dd('updataDataFromDataSource');
+            if(!isset($column->column_gui_type_id)) 
+                dd('updateRecordsDataForResponse');
             
-            $guiTypeName = get_attr_from_cache('column_gui_types', 'id', $column->column_gui_type_id, 'name');
-            if($guiTypeName == 'password')
-            {
-                if(get_class($records) == 'stdClass')
-                {
-                    $records->{$column->name} = NULL;
-                }
-                else
-                {
-                    foreach($records as $i => $record)
-                        $records[$i]->{$column->name} = NULL;
-                }
-            }
-                
-            
-            if(strlen($column->column_table_relation_id) == 0) continue;
-            
-            $relation = get_attr_from_cache('column_table_relations', 'id', $column->column_table_relation_id, '*');
-            if(strlen($relation->column_data_source_id) == 0) continue;
-            
-            
-            $dataSource = get_attr_from_cache('column_data_sources', 'id', $relation->column_data_source_id, '*');
-            $repository = NULL;
-            eval(helper('clear_php_code', $dataSource->php_code));
             
             if(get_class($records) == 'stdClass')
-            {
-                $records->{$column->name} = $repository->getRecordsForListBySourceData($records, $column);
-            }
+                $records->{$column->name} = $this->updateRecordsDataForResponseSingleData($records, $column);
             else
-            {
                 foreach($records as $i => $record)
-                    $records[$i]->{$column->name} = $repository->getRecordsForListBySourceData($record, $column);
-            }
+                    $records[$i]->{$column->name} = $this->updateRecordsDataForResponseSingleData($records[$i], $column);
         }
 
         return $records;

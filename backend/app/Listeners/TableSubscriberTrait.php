@@ -34,7 +34,7 @@ trait TableSubscriberTrait
         $params->model->offset($params->limit * ($params->page - 1));
         $records = $params->model->get();
         
-        $records = $model->updataDataFromDataSource($records, $params->columns);
+        $records = $model->updateRecordsDataForResponse($records, $params->columns);
         
         $tableInfo = $model->getTableInfo($params->table_name);
         
@@ -85,7 +85,7 @@ trait TableSubscriberTrait
         $params->model->offset($params->limit * ($params->page - 1));
         $records = $params->model->get();
         
-        $records = $model->updataDataFromDataSource($records, $params->columns);
+        $records = $model->updateRecordsDataForResponse($records, $params->columns);
         
         $tableInfo = $model->getTableInfo($params->table_name);
         
@@ -157,7 +157,7 @@ trait TableSubscriberTrait
         $params->model->limit($params->limit);
         $params->model->offset($params->limit * ($params->page - 1));
         $records = $params->model->get();
-        $records = $record->updataDataFromDataSource($records, $params->columns);
+        $records = $record->updateRecordsDataForResponse($records, $params->columns);
         
         $tableInfo = $record->getTableInfo($params->table_name);
         
@@ -235,7 +235,7 @@ trait TableSubscriberTrait
         $params->model->limit($params->limit);
         $params->model->offset($params->limit * ($params->page - 1));
         $records = $params->model->get();
-        $records = $params->recordModel->updataDataFromDataSource($records, $params->columns);
+        $records = $params->recordModel->updateRecordsDataForResponse($records, $params->columns);
         
         $tableInfo = $params->recordModel->getTableInfo($params->table_name);
         
@@ -681,7 +681,7 @@ dd($params->column);
         
         $record = $params->model->first();
         
-        $record = $model->updataDataFromDataSource($record, $params->columns);
+        $record = $model->updateRecordsDataForResponse($record, $params->columns);
         
         $record = $this->replaceDataForForm($model, $record, $columnSet);
         
@@ -743,7 +743,7 @@ dd($params->column);
         foreach($columnSet->column_arrays as $columnArray)
             foreach($columnArray->columns as $column) 
                 if(strlen($column->column_table_relation_id) == 0)
-                    $data[$column->name] = $model->{$column->name};
+                    $data[$column->name] = $data[$column->name];//$model->{$column->name};
                 else
                 {
                     $relationData = $model->getRelationData($column->name);
@@ -806,7 +806,7 @@ dd($params->column);
         $record = $params->model->first();
         if($record == NULL) custom_abort ('no.auth.for.this.record');
         
-        $record = $model->updataDataFromDataSource($record, $params->columns);
+        $record = $model->updateRecordsDataForResponse($record, $params->columns);
         
         return 
         [

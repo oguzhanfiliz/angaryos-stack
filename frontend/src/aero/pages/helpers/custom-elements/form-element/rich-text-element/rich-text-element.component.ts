@@ -2,6 +2,8 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
 
 import { BaseHelper } from './../../../base';
 
+declare var $: any;
+
 @Component(
 {
     selector: 'rich-text-element',
@@ -28,6 +30,11 @@ export class RichTextElementComponent
         $.trumbowyg.svgPath = 'assets/ext_modules/trumbowyg/dist/ui/icons.svg';
         
         $("#"+id).trumbowyg({lang: 'tr'});
+        
+        setTimeout(() =>
+        {
+            $('#'+id).html(this.value);
+        }, 500);
         
         var th = this;
         $('body').on('DOMSubtreeModified', "#"+id, function()

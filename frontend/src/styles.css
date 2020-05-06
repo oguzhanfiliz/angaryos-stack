@@ -89,6 +89,13 @@ input::placeholder, .select2-selection__placeholder, textarea::placeholder
     margin: 0px !important;
 }
 
+.filter-cell .input-group-text
+{
+    padding: 2 !important;
+    height: 25 !important;
+    margin: 5 0 0 10 !important;
+}
+
 #close
 {
     position: absolute !important;

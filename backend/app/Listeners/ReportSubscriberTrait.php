@@ -31,7 +31,7 @@ trait ReportSubscriberTrait
         $collectiveInfos = $model->getCollectiveInfos($params->model, $params->columns);
         
         $records = $params->model->get();
-        $records = $model->updataDataFromDataSource($records, $params->columns);
+        $records = $model->updateRecordsDataForResponse($records, $params->columns);
         
         $tableInfo = $model->getTableInfo($params->table_name);
         
