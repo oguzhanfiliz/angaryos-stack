@@ -17,6 +17,12 @@ export class AeroThemeHelper
 
     public loadPageScripts()
     {
+      if(BaseHelper.readFromPipe('loadPageScriptsLoaded'))  return;
+      
+      BaseHelper.writeToPipe('loadPageScriptsLoaded', true);
+      BaseHelper.writeToPipe('loadPageScriptsLightLoaded', true);
+      
+      console.log('loadPageScripts ok');
       setTimeout(() => 
       {
         $.getScript('assets/themes/aero/assets/bundles/libscripts.bundle.js', function()
@@ -50,6 +56,11 @@ export class AeroThemeHelper
 
     public loadPageScriptsLight()
     {
+      if(BaseHelper.readFromPipe('loadPageScriptsLightLoaded'))  return;
+      
+      BaseHelper.writeToPipe('loadPageScriptsLightLoaded', true);
+      
+      console.log('loadPageScripts  Light ok');
       setTimeout(() => 
       {
         $.getScript('assets/themes/aero/assets/bundles/libscripts.bundle.js', function()

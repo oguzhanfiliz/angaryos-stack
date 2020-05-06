@@ -18,6 +18,13 @@ showFilterTypesSelect="{{ showFilterTypesSelect }}"
 filterType="{{ filterType }}"
 class="{{ class }}"></text-element>
 
+<rich-text-element *ngIf="type == 'rich_text'" 
+value="{{ value }}"
+default="{{ default }}"
+name="{{ name }}"
+placeholder="{{ placeholder }}"
+class="{{ class }}"></rich-text-element>
+
 <string-element *ngIf="type == 'string'" 
 (changed)="handleChanged($event)"
 value="{{ value }}"
@@ -27,6 +34,16 @@ placeholder="{{ placeholder }}"
 showFilterTypesSelect="{{ showFilterTypesSelect }}"
 filterType="{{ filterType }}"
 class="{{ class }}"></string-element>
+
+<phone-element *ngIf="type == 'phone'" 
+(changed)="handleChanged($event)"
+value="{{ value }}"
+default="{{ default }}"
+name="{{ name }}"
+placeholder="{{ placeholder }}"
+showFilterTypesSelect="{{ showFilterTypesSelect }}"
+filterType="{{ filterType }}"
+class="{{ class }}"></phone-element>
 
 <password-element *ngIf="type == 'password'" 
 name="{{ name }}"
@@ -164,3 +181,14 @@ value="{{ value }}"
 default="{{ default }}"
 name="{{ name }}"
 class="{{ class }}"></code-editor-element>
+
+<money-element *ngIf="type.split(':')[0] == 'money'" 
+(changed)="handleChanged($event)"
+type="{{ type }}"
+value="{{ value }}"
+default="{{ default }}"
+placeholder="{{ placeholder }}"
+showFilterTypesSelect="{{ showFilterTypesSelect }}"
+filterType="{{ filterType }}"
+name="{{ name }}"
+class="{{ class }}"></money-element>

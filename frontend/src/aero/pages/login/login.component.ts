@@ -69,6 +69,7 @@ export class LoginComponent
             .then((data) =>
             {
                 this.loading = false;
+                this.loadScript();
                 window.location.href = BaseHelper.dashboardUrl;
             })
             .catch((e) =>
@@ -81,5 +82,16 @@ export class LoginComponent
             this.loading = false;
             this.messageHelper.toastMessage(errorMessage, "Doğrulama Hatası");
         });
+    }
+    
+    loadScript()
+    {
+        BaseHelper.writeToPipe('loadPageScriptsLoaded', false);
+
+        setTimeout(() => 
+        {
+            BaseHelper.writeToPipe('loadPageScriptsLightLoaded', false);
+            this.aeroThemeHelper.loadPageScriptsLight();
+        }, 500);
     }
 }

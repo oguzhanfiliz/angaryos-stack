@@ -41,6 +41,10 @@ import { DateElementComponent } from './helpers/custom-elements/form-element/dat
 import { TimeElementComponent } from './helpers/custom-elements/form-element/time-element/time-element.component';
 import { CodeEditorElementComponent } from './helpers/custom-elements/form-element/code-editor-element/code-editor-element.component';
 
+import { PhoneElementComponent } from './helpers/custom-elements/form-element/phone-element/phone-element.component';
+import { MoneyElementComponent } from './helpers/custom-elements/form-element/money-element/money-element.component';
+import { RichTextElementComponent } from './helpers/custom-elements/form-element/rich-text-element/rich-text-element.component';
+
 import { DataTableElementComponent } from './helpers/custom-elements/data-table-element/data-table-element.component';
 import { DetailFilterElementComponent } from './helpers/custom-elements/data-table-element/detail-filter-element/detail-filter-element.component';
 import { ColumnArrayElementComponent } from './helpers/custom-elements/column-array-element/column-array-element.component';
@@ -81,6 +85,11 @@ import { GeoPreviewElementComponent } from './helpers/custom-elements/geo-previe
     DateElementComponent,
     TimeElementComponent,
     CodeEditorElementComponent,
+    
+    PhoneElementComponent,
+    MoneyElementComponent,
+    RichTextElementComponent,
+    
 
     DataTableElementComponent,
     DetailFilterElementComponent,
@@ -117,6 +126,10 @@ import { GeoPreviewElementComponent } from './helpers/custom-elements/geo-previe
     DateElementComponent,
     TimeElementComponent,
     CodeEditorElementComponent,
+    
+    PhoneElementComponent,
+    MoneyElementComponent,
+    RichTextElementComponent,
 
     DataTableElementComponent,
     DetailFilterElementComponent,
@@ -148,6 +161,10 @@ export class PagesModule
     'time-element': TimeElementComponent,
     
     'code-editor-element': CodeEditorElementComponent,
+    
+    'phone-element': PhoneElementComponent,
+    'money-element': MoneyElementComponent,
+    'rich-text-element': RichTextElementComponent,
     
     'data-table-element': DataTableElementComponent,
     'detail-filter-element': DetailFilterElementComponent,

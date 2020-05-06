@@ -99,19 +99,28 @@ export abstract class DataHelper
 
     public static getFilterDescriptionByColumnGuiType(columnName, guiType, filterType, data, key)
     {
+        guiType = guiType.split(':')[0];
+        
         switch (guiType) 
         { 
             case "text": return this.getFilterDescriptionForTextType(filterType, data);
-            case "string": return this.getFilterDescriptionForStringType(filterType, data);
+            
+            case "string":
+            case "phone": 
+                return this.getFilterDescriptionForStringType(filterType, data);
+                
             case "numeric": return this.getFilterDescriptionForNumericType(filterType, data);
+            case "money": return this.getFilterDescriptionForMoneyType(filterType, data);
             case "boolean": return this.getFilterDescriptionForBooleanType(filterType, guiType, data);
             case "datetime": return this.getFilterDescriptionForDateTimeType(filterType, data);
             case "date": return this.getFilterDescriptionForDateType(filterType, data);
             case "time": return this.getFilterDescriptionForTimeType(filterType, data);
             case "jsonb": return this.getFilterDescriptionForJsonbType(columnName, filterType, data, key);
+            
             case "select":
             case "multiselect": 
                 return this.getFilterDescriptionForSelectType(columnName, filterType, data, key);
+                
             case "point": 
             case "multipolygon": 
                 return this.getFilterDescriptionForGeoType(filterType, data);
@@ -148,6 +157,18 @@ export abstract class DataHelper
             case 4: return "'"+data+"'";
             case 5: return "'"+data+"' a eşit olmayan";
             default: return "no string filter type for " + filterType;
+        }
+    }
+    
+    public static getFilterDescriptionForMoneyType(filterType, data)
+    {
+        switch(filterType)
+        {
+            case 1: return data;
+            case 2: return data + " olmayanlar";
+            case 3: return data + "'den küçük olanlar";
+            case 4: return data + "'den büyük olanlar";
+            default: return "no numeric filter type for " + filterType;
         }
     }
 
@@ -260,6 +281,9 @@ export abstract class DataHelper
             case "text":
                 data = this.convertDataByGuiTypeText(type, data);
                 break;
+            case "money":
+                data = this.convertDataByGuiTypeMoney(type, data);
+                break;
             case "files":
                 data = this.convertDataByGuiTypeFiles(type, data);
                 break;
@@ -337,7 +361,15 @@ export abstract class DataHelper
         if(data == null) return null;
         return data.substr(0, 100) + (data.length > 100 ? '...' : '');
     }
-
+    
+    public static convertDataByGuiTypeMoney(guiType, data)
+    {
+        var unit = guiType.split(':')[1].toUpperCase();
+        data = data.replace(/(\d)(?=(\d{3})+\.)/g, '$1,');  
+        
+        return  data + " " + unit;
+    }
+    
     public static convertDataByGuiTypeDateTime(guiType, data)
     {
         switch(guiType)
@@ -460,20 +492,10 @@ export abstract class DataHelper
             case 'multiselect':
                 data = this.changeDataForFilterByGuiTypeSelectAndMultiSelect(columnName, elementName, localKey);
                 break;
-            //case 'jsonb':
-            //    data = this.changeDataForFilterByGuiTypeJsonb(columnName, elementName, localKey);
-            //    break;
-            
         }
 
         return data;
     }
-
-    /*public static changeDataForFilterByGuiTypeJsonb(columnName, elementName, localKey)
-    {
-        var data = this.changeDataForFilterByGuiTypeSelectAndMultiSelect(columnName, elementName, localKey);
-        return BaseHelper.objectToJsonStr(data);
-    }*/
 
     public static changeDataForFilterByGuiTypeBoolean(data)
     {

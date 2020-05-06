@@ -31,16 +31,10 @@ export class DateTimeElementComponent
         this.elementOperations();
     }
 
-    async waitForInputmaskLibrary()
-    {
-        await BaseHelper.waitForOperation(() => $('test').inputmask() );
-    }
-
-    async elementOperations()
+    elementOperations()
     {      
-        await this.waitForInputmaskLibrary();
-
-        this.addInputMask();
+        $.getScript('assets/themes/aero/assets/plugins/jquery-inputmask/jquery.inputmask.bundle.js', 
+            () => this.addInputMask());        
     }
 
     ngOnChanges()

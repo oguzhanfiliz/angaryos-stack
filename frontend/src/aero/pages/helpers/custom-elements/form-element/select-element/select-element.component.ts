@@ -57,17 +57,13 @@ export class SelectElementComponent
             this.val = this.value.split(",");
     }
 
-    async waitForSelect2Library()
-    {
-        await BaseHelper.waitForOperation(() => $("test").select2('open') );
-    }
-
-    async elementOperations()
+    elementOperations()
     {      
-        await this.waitForSelect2Library();
-        
-        this.addSelect2()
-        this.addStyle(); 
+        $.getScript('assets/ext_modules/select2/select2.min.js', () => 
+        {
+            this.addSelect2()
+            this.addStyle(); 
+        });        
     }
 
     handleChange(event)

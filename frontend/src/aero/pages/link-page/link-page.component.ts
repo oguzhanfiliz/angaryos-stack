@@ -15,6 +15,8 @@ declare var $: any;
 })
 export class LinkPageComponent
 {
+  firstPage = true;
+   
   constructor(
     private generalHelper: GeneralHelper,
     private aeroThemeHelper: AeroThemeHelper,
@@ -34,20 +36,30 @@ export class LinkPageComponent
 
   ngAfterViewInit() 
   {  
-    this.aeroThemeHelper.loadPageScripts();
+    if(BaseHelper.readFromPipe('loadPageScriptsLightLoaded')) this.firstPage = false;
+    
     this.setDropdownOpenEffect();
+    this.aeroThemeHelper.loadPageScripts();
   }
 
   setDropdownOpenEffect()
   {
+    var th = this;
+      
     $('.dropdown').on('show.bs.dropdown', function(e)
     { 
-      $(this).find('.dropdown-menu').first().stop(true, true).slideUp(300);
+      if(th.firstPage)
+        $(this).find('.dropdown-menu').first().stop(true, true).slideUp(300);
+      else
+        $(this).find('.dropdown-menu').first().stop(true, true).slideDown(300);
     });
 
     $('.dropdown').on('hide.bs.dropdown', function(e)
     {
-      $(this).find('.dropdown-menu').first().stop(true, true).slideDown(300);
+      if(th.firstPage)
+        $(this).find('.dropdown-menu').first().stop(true, true).slideDown(300);
+      else
+        $(this).find('.dropdown-menu').first().stop(true, true).slideUp(300);
     });
   }
 
@@ -84,5 +96,16 @@ export class LinkPageComponent
   getTableGroupImageUrl(tableGroup)
   {
     return BaseHelper.backendBaseUrl+tableGroup.image;
+  }
+  
+  linkClicked()
+  {
+    BaseHelper.writeToPipe('loadPageScriptsLoaded', false);
+      
+    setTimeout(() => 
+    {
+        BaseHelper.writeToPipe('loadPageScriptsLightLoaded', false);
+        this.aeroThemeHelper.loadPageScriptsLight();
+    }, 500);
   }
 }

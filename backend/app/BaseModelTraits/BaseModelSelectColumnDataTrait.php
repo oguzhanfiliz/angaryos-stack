@@ -29,6 +29,16 @@ trait BaseModelSelectColumnDataTrait
                                                         NULL, 
                                                         $temp);
     }
+
+    private function getFirstJoinTableAliasForSelectColumn($relationTable)
+    {
+        if(is_string($relationTable->join_table_ids))
+            $joinTableIds = json_decode($relationTable->join_table_ids);
+        else
+            $joinTableIds = $relationTable->join_table_ids;
+
+        return get_attr_from_cache('join_tables', 'id', $joinTableIds[0], 'join_table_alias');
+    }
     
     public function getSelectColumnDataForJoinTableIds($params)
     {
@@ -41,14 +51,21 @@ trait BaseModelSelectColumnDataTrait
         $model = $temp->getQuery();
         
         $temp->addJoinsWithColumns($model, [$params->column], TRUE);
-        
+
+
+        $alias = $this->getFirstJoinTableAliasForSelectColumn($relationTable);
         
         $source = $relationTable->relation_source_column;
-        if(!strstr($source, '.')) $source = $table->name.'.'.$source;        
-        $model->addSelect(DB::raw($source.' as source'));        
+        if(!strstr($source, '.')) $source = $table->name.'.'.$source;      
         
         $display = $relationTable->relation_display_column;
-        if(!strstr($display, '.')) $display = $table->name.'.'.$display;        
+        if(!strstr($display, '.')) $display = $table->name.'.'.$display; 
+        
+        $source = str_replace($alias.'.', $table->name.'.', $source);
+        $display = str_replace($alias.'.', $table->name.'.', $display);
+
+        
+        $model->addSelect(DB::raw($source.' as source'));        
         $model->addSelect(DB::raw($display.' as display'));
         
         

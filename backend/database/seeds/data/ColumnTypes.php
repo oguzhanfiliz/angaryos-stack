@@ -68,6 +68,10 @@ $column_gui_types['codeeditor:php'] = 'Kod Editörü (PHP)';
 $column_gui_types['codeeditor:sql'] = 'Kod Editörü (SQL)';
 $column_gui_types['codeeditor:html'] = 'Kod Editörü (HTML)';
 $column_gui_types['multiselectdragdrop'] = 'Liste (Taşı Bırak)';
+$column_gui_types['phone'] = 'Telefon';
+$column_gui_types['money:tl'] = 'Para Birimi (TL)';
+$column_gui_types['money:usd'] = 'Para Birimi (USD)';
+$column_gui_types['rich_text'] = 'Zengin Metin Editörü';
 
 $temp = $this->get_base_record();
 

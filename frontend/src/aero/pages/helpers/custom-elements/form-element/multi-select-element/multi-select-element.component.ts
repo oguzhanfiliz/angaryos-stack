@@ -38,58 +38,47 @@ export class MultiSelectElementComponent
     }
 
     ngAfterViewInit()
-    {
-        //console.log(this.name  + ' ngAfterViewInit')//beki gecikme istiyodur. bazen bozuk çıkıyodu bu element filtre içinde bunu koyunca düzeldi
-        setTimeout(() => 
-        {            
-            if(this.upFormId.length > 0)
-                this.baseElementSelector = '[ng-reflect-id="'+this.upFormId+'"] ';
+    {         
+        if(this.upFormId.length > 0)
+            this.baseElementSelector = '[ng-reflect-id="'+this.upFormId+'"] ';
 
-            if(this.showClearDataButton == "false")
-                this.showClearDataButton = false;
+        if(this.showClearDataButton == "false")
+            this.showClearDataButton = false;
 
-            this.elementOperations();    
-        }, 500);
+        this.elementOperations();
     }
 
     ngOnChanges()
-    {
-        //console.log(this.name  +' ngOnChanges')//beki gecikme istiyodur. bazen bozuk çıkıyodu bu element filtre içinde bunu koyunca düzeldi
-        setTimeout(() => 
-        {            
-            if(this.valueJson.length > 0) 
+    {              
+        if(this.valueJson.length > 0) 
+        {
+            var key = "user:"+BaseHelper.loggedInUserInfo.user.id+"."+this.baseUrl+".data";
+            
+            this.val = [];
+            var temp = BaseHelper.jsonStrToObject(this.valueJson);
+            if(temp == null) return;
+            
+            for(var i = 0; i < temp.length; i++)
             {
-                var key = "user:"+BaseHelper.loggedInUserInfo.user.id+"."+this.baseUrl+".data";
-                
-                this.val = [];
-                var temp = BaseHelper.jsonStrToObject(this.valueJson);
-                if(temp == null) return;
-                
-                for(var i = 0; i < temp.length; i++)
-                {
-                    this.val.push(temp[i]['source']);
+                this.val.push(temp[i]['source']);
 
-                    var tempKey = key + ".selectQueryElementDataCache."+this.name+"."+temp[i]['source'];
-                    BaseHelper.writeToLocal(tempKey, temp[i]['display']);
-                }
+                var tempKey = key + ".selectQueryElementDataCache."+this.name+"."+temp[i]['source'];
+                BaseHelper.writeToLocal(tempKey, temp[i]['display']);
             }
-            else if(this.value.substr(0,1) == '[')
-                this.val = BaseHelper.jsonStrToObject(this.value);
-            else
-                this.val = this.value.split(",");    
-        }, 500);
+        }
+        else if(this.value.substr(0,1) == '[')
+            this.val = BaseHelper.jsonStrToObject(this.value);
+        else
+            this.val = this.value.split(","); 
     }
 
-    async waitForSelect2Library()
-    {
-        await BaseHelper.waitForOperation(() => $("test").select2('open') );
-    }
-
-    async elementOperations()
+    elementOperations()
     {      
-        await this.waitForSelect2Library();
-        this.addSelect2()
-        this.addStyle();
+        $.getScript('assets/ext_modules/select2/select2.min.js', () => 
+        {
+            this.addSelect2()
+            this.addStyle(); 
+        });        
     }
 
     handleChange(event)

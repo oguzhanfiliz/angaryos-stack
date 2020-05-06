@@ -79,26 +79,30 @@ export abstract class BaseHelper
 
   public static async waitForOperationTest(resolve, func)
   {
-      var control = true;
-      while (control) 
-      {
-          try 
-          {
-              func(); 
-              control = false;  
-          } 
-          catch (error) 
-          {
-              await BaseHelper.sleep(100); 
-          }    
-      }
+    var count = 20;
+    var control = true;
+    
+    while(control) 
+    {
+        try 
+        {
+            func(); 
+            control = false;
+        } 
+        catch (error) 
+        {
+            await BaseHelper.sleep(100); 
+        } 
 
+        if(--count == 0) control = false;
+      }
+            
       resolve();
   }
 
   public static async waitForOperation(func)
   {
-      return new Promise(resolve => this.waitForOperationTest(resolve, func));
+    return new Promise((resolve, error) => this.waitForOperationTest(resolve, func));
   } 
 
 

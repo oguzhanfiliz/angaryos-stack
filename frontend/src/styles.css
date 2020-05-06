@@ -84,6 +84,11 @@ input::placeholder, .select2-selection__placeholder, textarea::placeholder
     border-color: #b3b3b5 !important;
 }
 
+.trumbowyg-box
+{
+    margin: 0px !important;
+}
+
 #close
 {
     position: absolute !important;

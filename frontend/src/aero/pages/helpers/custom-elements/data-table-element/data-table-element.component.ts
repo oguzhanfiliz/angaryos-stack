@@ -625,6 +625,7 @@ export class DataTableElementComponent
         switch (guiType.split(':')[0]) 
         {
             case 'text': 
+            case 'rich_text': 
             case 'codeeditor': 
             case 'files': 
             case 'password': 

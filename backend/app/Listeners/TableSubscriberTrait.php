@@ -357,17 +357,6 @@ trait TableSubscriberTrait
                                                             $sourceColumn, 
                                                             $params->column, 
                                                             $params);
-        /*$rec = DB::table($tableName)
-                ->select($sourceColumnName)
-                ->addSelect($displayColumnName)
-                ->where($sourceColumnName, $val)
-                ->first();
-        
-        return
-        [
-            'source' => $rec->{$sourceColumnName},
-            'display' => $rec->{$displayColumnName}
-        ];*/
     }
 
     public function getDataForSelectElementSingleForTableIdAndColumnIdsForOneToOne($params)
@@ -415,28 +404,84 @@ trait TableSubscriberTrait
     {
         return $this->getDataForSelectElementForBasicColumn($params);
     }
+
+    private function getFirstJoinTableAliasForSelectColumn($relationTable)
+    {
+        if(is_string($relationTable->join_table_ids))
+            $joinTableIds = json_decode($relationTable->join_table_ids);
+        else
+            $joinTableIds = $relationTable->join_table_ids;
+
+        return get_attr_from_cache('join_tables', 'id', $joinTableIds[0], 'join_table_alias');
+    }
     
     public function getDataForSelectElementSingleForJoinTableIds($params)
     {
-        dd('getDataForSelectElementSingleForJoinTableIds');
-        $model = new BaseModel($params->record->getTable());
+        $params->tableName = get_attr_from_cache('tables', 'id', $params->relation->relation_table_id, 'name');
+        
+        $model = new BaseModel($params->tableName);
         $params->model = $model->getQuery();
         
         $model->addJoinsWithColumns($params->model, [$params->column], TRUE);
         
-        $sourceColumn = $params->relation->relation_source_column;
-        if(!strstr($sourceColumn, '.'))
-                $sourceColumn = $params->record->getTable().'.'.$sourceColumn;
+
+        $params->alias = $this->getFirstJoinTableAliasForSelectColumn($params->relation);
+
+        $params->source = $params->relation->relation_source_column;
+        if(!strstr($params->source, '.')) $params->source = $params->tableName.'.'.$params->source;
         
-        $displayColumn = $params->relation->relation_display_column;
-        if(!strstr($sourceColumn, '.'))
-                $displayColumn = $params->record->getTable().'.'.$displayColumn;
+        $params->display = $params->relation->relation_display_column;
+        if(!strstr($params->display, '.')) $params->display = $params->tableName.'.'.$params->display;
+
+        $params->source = str_replace($params->alias.'.', $params->tableName.'.', $params->source);
+        $params->display = str_replace($params->alias.'.', $params->tableName.'.', $params->display);
+
+        return ColumnClassificationLibrary::relationDbTypes(
+                                                            $this, 
+                                                            __FUNCTION__, 
+                                                            $params->column, 
+                                                            NULL, 
+                                                            $params);
+    }
+
+    public function getDataForSelectElementSingleForJoinTableIdsForOneToMany($params)
+    {
+        $params->model->addSelect(DB::raw($params->source.' as source'));
+        $params->model->addSelect(DB::raw($params->display.' as display'));
+
+        $params->model->whereIn($params->tableName.'.id', $params->record->{$params->column->name});
         
-        $params->model->addSelect(DB::raw($sourceColumn.' as source'));
-        $params->model->addSelect(DB::raw($displayColumn.' as display'));
+        $data = $params->model->get();
+
+        $display = helper('get_null_object');
+        $i = 1;
+        foreach($params->record->{$params->column->name} as $id)
+            foreach($data as $record)
+                if($record->source == $id)
+                {
+                    $display->{$i++} = $record;
+                    break;
+                }
+
+        return
+        [
+            'source' => '',
+            'display' => json_encode($display)
+        ];
+    }
+
+    public function getDataForSelectElementSingleForJoinTableIdsForOneToOne($params)
+    {
+        dd('getDataForSelectElementSingleForJoinTableIdsForOneToOne');
+
+        $params->model->addSelect(DB::raw($params->source.' as source'));
+        $params->model->addSelect(DB::raw($params->display.' as display'));
+
+        dd($params->record->{$params->column->name});
         
         
-        $params->model->whereRaw($params->record->getTable().'.id = '.$params->record->id);
+        
+        $params->model->whereRaw($tableName.'.id = '.$params->record->id);
         dd($params->model->toSql());
         $data = $params->model->get();
         dd($data);
@@ -445,9 +490,6 @@ trait TableSubscriberTrait
             'source' => $data->source,
             'display' => $data->display
         ];
-
-
-
 
 
 

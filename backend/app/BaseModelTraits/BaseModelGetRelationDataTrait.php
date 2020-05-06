@@ -31,7 +31,7 @@ trait BaseModelGetRelationDataTrait
         
         $params->record->{$params->column->name . '__relation_data'} = $repository->getRecordsBySourceData(json_encode($params->data_array));
     }
-    
+
     public function fillRelationDataForJoinTableIds($params)
     {
         $relationTable = get_model_from_cache('column_table_relations', 'id', $params->column->column_table_relation_id);
@@ -43,14 +43,22 @@ trait BaseModelGetRelationDataTrait
         $temp->addJoinsWithColumns($model, [$params->column], TRUE);
         
         $model->addSelect(DB::raw($table->name.'.id as id'));
+
+
+        $alias = $this->getFirstJoinTableAliasForSelectColumn($relationTable);
         
         $source = $relationTable->relation_source_column;
-        if(!strstr($source, '.')) $source = $table->name.'.'.$source;        
-        $model->addSelect(DB::raw($source.' as source'));        
+        if(!strstr($source, '.')) $source = $table->name.'.'.$source; 
         
         $display = $relationTable->relation_display_column;
-        if(!strstr($display, '.')) $display = $table->name.'.'.$display;        
+        if(!strstr($display, '.')) $display = $table->name.'.'.$display;     
+        
+        $source = str_replace($alias.'.', $table->name.'.', $source);
+        $display = str_replace($alias.'.', $table->name.'.', $display);
+
+        $model->addSelect(DB::raw($source.' as source'));
         $model->addSelect(DB::raw($display.' as display'));
+
         
         $model->whereIn($source, $params->data_array)->get();
         

@@ -173,7 +173,7 @@ export class ColumnArrayFormElementComponent
 
             if(count == -1)
             {
-                this.messageHelper.toastMessage(selectedItem+" bulunamadı!");
+                this.messageHelper.toastMessage("Seçili eleman getirilemedi!");
                 return 0;
             }
 
