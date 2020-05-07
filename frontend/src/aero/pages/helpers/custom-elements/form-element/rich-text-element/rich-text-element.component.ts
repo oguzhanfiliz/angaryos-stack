@@ -12,11 +12,12 @@ declare var $: any;
 })
 export class RichTextElementComponent
 {
-    @Input() default: string;
+    @Input() defaultData: string;
     @Input() value: string;
     @Input() name: string;
     @Input() class: string;
     @Input() placeholder: string;
+    @Input() createForm: boolean = false;
     
     ngAfterViewInit()
     {

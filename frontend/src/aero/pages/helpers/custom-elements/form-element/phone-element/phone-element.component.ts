@@ -12,13 +12,14 @@ declare var $: any;
 })
 export class PhoneElementComponent
 {
-    @Input() default: string;
+    @Input() defaultData: string;
     @Input() value: string;
     @Input() name: string;
     @Input() class: string;
     @Input() placeholder: string;
     @Input() showFilterTypesSelect: boolean;
     @Input() filterType: string;
+    @Input() createForm: boolean = false;
 
     val = "";
 

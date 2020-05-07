@@ -35,12 +35,12 @@
                         class="form-control"
                         upFormId="{{ upFormId }}"
                         showClearDataButton="true"
-                        baseUrl="{{ 'tables/' + tableName }}"
+                        baseUrl="{{ 'tables/' + tableName }}" createForm="{{ createForm }}"
                         upColumnName="{{ getDataFromColumnArray('columns.'+columnName+'.up_column_name') }}"
                         srid="{{ getDataFromColumnArray('columns.'+columnName+'.srid') }}"
                         type="{{ getDataFromColumnArray('columns.'+columnName+'.gui_type_name') }}"
                         placeholder="{{ getDataFromColumnArray('columns.'+columnName+'.display_name') }}"
-                        default="{{ getDataFromColumnArray('columns.'+columnName+'.default') }}"
+                        defaultData="{{ getDataFromColumnArray('columns.'+columnName+'.default') }}"
                         value="{{ getValue(columnName) }}" valueJson="{{ getJson(getValue(columnName)) }}">
                     </form-element> 
                 </td>

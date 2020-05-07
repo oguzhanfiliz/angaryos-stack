@@ -12,7 +12,7 @@ declare var $: any;
 })
 export class MoneyElementComponent
 {
-    @Input() default: string;
+    @Input() defaultData: string;
     @Input() value: string;
     @Input() name: string;
     @Input() class: string;
@@ -20,6 +20,7 @@ export class MoneyElementComponent
     @Input() showFilterTypesSelect: boolean;
     @Input() filterType: string;
     @Input() type: string;
+    @Input() createForm: boolean = false;
 
     val = "";
     unit = "";

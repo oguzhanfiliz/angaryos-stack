@@ -9,13 +9,14 @@ import { DataHelper } from './../../../data';
 })
 export class BooleanElementComponent
 {
-    @Input() default: string;
+    @Input() defaultData: string;
     @Input() value: string;
     @Input() guiType: string;
     @Input() class: string;
     @Input() name: string;
     @Input() placeholder: string;
     @Input() showFilterTypesSelect: boolean;
+    @Input() createForm: string = "false";
     @Input() filterType: string;
 
     displayNameForTrue = "true";
@@ -42,7 +43,8 @@ export class BooleanElementComponent
             this.displayNameForFalse = DataHelper.convertDataByGuiTypeBoolean(this.guiType, false);
 
             if(this.value.length > 0) return;
-            if(this.default.length == 0) return;
+            if(this.createForm != "true") return;
+            if(this.defaultData.length == 0) return;
 
             this.setDefaultData();
         }, 50);
@@ -50,9 +52,9 @@ export class BooleanElementComponent
 
     setDefaultData()
     {
-        if(this.default === "true")
+        if(this.defaultData === "true")
             this.value = "true";
-        else if(this.default === "false")
+        else if(this.defaultData === "false")
             this.value = "false";
     }
 }

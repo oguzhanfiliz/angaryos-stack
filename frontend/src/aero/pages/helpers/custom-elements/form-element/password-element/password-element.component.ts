@@ -11,4 +11,5 @@ export class PasswordElementComponent
     @Input() name: string;
     @Input() class: string;
     @Input() placeholder: string;
+    @Input() createForm: boolean = false;
 }

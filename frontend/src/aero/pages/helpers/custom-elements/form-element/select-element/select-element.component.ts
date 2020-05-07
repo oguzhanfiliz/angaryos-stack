@@ -11,7 +11,7 @@ declare var $: any;
 })
 export class SelectElementComponent
 {
-    @Input() default: string;
+    @Input() defaultData: string;
     @Input() baseUrl: string;
     @Input() value: string;
     @Input() valueJson: string;
@@ -23,6 +23,7 @@ export class SelectElementComponent
     @Input() filterType: string;
     @Input() upColumnName: string;
     @Input() upFormId: string = "";
+    @Input() createForm: string = "false";
 
     baseElementSelector = "";
     val = [];
@@ -39,12 +40,22 @@ export class SelectElementComponent
 
     ngOnChanges()
     {
-        if(this.value.substr(0,1) == '[')
+        if(this.createForm == "true" || this.value.substr(0,1) == '[')
         {
             var key = "user:"+BaseHelper.loggedInUserInfo.user.id+"."+this.baseUrl+".data";
             
             this.val = [];
-            var temp = BaseHelper.jsonStrToObject(this.valueJson);
+            var temp = [];
+            
+            if(this.createForm == "true")
+            {
+                if(this.defaultData == null || this.defaultData == "") return;
+
+                temp = BaseHelper.jsonStrToObject(this.defaultData);
+            }
+            else
+                temp = BaseHelper.jsonStrToObject(this.valueJson);
+
             for(var i = 0; i < temp.length; i++)
             {
                 this.val.push(temp[i]['source']);

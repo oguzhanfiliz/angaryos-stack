@@ -11,12 +11,13 @@ declare var $: any;
 })
 export class CodeEditorElementComponent
 {
-    @Input() default: string;
+    @Input() defaultData: string;
     @Input() value: string;
     @Input() name: string;
     @Input() class: string;
     @Input() mode: string;
     @Input() type: string;
+    @Input() createForm: boolean = false;
 
     @Output() changed = new EventEmitter();
 

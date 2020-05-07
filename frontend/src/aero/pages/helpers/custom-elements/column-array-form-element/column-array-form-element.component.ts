@@ -18,6 +18,7 @@ export class ColumnArrayFormElementComponent
     @Input() recordJson: string;
     @Input() tableName: string;
     @Input() upFormId: string = "";
+    @Input() createForm: boolean = true;
 
     @Output() dataChanged = new EventEmitter();
     @Output() formSaved = new EventEmitter();
@@ -178,17 +179,7 @@ export class ColumnArrayFormElementComponent
             }
 
             var data = $(elementId).select2("data");
-            return data[count].id;
-            /*var selectedItem = selected.html().split('</span>')[1];
-            var data = $(elementId).select2("data");
-            for(var i = 0; i < data.length; i++)
-            {
-                if(count-- > 0) continue;
-
-                if(data[i].text == selectedItem)
-                    return data[i].id;
-            }*/
-                
+            return data[count].id;                
         }
     }
 

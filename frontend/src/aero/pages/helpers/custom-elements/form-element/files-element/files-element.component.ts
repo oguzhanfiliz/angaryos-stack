@@ -12,7 +12,7 @@ declare var $: any;
 })
 export class FilesElementComponent
 {
-    @Input() default: string;
+    @Input() defaultData: string;
     @Input() baseUrl: string;
     @Input() value: string;
     @Input() valueJson: string = "";
@@ -23,6 +23,7 @@ export class FilesElementComponent
     @Input() showFilterTypesSelect: boolean;
     @Input() filterType: string;
     @Input() upColumnName: string;
+    @Input() createForm: boolean = false;
 
     @Output() changed = new EventEmitter();
 

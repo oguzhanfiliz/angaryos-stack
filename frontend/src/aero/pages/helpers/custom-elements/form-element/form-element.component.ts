@@ -14,7 +14,7 @@ export class FormElementComponent
     @Input() baseUrl: string;
     @Input() name: string;
     @Input() guiType: string;
-    @Input() default: string;
+    @Input() defaultData: string;
     @Input() value: string;
     @Input() valueJson: string;
     @Input() class: string;
@@ -26,6 +26,7 @@ export class FormElementComponent
     @Input() upFormId: string;    
     @Input() srid: string = "";
     @Input() showClearDataButton: boolean = false;
+    @Input() createForm: boolean = false;
     
     
     @Output() changed = new EventEmitter();

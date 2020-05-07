@@ -18,7 +18,7 @@ declare var $: any;
 })
 export class MultiSelectDragDropElementComponent
 {
-    @Input() default: string;
+    @Input() defaultData: string;
     @Input() baseUrl: string;
     @Input() value: string;
     @Input() valueJson: string = "";
@@ -30,6 +30,7 @@ export class MultiSelectDragDropElementComponent
     @Input() filterType: string;
     @Input() upColumnName: string;
     @Input() upFormId: string = "";
+    @Input() createForm: boolean = false;
 
     @Output() changed = new EventEmitter();
 

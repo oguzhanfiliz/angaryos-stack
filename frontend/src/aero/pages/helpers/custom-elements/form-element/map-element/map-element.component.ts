@@ -14,7 +14,7 @@ declare var $: any;
 })
 export class MapElementComponent
 {
-    @Input() default: string;
+    @Input() defaultData: string;
     @Input() value: string;
     @Input() type: string;
     @Input() name: string;
@@ -25,6 +25,7 @@ export class MapElementComponent
     @Input() filterType: string;  
     @Input() srid: string = "";
     @Input() upFormId: string = "";
+    @Input() createForm: boolean = false;
 
     map = null;
     geoJsonObject = null;

@@ -8,13 +8,14 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
 })
 export class TextElementComponent
 {
-    @Input() default: string;
+    @Input() defaultData: string;
     @Input() value: string;
     @Input() name: string;
     @Input() class: string;
     @Input() placeholder: string;
     @Input() showFilterTypesSelect: boolean;
     @Input() filterType: string;
+    @Input() createForm: boolean = false;
 
     @Output() changed = new EventEmitter();
 

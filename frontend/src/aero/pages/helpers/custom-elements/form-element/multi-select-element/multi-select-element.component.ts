@@ -12,7 +12,7 @@ declare var $: any;
 })
 export class MultiSelectElementComponent
 {
-    @Input() default: string;
+    @Input() defaultData: string;
     @Input() baseUrl: string;
     @Input() value: string;
     @Input() valueJson: string = "";
@@ -25,6 +25,7 @@ export class MultiSelectElementComponent
     @Input() upColumnName: string;
     @Input() upFormId: string = "";
     @Input() showClearDataButton;
+    @Input() createForm: boolean = false;
     
     baseElementSelector = "";
     val = [];
