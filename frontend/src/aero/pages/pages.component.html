@@ -82,8 +82,11 @@
                         <div class="user-info">
                             <a class="image"><img src="{{ getProfilePictureUrl() }}" alt='{{ user["name_basic"] + " " + user["surname"] }}'></a>
                             <div class="detail">
-                                <h4>{{ user["name_basic"] + " " + user["surname"] }}</h4>
-                                <small>{{ user["email"] }}</small>                        
+                                <h4>{{ user["name_basic"] + " " + user["surname"] }}</h4>                                
+                                <small *ngIf="!isUserEditOwn()">{{ user["email"] }}</small> 
+                                <small *ngIf="isUserEditOwn()">
+                                    <a style="padding: 0 !important;" href="{{ getUserEditUrl() }}">{{ user["email"] }}</a>
+                                </small>                  
                             </div>
                         </div>
                     </li>

@@ -331,7 +331,10 @@ export class FormComponent
         }
         else if(this.id.length == 0)
         {
-            this.generalHelper.navigate('table/'+this.tableName);
+            if(typeof BaseHelper.loggedInUserInfo.auths.tables[this.tableName]['lists'] == "undefined")
+                this.formSaved.emit(data);
+            else
+                this.generalHelper.navigate('table/'+this.tableName);
         }    
         else
         {

@@ -59,11 +59,11 @@ trait BaseModelGetRelationDataTrait
         $model->addSelect(DB::raw($source.' as source'));
         $model->addSelect(DB::raw($display.' as display'));
 
-        
-        $model->whereIn($source, $params->data_array)->get();
+        $model = $model->whereIn($source, $params->data_array);
         
         $temp->addFilters($model, $table->name);
         
+        $sorted = [];
         $recs = $model->get();
         foreach($recs as $key => $value)
         {
@@ -81,7 +81,10 @@ trait BaseModelGetRelationDataTrait
             array_push ($recs, $sorted[$i]);
         
         if($params->column->column_db_type_id == $params->relation->column_db_type_id) 
-            $recs = $recs[0];
+        {
+            if(count($recs) == 0) $recs = NULL;
+            else $recs = $recs[0];
+        }
         
         $params->record->{$params->column->name . '__relation_data'} = $recs;
     }

@@ -7,8 +7,8 @@ declare var $: any;
 @Injectable()
 export class AeroThemeHelper 
 {     
-  public baseMenu = [];
-
+    public baseMenu = [];
+    
     constructor(private sessionHelper: SessionHelper) { }
 
 
@@ -219,17 +219,11 @@ export class AeroThemeHelper
 
       var tables = BaseHelper.loggedInUserInfo.menu.tables;      
       var tableGroupIds = this.getTableGroupdByIds();//Object.keys(tables);
-      tableGroupIds.push(0);
+     
       for (var i = 0; i < tableGroupIds.length; i++) 
       {
         var tableGroup = this.getTableGroupdById(tableGroupIds[i]);
-        if(typeof tableGroup == "undefined")
-          tableGroup = 
-          {
-            name_basic: 'Diğer',
-            icon: 'zmdi-aspect-ratio'
-          };
-
+        
         var tempMenuItem =
         {
           title: tableGroup['name_basic'],

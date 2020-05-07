@@ -122,6 +122,7 @@ class BaseQueryBuilder extends Builder
             if(strstr($value, ' ')) continue;
             
             $name = last(explode('.', $value));
+            if($name == '*') continue;
             
             $dbTypeId = get_attr_from_cache('columns', 'name', $name, 'column_db_type_id');
             if(strlen($dbTypeId) == 0) dd('addSelectsWithGeoInjectionForAddedColumns');

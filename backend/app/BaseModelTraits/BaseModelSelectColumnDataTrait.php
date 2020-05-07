@@ -75,7 +75,7 @@ trait BaseModelSelectColumnDataTrait
             $query->orWhereRaw($display.'::text ilike \'%'.$params->search.'%\'');
         });        
         
-        $temp->addFilters($model, $table->name);
+        $temp->addFilters($model, $table->name, 'selectColumnData');
         
         $sourceSpace = $this->getSourceSpaceFromUpColumn($params);
         if($sourceSpace != FALSE)

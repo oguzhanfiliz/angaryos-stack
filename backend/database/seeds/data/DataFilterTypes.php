@@ -10,8 +10,7 @@ $data_filter_types['delete'] = 'Kayıt Silme Filtresi';
 $data_filter_types['restore'] = 'Kayıt Geri Yükleme Filtresi';
 $data_filter_types['show'] = 'Kayıt Bilgi Kartı Görüntüleme Filtresi';
 $data_filter_types['export'] = 'Kayıt Dışa Aktarma Filtresi';
-//$data_filter_types['deleteds'] = 'Silinmiş Kayıtlardan Geri Yükleme Filtresi';
-//bu bi süre dursun niye burda anlamadım
+$data_filter_types['selectColumnData'] = 'Kolon İlişkili Veri Filtresi';
 
 $temp = $this->get_base_record();
 

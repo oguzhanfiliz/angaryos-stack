@@ -11,9 +11,10 @@ use DB;
 
 trait BaseModelGetDataFilterTrait 
 {    
-    public function addFilters($model, $tableName)
+    public function addFilters($model, $tableName, $filterType = 'all')
     {
-        $auths = Auth::user()->auths;
+        $user = Auth::user();
+        $auths = $user->auths;
         
         if(!isset($auths['filters'])) return;
         if(!isset($auths['filters'][$tableName])) return;
@@ -22,51 +23,59 @@ trait BaseModelGetDataFilterTrait
         
         foreach($auths as $type => $filters)
             if($filters != [])
-                $this->{'add'. helper('str_to_class_name', $type) .'Filters'}($model, $filters, $tableName);
+                if($filterType == 'all' || $filterType == $type)
+                    $this->{'add'. helper('str_to_class_name', $type) .'Filters'}($user, $model, $filters, $tableName);
     }
         
-    private function addListFilters($model, $filters, $tableName)
+    private function addListFilters($user, $model, $filters, $tableName)
     {
         foreach($filters as $filterId)
         {
-            $sqlCode = get_attr_from_cache('data_filters', 'id', $filterId, 'sql_code');
-            $sql = str_replace('TABLE', $tableName, $sqlCode);            
+            $sql = get_attr_from_cache('data_filters', 'id', $filterId, 'sql_code');            
+            $sql = $this->GetReplacedSql($sql, $tableName, $user);           
             $model->whereRaw($sql);      
         }
     }
-    
-    private function addUpdateFilters($model, $filters, $tableName)
+
+    private function addSelectColumnDataFilters($user, $model, $filters, $tableName)
     {
-        $this->addSelectForFilters($model, $filters, $tableName, 'is_editable');
+        $this->addListFilters($user, $model, $filters, $tableName);
     }
     
-    private function addDeleteFilters($model, $filters, $tableName)
+    private function addUpdateFilters($user, $model, $filters, $tableName)
     {
-        $this->addSelectForFilters($model, $filters, $tableName, 'is_deletable');
+        $this->addSelectForFilters($user, $model, $filters, $tableName, 'is_editable');
     }
     
-    private function addRestoreFilters($model, $filters, $tableName)
+    private function addDeleteFilters($user, $model, $filters, $tableName)
     {
-        $this->addSelectForFilters($model, $filters, $tableName, 'is_restorable');
+        $this->addSelectForFilters($user, $model, $filters, $tableName, 'is_deletable');
     }
     
-    private function addShowFilters($model, $filters, $tableName)
+    private function addRestoreFilters($user, $model, $filters, $tableName)
     {
-        $this->addSelectForFilters($model, $filters, $tableName, 'is_showable');
+        $this->addSelectForFilters($user, $model, $filters, $tableName, 'is_restorable');
     }
     
-    private function addExportFilters($model, $filters, $tableName)
+    private function addShowFilters($user, $model, $filters, $tableName)
     {
-        $this->addSelectForFilters($model, $filters, $tableName, 'is_exportable');
+        $this->addSelectForFilters($user, $model, $filters, $tableName, 'is_showable');
     }
     
-    private function addSelectForFilters($model, $filters, $tableName, $alias)
+    private function addExportFilters($user, $model, $filters, $tableName)
     {
+        $this->addSelectForFilters($user, $model, $filters, $tableName, 'is_exportable');
+    }
+    
+    private function addSelectForFilters($user, $model, $filters, $tableName, $alias)
+    {
+        $user = \Auth::user();
+
         $filterSqls = [];
         foreach($filters as $filterId)
         {
-            $sqlCode = get_attr_from_cache('data_filters', 'id', $filterId, 'sql_code');
-            $sql = str_replace('TABLE', $tableName, $sqlCode);  
+            $sql = get_attr_from_cache('data_filters', 'id', $filterId, 'sql_code');            
+            $sql = $this->GetReplacedSql($sql, $tableName, $user);
             
             array_push($filterSqls, $sql);
         }
@@ -90,5 +99,16 @@ trait BaseModelGetDataFilterTrait
             'type' => 1,
             'filter' => $data
         ];
+    }
+
+    private function GetReplacedSql($sql, $tableName, $user)
+    {
+        $sql = str_replace('$record->', $tableName.'.', $sql);  
+
+        foreach($user->toArray() as $key => $value)
+            if(!is_array($value))
+                $sql = str_replace('$user->'.$key, $value, $sql); 
+
+        return $sql;
     }
 }

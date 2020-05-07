@@ -472,33 +472,14 @@ trait TableSubscriberTrait
 
     public function getDataForSelectElementSingleForJoinTableIdsForOneToOne($params)
     {
-        dd('getDataForSelectElementSingleForJoinTableIdsForOneToOne');
-
         $params->model->addSelect(DB::raw($params->source.' as source'));
         $params->model->addSelect(DB::raw($params->display.' as display'));
 
-        dd($params->record->{$params->column->name});
+        $params->model->where($params->tableName.'.id', $params->record->{$params->column->name});
         
+        $data = $params->model->first();
         
-        
-        $params->model->whereRaw($tableName.'.id = '.$params->record->id);
-        dd($params->model->toSql());
-        $data = $params->model->get();
-        dd($data);
-        return
-        [
-            'source' => $data->source,
-            'display' => $data->display
-        ];
-
-
-
-
-        dd($this->getDataForSelectElementForJoinTableIds);
-        //data $params->record->{$params->column->name}
-dd($params->column);
-        dd(array_keys((array)$params));
-        return $this->getDataForSelectElementForBasicColumn($params);
+        return $data;
     }
 
     public function getDataForSelectElementSingleForRelationSql($params)
@@ -680,10 +661,13 @@ dd($params->column);
         
         
         $record = $params->model->first();
-        
+
         $record = $model->updateRecordsDataForResponse($record, $params->columns);
         
-        $record = $this->replaceDataForForm($model, $record, $columnSet);
+        //bu neden eklenmiş anlaşılamadı. data zaten sqlden direk ilişkiligetiriliyor
+        //$record = $this->replaceDataForForm($model, $record, $columnSet);
+
+        $record = $this->filterRecordsColumnWithColumns([$record], $columnSet)[0];
         
         return 
         [
@@ -719,12 +703,14 @@ dd($params->column);
     public function getModelForEdit($model, $params)
     {
         $params->model = $model->getQuery();
-        
+        $params->model->addSelect($model->getTable().'.*');
+
         $params->columnSet = $model->getColumnSet($params->model, $params->column_set_id, TRUE);
         $params->columns = $model->getColumnsFromColumnSet($params->columnSet);
         
         $params->guiTriggers = $model->getGuiTriggers($params->columns);
         
+        //edit fomdaki datalar için belki gerekebilir
         //$model->addJoinsWithColumns($params->model, $params->columns);
         
         $model->addFilters($params->model, $params->table);        
@@ -946,5 +932,28 @@ dd($params->column);
         if($userIds != '*') $sql .= ' and id in ('.implode(',', $userIds).')';  
         
         DB::select($sql);        
+    }
+
+
+
+    /****    Common    ****/
+
+    private function filterRecordsColumnWithColumns($records, $columnSet)
+    {
+        $return = [];
+
+        foreach($records as $record)
+        {
+            $temp = [];
+            $temp['id'] = $record->id;
+
+            foreach($columnSet->column_arrays as $columnArray)
+                foreach($columnArray->columns as $columnName => $column)
+                    $temp[$columnName] = $record->{$columnName};
+
+            array_push($return, $temp);
+        }
+        
+        return $return;
     }
 }

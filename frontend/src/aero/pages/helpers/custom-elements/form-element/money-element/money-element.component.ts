@@ -77,7 +77,6 @@ export class MoneyElementComponent
         {
             radixPoint: ",",
             rightAlign: false,
-            //suffix: " €",
             prefix: "",
             oncomplete: (event) => this.dataChanged(event),
             onincomplete: (event) => this.dataChanged(event),

@@ -95,7 +95,14 @@ export class LinkPageComponent
 
   getTableGroupImageUrl(tableGroup)
   {
-    return BaseHelper.backendBaseUrl+tableGroup.image;
+    var url = BaseHelper.backendBaseUrl;
+
+    if(tableGroup.image)
+      url += tableGroup.image;
+    else 
+      url += 'uploads/2020/01/01/nomenuimage.png';
+      
+    return url;
   }
   
   linkClicked()

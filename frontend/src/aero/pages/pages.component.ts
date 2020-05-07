@@ -131,4 +131,17 @@ export class PagesComponent
     var theme = this.aeroThemeHelper.getThemeClass();
     return theme == ('theme-'+name)
   }
+
+  isUserEditOwn()
+  {
+    if(typeof BaseHelper.loggedInUserInfo.auths.tables['users'] == "undefined") return false;
+    if(typeof BaseHelper.loggedInUserInfo.auths.tables['users']['edits'] == "undefined") return false;
+    
+    return true;
+  }
+
+  getUserEditUrl()
+  {
+    return BaseHelper.baseUrl+"table/users/"+BaseHelper.loggedInUserInfo.user.id+"/edit";
+  }
 } 

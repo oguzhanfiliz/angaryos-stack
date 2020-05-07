@@ -94,6 +94,8 @@ trait BaseModelGetDataTrait
     
     public function getTableInfo($name)
     {
+        if(substr($name, -8, 8) == '_archive') $name = substr($name, 0, -8);
+
         $cacheName = 'tableName:'.$name.'|tableInfo'; 
         $tableInfo = Cache::rememberForever($cacheName, function() use($name)
         {      

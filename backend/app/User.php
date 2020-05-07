@@ -103,7 +103,7 @@ class User extends Authenticatable
         return $return;
     }
     
-    private function getTableGroupListForMenu()
+    private function getTableGroupListForMenu($tables)
     {
         $tableGroups = [];
         foreach($this->getTableGroups() as $tableGroup)
@@ -118,16 +118,32 @@ class User extends Authenticatable
             ];
             array_push($tableGroups, $temp);
         }
+
+        $temp = 
+        [
+            'id' => 0,
+            'name_basic' => 'Diğer Tablolar',
+            'table_ids' => [],
+            'image' => 'uploads/2020/01/01/other.png',
+            'icon' => 'zmdi-aspect-ratio',
+        ];
+
+        foreach($tables[0] as $table) 
+            array_push($temp['table_ids'], $table['id']);
         
+        array_push($tableGroups, $temp);
+
         return $tableGroups;
     }
     
     public function getMenuArray()
     {
+        $tables = $this->getTableListForMenu();
+        $tableGroups = $this->getTableGroupListForMenu($tables);
         return 
         [
-            'tables' => $this->getTableListForMenu(),
-            'tableGroups' => $this->getTableGroupListForMenu() 
+            'tables' => $tables,
+            'tableGroups' => $tableGroups 
         ];
     }
     
