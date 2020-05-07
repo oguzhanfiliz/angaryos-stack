@@ -59,15 +59,27 @@ export class DataTableElementComponent
         var th = this;
         this.route.params.subscribe(val => 
         {
-            setTimeout(() => 
-            {
-                th.fillParamsFromLocal();
-
-                th.loadData();  
-                th.addEventForThemeIcons();
-            }, 50);
+            setTimeout(() => th.preload(), 50);
         });
     }
+    
+    preload()
+    {
+        this.fillParamsFromLocal();
+
+        this.loadData();  
+        this.addEventForThemeIcons();
+    }
+    
+    dataReload()
+    {
+        BaseHelper.writeToPipe(this.getLocalKey("data"), []); 
+            
+        this.preload();
+    }
+    
+    
+    
 
 
 
@@ -293,14 +305,9 @@ export class DataTableElementComponent
             }
     }
 
-    create()
+    getTablePageBaseUrl()
     {
-        this.generalHelper.navigate("table/"+this.tableName+"/create")
-    }
-
-    deleted()
-    {
-        this.generalHelper.navigate("table/"+this.tableName+"/deleted")
+        return BaseHelper.baseUrl + "table/"+this.tableName+"/"; 
     }
 
     edit(record)

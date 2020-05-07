@@ -3,7 +3,11 @@
         <div class="col-12 col-md-6">
             <table class="light-table">
                 <tr *ngIf="!lightTable">
-                    <td><h2>{{ getData('table_info.display_name') }}</h2>
+                    <td>
+                        <h2 (click)="dataReload()" style="cursor: pointer">
+                            {{ getData('table_info.display_name') }}
+                        </h2>
+                    </td>
                 </tr><tr>
                     <td style="padding:5px 0">
                         <span *ngFor="let columnName of getObjectKeys(params.filters)"
@@ -43,31 +47,12 @@
 
                 <span class="ti-arrow-down"></span> 
             </button>
-
-            <!--<button *ngIf="!lightTable"
-                id="report-button"
+            
+            <a *ngIf="!lightTable && !archiveTable && can('deleted')"
+                id="delete-button" 
                 class="btn btn-sm float-right btn-primary btn-icon pull-right" 
-                data-toggle="dropdown" role="button" aria-haspopup="true" 
-                aria-expanded="false"> 
-                
-                <span class="ti-arrow-down" data-toggle="tooltip" title="Raporlar"></span> 
-            </button>
-            <ul class="dropdown-menu">
-                <li role="menuitem">
-                    <a class="dropdown-item" (click)="downloadStandartReport()">                                                        
-                        Tabloyu İndir
-                    </a>
-                </li>
-            </ul> -->
-
-            <button *ngIf="!lightTable && !archiveTable && can('deleted')"
-                id="delete-button" (click)="deleted()"
-                class="btn btn-sm float-right btn-primary btn-icon pull-right"
                 data-toggle="tooltip" title="Silinmiş Kayıtlar" 
-                role="button" > 
-                
-                <span class="ti-trash"></span>
-            </button>
+                href="{{ getTablePageBaseUrl()+'deleted' }}"><span class="ti-trash"></span></a>
             
             <button *ngIf="!lightTable"
                 id="search-button"
@@ -85,14 +70,11 @@
                 </li>
             </ul>
 
-            <button *ngIf="!lightTable && !archiveTable && can('create')"
-                id="create-button" (click)="create()"
+            <a *ngIf="!lightTable && !archiveTable && can('create')"
+                id="create-button"
                 class="btn btn-sm float-right btn-primary btn-icon pull-right" 
-                data-toggle="tooltip" title="Yeni Ekle"
-                role="button" > 
-                
-                <span class="ti-plus"></span> 
-            </button>
+                data-toggle="tooltip" title="Yeni Ekle" 
+                href="{{ getTablePageBaseUrl()+'create' }}"><span class="ti-plus"></span></a>
 
             <div class="checkbox" *ngIf="!lightTable && !archiveTable">
                 <input (click)="toggleEditMode()" id="editMode" type="checkbox" [attr.checked]="getEditMode() ? '' : null">

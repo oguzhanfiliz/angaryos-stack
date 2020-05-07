@@ -64,6 +64,24 @@ button.btn-sm
   }
 }
 
+a.btn
+{
+    padding: 0!important;
+    margin: 1px !important;
+    width: 25px !important;
+    min-width: 25px !important;
+    height: 25px !important;
+    min-height: 25px !important;
+    padding-top: 5 !important;
+    
+    span
+    {
+      padding: 0 !important;
+      margin: 0 !important;
+      font-size: 13px !important;
+    }
+}
+
 form-element
 {
   border: 0px !important;
