@@ -7,6 +7,8 @@ use App\Http\Requests\BaseRequest;
 use App\Libraries\ChangeDataLibrary;
 use App\Libraries\ColumnClassificationLibrary;
 
+use App\Listeners\CacheSubscriber;
+
 use DB;
 use Auth;
 use App\BaseModel;
@@ -664,8 +666,7 @@ trait TableSubscriberTrait
 
         $record = $model->updateRecordsDataForResponse($record, $params->columns);
         
-        //bu neden eklenmiş anlaşılamadı. data zaten sqlden direk ilişkiligetiriliyor
-        //$record = $this->replaceDataForForm($model, $record, $columnSet);
+        $record = $this->replaceRelationColumnDataForForm($model, $record, $columnSet);
 
         $record = $this->filterRecordsColumnWithColumns([$record], $columnSet)[0];
         
@@ -720,7 +721,7 @@ trait TableSubscriberTrait
         return $params;
     }
     
-    private function replaceDataForForm($model, $record, $columnSet)
+    private function replaceRelationColumnDataForForm($model, $record, $columnSet)
     {
         $dataClasses = ['stdClass', 'App\BaseModel'];
         
@@ -931,7 +932,17 @@ trait TableSubscriberTrait
         $sql = 'UPDATE users SET auths  = \'["'.$authId.'"]\'::jsonb where (auths::text = \'\') IS NOT FALSE';
         if($userIds != '*') $sql .= ' and id in ('.implode(',', $userIds).')';  
         
-        DB::select($sql);        
+        DB::select($sql);      
+
+
+        $model = DB::table('users');
+        if($userIds != '*') $model = $model->whereIn('id', $userIds);
+        $users = $model->get();
+        
+        $cacheSubscriber = new CacheSubscriber(TRUE);
+
+        foreach($users as $user)
+            $cacheSubscriber->recordChangedSuccess('users', $user, 'update');
     }
 
 
@@ -944,6 +955,8 @@ trait TableSubscriberTrait
 
         foreach($records as $record)
         {
+            if(is_array($record)) $record = (object)$record;
+
             $temp = [];
             $temp['id'] = $record->id;
 
