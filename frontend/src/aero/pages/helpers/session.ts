@@ -252,8 +252,14 @@ export class SessionHelper
 
     public logout()
     {
-      BaseHelper.clearUserData()
-      this.generalHelper.navigate('/login');
+      var url = this.getBackendUrlWithToken() + "logOut";
+
+      return this.doHttpRequest("GET", url, null) 
+      .then((data) =>  
+      {
+        BaseHelper.clearUserData()
+        this.generalHelper.navigate('/login');
+      })
     }
 
     public fillLoggedInUserInfo()

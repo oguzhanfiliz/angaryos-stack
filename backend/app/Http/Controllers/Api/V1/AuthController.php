@@ -36,6 +36,24 @@ class AuthController extends Controller
         send_log('info', 'Response Succes Login', $token);
         return helper('response_success', ['token' => $token]);
     }
+    
+    public function LogOut($user)
+    {
+        send_log('info', 'Request Logout', $user);
+        
+        $token = \Request::segment(3);
+        
+        $tokens = [];
+        foreach($user->tokens as $temp)
+            if($temp['token'] != $token)
+                array_push($tokens, $temp);
+        
+        $user->tokens = $tokens;
+        $user->save();
+
+        send_log('info', 'Logout Success', $token);
+        return helper('response_success', 'success');
+    }
         
     public function getLoggedInUserInfo($user)
     {

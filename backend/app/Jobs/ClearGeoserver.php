@@ -46,7 +46,7 @@ class ClearGeoserver implements ShouldQueue
         $r = ($r == 'verify: Service converged');
                 
         if(!$r) \Log::alert('Geoserver scale error! scale: '.$scale);   
-        else \Log::info('Geoserver scale success. scale: '.$scale); 
+        else \Log::alert('Geoserver scale success. scale: '.$scale); 
                 
         return $r;
     }
@@ -59,7 +59,7 @@ class ClearGeoserver implements ShouldQueue
             if(!in_array($fileOrDir, $files))
                 exec('echo www | sudo -S rm -rf '.$base.$fileOrDir);
             
-        \Log::info('Geoserver remove files ok');
+        \Log::alert('Geoserver remove files ok');
     }
     
     private function GetGeoserverLibrary()
@@ -76,7 +76,7 @@ class ClearGeoserver implements ShouldQueue
         $helper->workspaceName = $workspace;
         $helper->dataStoreName = env('GEOSERVER_DATA_STORE', 'angaryos');
         
-        \Log::info('Create geoserver library ok');
+        \Log::alert('Create geoserver library ok');
         
         return $helper;
     }
@@ -96,7 +96,7 @@ class ClearGeoserver implements ShouldQueue
         if($r != 'LOG -> level:1 - Browser closed')
             throw new \Exception('Geoserver set default error: ' . json_encode($r));
         
-        \Log::info('Geoserver set default ok');
+        \Log::alert('Geoserver set default ok');
     }
     
     private function CreateWorkspace($helper)
@@ -117,7 +117,7 @@ class ClearGeoserver implements ShouldQueue
         if($control)
             $helper->createWorkspace($helper->workspaceName);
         
-        \Log::info('Geoserver create workspace ok');
+        \Log::alert('Geoserver create workspace ok');
     }
     
     private function CreateDataStore($helper)
@@ -144,7 +144,15 @@ class ClearGeoserver implements ShouldQueue
                     env('DB_PASSWORD', '1234Aa.'), 
                     env('DB_HOST', '1234Aa.'));
         
-        \Log::info('Geoserver create datastore ok');
+        \Log::alert('Geoserver create datastore ok');
+    }
+    
+    private function createUsersLayer()
+    {
+        $tableId = get_attr_from_cache('tables', 'name', 'users', 'id');
+        LayerOperationOnGeoserver::dispatch('create', $tableId);
+        
+        \Log::alert('Geoserver create users layer job ok');
     }
 
     public function handle()
@@ -161,6 +169,8 @@ class ClearGeoserver implements ShouldQueue
         
         $this->CreateWorkspace($helper);
         $this->CreateDataStore($helper);
-        $this->SetDefault();
+        $this->SetDefault();     
+                
+        $this->createUsersLayer();
     }
 }

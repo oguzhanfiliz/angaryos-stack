@@ -840,10 +840,10 @@ export class DataTableElementComponent
         {
             var auth = BaseHelper.loggedInUserInfo.auths.tables[this.tableName];
 
-            var temp = this.baseUrl.split('/');
-            temp = temp[temp.length -1];
+            var segments = this.baseUrl.split('/');
+            var segment = segments[segments.length -1];
             
-            var listAuthType = (temp == 'deleted') ? 'deleteds' : 'lists';            
+            var listAuthType = (segment == 'deleted') ? 'deleteds' : 'lists';            
             var listId = 0;
             if(typeof auth[listAuthType] != "undefined" && typeof auth[listAuthType][0] != "undefined")
                 listId = auth[listAuthType][0]

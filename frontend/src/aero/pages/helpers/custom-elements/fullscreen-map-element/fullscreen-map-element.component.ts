@@ -66,7 +66,7 @@ export class FullScreenMapElementComponent
 
     ngAfterViewInit() 
     {  
-        this.aeroThemeHelper.loadPageScripts();
+        this.aeroThemeHelper.loadPageScriptsLight();
     }
 
     ngOnChanges()

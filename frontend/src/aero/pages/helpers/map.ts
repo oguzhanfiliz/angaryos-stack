@@ -40,6 +40,7 @@ export abstract class MapHelper
   public static escKeyListening = false;
 
 
+
   /****    Map Object Functions     ****/
 
   public static addCustomProjections()

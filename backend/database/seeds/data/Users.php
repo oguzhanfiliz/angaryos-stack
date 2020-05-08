@@ -27,7 +27,7 @@ $adminAuth->save();
 
 
 $createExcept = [];//['data_filter_types'];
-$hideMenuLink = [];
+$hideMenuLink = [];/*
 [
     'log_levels',
     'column_gui_types',
@@ -47,7 +47,7 @@ $hideMenuLink = [];
     'data_source_col_relations',
     'data_source_types',
     'data_source_directions'
-];
+];*/
 
 $adminAuths = [];
 foreach($tables as $table)
@@ -110,6 +110,9 @@ foreach($tables as $table)
             array_push($tableAuths, $temp.$type.':'.$filter->id);
         }
     }
+    
+    if($table->name == 'users')
+        array_push($tableAuths, 'tables:'.$table->name.':maps:0');
     
     $temp = $this->get_base_record();
     $temp['name_basic'] = $table_name_display_name_map[$table->name].' tüm yetki';

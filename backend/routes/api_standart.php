@@ -12,12 +12,14 @@ Route::group(['prefix' => '{token}'], function ()
 
     Route::get('test', function()
     {
-        
+        return 'test';
     });
     
     Route::any('/', '\App\Http\Controllers\GeneralController@serviceOk');
     Route::get('getLoggedInUserInfo', 'AuthController@getLoggedInUserInfo');
     Route::get('getUserToken/{user_id}', 'AuthController@getUserToken');
+    
+    Route::get('logOut', 'AuthController@LogOut');
     
     Route::get('assignAuth', 'AuthController@assignAuth');
     
