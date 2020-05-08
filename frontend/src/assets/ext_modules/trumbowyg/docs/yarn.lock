@@ -360,9 +360,9 @@ class-utils@^0.3.5:
     isobject "^3.0.0"
     static-extend "^0.1.1"
 
-clean-css@4.1.7:
-  version "4.1.7"
-  resolved "https://registry.yarnpkg.com/clean-css/-/clean-css-4.1.7.tgz#b9aea4f85679889cf3eae8b40349ec4ebdfdd032"
+clean-css@4.1.11:
+  version "4.1.11"
+  resolved "https://registry.yarnpkg.com/clean-css/-/clean-css-4.1.11.tgz#b9aea4f85679889cf3eae8b40349ec4ebdfdd032"
   integrity sha1-ua6k+FZ5iJzz6ui0A0nsTr390DI=
   dependencies:
     source-map "0.5.x"
