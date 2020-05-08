@@ -339,6 +339,24 @@ trait TableSubscriberTrait
         return ColumnClassificationLibrary::relation($this, $functionName, $column, NULL, $temp);
     }
     
+    public function getDataForSelectElementSingleForDataSource($params)
+    {
+        $val = $params->record{$params->column->name};
+        
+        $dataSource = get_attr_from_cache('column_data_sources', 'id', $params->relation->column_data_source_id, '*');
+        
+        $repository = NULL;
+        eval(helper('clear_php_code', $dataSource->php_code));
+        
+        $display = $repository->getRecordsForListBySourceData($params->record, $params->column);
+        
+        return
+        [
+            'source' => '',
+            'display' => $display
+        ];
+    }
+    
     public function getDataForSelectElementSingleForTableIdAndColumnIds($params)
     {
         $val = $params->record{$params->column->name};

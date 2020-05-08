@@ -20,6 +20,8 @@ $settings['FB_BASE_TOPIC'] = '/topics/angaryos';
 
 $settings['DATA_ENTEGRATOR_STATES'] = '{}';
 
+$settings['DEBUG_USER_IDS'] = '[1]';
+
 
 
 

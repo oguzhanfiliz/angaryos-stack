@@ -105,7 +105,7 @@ return Cache::rememberForever($key, function()
         }
 
         foreach(\DB::table('column_arrays')->where('table_id', $table->id)->get() as $columnArray)
-            foreach(['lists', 'queries'] as $type)
+            foreach(['lists', 'queries', 'deleteds'] as $type)
             {
                 $source = 'tables:'.$table->name.':'.$type.':'.$columnArray->id;
                 $display = 'Tablolar ' . $table->display_name. ' ' . $displays[$type] . ' ' . $columnArray->name_basic . ' (id: '.$columnArray->id.')';
@@ -113,7 +113,7 @@ return Cache::rememberForever($key, function()
             }
 
         foreach(\DB::table('column_sets')->where('table_id', $table->id)->get() as $columnSet)
-            foreach(['creates', 'edits', 'shows', 'deleteds'] as $type)
+            foreach(['creates', 'edits', 'shows'] as $type)
             {
                 $source = 'tables:'.$table->name.':'.$type.':'.$columnSet->id;
                 $display = 'Tablolar ' . $table->display_name. ' ' . $displays[$type] . ' ' . $columnSet->name_basic. ' (id: '.$columnSet->id.')';

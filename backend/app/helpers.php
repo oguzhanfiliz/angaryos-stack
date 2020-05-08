@@ -68,3 +68,12 @@ function copy_record_to_archive($record, $tableName = NULL)
 {
     return require 'HelperFunctions/'.__FUNCTION__.'.php';
 }
+
+function dd_live(...$data)
+{
+    $userId = @\Auth::user()->id;
+    if(strlen($userId) == 0) return;
+    
+    $ids = json_decode(DEBUG_USER_IDS);
+    if(in_array($userId, $ids)) dd($data);
+} 
