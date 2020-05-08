@@ -28,7 +28,7 @@
     "bootstrap": "^4.4.1",
     "document-register-element": "^1.7.2",
     "dotenv": "^8.2.0",
-    "jquery": "^3.3.1",
+    "jquery": "^3.5.0",
     "moment": "^2.24.0",
     "ol": "^6.1.1",
     "popper.js": "^1.16.1",
