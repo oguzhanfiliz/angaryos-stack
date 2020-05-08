@@ -22,7 +22,6 @@ export class AeroThemeHelper
       BaseHelper.writeToPipe('loadPageScriptsLoaded', true);
       BaseHelper.writeToPipe('loadPageScriptsLightLoaded', true);
       
-      console.log('loadPageScripts ok');
       setTimeout(() => 
       {
         $.getScript('assets/themes/aero/assets/bundles/libscripts.bundle.js', function()
@@ -60,7 +59,6 @@ export class AeroThemeHelper
       
       BaseHelper.writeToPipe('loadPageScriptsLightLoaded', true);
       
-      console.log('loadPageScripts  Light ok');
       setTimeout(() => 
       {
         $.getScript('assets/themes/aero/assets/bundles/libscripts.bundle.js', function()

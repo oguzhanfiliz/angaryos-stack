@@ -29,9 +29,20 @@ export class PagesComponent
         )
   { 
     this.fillVariablesFromLoggedInUserInfo();
+    
+    this.pageRutine();
 
     $('body').keydown((event) => this.keyEvent(event));
     $('body').keyup((event) => this.keyEvent(event));
+  }
+  
+  private pageRutine() 
+  {
+      setTimeout(() =>
+      {
+        $('#shortcuts').removeClass('show');
+        $('#shortcuts ul').removeClass('show')
+      }, 1000);
   }
 
   private keyEvent(event)
