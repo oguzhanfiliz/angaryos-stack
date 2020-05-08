@@ -102,6 +102,9 @@ $subscribers['table']['sub_point_types'][0] =
     'name_basic' => 'Revize katman işlemleri için trigger',
     'subscriber_type_id' => $subscriber_types['before']->id,
     'php_code' => '<?php
+return;
+
+//bu trigger neden var anlaşılamadı
 $params = 
 [
     "type" => $type,

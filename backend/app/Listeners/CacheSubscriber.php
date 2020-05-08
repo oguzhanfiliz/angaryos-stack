@@ -105,7 +105,7 @@ class CacheSubscriber
         $keys = $this->getCacheKeys();
         foreach($keys as $key)
             if(strstr($key, 'userToken:'))
-                dd('clearFilterCache');//userToken:1111111111111111d1.tableName:test.mapFilters
+                dd('clearFilterCache1');//userToken:1111111111111111d1.tableName:test.mapFilters
     }
     
     private function getCacheKeys()
@@ -173,10 +173,11 @@ class CacheSubscriber
         foreach($users as $user)
             $this->clearUserCache($user);
         
-        $keys = $this->getCacheKeys();
+        //niye burada anlaşılamadı
+        /*$keys = $this->getCacheKeys();
         foreach($keys as $key)
             if(strstr($key, 'userToken:'))
-                dd('clearFilterCache');//acaba bu clear user token içine alınabilir mi?//userToken:1111111111111111d1.tableName:test.mapFilters
+                dd('clearFilterCache');//acaba bu clear user token içine alınabilir mi?//userToken:1111111111111111d1.tableName:test.mapFilters*/
     }
     
     private function clearRelationDataCache($tableName, $record, $type)
@@ -361,14 +362,15 @@ class CacheSubscriber
             {
                 //userToken:1111111111111111d1.tableName:test.mapFilters
                 $temp = explode('.', explode('tableName:', $key)[1])[0];
+                $tableId = get_attr_from_cache('tables', 'name', $temp, 'id');
+                
                 if($temp == $table->name)
                     ClearCache::{$this->dispatchType}($key);
                 else
                 {
-                    dd('clearTablesAndColumnCommonCache');
-                    //$temp custom layer yada external layer adı olaiblir
-                    //onların masıl isimlendirildiğini inceleyip
-                    //bunların cache i var ise sil
+                    $customLayers = DB::table('custom_layers')->where('table_id', $tableId)->get();
+                    foreach($customLayers as $customLayer)
+                        dd('clearTablesAndColumnCommonCache');
                 }
             }
             else if(substr($key, -16, 16) == '|tableGroups')
