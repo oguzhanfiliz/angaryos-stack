@@ -69,8 +69,8 @@ export const types = [
             display: 'Dışa aktarma',
             table: 'data_filters',
             in_form_column: 'data_filter_ids',
-            description: 'Kaydı dışa aktarma varsayılan olarak izinlidir. İsterseniz kaldırılabilir.',
-            search: 'filters:tableName:export:'
+            description: 'Kaydı dışa aktarma varsayılan olarak izinli <span class="badge badge-warning">değildir</span>. İsterseniz ekleyebilirsiniz.',
+            search: 'tableName:export:'
         },
         {
             source: 'filters',

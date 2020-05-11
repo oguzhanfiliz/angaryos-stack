@@ -207,6 +207,7 @@ export class DataTableElementComponent
             case 'clone': this.clone(record); break;
             case 'edit': this.edit(record); break;
             case 'archive': this.archive(record); break;
+            case 'export': this.export(record); break;
             default: alert(policyType + ": " + record.id);
         }
     }
@@ -214,6 +215,11 @@ export class DataTableElementComponent
     show(record)
     {
         this.generalHelper.navigate("table/"+this.tableName+"/"+record.id)
+    }
+    
+    export(record)
+    {
+        window.open(this.sessionHelper.getBackendUrlWithToken()+"tables/"+this.tableName+"/"+record.id+"/export");
     }
 
     archive(record)

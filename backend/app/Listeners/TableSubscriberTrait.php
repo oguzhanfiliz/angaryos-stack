@@ -130,7 +130,8 @@ trait TableSubscriberTrait
             '_is_restorable' => 'restore',
             '_is_deletable' => 'delete',
             '_is_editable' => 'edits',
-            '_is_showable' => 'shows'
+            '_is_showable' => 'shows',
+            '_is_exportable' => 'export',
         ];
         
         $auths = Auth::user()->auths['tables'][$tableName];
@@ -144,6 +145,14 @@ trait TableSubscriberTrait
             }
             
         return $records;
+    }
+    
+    
+    /****    Export    ****/
+    
+    public function getDataForExport($record)
+    {
+        return $record->toArray();
     }
     
     

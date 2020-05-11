@@ -45,6 +45,7 @@ Route::group(['prefix' => '{token}'], function ()
     Route::any('tables/{table_name}/{id}/update', 'TableController@update');
     Route::get('tables/{table_name}/{id}/delete', 'TableController@destroy');
     Route::get('tables/{table_name}/{id}/clone', 'TableController@cloneRecord');
+    Route::get('tables/{table_name}/{id}/export', 'TableController@export');
     Route::get('tables/{table_name}/{id}/archive', 'TableController@archive');
     Route::get('tables/{table_name}/{archive_id}/restore', 'TableController@restore');
     Route::get('tables/{table_name}/{id}', 'TableController@show');

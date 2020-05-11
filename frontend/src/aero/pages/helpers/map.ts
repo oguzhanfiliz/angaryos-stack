@@ -236,15 +236,20 @@ export abstract class MapHelper
 
   /****   Operations    ****/
 
-  public static addDraw(map, type, multiple)
+  public static addDraw(map, type, multiple, freehand = false)
   {
     return new Promise((resolve) =>
     {
-      var draw = new Draw(
+      var opt = 
       {
         source: this.getVectorSource(map),
         type: type
-      });
+      };
+      
+      if(freehand && type == "LineString")
+        opt['freehand'] = true;
+      
+      var draw = new Draw(opt);
 
       draw['multiple'] = multiple;
       

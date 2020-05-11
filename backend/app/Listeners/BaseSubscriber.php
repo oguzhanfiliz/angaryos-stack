@@ -47,6 +47,8 @@ class BaseSubscriber
         
         $events->listen('record.deleted.requested', 'App\Listeners\TableSubscriber@deletedRequested');
         
+        $events->listen('record.export.requested', 'App\Listeners\TableSubscriber@exportRequested');
+        
         
         $events->listen('record.selectColummnData.requested', 'App\Listeners\TableSubscriber@selectColumnDataRequested');
         $events->listen('record.realtionTableData.requested', 'App\Listeners\TableSubscriber@realtionTableDataRequested');

@@ -70,6 +70,14 @@ class UserPolicy
         return $this->recordPermitted($record, 'clone');
     }
     
+    public function export($user, $record)
+    {
+        if(!isset($user->auths['tables'][$record->getTable()]['export'])) 
+            return FALSE;
+        
+        return $this->recordPermitted($record, __FUNCTION__);
+    }
+    
     public function archive($user, $record, $params)
     {
         $tableName = substr($params->table_name, 0, -8);

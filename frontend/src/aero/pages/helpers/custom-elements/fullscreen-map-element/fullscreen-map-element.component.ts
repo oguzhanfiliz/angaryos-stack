@@ -798,9 +798,9 @@ export class FullScreenMapElementComponent
 
     }
 
-    drawStart(featureType, multi = false)
+    drawStart(featureType, multi = false, freehand = false)
     {
-        MapHelper.addDraw(this.map, featureType, true)
+        MapHelper.addDraw(this.map, featureType, true, freehand)
         .then((drawingInteraction) =>
         {
             this.waitDrawSingleFeature = !multi;
@@ -928,5 +928,10 @@ export class FullScreenMapElementComponent
             })
             .catch((e) => { this.generalHelper.stopLoading(); });
         }); 
+    }
+    
+    isMobileDevice()
+    {
+        return BaseHelper.isMobileDevice;
     }
 }

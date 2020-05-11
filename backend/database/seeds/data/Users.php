@@ -61,6 +61,7 @@ foreach($tables as $table)
     
     array_push($tableAuths, $temp.'delete:0');
     array_push($tableAuths, $temp.'restore:0');
+    array_push($tableAuths, $temp.'export:0');
     
     if(isset($column_arrays[$table->name]))
     {

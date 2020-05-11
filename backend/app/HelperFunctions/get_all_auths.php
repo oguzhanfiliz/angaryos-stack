@@ -96,6 +96,10 @@ return Cache::rememberForever($key, function()
         $source = 'tables:'.$table->name.':restore:0';
         $display = 'Tablolar ' . $table->display_name. ' Kayıt Geri Yükle';
         $auths[$source] = $display;
+        
+        $source = 'tables:'.$table->name.':export:0';
+        $display = 'Tablolar ' . $table->display_name. ' Kayıt Dışa Aktar';
+        $auths[$source] = $display;
             
         foreach(['creates', 'lists', 'queries', 'edits', 'shows', 'deleteds'] as $type)
         {

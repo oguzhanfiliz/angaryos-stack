@@ -1,4 +1,4 @@
-﻿version: "3.3"
+version: "3.3"
 
 services:
 
@@ -39,20 +39,7 @@ services:
         networks:
             - frontend-nw
             - backend-nw
-
-    test:
-        image: containous/whoami:latest
-        networks:
-            - frontend-nw
-        deploy:
-            mode: replicated
-            replicas: 2
-            labels:
-                traefik.frontend.rule: "PathPrefixStrip:/test"
-                traefik.port: "80"
-                traefik.enable: "true"
-                traefik.backend: "test"
-                traefik.docker.network: "angaryos_frontend-nw"
+            
 
 
     #######       FRONTEND       #######
@@ -64,6 +51,10 @@ services:
         networks:
             - frontend-nw
         deploy:
+            resources:
+                limits:
+                    #cpus: '0.001' 
+                    memory: 200M
             mode: replicated
             replicas: 1
             labels:
@@ -93,7 +84,6 @@ services:
         networks:
             - backend-nw
             - db-nw
-            - mq-nw
 
     laravelcron:
         image: karapazar/laravel-cron:0.19
@@ -111,7 +101,6 @@ services:
         networks:
             - backend-nw
             - db-nw
-            - mq-nw
             
     laraveljobs:
         image: karapazar/laravel-jobs:0.10
@@ -129,7 +118,6 @@ services:
         networks:
             - backend-nw
             - db-nw
-            - mq-nw
 
     nginx:
         image: nginx:alpine
@@ -166,7 +154,7 @@ services:
         environment:
             - POSTGRES_DB=postgres
             - POSTGRES_USER=postgres
-            - POSTGRES_PASS=1234Aa.
+            - POSTGRES_PASS=seraHost2643**
             - ALLOW_IP_RANGE=0.0.0.0/0
         volumes:
             - ./services/postgresql/data:/var/lib/postgresql
@@ -175,113 +163,7 @@ services:
         networks:
             - db-nw
 
-
-
-    #######       QUEUE FOR LOG       #######  
-
-    rabbitmq:
-        hostname: 'rabbitmq'
-        image: rabbitmq:3-management
-        ports:
-            - "9001:15672"
-        deploy:
-            mode: replicated
-            replicas: 1
-        networks:
-            - mq-nw
-        environment:
-            - RABBITMQ_ERLANG_COOKIE=1234
-            - RABBITMQ_DEFAULT_USER=${RABBITMQ_DEFAULT_USER}
-            - RABBITMQ_DEFAULT_PASS=${RABBITMQ_DEFAULT_PASS}
-            - RABBITMQ_DEFAULT_VHOST=${RABBITMQ_DEFAULT_VHOST}
-
-
-
-    #######       LOG       #######  
-
-    elasticsearch:
-        hostname: 'elasticsearch'
-        image: docker.elastic.co/elasticsearch/elasticsearch-oss:6.5.4
-        environment:
-            ES_JAVA_OPTS: "-Xms108m -Xmx108m"
-        networks:
-            - elk-nw
-        deploy:
-            mode: replicated
-            replicas: 1            
-        volumes:
-            - ./services/logs/elasticsearch/data:/usr/share/elasticsearch/data
-            - ./services/logs/elasticsearch/config/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
-
-    logstash:
-        hostname: 'logstash'
-        image: docker.elastic.co/logstash/logstash-oss:6.5.4
-        volumes:
-            - ./services/logs/logstash/config/logstash.yml:/usr/share/logstash/config/logstash.yml
-            - ./services/logs/logstash/pipeline/logstash.conf:/usr/share/logstash/pipeline/logstash.conf
-        environment:
-            LS_JAVA_OPTS: "-Xmx256m -Xms256m"
-        networks:
-            - elk-nw
-            - mq-nw
-        depends_on:
-            - elasticsearch
-        deploy:
-            mode: replicated
-            replicas: 1
-
-    kibana:
-        hostname: 'kibana'
-        image: docker.elastic.co/kibana/kibana-oss:6.5.4
-        ports:
-            - "9002:5601"
-        volumes:
-            - ./services/logs/kibana/config/kibana.yml:/usr/share/kibana/config/kibana.yml
-        networks:
-            - elk-nw
-        deploy:
-            mode: replicated
-            replicas: 1
-
-
-
-    #######       GEOSERVER CLUSTER       #######
-
-    geoserver:
-        image: thinkwhere/geoserver:2.14
-        logging:
-            driver: "json-file"
-            options:
-                max-size: "10m"
-                max-file: "10"
-        networks:
-            - db-nw
-            - backend-nw
-        ports:
-            - "9003:8080"
-        deploy:
-            mode: replicated
-            replicas: 1
-            labels:
-                traefik.frontend.rule: "PathPrefix:/geoserver"
-                traefik.port: "8080"
-                traefik.enable: "true"
-                traefik.backend: "geoserver"
-                traefik.docker.network: "angaryos_backend-nw"
-        environment:
-            - GEOSERVER_LOG_LOCATION=/opt/geoserver/data_dir/logs/geoserver.log
-        volumes:
-            - ./services/geoserver/data:/opt/geoserver/data_dir
-            - ./services/geoserver/tomcat_settings/setenv.sh:/usr/local/tomcat/bin/setenv.sh
-            - ./services/geoserver/tomcat_settings/logs:/usr/local/tomcat/logs
-            - ./services/geoserver/rasters:/root/Rasters
-            - ./services/geoserver/font/Ubuntu-R.ttf:/usr/share/fonts/truetype/Ubuntu-R.ttf
-    
-    
-
 networks:
     frontend-nw:
     backend-nw:
     db-nw:
-    elk-nw:
-    mq-nw:

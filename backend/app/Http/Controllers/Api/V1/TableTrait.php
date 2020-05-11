@@ -40,6 +40,7 @@ trait TableTrait
             'restore',
             'restored',
             'deleted',
+            'export',
             'cloneRecord',
             'columnSetOrArrayIsPermitted',
             
@@ -366,5 +367,19 @@ trait TableTrait
         unset($cloneData['updated_at']);
         
         return $cloneData;
+    }
+    
+    private function exportAsFile($table, $record, $data)
+    {
+        $fileName = 'export.'.$table->getTable().'.'.$record->id.'.json';
+        $params = 
+        [
+            'data' => $data,
+            'fileName' => $fileName,
+            'fullPath' => 'temps/'.$fileName,
+            'headers' => ['Content-Type: application/json'],
+        ];
+        
+        return helper('response_as_file', $params);
     }
 }

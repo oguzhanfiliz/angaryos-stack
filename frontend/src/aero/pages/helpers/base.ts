@@ -27,6 +27,8 @@ export abstract class BaseHelper
 
   public static addedScripts = {};
   public static pipe = {};
+  
+  public static isMobileDevice = (/android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini/i.test(navigator.userAgent.toLowerCase()));
 
   public static preLoad()
   {

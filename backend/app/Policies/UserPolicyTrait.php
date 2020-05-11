@@ -181,6 +181,9 @@ trait UserPolicyTrait
             case 'restore':
                 $permitName = '_is_restorable';
                 break;
+            case 'export':
+                $permitName = '_is_exportable';
+                break;
             case 'update':
                 $permitName = '_is_editable';
                 break;

@@ -26,6 +26,11 @@ class TableSubscriber
         return $this->getDataForShow($model, $params);
     }
     
+    public function exportRequested($model) 
+    {
+        return $this->getDataForExport($model);
+    }
+    
     public function selectColumnDataRequested($column, $params) 
     {
         return $column->getSelectColumnData($params);

@@ -213,6 +213,19 @@ class TableController extends Controller
         return helper('response_success', ['message' => 'success', 'id' => $cloneRecordOrErrors->id]);
     }
     
+    public function export(User $user, BaseModel $table, BaseModel $record)
+    {
+        send_log('info', 'Request Export', $record);
+        
+        if(Gate::denies('export', $record)) $this->abort();
+        
+        $data = Event::dispatch('record.export.requested', $record)[0];
+        
+        send_log('info', 'Response export', [$record, $data]);
+        
+        return $this->exportAsFile($table, $record, $data);
+    }
+    
     public function archive(User $user, BaseModel $table, BaseModel $record)
     {   
         $params = $this->getValidatedParamsForArchive();
