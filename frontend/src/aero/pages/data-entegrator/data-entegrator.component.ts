@@ -23,9 +23,9 @@ export class DataEntegratorComponent
     private tableId:number = 0;
     private dataSourceId:number = 0;
 
-    private remoteColumns = [];
-    private columnChanges = {};
-    private columns = [];
+    public remoteColumns = [];
+    public columnChanges = {};
+    public columns = [];
 
     private loading = false;
     

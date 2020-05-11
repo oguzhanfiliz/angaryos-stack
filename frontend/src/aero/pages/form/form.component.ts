@@ -34,7 +34,7 @@ export class FormComponent
     public tableName = "";
     public recordId = null;
 
-    private loading = true;
+    public loading = true;
     
     constructor(
         public route: ActivatedRoute,

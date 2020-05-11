@@ -382,14 +382,14 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="detailFilterModalTitle">
-                    {{ getData('columns.' + selectedFilter.columnName + '.display_name') }}
+                    {{ getData('columns.' + selectedFilter['columnName'] + '.display_name') }}
                 </h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
             <detail-filter-element 
-                displayName="{{ getData('columns.'+selectedFilter.columnName+'.display_name') }}"                                                                
+                displayName="{{ getData('columns.'+selectedFilter['columnName']+'.display_name') }}"                                                                
                 filterJson="{{ getFilterJson(selectedFilter) }}"
                 (changed)="detailFilterChanged($event)"
                 baseUrl="{{ baseUrl }}" >
