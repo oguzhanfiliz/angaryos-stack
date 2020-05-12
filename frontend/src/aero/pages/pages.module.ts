@@ -110,6 +110,10 @@ import { GeoPreviewElementComponent } from './helpers/custom-elements/geo-previe
   bootstrap: [PagesComponent],
   entryComponents: 
   [
+    
+  ],
+  exports: 
+  [
     FormComponent,
     FormElementComponent,
     TextElementComponent,
@@ -138,7 +142,7 @@ import { GeoPreviewElementComponent } from './helpers/custom-elements/geo-previe
     ColumnArrayFormElementComponent,
 
     GeoPreviewElementComponent
-  ],
+  ]
 })
 export class PagesModule 
 {

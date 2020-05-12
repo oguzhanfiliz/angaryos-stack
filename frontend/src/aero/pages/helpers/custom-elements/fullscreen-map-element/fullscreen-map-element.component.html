@@ -281,7 +281,7 @@
 
 <input style="display: none;" name="kmzFile" id="kmzFile" type="file" accept=".kmz,.kml">
     
-<!--<div class="modal fade" id="{{ inFormElementId }}inFormModal" role="dialog" [attr.aria-labelledby]="inFormTableName+'inFormModalLabel'" aria-hidden="true">
+<div class="modal fade" id="{{ inFormElementId }}inFormModal" role="dialog" [attr.aria-labelledby]="inFormTableName+'inFormModalLabel'" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
         <div class="modal-content">
             <div class="modal-body" style="padding: 0px !important;">
@@ -289,9 +289,12 @@
                     *ngIf="inFormTableName.length > 0"
                     id="{{ inFormElementId }}" 
                     (formSaved)="inFormSavedSuccess($event)"
-                    [attr.inFormTableName]="inFormTableName"
-                    [attr.inFormColumnName]="inFormColumnName" 
-                    [attr.inFormRecordId]="inFormRecordId">
+                    (formLoad)="inFormLoaded($event)"
+                    [inFormIsDataTransport]="true"
+                    inFormDataTransportSelectOptionsJson="{{ convertToJson(inFormSelectDataForColumn) }}"
+                    inFormTableName="{{ inFormTableName }}"
+                    inFormColumnName="record_id" 
+                    inFormRecordId="{{ inFormRecordId }}">
                 
                 </in-form-element>
                 <button class="btn btn-danger btn-block" 
@@ -302,4 +305,4 @@
             </div>
         </div>
     </div>
-</div>-->
+</div>

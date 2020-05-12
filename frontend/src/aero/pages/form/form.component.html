@@ -30,9 +30,12 @@
                                     upFormId="{{ id }}"
                                     tableName="{{ tableName }}"
                                     (dataChanged)="change($event)"
+                                    [inFormIsDataTransport]="inFormIsDataTransport"
+                                    inFormDataTransportSelectOptionsJson="{{ inFormDataTransportSelectOptionsJson }}"
                                     (formSaved)="inFormSavedSuccess($event)"
                                     (inFormOpened)="inFormload($event)"
                                     columnArrayJson="{{ getJson(columnArray) }}"
+                                    createForm="{{ (recordId == 0) }}"
                                     recordJson="{{ getJson(getData('record')) }}">
                                 </column-array-form-element>
                             </div>

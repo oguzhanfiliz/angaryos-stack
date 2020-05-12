@@ -40,7 +40,7 @@ export class SelectElementComponent
 
     ngOnChanges()
     {
-        if(this.createForm == "true" || this.value.substr(0,1) == '[')
+        if(this.createForm == "true" || this.valueJson.substr(0,1) == '[')
         {
             var key = "user:"+BaseHelper.loggedInUserInfo.user.id+"."+this.baseUrl+".data";
             

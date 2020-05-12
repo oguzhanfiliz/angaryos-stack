@@ -68,6 +68,7 @@ class TableGeoServerOperationsLibrary
         
         $SLD = $params['requests']['style_code'];
         $styleName = $params['requests']['name'];
+        $styleName = helper('seo', $styleName);
         
         $r = $helper->createStyle($styleName, $SLD);
         if(!$r) custom_abort('style.not.created.on.geoserver');
@@ -110,6 +111,7 @@ class TableGeoServerOperationsLibrary
         $helper = $this->GetGeoServerHelper();
         
         $styleName = $params['record']->name;
+        $styleName = helper('seo', $styleName);
         
         $r = $helper->deleteStyle($styleName);
         if(strlen($r) != 0) custom_abort('style.not.deleted.on.geoserver');
@@ -117,6 +119,9 @@ class TableGeoServerOperationsLibrary
     
     public function CustomLayerEventForCreate($params)
     {
+        if(!isset($params['requests']['table_id']) || strlen($params['requests']['table_id']) == 0)
+            $params['requests']['table_id'] = $params['record']->table_id;
+        
         $table = get_model_from_cache('tables', 'id', $params['requests']['table_id']);
         if(!$this->TableIsHasGeoColumn($table)) 
             custom_abort('table.not.has.geo.column');
@@ -139,7 +144,16 @@ class TableGeoServerOperationsLibrary
             custom_abort('layer.not.created.on.geoserver:'.$temp);
         }
         
+        
+        if(!isset($params['requests']['layer_style_id']) || strlen($params['requests']['layer_style_id']) == 0)
+            $params['requests']['layer_style_id'] = $params['record']->layer_style_id;
+        
         $styleName = get_attr_from_cache('layer_styles', 'id', $params['requests']['layer_style_id'], 'name');
+        $styleName = helper('seo', $styleName);
+        
+        
+        if(!isset($params['requests']['custom_layer_type_id']) || strlen($params['requests']['custom_layer_type_id']) == 0)
+            $params['requests']['custom_layer_type_id'] = $params['record']->custom_layer_type_id;
         
         $type = get_attr_from_cache('custom_layer_types', 'id', $params['requests']['custom_layer_type_id'], 'name');
         if($type == 'wfs') return;
@@ -151,6 +165,8 @@ class TableGeoServerOperationsLibrary
     
     public function CustomLayerEventForUpdate($params)
     {
+        if(!isset($params['requests']['name']) || strlen($params['requests']['name']) == 0) return;
+        
         $oldLayerName = helper('seo', $params['record']->name);
         $newLayerName = helper('seo', $params['requests']['name']);
         

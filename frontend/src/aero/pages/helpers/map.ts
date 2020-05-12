@@ -583,6 +583,7 @@ export abstract class MapHelper
         var layer = this.getLayerFromMapAuth(map, auth);
         if(layer == null) continue;
 
+        layer['authData'] = auth;
         layer.setVisible(this.getLayerVisibilityFromConfig(map, layer));
 
         map.addLayer(layer);
@@ -851,6 +852,20 @@ export abstract class MapHelper
     feature.setStyle(this.getDefaultStyle(type));
     return feature;
   }
+  
+  public static getWktFromFeature(feature, targetProjection = null)
+  {
+    var sourceProjection = this.mapProjection;
+    if(targetProjection == null) targetProjection = this.userProjection;
+
+    var format = new WKT();
+
+    feature.getGeometry().transform(sourceProjection, targetProjection);
+    var wkt = format.writeGeometry(feature.getGeometry());
+    feature.getGeometry().transform(targetProjection, sourceProjection);
+    
+    return wkt;
+  }
 
   public static getVectorLayer(map)
   {
@@ -875,6 +890,17 @@ export abstract class MapHelper
   {
     var source = this.getVectorSource(map);
     var feature = source.getFeatures()[index];
+    source.removeFeature(feature);
+  }
+  
+  public static deleteFeature(map, indexOrFeature)
+  {
+    var source = this.getVectorSource(map);
+    
+    var feature = indexOrFeature;
+    if($.isNumeric(indexOrFeature))
+        feature = source.getFeatures()[index];
+        
     source.removeFeature(feature);
   }
 

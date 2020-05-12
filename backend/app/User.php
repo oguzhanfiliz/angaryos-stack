@@ -171,6 +171,8 @@ class User extends Authenticatable
             if(in_array(2, $tableAuth)) $info['search'] = TRUE;
         }
         
+        $info['layerTableType'] = 'default';
+        
         return $info;
     }
     
@@ -185,15 +187,21 @@ class User extends Authenticatable
         $info['layer_name'] = $temp[1];
         $info['type'] = get_attr_from_cache('custom_layer_types', 'id', $layer->custom_layer_type_id, 'name');
         
-        $info['style'] = '';
-        if(strlen($layer->layer_style_id) > 0) 
+        
+        $info['style'] = get_attr_from_cache('layer_styles', 'id', $layer->layer_style_id, 'name');
+        $info['style'] = helper('seo', $info['style']);
+        
+        if($info['type'] == 'wfs' && strlen($info['style']) > 0) 
             $info['style'] = get_attr_from_cache('layer_styles', 'id', $layer->layer_style_id, 'style_code');
+               
         
         $info['period'] = $layer->period;
         if(strlen($info['period']) == 0) $info['period'] = 0;
         
         $info['filter'] = FALSE;
         $info['search'] = FALSE;
+        
+        $info['layerTableType'] = 'external';
         
         return $info;
     }
@@ -205,7 +213,9 @@ class User extends Authenticatable
         $info['workspace'] = env('GEOSERVER_WORKSPACE', 'angaryos');
         $info['layer_name'] = helper('seo', $layer->name);
         $info['type'] = get_attr_from_cache('custom_layer_types', 'id', $layer->custom_layer_type_id, 'name');
+        
         $info['style'] = get_attr_from_cache('layer_styles', 'id', $layer->layer_style_id, 'name');
+        $info['style'] = helper('seo', $info['style']);
         
         if($info['type'] == 'wfs' && strlen($info['style']) > 0) 
             $info['style'] = get_attr_from_cache('layer_styles', 'id', $layer->layer_style_id, 'style_code');
@@ -215,6 +225,9 @@ class User extends Authenticatable
         
         $info['filter'] = FALSE;
         $info['search'] = FALSE;
+        
+        $info['baseTableName'] = get_attr_from_cache('tables', 'id', $layer->table_id, 'name');
+        $info['layerTableType'] = 'custom';
         
         return $info;
     }
@@ -254,7 +267,7 @@ class User extends Authenticatable
 
                 $mapAuths[$name] = $temp;
             }
-                
+        
         return $mapAuths;
     }
     

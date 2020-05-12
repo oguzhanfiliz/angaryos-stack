@@ -34,6 +34,8 @@ export class FullScreenMapElementComponent
     inFormTableName = "";
     inFormRecordId = 0;
     inFormElementId = "";
+    inFormTargetData = {};
+    inFormSelectDataForColumn = [];
 
     map = null;
     loggedInUserInfo = null;
@@ -66,7 +68,13 @@ export class FullScreenMapElementComponent
 
     ngAfterViewInit() 
     {  
-        this.aeroThemeHelper.loadPageScriptsLight();
+        this.fillInFormSelectDataForColumn();
+        
+        setTimeout(() =>
+        {
+            this.aeroThemeHelper.loadPageScriptsLight();
+            this.addKmzFileSelectedEvent();
+        }, 200);
     }
 
     ngOnChanges()
@@ -88,6 +96,43 @@ export class FullScreenMapElementComponent
 
 
     /****    Gui Operations    ****/
+    
+    fillInFormSelectDataForColumn()
+    {
+        var temp =
+        {
+            "source": "length",
+            "display": "Uzunluk hesapla doldur"
+        };
+        
+        this.inFormSelectDataForColumn.push(temp);
+        
+        temp =
+        {
+            "source": "area",
+            "display": "Alan hesapla doldur"
+        };
+        
+        this.inFormSelectDataForColumn.push(temp);
+    }
+    
+    addKmzFileSelectedEvent()
+    {
+        var th = this;
+        $('#kmzFile').change(function ()
+        {
+            var exts = ['kml', 'kmz'];
+
+            var path = $('#kmzFile').val();
+            var arr = path.split('.');
+            var ext = arr[arr.length-1];
+
+            if(exts.includes(ext))
+                th.uploadKmz();
+            else
+                th.messageHelper.sweetAlert("Geçersiz doya tipi!", "Hata", "warning");
+        });
+    }
 
     layers()
     {
@@ -123,21 +168,6 @@ export class FullScreenMapElementComponent
     selectKmzFile()
     {
         $('#kmzFile').click();
-
-        var th = this;
-        $('#kmzFile').change(function ()
-        {
-            var exts = ['kml', 'kmz'];
-
-            var path = $('#kmzFile').val();
-            var arr = path.split('.');
-            var ext = arr[arr.length-1];
-
-            if(exts.includes(ext))
-                th.uploadKmz();
-            else
-                th.messageHelper.sweetAlert("Geçersiz doya tipi!", "Hata", "warning");
-        });
     }
 
     kmzAuthControl()
@@ -208,11 +238,180 @@ export class FullScreenMapElementComponent
         map.on('click', (event) =>
         {
             if(th.drawingInteraction != null) 
+            {
                 return;
+            }
             else if(th.featuresTreeVisible)
+            {
                 th.selectClickedFeatureOnVectorSourceTree(event);
-            else
-                console.log(th.mapClickMode);
+                return;
+            }
+            
+            switch(th.mapClickMode)
+            {
+                case "getClickedFeatureInfo":
+                    th.showClickedFeatureInfo(event);
+                    break;
+                default: console.log(th.mapClickMode)
+            }
+        });
+    }
+    
+    async showClickedFeatureInfo(event)
+    {
+        //event.coordinate
+        //event.pixel
+        ////MapHelper.getLayersFromMapWithoutBaseLayers(this.map)
+        
+        var features = [];
+        var layers = MapHelper.getLayersFromMapWithoutBaseLayers(this.map);
+        for(var i = 0; i < layers.length; i++)
+            if(layers[i].getVisible())
+            {
+                var temp = this.getClickedFeatureInfoFromLayer(layers[i], event);
+                
+                if(temp == null) continue;
+                
+                await temp.then((data) =>
+                {
+                    console.log(data);
+                })
+                .catch((e) =>
+                {
+                    console.log('error');
+                });
+            }
+            
+        console.log(features);
+    }
+    
+    getClickedFeatureInfoFromLayer(layer, event)
+    {
+        switch(layer['authData']['layerTableType'])
+        {
+            case 'default':
+                return this.getClickedFeatureInfoFromDefaultLayer(layer, event);
+            case 'external':
+                return this.getClickedFeatureInfoFromExternalLayer(layer, event);
+            case 'custom':
+                return this.getClickedFeatureInfoFromCustomLayer(layer, event);
+            default : 
+                console.log("getClickedFeatureInfoFromLayer");
+                return null;
+        }
+    }
+    
+    getClickedFeatureInfoFromExternalLayer(layer, event)
+    {
+        var url = "https://192.168.10.185/geoserver/angaryos/wms";
+        
+        var params = 
+        {
+            SERVICE: "WMS",
+            VERSION: "1.1.1",
+            REQUEST: "GetFeatureInfo",
+            FORMAT: "image/png",
+            TRANSPARENT: "true",
+            QUERY_LAYERS: "angaryos:v_users",
+            LAYERS: "angaryos:v_users",
+            exceptions: "application/vnd.ogc.se_inimage",
+            INFO_FORMAT: "application/json",
+            FEATURE_COUNT: "50",
+            X: "50",
+            Y: "50",
+            SRS: "EPSG:7932",
+            STYLES: "",
+            WIDTH: "101",
+            HEIGHT: "101",
+            BBOX: "498781.45297684456,4365044.059510907,498781.9236493026,4365044.530183366" 
+        };
+        
+        //http://192.168.10.185:9003/geoserver/angaryos/wms?SERVICE=WMS&VERSION=1.1.1&REQUEST=GetFeatureInfo&FORMAT=image/png&TRANSPARENT=true&QUERY_LAYERS=angaryos:v_users&LAYERS=angaryos:v_users&exceptions=application/vnd.ogc.se_inimage&INFO_FORMAT=application/json&FEATURE_COUNT=50&X=50&Y=50&SRS=EPSG:7932&STYLES=&WIDTH=101&HEIGHT=101&BBOX=498781.45297684456%2C4365044.059510907%2C498781.9236493026%2C4365044.530183366
+        
+        return new Promise((resolve) =>
+        {
+            $.ajax(
+            {
+                dataType: "json",
+                url: url,
+                data: params,
+                success: (data) =>
+                {
+                    resolve(data);
+                }
+            });
+        });
+    }
+    
+    getClickedFeatureInfoFromCustomLayer(layer, event)
+    {
+        var params =
+        {
+            "page":1,
+            "limit":"10",
+            "column_array_id":"0",
+            "column_array_id_query":"0",
+            "sorts":{},
+            "filters":
+            {
+                "location":
+                {
+                    "type":1,
+                    "guiType":"multipolygon",
+                    "filter":"[\"POLYGON((29.985234434012 39.41981658262381,29.984689408644563 39.41890261235119,29.986337778048522 39.41817348140546,29.98685621681266 39.41929284831565,29.985234434012 39.41981658262381))\"]"
+                }
+            },
+            
+            //asagidakiler silineilir mi?
+            "edit":true,
+            "columns":["id","profile_picture","tc","name_basic","surname","department_id","email","srid","location"]
+        };
+        
+        var url = this.sessionHelper.getBackendUrlWithToken()+"tables/users";
+        
+        return new Promise((resolve) =>
+        {
+            this.sessionHelper.doHttpRequest("GET", url, {params: BaseHelper.objectToJsonStr(params)}) 
+            .then((data) => 
+            {
+                resolve(data);
+            });
+        });
+    }
+    
+    getClickedFeatureInfoFromDefaultLayer(layer, event)
+    {
+        var params =
+        {
+            "page":1,
+            "limit":"10",
+            "column_array_id":"0",
+            "column_array_id_query":"0",
+            "sorts":{},
+            "filters":
+            {
+                "location":
+                {
+                    "type":1,
+                    "guiType":"multipolygon",
+                    "filter":"[\"POLYGON((29.985234434012 39.41981658262381,29.984689408644563 39.41890261235119,29.986337778048522 39.41817348140546,29.98685621681266 39.41929284831565,29.985234434012 39.41981658262381))\"]"
+                }
+            },
+            
+            //asagidakiler silineilir mi?
+            "edit":true,
+            "columns":["id","profile_picture","tc","name_basic","surname","department_id","email","srid","location"]
+        };
+        
+        var url = this.sessionHelper.getBackendUrlWithToken()+"tables/users";
+        
+        return new Promise((resolve) =>
+        {
+            this.sessionHelper.doHttpRequest("GET", url, {params: BaseHelper.objectToJsonStr(params)}) 
+            .then((data) => 
+            {
+                resolve(data);
+            });
         });
     }
 
@@ -623,6 +822,7 @@ export class FullScreenMapElementComponent
             else 
             {
                 this.addFeaturesFromKmzOrKmlFile(data);
+                this.updateInFormSelectDataForColumn();
                 
                 $('#kmzFile').val("");
 
@@ -633,6 +833,31 @@ export class FullScreenMapElementComponent
                 
         })
         .catch((e) => { this.generalHelper.stopLoading(); });
+    }
+    
+    convertToJson(data)
+    {
+        return BaseHelper.objectToJsonStr(data);
+    }
+    
+    updateInFormSelectDataForColumn()
+    {
+        this.inFormSelectDataForColumn = this.inFormSelectDataForColumn.splice(0, 2);
+        
+        var temp = [];
+        var classNames = Object.keys(this.vectorFeaturesTree);
+        for(var i = 0; i < classNames.length; i++)
+        {
+            var className = classNames[i];
+            
+            var subClassNames = Object.keys(this.vectorFeaturesTree[className]['data']);
+            for(var j = 0; j < subClassNames.length; j++)
+                this.inFormSelectDataForColumn.push(
+                {
+                    "source": "fromData."+className+"."+subClassNames[j],
+                    "display": "Nesneden data al: ["+className+"."+subClassNames[j]+"]"
+                });
+        }
     }
 
     getClassNames()
@@ -769,7 +994,8 @@ export class FullScreenMapElementComponent
             var index = features[i].index;
             
             var temp = this.vectorFeaturesTree[className]["data"][subClassName]["data"][typeName]["data"][index];
-
+            if(typeof temp['visible'] == "undefined") continue;
+            
             var type = BaseHelper.ucfirst(typeName);
 
             var style = null;
@@ -858,18 +1084,21 @@ export class FullScreenMapElementComponent
         {
             if(target['length'] == 0) return;
 
+            target['type'] = typeName;
             this.openDataTransformForm(target);
         })
     }
     
     openDataTransformForm(target)
     {
+        this.inFormTargetData['subTable'] = target;
+        
         this.inFormTableName = target.tableName;
         this.inFormColumnName = target.columnName;
         
         var loggedInUserId = BaseHelper.loggedInUserInfo['user']['id'];
         var key = 'user:'+loggedInUserId+'.dataTransport';
-        var temp = BaseHelper.readFromLocal(key);
+        this.inFormTargetData['baseTable'] = BaseHelper.readFromLocal(key);
 
         this.inFormRecordId = 0;
 
@@ -933,5 +1162,160 @@ export class FullScreenMapElementComponent
     isMobileDevice()
     {
         return BaseHelper.isMobileDevice;
+    }
+    
+    inFormLoaded(event)
+    {
+        this.fillAndHideBaseColumns();
+    }
+    
+    fillAndHideBaseColumns()
+    {
+        this.fillSourceRecordIdColumn();
+        this.fillTableIdColumn();
+        
+        this.hideBaseColumns();
+    }
+    
+    hideBaseColumns()
+    {
+        $('#table_id-group').css('display', 'none');
+        $('#source_record_id-group').css('display', 'none');
+        $('#'+this.inFormTargetData['subTable']['columnName']+'-group').css('display', 'none');
+    }
+    
+    fillSourceRecordIdColumn()
+    {
+        var recId = this.inFormTargetData['baseTable']['recordId'];
+        $('#source_record_id').val(recId);
+    }
+    
+    fillTableIdColumn()
+    {
+        var url = this.sessionHelper.getBackendUrlWithToken()+"tables/"+this.inFormTargetData['subTable']['tableName']+"/";
+        url += "getSelectColumnData/table_id?search=" + this.inFormTargetData['baseTable']['tableName'];
+        
+        $.ajax(
+        {
+            dataType: "json",
+            url: url,
+            data: null,
+            success: (data) =>
+            {
+                var tableId = data['results'][0]['id'];        
+                $('#table_id').html("<option value='"+tableId+"'></option>")
+                $('#table_id').val(tableId);
+            }
+        });
+    }
+    
+    getDataTransferSelects(data)
+    {
+        var dataTransferSelects = {};
+        var columns = Object.keys(data);
+        for(var i = 0; i < columns.length; i++)
+        {
+            var temp = $("#"+columns[i]+"-DTS").val();
+            if(typeof temp == "undefined" || temp == "") continue;
+            
+            dataTransferSelects[columns[i]] = temp;
+        }
+        
+        return dataTransferSelects;
+    }
+    
+    getDataForDataTransformStore(record, feature, dataTransferSelects)
+    {
+        var columnNames = Object.keys(dataTransferSelects);
+        for(var j = 0; j < columnNames.length; j++)
+        {
+            var columnName = columnNames[j];
+            record[columnName] = this.convertDataForDataTransform(record, feature, columnName, dataTransferSelects[columnName]);
+        }
+
+        var wkt = MapHelper.getWktFromFeature(feature, "EPSG:"+this.inFormTargetData['subTable']['columnSrid']);            
+        record[this.inFormTargetData['subTable']['columnName']] = wkt;
+        
+        return record;
+    }
+    
+    async inFormSavedSuccess(data)
+    {
+        $('#'+this.inFormElementId+'inFormModal').modal('hide');
+        
+        var dataTransferSelects = this.getDataTransferSelects(data);
+        
+        var url = this.sessionHelper.getBackendUrlWithToken();
+        url += "tables/"+this.inFormTargetData['subTable']['tableName']+"/store";
+
+        var errorWhenFirstRecordStore = false;
+        
+        var selectedFeatures = this.getSelectedFeatures();
+        selectedFeatures = selectedFeatures[this.inFormTargetData['subTable']['type']];        
+        for(var i = 0; i < selectedFeatures.length; i++)
+        {
+            if(errorWhenFirstRecordStore) break;
+            
+            var record = BaseHelper.getCloneFromObject(data);               
+            var feature = selectedFeatures[i];
+            
+            record = this.getDataForDataTransformStore(record, feature, dataTransferSelects)
+            
+            await this.storeData(url, record, feature)
+            .then((feature) =>
+            {
+                this.removeFeature(feature);
+            })
+            .catch((e) => 
+            { 
+                if(i == 0) errorWhenFirstRecordStore = true;
+                alert("error");
+                console.log(e);
+            });
+            
+            await BaseHelper.sleep(500);
+        }
+        
+        if(errorWhenFirstRecordStore) 
+            $('#'+this.inFormElementId+'inFormModal').modal('show');
+        else
+            this.messageHelper.toastMessage('Aktarım başarılı!');
+    }
+    
+    storeData(url, data, feature)
+    {
+        return new Promise((resolve, error) => 
+        {
+            var request = this.sessionHelper.doHttpRequest("GET", url, data) 
+            .then((data) => 
+            {
+                if(typeof data['message'] == "undefined")
+                    error(data);
+                else if(data['message'] == 'error')
+                    error(data);
+                else if(data['message'] == 'success')
+                    resolve(feature)
+                else
+                    error(data);                
+            })
+            .catch((e) => { error(e) });
+        });
+    }
+    
+    removeFeature(feature)
+    {
+        MapHelper.deleteFeature(this.map, feature);
+        
+        var data = this.vectorFeaturesTree[feature.className]["data"][feature.subClassName]["data"][feature.typeName]["data"];
+        data.splice(feature.index, 1);
+        
+        for(var i = feature.index; i < data.length; i++) data[i]['index']--;   
+                
+        this.vectorFeaturesTree[feature.className]["data"][feature.subClassName]["data"][feature.typeName]["data"] = data;
+    }
+    
+    convertDataForDataTransform(record, feature, columnName, convertType)
+    {
+        return record[columnName];
     }
 }

@@ -68,7 +68,6 @@ import { AeroThemeHelper } from './pages/helpers/aero.theme';
   ],
   entryComponents: 
   [
-    FormComponent,
     ColumnArrayFormElementComponent,
     FullScreenMapElementComponent
   ],
@@ -77,7 +76,7 @@ export class AeroModule
 {
   customElementList =
   {
-    'fullscreen-map-element': FullScreenMapElementComponent    
+    'fullscreen-map-element': FullScreenMapElementComponent
   };
 
   constructor(private injector: Injector) { }

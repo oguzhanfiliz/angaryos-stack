@@ -22,6 +22,8 @@ export class FormComponent
     @Input() id: string = "";
     @Input() inFormTableName: string = ""; 
     @Input() inFormColumnName: string = "";
+    @Input() inFormIsDataTransport: boolean = false;
+    @Input() inFormDataTransportSelectOptionsJson: string = "";
     @Input() inFormRecordId: number = 0;
     
     @Input() singleColumn: boolean = false;
@@ -270,6 +272,13 @@ export class FormComponent
             url += this.recordId + "/update";
 
         var params = null;
+        
+        if(this.inFormIsDataTransport)
+        {
+            params = this.getElementsData();
+            this.formSaved.emit(params);
+            return;
+        }
 
         if(BaseHelper.formSendMethod == "POST")
             params = this.getElementsDataForUpload(); 

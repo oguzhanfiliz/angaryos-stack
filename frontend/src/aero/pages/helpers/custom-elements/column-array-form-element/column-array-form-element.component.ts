@@ -18,7 +18,9 @@ export class ColumnArrayFormElementComponent
     @Input() recordJson: string;
     @Input() tableName: string;
     @Input() upFormId: string = "";
-    @Input() createForm: boolean = true;
+    @Input() createForm: boolean = false;
+    @Input() inFormIsDataTransport: boolean = false;
+    @Input() inFormDataTransportSelectOptionsJson: string = "";
 
     @Output() dataChanged = new EventEmitter();
     @Output() formSaved = new EventEmitter();
@@ -28,6 +30,7 @@ export class ColumnArrayFormElementComponent
     inFormTableName = "";
     inFormRecordId = 0;
     inFormElementId = "";
+    inFormDataTransportSelectValues = {}
 
     columnArray = null;
     record = null;
@@ -194,6 +197,11 @@ export class ColumnArrayFormElementComponent
         if(typeof BaseHelper.loggedInUserInfo.auths['tables'][tableName][type] == "undefined") return false;
 
         return true;
+    }
+    
+    convertToObject(json)
+    {
+        return BaseHelper.jsonStrToObject(json);
     }
 
 

@@ -8,7 +8,7 @@
                 <td>
                     {{ getDataFromColumnArray('columns.'+columnName+'.display_name') }}
                 </td>
-                <td align="right">
+                <td *ngIf="!inFormIsDataTransport" align="right">
                     <button 
                         *ngIf="isColumnRelationDataAuth(columnName, 'creates')"
                         (click)="addRelationRecord(columnName)"  
@@ -24,6 +24,20 @@
                         
                         Düzenle
                     </button>
+                </td>
+                <td *ngIf="inFormIsDataTransport" align="right">
+                    <!-- Data Transfer Select --->
+                    <select  [(ngModel)]="inFormDataTransportSelectValues[columnName]"
+                        style="width: 250; font-size: 12px; padding: 5;"
+                        class="form-control"
+                        name="{{ columnName }}-DTS"
+                        id="{{ columnName }}-DTS" >
+                        
+                        <option value="">Seçenekler</option>
+                        <option *ngFor="let opt of convertToObject(inFormDataTransportSelectOptionsJson)" value="{{ opt['source'] }}">
+                            {{ opt['display'] }}
+                        </option>
+                    </select>
                 </td>
             </tr><tr>
                 <td colspan="2">

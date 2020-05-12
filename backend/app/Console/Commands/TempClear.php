@@ -64,13 +64,12 @@ class TempClear extends Command
         
         foreach($fl as $f) 
             if(((int)(time() - File::lastModified($fileBase.$f)))/(60*15) > 1)//60 saniye * 15 dk (yani 15 dkdan daha eski ise)
-                Storage::delete($fileBase.$f);
+                Storage::delete($f);
                 
         for($i = count($dl) - 1; $i >= 0; $i--)
             if($this->is_dir_empty($fileBase.$dl[$i]))
-                Storage::deleteDirectory($fileBase.$dl[$i]);
+                Storage::deleteDirectory($dl[$i]);
             
-        
         @mkdir(base_path().'/public/temps', 777);
         
         exec ('chmod 777 -R '.base_path().'/public/temps');

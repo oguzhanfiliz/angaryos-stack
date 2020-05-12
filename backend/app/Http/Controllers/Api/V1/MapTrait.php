@@ -461,6 +461,9 @@ trait MapTrait
                 $columnTypeName = $column->getRelationData('column_db_type_id')->name;
                 if(!strstr($columnTypeName, $type)) continue;
                 
+                $srid = $column->srid;
+                if(strlen($srid) == 0) $srid = DB_PROJECTION;
+                
                 array_push($return, 
                 [
                     'tableId' => $table->id,
@@ -469,7 +472,7 @@ trait MapTrait
                     'columnid' => $column->id,
                     'columnName' => $column->name,
                     'columnDisplayName' => $column->display_name,
-                    
+                    'columnSrid' => $srid                    
                 ]);
             }
         }

@@ -42,7 +42,8 @@
             }
         }
         
-        XMLHttpRequest.prototype.send = function(a,b) {
+        XMLHttpRequest.prototype.send = function(a,b) 
+        {
             if(customAjaxListener.url.indexOf("tawk.to") > -1)
             {
                 //console.log("Canceled: " + customAjaxListener.url);
