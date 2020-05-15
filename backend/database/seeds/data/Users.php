@@ -27,27 +27,26 @@ $adminAuth->save();
 
 
 $createExcept = [];//['data_filter_types'];
-$hideMenuLink = [];/*
+$hideMenuLink =
 [
     'log_levels',
+    'color_classes',
+    'column_gui_triggers',
+    'column_validations',
     'column_gui_types',
-    'column_db_types', 
+    'column_table_relations',
+    'column_collective_infos',
+    'column_db_types',
+    'subscriber_types',
+    'data_filter_types',
+    'column_array_types',
+    'column_set_types',
     'custom_layer_types',
-    'data_filter_types', 
-    'join_tables', 
-    'column_gui_triggers', 
-    'column_array_types', 
-    'column_validations', 
-    'column_set_types', 
-    'column_table_relations', 
-    'column_collective_infos', 
-    'color_classes', 
-    'subscriber_types', 
-    'subscribers',
     'data_source_col_relations',
     'data_source_types',
-    'data_source_directions'
-];*/
+    'data_source_directions',
+    'join_tables', 
+];
 
 $adminAuths = [];
 foreach($tables as $table)

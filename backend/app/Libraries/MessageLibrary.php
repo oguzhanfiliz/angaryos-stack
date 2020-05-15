@@ -1,6 +1,8 @@
 <?php
 
 namespace App\Libraries;
+
+use Illuminate\Support\Facades\Mail;
 use Log;
 
 class MessageLibrary 
@@ -86,6 +88,32 @@ class MessageLibrary
         send_log('info', 'Send sms end', [$data]);
         
         return $data['error'] != FALSE;
+    }
+    
+    /**
+    *
+    * Send e-mail
+    *
+    * @param string $subject Mail subject
+    * @param string $mail Mail content. It be html if you want
+    * @param array $emailsWithNames Ex: [['email' => 'emailone.to', 'name' => 'Name One'], ['email' => 'emailtwo.to', 'name' => 'Name Two']]
+    * @param array $attachments Ex: ['/var/www/public/uploads/2020/01/01/auths.png']
+     * 
+    * @return boolean
+    *
+    */
+    public static function sendMail($subject, $mail, $emailsWithNames, $attachments = [])
+    {
+        Mail::send("email.base", ["html" => $mail], function ($message) use($subject, $emailsWithNames, $attachments)
+        {
+            foreach($emailsWithNames as $emailsWithName)
+                $message->to($emailsWithName['email'], $emailsWithName['name'])->subject($subject);
+            
+            foreach($attachments as $attachment)
+                $message->attach($attachment);
+        });
+        
+        return Mail::failures();
     }
     
     public function fireBaseCloudMessaging($title, $text, $to = FB_BASE_TOPIC)

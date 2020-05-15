@@ -1,1 +1,12 @@
-<a *ngIf="!isElementNull()" style="color: #0c7ce6" (click)="preview()">{{ this.getDisplayName(type)  }}</a>
+<table class="light-table">
+    <tr>
+        <td>
+            <a *ngIf="!isElementNull()" style="color: #0c7ce6" (click)="preview()">{{ this.getDisplayName(type)  }}</a>
+        </td><td>
+            <a *ngIf="mapAuthControl()" href="#/angaryos/map#zoomTo={{ getZoomToJson() }}" class=" waves-effect waves-block" style="margin-top: -3;">
+                <i class="zmdi zmdi-turning-sign"></i>
+            </a>
+        </td>
+    </tr>
+</table>
+

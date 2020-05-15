@@ -75,6 +75,8 @@ class BaseRequest extends FormRequest
         $columns = $this->getColumns();
         foreach($columns as $column)
         {
+            global $pipe;
+            
             if(in_array($column->name, $disabledColumns)) continue;
             if(strlen($singleColumn) > 0 && $column->name != $singleColumn) continue;
          
@@ -107,6 +109,16 @@ class BaseRequest extends FormRequest
                         if($old == $new)
                             $validation->validation_with_params = '';
                     }
+                }
+                else if(strstr($validation->validation_with_params, 'required_for:'))
+                {
+                    $params = explode(':', $validation->validation_with_params)[1];
+                    $params = explode(',', $params);
+                    
+                    if(in_array($pipe['table'], $params)) $temp = 'required';
+                    else $temp = 'nullable';
+                    
+                    $rules[$column->name] .= $temp . '|';
                 }
                     
                 $rules[$column->name] .= $validation->validation_with_params . '|';

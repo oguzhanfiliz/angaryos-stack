@@ -1,6 +1,7 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 
 import { MapHelper } from './../../map';
+import { BaseHelper } from './../../base';
  
 declare var $: any;
 
@@ -61,5 +62,24 @@ export class GeoPreviewElementComponent
         if(this.wkt.length == 0) return true;
 
         return false;
+    }
+    
+    mapAuthControl()
+    {
+        if(typeof BaseHelper.loggedInUserInfo['auths']['map'] == "undefined")
+            return false;
+            
+        return true;
+    }
+    
+    getZoomToJson()
+    {
+        var params = 
+        {
+            wkt: this.wkt,
+            srid: "EPSG:"+this.srid
+        };
+        
+        return BaseHelper.objectToJsonStr(params);
     }
 }

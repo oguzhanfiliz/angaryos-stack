@@ -110,10 +110,10 @@ trait MapTrait
         $key = 'customLayerSeoName:'.$seoName.'|returnData:table_id';
         $tableId = (int)Cache::rememberForever($key, function() use($seoName)
         {      
-            $customLayers = DB::table('custom_layers')->pluck('name', 'table_id');
-            foreach($customLayers as $tableId => $customLayer)
-                if(helper('seo', $customLayer) == $seoName)
-                    return $tableId;
+            $customLayers = DB::table('custom_layers')->get();
+            foreach($customLayers as $customLayer)
+                if(helper('seo', $customLayer->name) == $seoName)
+                    return $customLayer->table_id;
         });        
         if($tableId == 0) custom_abort ('undefined.layer_name: ' . $seoName);
         

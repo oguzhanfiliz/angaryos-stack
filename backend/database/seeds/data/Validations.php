@@ -9,12 +9,14 @@ $validations['files_type']['display_name'] = 'Yalnızca resim';
 $validations['files_count']['display_name'] = 'Dosya sayısı';
 $validations['no_self']['display_name'] = 'Yetki grubuna kendini ekleyemesin';
 $validations['name_not_start_deleted']['display_name'] = 'İsim "deleted_" ile başlayamasın';
+$validations['name_not_be_deleted_records_name']['display_name'] = 'İsim silinmiş bit tablonun adı olamaz';
 $validations['no_change']['display_name'] = 'Data değiştirilemez';
 $validations['valid_validations']['display_name'] = 'Olmayan doğrulama kuralı yazılamaz!';
 $validations['column_table_relation_control']['display_name'] = 'İlişkili kolon ilişki kontrolü';
 $validations['cron']['display_name'] = 'Crontab sözdizimi kontrolü';
 $validations['select_updated_at']['display_name'] = 'Veri aktarma ilişkisi için zorunlu kolon kontrolü';
 $validations['only_fromdatasource_for_excel_type']['display_name'] = 'Excel veri kaynağı için sadece fromDataSource yönü seçilsin kontrolü';
+$validations['required_for']['display_name'] = 'Boş geçilemez (şartlı)';
 
 
 
@@ -86,6 +88,19 @@ if($pipe["table"] != "tables" && $pipe["table"] != "columns")
 }
 
 $return = (substr($value, 0, 8) != "deleted_");
+?>';
+
+$validations['name_not_be_deleted_records_name']['php_code'] = '<?php
+global $pipe;
+if($pipe["table"] != "tables" && $pipe["table"] != "columns")
+{
+    $return = TRUE;
+    return;
+}
+
+$temp = \DB::table($pipe["table"])->where("name", "deleted_".$value)->get();
+
+$return = (count($temp) == 0);
 ?>';
 
 $validations['no_change']['php_code'] = '<?php 
@@ -196,17 +211,24 @@ if($dataSourceTypeName == \'excel\')
 }
 ?>';
 
+$validations['required_for']['php_code'] = '<?php
+$return = TRUE;
+?>';
+
+
 $validations['numeric_min']['error_message'] = 'Değer en az :parameters[0] olmalıdır';
 $validations['files_type']['error_message'] = 'Dosya tipi yalnızca :parameters[0] olabilir.';
 $validations['files_count']['error_message'] = 'Dosya sayısı yalnızca :parameters[0] olabilir.';
 $validations['no_self']['error_message'] = 'Yetkiye kendisini ekleyemezsiniz!';
 $validations['name_not_start_deleted']['error_message'] = 'İsim "deleted_" ile başlayamaz';
+$validations['name_not_be_deleted_records_name']['error_message'] = 'İsim silinmiş kayıtlardan birine ait. Bunu kullanamazsınız!';
 $validations['no_change']['error_message'] = 'Bu veri değiştirilemez.';
 $validations['valid_validations']['error_message'] = 'Böyle bir doğrulama kuralı yok!';
 $validations['column_table_relation_control']['error_message'] = 'İlişkili kolon için bir data ilişkisi seçmelisiniz!';
 $validations['cron']['error_message'] = 'Geçerisiz bir zamanlayıcı girdiniz! (cron syntax)';
 $validations['select_updated_at']['error_message'] = 'Güncellenme zamanı ve id kolonu seçilmelidir!';
 $validations['only_fromdatasource_for_excel_type']['error_message'] = 'Excel tipi için yalnızca fromDataSource seçilebilir';
+$validations['required_for']['error_message'] = '//Mesaj otomatik gelecek';
         
 
 $temp = $this->get_base_record();
@@ -249,12 +271,14 @@ $column_validations['json'] = NULL;
 $column_validations['nullable'] = NULL;
 $column_validations['no_self'] = NULL;
 $column_validations['name_not_start_deleted'] = NULL;
+$column_validations['name_not_be_deleted_records_name'] = NULL;
 $column_validations['no_change'] = NULL;
 $column_validations['valid_validations'] = NULL;
 $column_validations['column_table_relation_control'] = NULL;
 $column_validations['cron'] = NULL;
 $column_validations['select_updated_at'] = NULL;
 $column_validations['only_fromdatasource_for_excel_type'] = NULL;
+$column_validations['required_for:table1,table2'] = NULL;
 
 $temp = $this->get_base_record();
 

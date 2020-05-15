@@ -1,5 +1,5 @@
 import { ActivatedRoute} from '@angular/router';
-import { Component, ElementRef } from '@angular/core';
+import { Component, ElementRef, EventEmitter, Input, Output } from '@angular/core';
 import { SessionHelper } from './../helpers/session';
 import { BaseHelper } from './../helpers/base';
 import { GeneralHelper } from './../helpers/general';
@@ -10,16 +10,21 @@ declare var $: any;
 
 @Component(
 {
-    selector: 'show',
+    selector: 'in-show-element',
     styleUrls: ['./show.component.scss'],
     templateUrl: './show.component.html',
 })
 export class ShowComponent 
 {
+    @Input() id: string = "";
+    @Input() inShowTableName: string = ""; 
+    
+    @Output() showLoad = new EventEmitter();
+    
     public data;
     public tableName = "";
     public recordId = -1;
-    public defaultLimit = 2;
+    public defaultLimit = 3;
     
     constructor(
         private route: ActivatedRoute,
@@ -29,15 +34,26 @@ export class ShowComponent
         ) 
     {
         var th = this;
-        route.params.subscribe(val => 
+        setTimeout(() => 
         {
-            th.tableName = val.tableName;
-            th.recordId = val.recordId; 
+            route.params.subscribe(val => 
+            {
+                if(th.inShowTableName.length == 0)
+                {
+                    th.tableName = val.tableName;
+                    th.recordId = val.recordId; 
+                }
+                else
+                {
+                    th.tableName = th.inShowTableName;
+                    th.recordId = th.id;
+                }
 
-            th.addEventForFeatures();
-            th.addEventForThemeIcons();
-            th.dataReload();    
-        });
+                th.addEventForFeatures();
+                th.addEventForThemeIcons();
+                th.dataReload();    
+            });
+        }, 100);
     }
 
 
@@ -93,6 +109,8 @@ export class ShowComponent
 
             this.generalHelper.stopLoading();
             this.addEventForFeatures();
+            
+            this.showLoad.emit(data);
         })
         .catch((e) => { this.generalHelper.stopLoading(); });
     }

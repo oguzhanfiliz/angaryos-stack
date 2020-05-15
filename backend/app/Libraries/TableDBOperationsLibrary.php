@@ -515,11 +515,14 @@ class TableDBOperationsLibrary
     public function UpdateTableOnDB($params)
     {
         $table = $params['record'];
+
+        if(!isset($params['requests']['name'])) $params['requests']['name'] = $table->name;
+        if(!isset($params['requests']['column_ids'])) $params['requests']['column_ids'] = $table->column_ids;
         
         $this->RenameTable($table->name, $params['requests']['name']);
         $this->RenameTable($table->name.'_archive', $params['requests']['name'].'_archive');
         
-        $columnIds = json_decode($params['requests']['column_ids']);
+        $columnIds = is_string($params['requests']['column_ids']) ? json_decode($params['requests']['column_ids']) : $params['requests']['column_ids'];
         $columns = $this->GetRealColumnsByColumnIds($columnIds);
         
         $deletedColumnIds = $this->GetDeletedColumns($table->column_ids, $columnIds);

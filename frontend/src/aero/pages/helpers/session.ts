@@ -11,6 +11,8 @@ import 'sweetalert2/dist/sweetalert2.min.css'
 @Injectable()
 export class SessionHelper 
 {     
+    disableDoHttpRequestErrorControl = false; 
+    
     constructor(
       private httpClient: HttpClient,
       private messageHelper: MessageHelper,
@@ -121,6 +123,8 @@ export class SessionHelper
 
     private redirectInitializeIfDbNotInitialized(error)
     {
+      if(this.disableDoHttpRequestErrorControl) return false;
+      
       if(typeof error.error != "undefined")
         if(typeof error.error.data != "undefined")
           if(typeof error.error.data.message != "undefined")
@@ -148,6 +152,8 @@ export class SessionHelper
 
     private alertIfErrorHaveServerMessage(error)
     {
+      if(this.disableDoHttpRequestErrorControl) return false; 
+      
       if(typeof error.error != "undefined")
         if(typeof error.error.data != "undefined")
           if(typeof error.error.data.message != "undefined")
@@ -173,7 +179,9 @@ export class SessionHelper
           else if(this.redirectLoginPageIfTokenIsFail(error)) return;          
           else if(this.alertIfErrorHaveServerMessage(error)) return;     
 
-          this.messageHelper.sweetAlert("Sunucuyla iletişimde bir hata oldu: " + error.message);
+          if(!this.disableDoHttpRequestErrorControl)
+            this.messageHelper.sweetAlert("Sunucuyla iletişimde bir hata oldu: " + error.message);
+            
           reject(error.message);
         });
       });

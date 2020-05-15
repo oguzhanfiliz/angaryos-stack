@@ -22,6 +22,12 @@ input::placeholder, .select2-selection__placeholder, textarea::placeholder
     color:#ccc !important;
 }
 
+#defaultFeatureInfoModal in-show-element section
+{
+    padding: 0px !important;
+    margin: 0px !important;
+}
+
 .selected-option
 {
     background-color: #9aeef1 !important;

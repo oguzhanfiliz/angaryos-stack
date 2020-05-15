@@ -16,6 +16,7 @@
         </h1>
 
         <div *ngFor="let dashboardClass of getSortedDashboardClass()">
+            
             <div *ngIf="dashboardClass == 'RecordCount'" class="row clearfix">
                 <div *ngFor="let dashboardItemName of getDashboardsByClassName(dashboardClass)" class="col-lg-3 col-md-6 col-sm-12">
                     <div class="card widget_2 big_icon data">
@@ -34,6 +35,23 @@
                     </div>
                 </div>
             </div>
+
+            <div *ngIf="dashboardClass == 'RefreshableNumber'" class="row clearfix">
+                <div 
+                    *ngFor="let dashboardItemName of getDashboardsByClassName(dashboardClass)" 
+                    (click)="refreshableNumberRefresh(dashboardItemName)"
+                    style="cursor: pointer"
+                    class="col-lg-3 col-md-6 col-sm-12">
+                    
+                    <div class="card widget_2 big_icon data">
+                        <div class="body">
+                            <h6>{{ dashboardDatas[dashboardClass][dashboardItemName]['display_name']  }}</h6>
+                            <h2> {{ dashboardDatas[dashboardClass][dashboardItemName]['number']  }}<small class="info"> adet</small></h2>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
         </div>
     </div>
 </section>

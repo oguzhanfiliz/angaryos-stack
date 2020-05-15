@@ -47,6 +47,11 @@ trait TableSubscriberTrait
         
         $records = $this->fillRecordCanInfos($records, $params->table_name);
         
+        if($params->limit == 0)
+            $pages = 0;
+        else 
+            $pages = (int)ceil($count / $params->limit);
+        
         return 
         [
             'table_info' => $tableInfo,
@@ -54,7 +59,7 @@ trait TableSubscriberTrait
             'collectiveInfos' => $collectiveInfos, 
             'columns' => $columns,
             'query_columns' => $queryColumns,
-            'pages' => (int)ceil($count / $params->limit),
+            'pages' => $pages,
             'all_records_count' => $count
         ];
     }

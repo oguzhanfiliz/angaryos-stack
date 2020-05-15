@@ -49,6 +49,13 @@ export class FullScreenMapElementComponent
     ctrlPressed = false;
     altPressed = false;
     selectAreaStartPixel = null;
+    tableGeoColumns = {};
+    tableColumns = {};
+    
+    featureList = {};
+    lastSelectedFeatureData = {};
+    
+    loading = false;
     
     typesMatch = 
     {
@@ -64,7 +71,9 @@ export class FullScreenMapElementComponent
         private aeroThemeHelper: AeroThemeHelper,
         private sessionHelper: SessionHelper,
         private generalHelper: GeneralHelper) 
-    {  }
+    {
+        window.onhashchange = ((e) => this.urlChanged(e));
+    }
 
     ngAfterViewInit() 
     {  
@@ -74,6 +83,7 @@ export class FullScreenMapElementComponent
         {
             this.aeroThemeHelper.loadPageScriptsLight();
             this.addKmzFileSelectedEvent();
+            
         }, 200);
     }
 
@@ -85,17 +95,94 @@ export class FullScreenMapElementComponent
         this.createMapElement()
         .then((map) => this.addLayers(map))
         .then((map) => this.addEvents(map))
-        .then((map) => $('.ol-zoom').css('display', 'none'));
+        .then((map) => this.controlZoomTo(map))
+        .then((map) => $('.ol-zoom').css('display', 'none'))
     }
 
     handleChange(event)
     {
         this.changed.emit(event);
-    }   
+    }  
+    
+    urlChanged(e)
+    {
+        if(e.newURL == e.oldURL) return;
+        
+        this.controlZoomTo(this.map);
+    } 
 
 
 
     /****    Gui Operations    ****/
+    
+    search()
+    {
+        var th = this;
+        
+        this.messageHelper.swalPrompt("Arama yap")
+        .then((result) =>
+        {
+            if(typeof result['value'] == "undefined") return;
+            
+            console.log(result['value']);
+            th.searchWithString(result['value']);
+        });
+    }
+    
+    getSegmentsArray()
+    {
+        var temp = window.location.href .split('#');
+        var temp = temp[temp.length -1];
+        var segmentsWithData = temp.split('&');
+        
+        var segments = {};
+        for(var i = 0; i < segmentsWithData.length; i++)
+        {
+            var temp = segmentsWithData[i].split('=');
+            segments[temp[0]] = decodeURI(temp[1]);
+        }
+        
+        return segments;
+    }
+    
+    controlZoomTo(map)
+    {
+        var segments = this.getSegmentsArray();
+        if(typeof segments['zoomTo'] == "undefined") return map;
+        
+        var params = BaseHelper.jsonStrToObject(segments['zoomTo']);
+        
+        var feature = MapHelper.getFeatureFromWkt(params['wkt'], params['srid']);
+        
+        this.zoomToFeature(feature);
+        
+        return map;
+    }
+    
+    zoomToFeature(feature)
+    {
+        MapHelper.zoomToFeatures(this.map, [feature]);
+    }
+    
+    getHomePageUrl()
+    {
+        return BaseHelper.dashboardUrl;
+    }
+    
+    startLoading()
+    {
+        this.loading = true;
+    }
+    
+    stopLoading()
+    {   
+        this.loading = false;
+    }
+    
+    getKeys(obj)
+    {
+        return Object.keys(obj);
+    }
     
     fillInFormSelectDataForColumn()
     {
@@ -237,15 +324,12 @@ export class FullScreenMapElementComponent
         var th = this;
         map.on('click', (event) =>
         {
+            if(th.loading) return;
+            
             if(th.drawingInteraction != null) 
-            {
                 return;
-            }
             else if(th.featuresTreeVisible)
-            {
-                th.selectClickedFeatureOnVectorSourceTree(event);
-                return;
-            }
+                return th.selectClickedFeatureOnVectorSourceTree(event);
             
             switch(th.mapClickMode)
             {
@@ -257,76 +341,335 @@ export class FullScreenMapElementComponent
         });
     }
     
-    async showClickedFeatureInfo(event)
+    getPolygonFromClickedPoint(coord)
     {
-        //event.coordinate
-        //event.pixel
-        ////MapHelper.getLayersFromMapWithoutBaseLayers(this.map)
+        var radius = MapHelper.getBufferSizeByMapZoom(this.map);
         
-        var features = [];
-        var layers = MapHelper.getLayersFromMapWithoutBaseLayers(this.map);
-        for(var i = 0; i < layers.length; i++)
-            if(layers[i].getVisible())
-            {
-                var temp = this.getClickedFeatureInfoFromLayer(layers[i], event);
-                
-                if(temp == null) continue;
-                
-                await temp.then((data) =>
-                {
-                    console.log(data);
-                })
-                .catch((e) =>
-                {
-                    console.log('error');
-                });
-            }
-            
-        console.log(features);
+        var wkt = "POINT("+coord[0]+" "+coord[1]+")";
+        var point = MapHelper.getFeatureFromWkt(wkt, MapHelper.mapProjection);
+        var poly = MapHelper.getPolygonFromPoint(point, radius);
+        
+        var buffer = MapHelper.getFeatureFromGeometry(poly);
+        
+        MapHelper.addFeatures(this.map, [buffer]);
+        setTimeout(() =>
+        {
+            MapHelper.deleteFeature(this.map, buffer);
+        }, 1000);
+        
+        return buffer;
     }
     
-    getClickedFeatureInfoFromLayer(layer, event)
+    getSearchedFeatureInfoFromCustomLayer(layer, search)
+    {
+        return this.getSearchedFeatureInfoFromDefaultLayer(layer, search);
+    }
+    
+    async getSearchedFeatureInfoFromDefaultLayer(layer, search)
+    {
+        var tableName = layer['authData']['tableName'];
+        var strColumns = ['string', 'text'];
+        
+        await this.fillTableColumns(tableName);
+        
+        var temp = [];
+        
+        var columnNames = Object.keys(this.tableColumns[tableName]);
+        for(var i = 0; i < columnNames.length; i++)
+        {
+            var column = this.tableColumns[tableName][columnNames[i]];
+            if(!strColumns.includes(column['gui_type_name'])) continue;
+            
+            var filter = {};
+            filter[column['name']] =
+            {
+                "type": 1,
+                "guiType": "string",
+                "filter": search
+            };
+            
+            await this.getListDataFromTable(tableName, filter, 3)
+            .then(async (data) =>
+            {
+                if(data == null) return;
+                
+                for(var i = 0; i < data['records'].length; i++)
+                {
+                    var rec = data['records'][i];
+                    
+                    var gColumn = this.tableGeoColumns[tableName][0];
+                    var geoFeature = MapHelper.getFeatureFromWkt(rec[gColumn['name']], "EPSG:"+gColumn['srid']);
+                
+                    temp.push(
+                    {
+                        'type': 'default',
+                        'tableName': tableName,
+                        'tableDisplayName': data['table_info']['display_name'],
+                        //'feature': geoFeature,
+                        'data': rec,
+                        'response': rec
+                    });
+                }
+                
+                await BaseHelper.sleep(500);
+            });
+       }
+        
+       return new Promise((resolve) => resolve(temp));
+    }
+    
+    getSearchedFeatureInfoFromLayer(layer, search)
     {
         switch(layer['authData']['layerTableType'])
         {
             case 'default':
-                return this.getClickedFeatureInfoFromDefaultLayer(layer, event);
+                return this.getSearchedFeatureInfoFromDefaultLayer(layer, search);
             case 'external':
-                return this.getClickedFeatureInfoFromExternalLayer(layer, event);
+                return null;
             case 'custom':
-                return this.getClickedFeatureInfoFromCustomLayer(layer, event);
+                return this.getSearchedFeatureInfoFromCustomLayer(layer, search);
             default : 
-                console.log("getClickedFeatureInfoFromLayer");
                 return null;
         }
     }
     
-    getClickedFeatureInfoFromExternalLayer(layer, event)
+    async searchWithString(search)
     {
-        var url = "https://192.168.10.185/geoserver/angaryos/wms";
+        try
+        {
+            this.startLoading();
+            
+            var features = [];
+            var layers = MapHelper.getLayersFromMapWithoutBaseLayers(this.map);
+            for(var i = 0; i < layers.length; i++)
+                if(layers[i].getVisible())
+                {
+                    var temp = this.getSearchedFeatureInfoFromLayer(layers[i], search);
+                    if(temp == null) continue;
+
+                    await temp.then((data) =>
+                    {
+                        for(var i = 0; i < data.length; i++)
+                        {
+                            var rec = data[i];
+                            if(typeof features[rec['tableName']] == "undefined")
+                                features[rec['tableName']] = 
+                                {
+                                    name: rec['tableName'],
+                                    display_name: rec['tableDisplayName'],
+                                    records: []
+                                };
+
+                            features[rec['tableName']]['records'][rec['data']['id']] = rec;
+                        }
+                    });
+                }
+
+            this.setFeatureList(features);
+            
+            this.stopLoading();
+        }
+        catch(ex)
+        {
+            this.messageHelper.toastMessage("Aradığınız nesneler getirilirken hata oluştu!");
+            this.stopLoading()
+        }
+    }
+    
+    async showClickedFeatureInfo(event)
+    {
+        try
+        {
+            this.startLoading();
+            
+            var buffer = this.getPolygonFromClickedPoint(event.coordinate);
+        
+            var features = [];
+            var layers = MapHelper.getLayersFromMapWithoutBaseLayers(this.map);
+            for(var i = 0; i < layers.length; i++)
+                if(layers[i].getVisible())
+                {
+                    var temp = this.getClickedFeatureInfoFromLayer(layers[i], event, buffer);
+                    if(temp == null) continue;
+
+                    await temp.then((data) =>
+                    {
+                        for(var i = 0; i < data.length; i++)
+                        {
+                            var rec = data[i];
+                            if(typeof features[rec['tableName']] == "undefined")
+                                features[rec['tableName']] = 
+                                {
+                                    name: rec['tableName'],
+                                    display_name: rec['tableDisplayName'],
+                                    records: []
+                                };
+
+                            features[rec['tableName']]['records'][rec['data']['id']] = rec;
+                        }
+                    })
+                    .catch((e) =>
+                    {
+                        this.messageHelper.toastMessage("Tıklanılan noktadaki nesneler getirilirken hata oluştu!");
+                    });
+                }
+
+            this.setFeatureList(features);
+            
+            this.stopLoading();
+        }
+        catch(ex)
+        {
+            this.messageHelper.toastMessage("Tıklanılan noktadaki nesneler getirilirken hata oluştu!");
+            this.stopLoading()
+        }
+    }
+    
+    showFeatureListTable(features)
+    {
+        this.featureList = features;
+        $('#featureListTableModal').modal('show');
+    }
+    
+    showFeatureInfoPage(feature)
+    {
+        this.lastSelectedFeatureData = feature;
+        
+        switch(feature['type'])
+        {
+            case 'external':
+                this.showFeatureInfoPageExternal(feature);
+                break;
+            case 'default':
+                this.showFeatureInfoPageDefault(feature);
+                break;
+        }
+    }
+    
+    showFeatureInfoPageExternal(feature)
+    {
+        setTimeout(() =>
+        {
+            $('#externalFeatureInfoModal').modal('show');
+        }, 100);
+    }
+    
+    showFeatureInfoPageDefault(feature)
+    {
+        setTimeout(() =>
+        {
+            $('#defaultFeatureInfoModal').modal('show');
+        }, 100);
+    }
+    
+    lastSelectedFeatureType(typeName)
+    {
+        if(typeof this.lastSelectedFeatureData['type'] == 'undefined') return false;
+        
+         return this.lastSelectedFeatureData['type'] == typeName;
+    }
+    
+    setFeatureList(features)
+    {
+        var tableNames = Object.keys(features);
+        
+        if(tableNames.length == 0)
+        {
+            this.messageHelper.toastMessage("Tıkladığınız alanda nesne bulunamadı");
+            return;
+        }
+        else if(tableNames.length > 1)
+        {
+            this.showFeatureListTable(features);
+            return;
+        }
+        
+        var recs = features[tableNames[0]]['records'];
+        var recIds = Object.keys(recs);
+        
+        if(recIds.length > 1)
+            this.showFeatureListTable(features);
+        else
+            this.showFeatureInfoPage(recs[recIds[0]]);
+    }
+    
+    getClickedFeatureInfoFromLayer(layer, event, buffer)
+    {
+        switch(layer['authData']['layerTableType'])
+        {
+            case 'default':
+                return this.getClickedFeatureInfoFromDefaultLayer(layer, event, buffer);
+            case 'external':
+                return this.getClickedFeatureInfoFromExternalLayer(layer, event, buffer);
+            case 'custom':
+                return this.getClickedFeatureInfoFromCustomLayer(layer, event, buffer);
+            default : 
+                return null;
+        }
+    }
+    
+    getParamsForClickedFeatureInfoFromExternalLayerWMS(layer, srid, buffer)
+    {
+        buffer = MapHelper.transformFeatureCoorditanes(buffer, MapHelper.mapProjection, srid);
+        
+        var ext = buffer.getGeometry().getExtent();
+        var bbox = ext[0]+","+ext[1]+","+ext[2]+","+ext[3];
+        
+        buffer = MapHelper.transformFeatureCoorditanes(buffer, srid, MapHelper.mapProjection);
         
         var params = 
         {
             SERVICE: "WMS",
             VERSION: "1.1.1",
             REQUEST: "GetFeatureInfo",
-            FORMAT: "image/png",
-            TRANSPARENT: "true",
-            QUERY_LAYERS: "angaryos:v_users",
-            LAYERS: "angaryos:v_users",
-            exceptions: "application/vnd.ogc.se_inimage",
+            QUERY_LAYERS: layer['authData']['workspace']+":"+layer['authData']['layer_name'],
+            LAYERS: layer['authData']['workspace']+":"+layer['authData']['layer_name'],
             INFO_FORMAT: "application/json",
-            FEATURE_COUNT: "50",
+            FEATURE_COUNT: "5",
             X: "50",
             Y: "50",
-            SRS: "EPSG:7932",
-            STYLES: "",
+            SRS: srid,
             WIDTH: "101",
             HEIGHT: "101",
-            BBOX: "498781.45297684456,4365044.059510907,498781.9236493026,4365044.530183366" 
+            BBOX: bbox 
         };
         
-        //http://192.168.10.185:9003/geoserver/angaryos/wms?SERVICE=WMS&VERSION=1.1.1&REQUEST=GetFeatureInfo&FORMAT=image/png&TRANSPARENT=true&QUERY_LAYERS=angaryos:v_users&LAYERS=angaryos:v_users&exceptions=application/vnd.ogc.se_inimage&INFO_FORMAT=application/json&FEATURE_COUNT=50&X=50&Y=50&SRS=EPSG:7932&STYLES=&WIDTH=101&HEIGHT=101&BBOX=498781.45297684456%2C4365044.059510907%2C498781.9236493026%2C4365044.530183366
+        return params;
+    }
+    
+    getParamsForClickedFeatureInfoFromExternalLayerWFS(layer, srid, buffer)
+    {
+        var ext = buffer.getGeometry().getExtent();//Alreadey EPSG:3857
+        
+        var params = 
+        {
+            service: "WFS",
+            version: "1.1.0",
+            request: "GetFeature",
+            typename: layer['authData']['workspace']+":"+layer['authData']['layer_name'],
+            outputFormat: "application/json",
+            srsname: srid,
+            bbox: ext[0]+","+ext[1]+","+ext[2]+","+ext[3]+",EPSG:3857"
+        };
+        
+        return params;
+    }
+    
+    getClickedFeatureInfoFromExternalLayer(layer, event, buffer)
+    {
+        var srid = layer['authData']['srid'];
+        if(srid == null || srid.length == 0) srid = MapHelper.dbProjection;
+            
+        var url = layer['authData']['base_url'];
+        
+        var params = {};
+        
+        if(layer['authData']['type'] == "wms") 
+            params = this.getParamsForClickedFeatureInfoFromExternalLayerWMS(layer, srid, buffer);
+        else if(layer['authData']['type'] == "wfs") 
+            params = this.getParamsForClickedFeatureInfoFromExternalLayerWFS(layer, srid, buffer);
+        else
+            return null;
         
         return new Promise((resolve) =>
         {
@@ -337,82 +680,162 @@ export class FullScreenMapElementComponent
                 data: params,
                 success: (data) =>
                 {
-                    resolve(data);
+                    var temp = [];
+                    for(var i = 0; i < data['features'].length; i++)
+                    {
+                        var feature = data['features'][i];
+                        var tableName = feature.id.split(".")[0];
+                        
+                        var geoFeature = MapHelper.getFeatureFromGeoserverJsonResponseGeometry(feature['geometry']);
+                        geoFeature = MapHelper.transformFeatureCoorditanes(geoFeature, srid, MapHelper.mapProjection);
+                        
+                        temp.push(
+                        {
+                            'type': 'external',
+                            'tableName': tableName,
+                            'tableDisplayName': layer['authData']['display_name'],
+                            'feature': geoFeature,
+                            'data': feature.properties,
+                            'response': feature
+                        })
+                    }
+                    
+                    resolve(temp);
                 }
             });
         });
     }
     
-    getClickedFeatureInfoFromCustomLayer(layer, event)
+    getClickedFeatureInfoFromCustomLayer(layer, event, buffer)
     {
+        return this.getClickedFeatureInfoFromDefaultLayer(layer, event, buffer);
+    }
+    
+    getListDataFromTable(tableName, filters = {}, limit = 0)
+    {
+        var auth = BaseHelper.loggedInUserInfo.auths.tables[tableName];
+        var columnArrayId = auth['lists'][0];
+        var columnArrayIdQuery = auth['queries'][0];
+        
         var params =
         {
-            "page":1,
-            "limit":"10",
-            "column_array_id":"0",
-            "column_array_id_query":"0",
-            "sorts":{},
-            "filters":
-            {
-                "location":
-                {
-                    "type":1,
-                    "guiType":"multipolygon",
-                    "filter":"[\"POLYGON((29.985234434012 39.41981658262381,29.984689408644563 39.41890261235119,29.986337778048522 39.41817348140546,29.98685621681266 39.41929284831565,29.985234434012 39.41981658262381))\"]"
-                }
-            },
-            
-            //asagidakiler silineilir mi?
-            "edit":true,
-            "columns":["id","profile_picture","tc","name_basic","surname","department_id","email","srid","location"]
+            "page": 1,
+            "limit": limit,
+            "column_array_id": columnArrayId,
+            "column_array_id_query": columnArrayIdQuery,
+            "sorts": {},
+            "filters": filters,
         };
         
-        var url = this.sessionHelper.getBackendUrlWithToken()+"tables/users";
+        var url = this.sessionHelper.getBackendUrlWithToken()+"tables/"+tableName;
         
-        return new Promise((resolve) =>
+        return new Promise(async (resolve) =>
         {
-            this.sessionHelper.doHttpRequest("GET", url, {params: BaseHelper.objectToJsonStr(params)}) 
-            .then((data) => 
+            this.sessionHelper.disableDoHttpRequestErrorControl = true;
+            
+            await this.sessionHelper.doHttpRequest("GET", url, {params: BaseHelper.objectToJsonStr(params)}) 
+            .then((data) => resolve(data))
+            .catch((er) => resolve(null));
+            
+            this.sessionHelper.disableDoHttpRequestErrorControl = false;
+        }); 
+    }
+    
+    async fillTableColumns(tableName)
+    {
+        if(typeof this.tableGeoColumns[tableName] != "undefined") return;
+        
+        var geoColumns = ['point', 'linestring', 'polygon', 'multipoint', 'multilinestring', 'multipolygon'];
+        
+        await this.getListDataFromTable(tableName)
+        .then((data) =>
+        {
+            this.tableColumns[tableName] = data['columns'];
+            
+            var columnNames = Object.keys(data['columns']);
+            for(var i = 0; i < columnNames.length; i++)
             {
-                resolve(data);
-            });
+                var columnName = columnNames[i];
+                var column = data['columns'][columnName];
+                
+                if(geoColumns.includes(column['gui_type_name']))
+                {
+                    if(typeof this.tableGeoColumns[tableName] == "undefined")
+                        this.tableGeoColumns[tableName] = [];
+                        
+                    this.tableGeoColumns[tableName].push(column);
+                }
+            }
         });
     }
     
-    getClickedFeatureInfoFromDefaultLayer(layer, event)
+    async getClickedFeatureInfoFromDefaultLayer(layer, event, buffer)
     {
-        var params =
+        var tableName = layer['authData']['tableName'];
+        
+        await this.fillTableColumns(tableName);
+        
+        var wkt = MapHelper.getWktFromFeature(buffer);
+        
+        var temp = [];
+        
+        var columnNames = Object.keys(this.tableGeoColumns[tableName]);
+        for(var i = 0; i < columnNames.length; i++)
         {
-            "page":1,
-            "limit":"10",
-            "column_array_id":"0",
-            "column_array_id_query":"0",
-            "sorts":{},
-            "filters":
-            {
-                "location":
-                {
-                    "type":1,
-                    "guiType":"multipolygon",
-                    "filter":"[\"POLYGON((29.985234434012 39.41981658262381,29.984689408644563 39.41890261235119,29.986337778048522 39.41817348140546,29.98685621681266 39.41929284831565,29.985234434012 39.41981658262381))\"]"
-                }
-            },
+            var column = this.tableGeoColumns[tableName][columnNames[i]];
             
-            //asagidakiler silineilir mi?
-            "edit":true,
-            "columns":["id","profile_picture","tc","name_basic","surname","department_id","email","srid","location"]
-        };
-        
-        var url = this.sessionHelper.getBackendUrlWithToken()+"tables/users";
-        
-        return new Promise((resolve) =>
-        {
-            this.sessionHelper.doHttpRequest("GET", url, {params: BaseHelper.objectToJsonStr(params)}) 
-            .then((data) => 
+            var filter = {};
+            filter[column['name']] =
             {
-                resolve(data);
+                "type": 1,
+                "guiType": "multipolygon",
+                "filter": '["'+wkt+'"]' 
+            };
+            
+            await this.getListDataFromTable(tableName, filter, 3)
+            .then(async (data) =>
+            {
+                for(var i = 0; i < data['records'].length; i++)
+                {
+                    var rec = data['records'][i];
+                    
+                    var geoFeature = MapHelper.getFeatureFromWkt(rec[column['name']], "EPSG:"+column['srid']);
+                
+                    temp.push(
+                    {
+                        'type': 'default',
+                        'tableName': tableName,
+                        'tableDisplayName': data['table_info']['display_name'],
+                        'feature': geoFeature,
+                        'data': rec,
+                        'response': rec
+                    });
+                }
+                
+                await BaseHelper.sleep(500);
             });
-        });
+        }
+        
+        return new Promise((resolve) => resolve(temp));
+    }
+    
+    getColumnDisplayName(tableName, columnName)
+    {
+        if(typeof this.tableColumns[tableName] == "undefined") return columnName;
+        if(typeof this.tableColumns[tableName][columnName] == "undefined") return columnName;
+        if(typeof this.tableColumns[tableName][columnName]['display_name'] == "undefined") return columnName;
+        
+        return this.tableColumns[tableName][columnName]['display_name']
+    }
+    
+    getSummary(data)
+    {
+        if(data == null) return null;
+        
+        data = data.toString();
+        if(data.length < 50) return data;
+        
+        return data.substring(0, 50) + "...";
     }
 
     addEventForDataChanged(map)
@@ -1233,7 +1656,7 @@ export class FullScreenMapElementComponent
             record[columnName] = this.convertDataForDataTransform(record, feature, columnName, dataTransferSelects[columnName]);
         }
 
-        var wkt = MapHelper.getWktFromFeature(feature, "EPSG:"+this.inFormTargetData['subTable']['columnSrid']);            
+        var wkt = MapHelper.getWktFromFeature(feature, null, "EPSG:"+this.inFormTargetData['subTable']['columnSrid']);            
         record[this.inFormTargetData['subTable']['columnName']] = wkt;
         
         return record;
@@ -1269,8 +1692,8 @@ export class FullScreenMapElementComponent
             .catch((e) => 
             { 
                 if(i == 0) errorWhenFirstRecordStore = true;
-                alert("error");
-                console.log(e);
+                this.messageHelper.toastMessage("Aktarım esnasında bir hata oluştu. Aktarım durduruldu");
+                //$('#'+this.inFormElementId+'inFormModal').modal('show');
             });
             
             await BaseHelper.sleep(500);

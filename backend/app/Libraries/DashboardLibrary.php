@@ -9,7 +9,6 @@ class DashboardLibrary
 {
     public function RecordCount($param1, $param2)
     {
-        Cache::forget('sumAllTablesCounts');
         $sumAllTablesCounts = Cache::remember('sumAllTablesCounts', 60 * 60 * 24, function()
         {
             $except = ['migrations', 'password_resets', 'sessions', 'jobs', 'failed_jobs'];
@@ -32,6 +31,20 @@ class DashboardLibrary
             'table_display_name' => get_attr_from_cache('tables', 'name', $param1, 'display_name'),
             'count' => $count,
             'all' => $sumAllTablesCounts
+        ];
+    }
+    
+    public function RefreshableNumber($param1, $param2)
+    {
+        return $this->{'RefreshableNumber'.$param1}($param2);
+    }
+    
+    public function RefreshableNumberJobCount($param2)
+    {
+        return 
+        [
+            'display_name' => 'Kuyruktaki İş Sayısı',
+            'number' => DB::table('jobs')->count('*')
         ];
     }
 }

@@ -4,7 +4,7 @@ $columns_validations =
 [
     //'id' => 'ID',
     'name_basic' => [$column_validations['required']->id ],
-    'name' => [$column_validations['required']->id, $column_validations['unique']->id, $column_validations['name_not_start_deleted']->id ],
+    'name' => [$column_validations['required']->id, $column_validations['unique']->id, $column_validations['name_not_start_deleted']->id, $column_validations['name_not_be_deleted_records_name']->id ],
     'surname' =>  [ $column_validations['required']->id ],
     'email' => [ $column_validations['required']->id, $column_validations['email']->id, $column_validations['unique']->id  ],
     'tc' => [ $column_validations['required']->id , $column_validations['unique']->id ],

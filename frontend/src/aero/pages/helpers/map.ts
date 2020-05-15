@@ -1,6 +1,8 @@
 import Map from 'ol/Map';
 import View from 'ol/View';
 
+import Feature from 'ol/Feature';
+
 import { WKT, GeoJSON} from 'ol/format';
 
 import { Tile as TileLayer, Vector as VectorLayer } from 'ol/layer';
@@ -12,6 +14,8 @@ import BingMaps from 'ol/source/BingMaps';
 import {Draw, Modify, Snap} from 'ol/interaction';
 
 import { Circle as CircleStyle, Fill, Stroke, Style, Icon, Text } from 'ol/style';
+
+import {Point, LineString, Polygon, MultiPoint, MultiLineString, MultiPolygon} from 'ol/geom';
 
 import {defaults as defaultControls} from 'ol/control';
 import MousePosition from 'ol/control/MousePosition';
@@ -32,6 +36,7 @@ declare var $: any;
 
 export abstract class MapHelper 
 {   
+  public static dbProjection = 'EPSG:7932';
   public static mapProjection = 'EPSG:3857';
   public static userProjection = ""
   public static customProjectionAdded = false;
@@ -292,23 +297,6 @@ export abstract class MapHelper
       resolve(draw);
     });     
   }
-
-  /*ublic static keyTimeOutControl(key)
-  {
-    if(typeof this.keyPressedTime[key] != "undefined")
-    {
-      var now = new Date();
-      var timeOut = (now.getTime() - this.keyPressedTime[key].getTime());
-      if(timeOut < 1000) 
-      {
-        console.log("no time out" + timeOut);
-        return false;
-      }
-    }
-
-    this.keyPressedTime[key] = new Date();
-    return true;
-  }*/
 
   public static escapeLastNodeOnDrawingFeatureControl(map, draw)
   {
@@ -853,9 +841,63 @@ export abstract class MapHelper
     return feature;
   }
   
-  public static getWktFromFeature(feature, targetProjection = null)
+  public static getFeatureFromGeometry(geom)
   {
-    var sourceProjection = this.mapProjection;
+    return new Feature({ geometry: geom });
+  }
+  
+  public static getFeatureFromGeoserverJsonResponseGeometry(geoServerGeometry)
+  {
+      var geom = null;
+      
+      switch(geoServerGeometry['type'])
+      {
+        case 'Point': 
+          geom = new Point(geoServerGeometry['coordinates']);
+          break;
+        case 'Linestring': 
+          geom = new Linestring(geoServerGeometry['coordinates']);
+          break;
+        case 'Polygon': 
+          geom = new Polygon(geoServerGeometry['coordinates']);
+          break;
+        default:
+            console.log('getFeatureFromGeoserverJsonResponseGeometry: ' + geoServerGeometry['type']);
+            return null;
+      }
+      
+      return this.getFeatureFromGeometry(geom);
+  }
+  
+  public static getPolygonFromPoint(pointFeature, radius)
+  {
+    radius = radius / 2;
+    
+    var poitnExtent = pointFeature.getGeometry().getExtent();
+    var bufferedExtent = 
+    [
+        poitnExtent[0]-radius,
+        poitnExtent[1]-radius,
+        poitnExtent[2]+radius,
+        poitnExtent[3]+radius
+    ];
+    
+    
+    return new Polygon(
+    [
+        [
+            [bufferedExtent[0], bufferedExtent[1]],
+            [bufferedExtent[0], bufferedExtent[3]],
+            [bufferedExtent[2], bufferedExtent[3]],
+            [bufferedExtent[2], bufferedExtent[1]],
+            [bufferedExtent[0], bufferedExtent[1]]
+        ]
+    ]);
+  }
+  
+  public static getWktFromFeature(feature, sourceProjection = null, targetProjection = null)
+  {
+    if(sourceProjection == null) sourceProjection = this.mapProjection;
     if(targetProjection == null) targetProjection = this.userProjection;
 
     var format = new WKT();
@@ -884,13 +926,6 @@ export abstract class MapHelper
   public static clearAllFeatures(map)
   {
     this.getVectorSource(map).clear();
-  }
-
-  public static deleteFeature(map, index)
-  {
-    var source = this.getVectorSource(map);
-    var feature = source.getFeatures()[index];
-    source.removeFeature(feature);
   }
   
   public static deleteFeature(map, indexOrFeature)
@@ -1028,6 +1063,17 @@ export abstract class MapHelper
 
 
   /****    Common Functions    ****/
+  
+  public static getBufferSizeByMapZoom(map)
+  {
+      var sizes = { 8: 5000, 9: 2500, 10: 1500, 11: 800, 12: 500, 13: 200, 14: 100, 15: 35, 16: 20, 17: 10, 18: 5, 19: 3}; 
+      var zoom = map.getView().getZoom();
+      
+      if(zoom >= 19) return sizes[19];
+      if(zoom <= 8) return sizes[8];
+      
+      return sizes[Math.round(zoom)];
+  }
 
   public static showNoMultipleConfirm(map, e)
   {
@@ -1220,6 +1266,8 @@ export abstract class MapHelper
     if(targetProjection == null) targetProjection = this.userProjection;
     if(sourceProjection == targetProjection) return feature;
 
-    return feature.getGeometry().transform(sourceProjection, targetProjection);
+    feature.getGeometry().transform(sourceProjection, targetProjection);
+    
+    return feature;
   }
 }

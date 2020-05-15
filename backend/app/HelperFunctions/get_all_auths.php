@@ -41,7 +41,7 @@ return Cache::rememberForever($key, function()
     $auths['map:0:0:0'] = 'Harita';    
     $auths['map:kmz:upload:0'] = 'Upload KMZ';
 
-    
+    $auths['dashboards:RefreshableNumber:JobCount:0'] = 'Göstergeler Bekleyen İş Sayısı';
     
     /****        ****/
     

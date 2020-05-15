@@ -32,8 +32,23 @@ export class MessageHelper
         title: message
         });
     }
-
-    public swarmConfirm(title, text, icon, confirmButtonText = 'Evet', cancelButtonText = 'Hayır', showCancelButton = true)
+    
+    public swalPrompt(title, confirmText = "Tamam", cancelText = "İptal")
+    {
+        return Swal.fire(
+        {
+            title: title,
+            input: 'text',
+            inputAttributes: 
+            {
+              autocapitalize: 'off'
+            },
+            showCancelButton: true,
+            confirmButtonText: confirmText,
+        });
+    }
+    
+    public swalConfirm(title, text, icon, confirmButtonText = 'Evet', cancelButtonText = 'Hayır', showCancelButton = true)
     {
         return Swal.fire(
         {

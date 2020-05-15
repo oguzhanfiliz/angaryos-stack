@@ -153,6 +153,7 @@ class User extends Authenticatable
         $info['display_name'] = get_attr_from_cache('tables', 'name', $tableName, 'display_name');
         $info['workspace'] = env('GEOSERVER_WORKSPACE', 'angaryos');
         $info['layer_name'] = 'v_'.$tableName;
+        $info['tableName'] = $tableName;
         $info['type'] = 'wms';
         $info['style'] = '';
         $info['period'] = '0';
@@ -201,6 +202,8 @@ class User extends Authenticatable
         $info['filter'] = FALSE;
         $info['search'] = FALSE;
         
+        $info['srid'] = $layer->srid;
+        
         $info['layerTableType'] = 'external';
         
         return $info;
@@ -226,7 +229,7 @@ class User extends Authenticatable
         $info['filter'] = FALSE;
         $info['search'] = FALSE;
         
-        $info['baseTableName'] = get_attr_from_cache('tables', 'id', $layer->table_id, 'name');
+        $info['tableName'] = get_attr_from_cache('tables', 'id', $layer->table_id, 'name');
         $info['layerTableType'] = 'custom';
         
         return $info;

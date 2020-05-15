@@ -114,6 +114,7 @@ import { GeoPreviewElementComponent } from './helpers/custom-elements/geo-previe
   ],
   exports: 
   [
+    ShowComponent,
     FormComponent,
     FormElementComponent,
     TextElementComponent,
@@ -176,7 +177,8 @@ export class PagesModule
     'column-array-form-element': ColumnArrayFormElementComponent,
     'geo-preview-element': GeoPreviewElementComponent,
     
-    'in-form-element': FormComponent
+    'in-form-element': FormComponent,
+    'in-show-element': ShowComponent
   };
 
   constructor(private injector: Injector) 

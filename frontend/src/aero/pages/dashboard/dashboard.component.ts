@@ -30,7 +30,7 @@ export class DashboardComponent
         return;
 
       this.dashboardAuths = BaseHelper.loggedInUserInfo.auths['dashboards'];
-      this.getDashboardsData();
+      this.fillDashboardsData();
     }
 
   ngAfterViewInit() 
@@ -44,9 +44,10 @@ export class DashboardComponent
     this.aeroThemeHelper.addEventForFeature("standartElementEvents"); 
   }
 
-  getDashboardsData()
+  fillDashboardsData()
   {
-    this.getDashboardsDataRecordCount();
+    this.fillDashboardsDataRecordCount();
+    this.fillDashboardsDataRefreshableNumber();
   }
 
   isDashboardDataNull()
@@ -57,8 +58,6 @@ export class DashboardComponent
 
   getSortedDashboardClass()
   {
-    //getFromLocal
-
     return Object.keys(this.dashboardDatas);
   }
 
@@ -79,7 +78,7 @@ export class DashboardComponent
     return temp / 100;
   }
 
-  async getDashboardsDataRecordCount()
+  async fillDashboardsDataRecordCount()
   {
     if(typeof this.dashboardAuths['RecordCount'] == "undefined") return;
     
@@ -106,6 +105,38 @@ export class DashboardComponent
         this.messageHelper.toastMessage("Bazı göstergeler için data alınamadı!");
       });
     }
+  }
+  
+  async fillDashboardsDataRefreshableNumber()
+  {
+    if(typeof this.dashboardAuths['RefreshableNumber'] == "undefined") return;
+    
+    var dashNames = Object.keys(this.dashboardAuths['RefreshableNumber']);
+
+    for(var i = 0; i < dashNames.length; i++)
+        await this.refreshableNumberRefresh(dashNames[i]);
+  }
+  
+  async refreshableNumberRefresh(dashName)
+  {
+    var url = this.sessionHelper.getBackendUrlWithToken()+"dashboards/getData/dashboards:RefreshableNumber:"+dashName+":0";
+
+    var th = this;
+
+    await this.sessionHelper.doHttpRequest("GET", url) 
+    .then((data) => 
+    {
+      if(typeof th.dashboardDatas['RefreshableNumber'] == "undefined")
+        th.dashboardDatas['RefreshableNumber'] = [];
+
+      th.dashboardDatas['RefreshableNumber'][dashName] = data;
+
+      return true;
+    })
+    .catch((e) => 
+    {
+      this.messageHelper.toastMessage("Bazı göstergeler için data alınamadı!");
+    });
   }
 }
 

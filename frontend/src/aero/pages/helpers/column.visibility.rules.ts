@@ -112,6 +112,11 @@ function customLayerTypeIdTrigger(tableName, columnName, elementId, data)
     if(data[columnName] == "2") visible = true;//wfs
     
     setElementVisibility(elementId, "period", visible);
+    
+    if(tableName == "external_layers")
+        setElementVisibility(elementId, "layer_style_id", visible);
+    else
+        setElementVisibility(elementId, "layer_style_id", true);
 }
 
 function dataSourceTypeIdTrigger(tableName, columnName, elementId, data)

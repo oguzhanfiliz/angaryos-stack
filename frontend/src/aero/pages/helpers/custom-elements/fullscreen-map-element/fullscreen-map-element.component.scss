@@ -6,7 +6,6 @@
     }
 }
 
-
 button
 {
     border: 1px solid #a2b6ca !important;
@@ -20,6 +19,17 @@ button
 }
 
 
+.btn
+{
+    color: white;
+    padding: 4;
+    border: 1px solid #a9b1b9;
+}
+
+.btn:hover
+{
+    color: white !important;
+}
 
 .dragdrop-container {
 width: 100%;
@@ -241,4 +251,13 @@ transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
     box-shadow: 0px 0px 10px #bdbaba;
     border: 1px solid #ccc;
     opacity: 0.86;
+}
+
+#loading
+{
+    position: absolute;
+    right: 20;
+    top: 20;
+    z-index: 999;
+    color: white;
 }
