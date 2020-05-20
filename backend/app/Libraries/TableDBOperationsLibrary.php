@@ -94,6 +94,7 @@ class TableDBOperationsLibrary
             'tables:'.$table['name'].':creates:0',
             'tables:'.$table['name'].':delete:0',
             'tables:'.$table['name'].':restore:0',
+            'tables:'.$table['name'].':export:0',
         ];
         
         
@@ -274,6 +275,8 @@ class TableDBOperationsLibrary
     
     private function ColumnEventForCreate($params) { }
     
+    private function ColumnEventForImport($params) { }
+    
     
     
     /****    Columns Update    ****/
@@ -401,10 +404,9 @@ class TableDBOperationsLibrary
         $this->ReturnErrorIFTableHasDeletedRecord($columns);
     }
     
-    public function ColumnArrayEventForDelete($params)
-    {
-        
-    }
+    public function ColumnArrayEventForDelete($params) { }
+    
+    public function ColumnArrayEventForClone($params) { }
     
     public function ColumnArrayEventForCreate($params)
     {
@@ -423,6 +425,14 @@ class TableDBOperationsLibrary
     /****    Table Create    ****/
     
     public function TableEventForCreate($params)
+    {
+        $columnIds = $this->CreateTableOnDB($params['requests']);
+        $this->CreateArchiveTableOnDB($params['requests']['name'], $params['requests']['name'].'_archive');
+        
+        return $columnIds;
+    }
+    
+    public function TableEventForImport($params)
     {
         $columnIds = $this->CreateTableOnDB($params['requests']);
         $this->CreateArchiveTableOnDB($params['requests']['name'], $params['requests']['name'].'_archive');

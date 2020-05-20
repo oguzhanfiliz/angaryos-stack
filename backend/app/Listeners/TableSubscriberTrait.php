@@ -157,7 +157,150 @@ trait TableSubscriberTrait
     
     public function getDataForExport($record)
     {
-        return $record->toArray();
+        global $pipe;
+        
+        //$pipe['count'] = 0;
+        //dd($this->getDataForExportRecursive($pipe['table'], $record));
+        return $this->getDataForExportRecursive($pipe['table'], $record);
+    }
+    
+    private function getPipeKeysForExportRecursiveFunction($tableName, $record)
+    {
+        global $pipe;
+        
+        if(isset($record->id))
+            $unique = $record->id;
+        else if(isset($record->_source_column_name))
+            $unique = $record->{$record->_source_column_name};
+            
+        $keys = ['getDataForExportRecursiveData', $tableName.':'.$unique];
+        
+        return $keys;
+    }
+    
+    private function recursiveControlForGetDataForExportRecursiveFunction($tableName, $record)
+    {
+        if($tableName == 'columns')
+            if($record->id < 100) 
+                return FALSE;
+            
+        if($tableName == 'column_table_relations')
+            if($record->id < 46) 
+                return FALSE;
+        
+        return TRUE;
+    }
+    
+    private function getDataForExportRecursive($tableName, $record, $recursive = TRUE)
+    {
+        global $pipe;
+        
+        $keys = $this->getPipeKeysForExportRecursiveFunction($tableName, $record);
+        if(isset($pipe[$keys[0]][$keys[1]])) return $pipe[$keys[0]][$keys[1]];
+     
+        $return = 
+        [
+            'tableName' => $tableName,
+            'columns' => [],
+            'data' => []
+        ];
+        
+        if(get_class($record) == 'App\BaseModel') $data = $record->toArray(); 
+        else if(get_class($record) == 'stdClass') $data = (array)$record;
+        
+        //echo $tableName . ':  ' . json_encode($data) . '<br><br><br>';
+        //$pipe['count']++;
+        //if($pipe['count'] > 60) dd(123);
+        
+        
+        $table = new BaseModel('tables');
+        $table = $table->where('name', $tableName)->first();
+        
+        if($table == NULL)
+        {
+            $return['data'] = $data;
+        }
+        else
+        {
+            $baseColumns = ['user_id', 'own_id', 'created_at', 'updated_at'];
+            
+            $columns = $table->getRelationData('column_ids');
+            foreach($columns as $column)
+                if(!in_array($column->name, $baseColumns))
+                {
+                    $recursive = $this->recursiveControlForGetDataForExportRecursiveFunction($tableName, $record);
+                    if(!$recursive)
+                    {
+                        $return['data'][$column->name] = $data[$column->name];
+                        continue;
+                    }
+                    
+                    $tempColumn = $this->getDataForExportRecursive('columns', $column);
+                    $return['columns'][$column->name] = $tempColumn;
+
+                    //if($tableName == 'column_table_relations') dd($return['columns']);
+                    
+                    if(get_class($record) == 'App\BaseModel')
+                        $temp = $record->getRelationData($column->name);
+                    else if(get_class($record) == 'stdClass') 
+                        $temp = @$record->{$column->name};
+
+                    $return['data'][$column->name] = $temp;
+
+                    $params = helper('get_null_object');
+                    $params->record = $record;
+                    $params->column = $column;
+
+                    if(strlen($column->column_table_relation_id) > 0)
+                    {
+                        $subTableName = ColumnClassificationLibrary::relation(
+                                                $this, 
+                                                'getTableNameForGetDataForExportRecursive', 
+                                                $column, 
+                                                NULL, 
+                                                $params);
+                        
+                        $relation = get_model_from_cache('column_table_relations', 'id', $column->column_table_relation_id);
+                        
+                        if(is_object($temp))
+                        {
+                            $return['data'][$column->name] = $this->getDataForExportRecursive($subTableName, $temp);
+                        
+                            $relationTree = $this->getDataForExportRecursive('column_table_relations', $relation);
+                            $return['data'][$column->name]['relation'] = $relationTree;
+                        }
+                        else if(is_array($temp))
+                            foreach($temp as $i => $tempObject)
+                            {
+                                $return['data'][$column->name][$i] = $this->getDataForExportRecursive($subTableName, $tempObject);
+                            
+                                $relationTree = $this->getDataForExportRecursive('column_table_relations', $relation);
+                                $return['data'][$column->name][$i]['relation'] = $relationTree;
+                            }
+                        
+                        
+                    }
+                }
+        }
+        $pipe[$keys[0]][$keys[1]] = $return;
+        
+        return $return;
+    }
+    
+    public function getTableNameForGetDataForExportRecursiveForTableIdAndColumnIds($params)
+    {
+        return get_attr_from_cache('tables', 'id', $params->relation->relation_table_id, 'name');
+    }
+    
+    public function getTableNameForGetDataForExportRecursiveForRelationSql($params)
+    {
+        return helper('get_table_name_from_sql', $params->relation->relation_sql);
+    }
+    
+    public function getTableNameForGetDataForExportRecursiveForDataSource($params)
+    {
+        $name = get_attr_from_cache('column_data_sources', 'id', $params->relation->column_data_source_id, 'name');
+        return '[columnDataSources: '.$name.']';
     }
     
     

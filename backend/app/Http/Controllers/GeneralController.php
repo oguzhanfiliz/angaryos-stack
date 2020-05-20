@@ -7,6 +7,8 @@ use DB;
 
 class GeneralController extends Controller
 {
+    use GeneralControllerTrait;
+    
     public function __construct()
     {
         //\Cache::flush();
@@ -21,6 +23,22 @@ class GeneralController extends Controller
             abort(helper('response_error', 'db.already.initialized'));
         else
             abort(helper('response_error', 'db.not.initialized: '.$output));
+    }
+    
+    public function importRecord($user)
+    {
+        send_log('info', 'Request Import Record');
+        
+        $this->UserImportRecordAuthControl($user);
+        
+        $files = \Request::file('files');
+        $paths = $this->MoveUploadedFileToTempFolder($files);
+        
+        $data = $this->ImportRecordsToTables($user, $paths);
+        
+        send_log('info', 'Record Import Success', $data);
+
+        return helper('response_success', $data);
     }
     
     public function serviceOk($user = NULL) 

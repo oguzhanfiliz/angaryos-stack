@@ -15,6 +15,8 @@ Route::group(['prefix' => '{token}'], function ()
         return 'test';
     });
     
+    Route::get('logs', '\Rap2hpoutre\LaravelLogViewer\LogViewerController@index');
+    
     Route::any('/', '\App\Http\Controllers\GeneralController@serviceOk');
     Route::get('getLoggedInUserInfo', 'AuthController@getLoggedInUserInfo');
     Route::get('getUserToken/{user_id}', 'AuthController@getUserToken');
@@ -28,6 +30,9 @@ Route::group(['prefix' => '{token}'], function ()
     Route::get('getMapData', 'MapController@GetData');
     Route::post('translateKmzOrKmlToJson', 'MapController@TranslateKmzOrKmlToJson');
     Route::get('getSubTables/{upTableName}/{type}', 'MapController@GetSubTables');
+    
+    
+    Route::post('importRecord', '\App\Http\Controllers\GeneralController@importRecord');
 
     
     

@@ -11,7 +11,6 @@
 |
 */
 
-Route::get('logs', '\Rap2hpoutre\LaravelLogViewer\LogViewerController@index');
 Route::any('/', '\App\Http\Controllers\GeneralController@serviceOk');
 
 //Route::get('/auth/login', ['as'=>'login','uses'=>'Auth\AuthController@getLogin']);

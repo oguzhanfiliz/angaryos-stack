@@ -41,8 +41,26 @@ export class PagesComponent
       setTimeout(() =>
       {
         $('#shortcuts').removeClass('show');
-        $('#shortcuts ul').removeClass('show')
+        $('#shortcuts ul').removeClass('show');
+        
+        var th = this;
+        $('#importRecordFile').change(() => th.importRecodrFileChanged());
+        
       }, 1000);
+  }
+  
+  private importRecodrFileChanged()
+  {
+    var path = $('#importRecordFile').val();
+    if(path == "") return;
+
+    var arr = path.split('.');
+    var ext = arr[arr.length-1];
+
+    if(ext == 'json')
+      this.importRecord();
+    else
+      this.messageHelper.sweetAlert("Geçersiz doya tipi!", "Hata", "warning");
   }
 
   private keyEvent(event)
@@ -90,6 +108,63 @@ export class PagesComponent
     }
 
     return BaseHelper.doInterval('searchInBaseMenu', func, params, 500);
+  }
+  
+  menuItemClick(func)
+  {
+    switch(func)
+    {
+      case 'importRecord':
+        this.importRecordLinkClicked();
+        break;
+      default:
+        console.log(func);
+    }
+  }
+  
+  importRecordLinkClicked()
+  {
+    $('#importRecordFile').click();
+  }
+  
+  
+  importRecord()
+  {
+    var url = this.sessionHelper.getBackendUrlWithToken()+"importRecord";
+
+    var params = new FormData();
+    var files = $('#importRecordFile')[0].files;
+    for(var l = 0; l < files.length; l++)
+        params.append("files[]", files[l]);
+
+    this.generalHelper.startLoading();
+
+    this.sessionHelper.doHttpRequest("POST", url, params) 
+    .then((data) => 
+    {
+        $('#importRecordFile').val("");
+        this.generalHelper.stopLoading();
+
+        if(data == null)
+            this.messageHelper.sweetAlert("Beklenmedik cevap geldi!", "Hata", "warning");
+        else 
+        {
+            console.log(data);
+            if(typeof data['data'] == "undefined")
+                this.messageHelper.sweetAlert('Beklenmedik bir hata oluştu!', 'İçe Aktarma', 'error');
+            else if(typeof data['error'] == "undefined")
+                this.messageHelper.sweetAlert('Beklenmedik bir hata oluştu!', 'İçe Aktarma', 'error');
+            else if(Object.keys(data['error']).length > 0)
+                this.messageHelper.sweetAlert('İçe aktarma tamamlandı ama bazı hatalar oluştu!', 'İçe Aktarma', 'error');
+            else 
+                this.messageHelper.sweetAlert('İşlem başarı ile gerçekleştirildi', 'İçe Aktarma', 'success');
+        }
+    })
+    .catch((e) => 
+    { 
+        $('#importRecordFile').val("");
+        this.generalHelper.stopLoading(); 
+    });
   }
 
   clearMenuFilter()

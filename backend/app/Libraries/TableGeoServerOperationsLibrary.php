@@ -47,6 +47,11 @@ class TableGeoServerOperationsLibrary
         return $this->CreateLayerIfNotExist($params);
     }
     
+    public function TableEventForImport($params)
+    {
+        return $this->CreateLayerIfNotExist($params);
+    }
+    
     public function TableEventForClone($params)
     {
         return $this->CreateLayerIfNotExist($params);

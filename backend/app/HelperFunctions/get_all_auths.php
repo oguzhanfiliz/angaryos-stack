@@ -36,12 +36,15 @@ return Cache::rememberForever($key, function()
     $auths['admin:userImitation:0:0'] = 'Kullanıcı taklit';
     $auths['admin:authWizard:0:0'] = 'Yetki oluşturma yardımcısı';
     $auths['admin:dataEntegrator:0:0'] = 'Veri Aktarıcı';
+    $auths['admin:recordImport:0:0'] = 'Kayıt İçe Aktarma';
 
     
     $auths['map:0:0:0'] = 'Harita';    
     $auths['map:kmz:upload:0'] = 'Upload KMZ';
 
     $auths['dashboards:RefreshableNumber:JobCount:0'] = 'Göstergeler Bekleyen İş Sayısı';
+    
+    
     
     /****        ****/
     

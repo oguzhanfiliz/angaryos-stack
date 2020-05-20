@@ -16,7 +16,7 @@ class TestRepository
         $temp->_display_column = 'Bir';
 
         $temp->_source_column_name = '_source_column';
-        $temp->_display_column_name = '_display_column_name';
+        $temp->_display_column_name = '_display_column';
 
         return [$temp];
     }

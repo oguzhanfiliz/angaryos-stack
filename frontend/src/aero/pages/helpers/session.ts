@@ -295,6 +295,16 @@ export class SessionHelper
 
       return true;
     }
+    
+    public recordImportAuthControl()
+    {
+      if(BaseHelper.loggedInUserInfo == null) return false;
+      if(typeof BaseHelper.loggedInUserInfo['auths'] == "undefined") return false;
+      if(typeof BaseHelper.loggedInUserInfo['auths']['admin'] == "undefined") return false;
+      if(typeof BaseHelper.loggedInUserInfo['auths']['admin']['recordImport'] == "undefined") return false;
+
+      return true;
+    }
 
     public kmzAuthControl()
     {

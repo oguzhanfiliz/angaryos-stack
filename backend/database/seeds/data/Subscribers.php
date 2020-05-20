@@ -47,7 +47,7 @@ $subscribers['table']['tables'][1] =
     'name_basic' => 'Tabloyla ilişkili kolon işlemleri için trigger',
     'subscriber_type_id' => $subscriber_types['after']->id,
     'php_code' => '<?php
-if($type != \'create\') return;
+if($type != "create" && $type != "import") return;
 
 $helper = new App\Libraries\TableDBOperationsLibrary();
 $return = $helper->CreateRelationColumnsForTable($record);
@@ -70,7 +70,7 @@ $subscribers['table']['tables'][3] =
     'php_code' => '<?php
 $helper = new App\Libraries\TableDBOperationsLibrary();
 
-if($type == "create")
+if($type == "create" || $type == "import")
     $return = $helper->AddTableFullAuthToAdminUser($record);
 else
     $return = $helper->UpdateTableFullAuthToAdminUser($record);

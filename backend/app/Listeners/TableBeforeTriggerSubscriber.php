@@ -32,6 +32,9 @@ class TableBeforeTriggerSubscriber
 
     private function controlSubscribers($table, $columns, $type, $record = NULL)
     {
+        global $pipe;
+        if(isset($pipe['subscriberTypeOverride'])) $type = $pipe['subscriberTypeOverride'];
+        
         $returned = [];
         if(strlen($table->subscriber_ids) > 0)
         {

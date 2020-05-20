@@ -222,7 +222,7 @@ class TableController extends Controller
         $data = Event::dispatch('record.export.requested', $record)[0];
         
         send_log('info', 'Response export', [$record, $data]);
-        
+        return $data;
         return $this->exportAsFile($table, $record, $data);
     }
     

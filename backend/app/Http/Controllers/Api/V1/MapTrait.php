@@ -253,7 +253,6 @@ trait MapTrait
 
     private function MoveUploadedFileToTempFolder($user, $file)
     {
-        $disk = env('FILESYSTEM_DRIVER', 'uploads');
         $tempFolder = 'temps/';
         $fileName = $user->id.'_'.$file->getClientOriginalName();
         $path = $tempFolder.$fileName;

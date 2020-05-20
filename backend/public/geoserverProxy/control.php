@@ -6,7 +6,7 @@ $temp = explode('?', $_SERVER['REQUEST_URI']);
 if(count($temp) != 2) return;
 
 $segments = explode('/', $temp[0]);
-if($segments[4] != 'getMapData') return;
+if(@$segments[4] != 'getMapData') return;
 
 $requests = [];
 foreach(explode('&', $temp[1]) as $req)

@@ -2,6 +2,8 @@
 
 namespace App\Listeners;
 
+use DB;
+
 class TableAfterTriggerSubscriber 
 {
     private function triggerSubscriber($record, $table, $column, $subscriber, $type)
@@ -27,6 +29,9 @@ class TableAfterTriggerSubscriber
 
     private function controlSubscribers($record, $table, $columns, $type)
     {
+        global $pipe;
+        if(isset($pipe['subscriberTypeOverride'])) $type = $pipe['subscriberTypeOverride'];
+        
         $returned = [];
         
         if(strlen($table->subscriber_ids) > 0)
@@ -59,11 +64,8 @@ class TableAfterTriggerSubscriber
                 
         if(count($returned) > 0)
         {
-            //after içinde gelen data ile kayır update edilebilir.
-            dd('controlSubscribers after');
-            dd($returned);
-            global $pipe;
-            $pipe['overrideRequestDatas'] = $returned;
+            send_log('info', 'After subscriber trigered', [$table->name, $record->toArray(), $returned]);
+            DB::table($table->name)->where('id', $record->id)->update($returned);
         }
         
         return TRUE;

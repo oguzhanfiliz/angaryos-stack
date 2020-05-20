@@ -82,7 +82,7 @@ export class FullScreenMapElementComponent
         setTimeout(() =>
         {
             this.aeroThemeHelper.loadPageScriptsLight();
-            this.addKmzFileSelectedEvent();
+            this.addKmzFileChangedEvent();
             
         }, 200);
     }
@@ -203,22 +203,26 @@ export class FullScreenMapElementComponent
         this.inFormSelectDataForColumn.push(temp);
     }
     
-    addKmzFileSelectedEvent()
+    addKmzFileChangedEvent()
     {
         var th = this;
-        $('#kmzFile').change(function ()
-        {
-            var exts = ['kml', 'kmz'];
+        $('#kmzFile').change(() => th.kmzFileChanged());
+    }
+    
+    kmzFileChanged()
+    {
+        var exts = ['kml', 'kmz'];
 
-            var path = $('#kmzFile').val();
-            var arr = path.split('.');
-            var ext = arr[arr.length-1];
+        var path = $('#kmzFile').val();
+        if(path == "") return;
 
-            if(exts.includes(ext))
-                th.uploadKmz();
-            else
-                th.messageHelper.sweetAlert("Geçersiz doya tipi!", "Hata", "warning");
-        });
+        var arr = path.split('.');
+        var ext = arr[arr.length-1];
+
+        if(exts.includes(ext))
+            this.uploadKmz();
+        else
+            this.messageHelper.sweetAlert("Geçersiz doya tipi!", "Hata", "warning");
     }
 
     layers()
@@ -1159,17 +1163,6 @@ export class FullScreenMapElementComponent
         MapHelper.zoom(this.map, true);
     }
 
-    uploadKmzValidation()
-    {
-        if($('#kmzFile').val() == "")
-        {
-            this.messageHelper.sweetAlert("Dosya boş geçilemez!", "Hata", "warning");
-            return false;
-        }
-
-        return true;
-    }
-
     deleteKmlOrKmzFileFeatures(name)
     {
         console.log("delete: " + name);
@@ -1224,12 +1217,8 @@ export class FullScreenMapElementComponent
 
     uploadKmz()
     {
-        if($('#kmzFile').val() == "") return;
-
         var url = this.sessionHelper.getBackendUrlWithToken()+"translateKmzOrKmlToJson";
         
-        if(!this.uploadKmzValidation()) return;
-
         var params = new FormData();
         params.append("file", $('#kmzFile')[0].files[0]);
 
@@ -1238,6 +1227,7 @@ export class FullScreenMapElementComponent
         this.sessionHelper.doHttpRequest("POST", url, params) 
         .then((data) => 
         {
+            $('#kmzFile').val("");
             this.generalHelper.stopLoading();
             
             if(data == null)
@@ -1247,15 +1237,17 @@ export class FullScreenMapElementComponent
                 this.addFeaturesFromKmzOrKmlFile(data);
                 this.updateInFormSelectDataForColumn();
                 
-                $('#kmzFile').val("");
-
                 MapHelper.addModify(this.map, true);
 
                 this.setFeaturesTreeVisible(true);
             }
                 
         })
-        .catch((e) => { this.generalHelper.stopLoading(); });
+        .catch((e) => 
+        { 
+            $('#kmzFile').val("");
+            this.generalHelper.stopLoading();
+        });
     }
     
     convertToJson(data)

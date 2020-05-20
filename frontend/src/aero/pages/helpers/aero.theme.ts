@@ -296,7 +296,19 @@ export class AeroThemeHelper
       };
       return mapPage;
     }
-
+    
+    public getRecordImportPageMenuItem()
+    {
+      var mapPage =
+      {
+        title: 'İçe Aktar',
+        icon: 'zmdi-sign-in',
+        link: '',
+        func: 'importRecord',
+      };
+      return mapPage;
+    }
+    
     public updateBaseMenu(search = "")
     {
       this.baseMenu =  [ ];
@@ -307,6 +319,9 @@ export class AeroThemeHelper
         
         if(this.sessionHelper.mapAuthControl())
           this.baseMenu.push(this.getMapPageMenuItem());
+          
+        if(this.sessionHelper.recordImportAuthControl())
+          this.baseMenu.push(this.getRecordImportPageMenuItem());
         
         this.baseMenu.push(this.getDashboardPageMenuItem());
       }

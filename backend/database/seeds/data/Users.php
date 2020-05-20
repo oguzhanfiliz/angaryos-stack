@@ -142,12 +142,18 @@ array_push($adminAuths, $tempAuths->id);
 array_push($adminAuths, 'admin:authWizard:0:0');
 array_push($adminAuths, 'admin:userImitation:0:0');
 array_push($adminAuths, 'admin:dataEntegrator:0:0');
+array_push($adminAuths, 'admin:recordImport:0:0');
 
 
 
 array_push($adminAuths, 'dashboards:RecordCount:auth_groups:0');
 array_push($adminAuths, 'dashboards:RecordCount:users:0');
 array_push($adminAuths, 'dashboards:RecordCount:departments:0');
+
+
+
+array_push($adminAuths, 'dashboards:RefreshableNumber:JobCount:0');
+
 
 
 array_push($adminAuths, 'map:0:0:0');

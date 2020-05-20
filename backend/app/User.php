@@ -128,8 +128,9 @@ class User extends Authenticatable
             'icon' => 'zmdi-aspect-ratio',
         ];
 
-        foreach($tables[0] as $table) 
-            array_push($temp['table_ids'], $table['id']);
+        if(isset($tables[0]))
+            foreach($tables[0] as $table) 
+                array_push($temp['table_ids'], $table['id']);
         
         array_push($tableGroups, $temp);
 

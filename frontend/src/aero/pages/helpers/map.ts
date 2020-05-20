@@ -277,17 +277,18 @@ export abstract class MapHelper
 
         $(document).on('keyup', function(e)
         {
-          if(e.key == "Escape")
-            draw.set('escKey', Math.random());
+          if(e.key != "Escape") return;
+          
+          var ins = map.getInteractions().getArray();
+          for(var i = 0; i < ins.length; i++)
+            if(ins[i].constructor.name == "Draw")
+                ins[i].set('escKey', Math.random());
         });
       }
 
       draw.on('change:escKey', (e) => 
       {
-        if(typeof this.drawingFeatures[map.getTarget()] == "undefined") return;
-        if(this.drawingFeatures[map.getTarget()] == null) return;
-
-        this.escapeLastNodeOnDrawingFeature(map, draw, e);
+        draw.removeLastPoint();
       });
       
       
@@ -298,61 +299,12 @@ export abstract class MapHelper
     });     
   }
 
-  public static escapeLastNodeOnDrawingFeatureControl(map, draw)
-  {
-    var feature = this.drawingFeatures[map.getTarget()];
-
-    var geom = feature.getGeometry();
-    var coords = geom.getCoordinates();
-    var typeName = feature.getGeometry().getType();
-    switch (typeName) 
-    {
-      case 'LineString':
-        if(coords.length > 2) return true;
-        break;
-      case 'Polygon':
-        if(coords[0].length > 3) return true;
-        break;
-    }
-
-    return false;  
-  }
-
-  public static escapeLastNodeOnDrawingFeature(map, draw, e)
-  {
-    var control = this.escapeLastNodeOnDrawingFeatureControl(map, draw);
-    if(!control) return;
-
-    var feature = this.drawingFeatures[map.getTarget()];
-
-    var geom = feature.getGeometry();
-    var coords = geom.getCoordinates();
-
-    var typeName = feature.getGeometry().getType();
-    switch (typeName) 
-    {
-      case 'LineString':
-        var newCoordinates = coords.slice(0, coords.length - 1);
-        geom.setCoordinates(newCoordinates);
-        console.log(e.target);
-        //e.target.sketchCoords_ = newCoordinates;
-        //e.target.sketchFeature_ = feature;
-        break;
-      case 'Polygon':
-        var newCoordinates = coords[0].slice(0, coords[0].length - 1);
-        geom.setCoordinates([newCoordinates]); 
-        console.log(e.target);
-        //e.target.sketchFeature_ = feature;
-        //e.target.sketchCoords_ = [e.target.sketchCoords_[0].splice(0, e.target.sketchCoords_[0].length - 1)];
-        break;
-    }     
-  }
-
   public static removeInteraction(map, interaction)
   {
     return new Promise((resolve) =>
     {
       map.removeInteraction(interaction);
+      interaction.dispose();
       resolve(map);
     });     
   }
