@@ -119,7 +119,7 @@ trait TableSubscriberTrait
         $model->addJoinsWithColumns($params->model, $params->columns);
         $model->addSorts($params->model, $params->columns, $params->sorts);
         $model->addWheres($params->model, $params->columns, $params->filters);
-        $model->addSelects($params->model, $params->columns);//
+        $model->addSelects($params->model, $params->columns);
         $model->addFilters($params->model, $params->table_name);
         
         $params->model->addSelect($params->table_name.'.id');
@@ -159,8 +159,6 @@ trait TableSubscriberTrait
     {
         global $pipe;
         
-        //$pipe['count'] = 0;
-        //dd($this->getDataForExportRecursive($pipe['table'], $record));
         return $this->getDataForExportRecursive($pipe['table'], $record);
     }
     
@@ -206,12 +204,7 @@ trait TableSubscriberTrait
         ];
         
         if(get_class($record) == 'App\BaseModel') $data = $record->toArray(); 
-        else if(get_class($record) == 'stdClass') $data = (array)$record;
-        
-        //echo $tableName . ':  ' . json_encode($data) . '<br><br><br>';
-        //$pipe['count']++;
-        //if($pipe['count'] > 60) dd(123);
-        
+        else if(get_class($record) == 'stdClass') $data = (array)$record;        
         
         $table = new BaseModel('tables');
         $table = $table->where('name', $tableName)->first();
@@ -238,8 +231,6 @@ trait TableSubscriberTrait
                     $tempColumn = $this->getDataForExportRecursive('columns', $column);
                     $return['columns'][$column->name] = $tempColumn;
 
-                    //if($tableName == 'column_table_relations') dd($return['columns']);
-                    
                     if(get_class($record) == 'App\BaseModel')
                         $temp = $record->getRelationData($column->name);
                     else if(get_class($record) == 'stdClass') 
@@ -904,9 +895,7 @@ trait TableSubscriberTrait
         
         foreach($columnSet->column_arrays as $columnArray)
             foreach($columnArray->columns as $column) 
-                if(strlen($column->column_table_relation_id) == 0)
-                    $data[$column->name] = $data[$column->name];//$model->{$column->name};
-                else
+                if(strlen($column->column_table_relation_id) > 0)
                 {
                     $relationData = $model->getRelationData($column->name);
 
@@ -921,7 +910,7 @@ trait TableSubscriberTrait
                                 'source' => $r->_source_column,
                                 'display' => $r->_display_column
                             ]);
-                    }
+                }
         
         $data['id'] = $model->id;
                     

@@ -46,7 +46,7 @@ export class ShowComponent
                 else
                 {
                     th.tableName = th.inShowTableName;
-                    th.recordId = th.id;
+                    th.recordId = parseInt(th.id);
                 }
 
                 th.addEventForFeatures();

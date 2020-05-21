@@ -292,7 +292,7 @@
 
                                             <td></td>
                                             <td *ngFor="let columnName of params.columns">
-                                                <b>{{ getCollectiveInfo(columnName) }}</b>
+                                                <b [innerHTML]="getCollectiveInfo(columnName)"></b>
                                             </td>
                                         </tr>
                                     </tbody>

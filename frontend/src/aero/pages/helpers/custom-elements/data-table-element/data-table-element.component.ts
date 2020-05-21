@@ -243,7 +243,7 @@ export class DataTableElementComponent
             message += " id 'li kayıtları simek istediğinize emin misiniz?";
         }
 
-        this.messageHelper.swarmConfirm(title, message, "warning")
+        this.messageHelper.swalConfirm(title, message, "warning")
         .then(async (r) =>
         {
             if(r != true) return;
@@ -371,7 +371,7 @@ export class DataTableElementComponent
 
     restore(record)
     {
-        this.messageHelper.swarmConfirm("Kayıt geri yüklenecek", record.id + " id 'li kaydı geri yüklemek istediğinize emin misiniz?", "warning")
+        this.messageHelper.swalConfirm("Kayıt geri yüklenecek", record.id + " id 'li kaydı geri yüklemek istediğinize emin misiniz?", "warning")
         .then((r) =>
         {
             if(r != true) return;
@@ -453,7 +453,15 @@ export class DataTableElementComponent
         if(info == null) return "";
         if(info == "") return "";
 
-        return nameMap[info['type']] + ': ' + info['data'];
+        
+        var html = nameMap[info['type']] + ': ';
+        
+        var temp = {};
+        temp[columnName] = info['data'];
+        var typeName = this.getData('columns.'+columnName+".gui_type_name");
+        html += DataHelper.convertDataForGui(temp, columnName, typeName);
+        
+        return this.sanitizer.bypassSecurityTrustHtml(html);
     }
 
     loadDataInterval(timeout = null, del = false)

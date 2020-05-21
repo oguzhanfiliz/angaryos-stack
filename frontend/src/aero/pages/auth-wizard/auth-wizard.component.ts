@@ -333,11 +333,11 @@ export class AuthWizardComponent
         var columnArrayTypeElement = modalId+' [name="column_array_type_id"]';
 
         $(tableIdElement).append("<option value='"+this.tableId+"'></option>")
-        $(tableIdElement).val(this.tableId);
+        setTimeout(() => $(tableIdElement).val(this.tableId), 500);
         $(modalId+' #table_id-group').css('display', 'none');
 
         $(columnArrayTypeElement).append("<option value='1'></option>")
-        $(columnArrayTypeElement).val("1");
+        setTimeout(() => $(columnArrayTypeElement).val("1"), 500);
         $(modalId+' #column_array_type_id-group').css('display', 'none');
 
         var val = $("input[name='name_basic']").val();

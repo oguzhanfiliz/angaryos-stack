@@ -107,7 +107,10 @@ class AuthsRepository
     
     public function whereRecords($serach)
     {
-        $list = json_decode($serach);
+        if(is_string($serach))
+            $list = json_decode($serach);
+        else
+            $list = $serach;
 
         $len = count($list);
         $i = 0;

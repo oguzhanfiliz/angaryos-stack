@@ -161,6 +161,7 @@ trait BaseModelGetDataTrait
             if(!isset($column->column_gui_type_id)) 
                 dd('updateRecordsDataForResponse');
             
+            $records = $this->UpdateGeoColumnsDataForResponse($records, $column);
             
             if(get_class($records) == 'stdClass')
                 $records->{$column->name} = $this->updateRecordsDataForResponseSingleData($records, $column);
@@ -170,5 +171,29 @@ trait BaseModelGetDataTrait
         }
 
         return $records;
+    }
+    
+    public function  UpdateGeoColumnsDataForResponse($records, $column)
+    {
+        $geoColumns = ['point', 'linestring', 'polygon', 'multipoint', 'multilinestring', 'multipolygon'];
+        
+        $columnGuiTypeName = get_attr_from_cache('column_gui_types', 'id', $column->column_gui_type_id, 'name');
+        if(!in_array($columnGuiTypeName, $geoColumns)) return $records;
+                    
+        if(get_class($records) == 'stdClass')
+            $records->{$column->name} = $this->GetWKTFromPGDBString($records->{$column->name});
+        else
+            foreach($records as $i => $record)
+                $records[$i]->{$column->name} = $this->GetWKTFromPGDBString($records[$i]->{$column->name});
+                
+        return $records;
+    }
+    
+    public function GetWKTFromPGDBString($str)
+    {
+        if($str == NULL) return NULL;
+        if(strlen($str) == 0) return "";
+        
+        return DB::select('select st_astext(\''.$str.'\') as data')[0]->data;
     }
 }

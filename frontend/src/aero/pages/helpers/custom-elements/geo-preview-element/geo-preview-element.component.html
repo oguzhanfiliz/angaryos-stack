@@ -2,11 +2,15 @@
     <tr>
         <td>
             <a *ngIf="!isElementNull()" style="color: #0c7ce6" (click)="preview()">{{ this.getDisplayName(type)  }}</a>
-        </td><td>
-            <a *ngIf="mapAuthControl()" href="#/angaryos/map#zoomTo={{ getZoomToJson() }}" class=" waves-effect waves-block" style="margin-top: -3;">
-                <i class="zmdi zmdi-turning-sign"></i>
+        </td><td style="padding-left: 5px">
+            <a 
+                *ngIf="mapAuthControl() && !isElementNull()" 
+                href="#/angaryos/map#zoomTo={{ getZoomToJson() }}" 
+                class=" waves-effect waves-block btn btn-sm btn-primary" 
+                style="margin-top: -3; padding: 3px !important;">
+                
+                <i class="zmdi zmdi-gps-dot"></i>
             </a>
         </td>
     </tr>
 </table>
-

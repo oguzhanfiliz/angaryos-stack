@@ -266,8 +266,9 @@ trait BaseModelGetDataWhereTrait
     
     private function addWhereForDataSourceJsonb($params)//OneToMany
     {
-        $relation = $params->column->getRelationData('column_table_relation_id');
-        $dataSource = $relation->getRelationData('column_data_source_id');
+        $relation = get_attr_from_cache('column_table_relations', 'id', $params->column->column_table_relation_id, '*');
+        $dataSource = get_attr_from_cache('column_data_sources', 'id', $relation->column_data_source_id, '*');
+        
             
         $repository = NULL;
         eval(helper('clear_php_code', $dataSource->php_code));
@@ -276,7 +277,11 @@ trait BaseModelGetDataWhereTrait
 
         $params->model->where(function ($query) use ($params, $temp) 
         {
-            $filters = json_decode($params->filter->filter);
+            if(is_string($params->filter->filter))
+                $filters = json_decode($params->filter->filter);
+            else
+                $filters = $params->filter->filter;
+
             foreach($filters as $filter)
             {
                 if(!is_numeric($filter))
@@ -306,33 +311,5 @@ trait BaseModelGetDataWhereTrait
     public function addWhereForJoinedColumn($params)
     {
         return $this->addWhereForJoinedColumnAsString($params);
-    }
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    public function add_where_for_join_table_ids($params)
-    {
-        dd('add_where_with_join_table_ids');
-        //daha önce joined col eklendi add_where_for_joined_column
     }
 }

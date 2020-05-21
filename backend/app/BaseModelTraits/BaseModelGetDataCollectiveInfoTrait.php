@@ -18,7 +18,7 @@ trait BaseModelGetDataCollectiveInfoTrait
                 $infos[$column->name] =
                 [
                     'type' => $collectiveInfoName,
-                    'data' => $model->{$collectiveInfoName}($column->table_alias.'.id')
+                    'data' => $model->{$collectiveInfoName}($column->table_alias.'.'.$column->name)
                 ];
             }
             

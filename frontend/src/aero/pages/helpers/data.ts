@@ -365,7 +365,7 @@ export abstract class DataHelper
     public static convertDataByGuiTypeMoney(guiType, data)
     {
         var unit = guiType.split(':')[1].toUpperCase();
-        data = data.replace(/(\d)(?=(\d{3})+\.)/g, '$1,');  
+        data = BaseHelper.formatMoney(data, 2, '.', ',')//data.replace(/(\d)(?=(\d{3})+\.)/g, '$1,');  
         
         return  data + " " + unit;
     }

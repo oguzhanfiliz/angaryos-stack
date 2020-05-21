@@ -131,15 +131,15 @@ export class FullScreenMapElementComponent
     
     getSegmentsArray()
     {
-        var temp = window.location.href .split('#');
-        var temp = temp[temp.length -1];
-        var segmentsWithData = temp.split('&');
+        var temp = window.location.href.split('#');
+        var data = temp[temp.length -1];
+        var segmentsWithData = data.split('&');
         
         var segments = {};
         for(var i = 0; i < segmentsWithData.length; i++)
         {
-            var temp = segmentsWithData[i].split('=');
-            segments[temp[0]] = decodeURI(temp[1]);
+            var dataArray = segmentsWithData[i].split('=');
+            segments[dataArray[0]] = decodeURI(dataArray[1]);
         }
         
         return segments;
@@ -451,7 +451,7 @@ export class FullScreenMapElementComponent
                     var temp = this.getSearchedFeatureInfoFromLayer(layers[i], search);
                     if(temp == null) continue;
 
-                    await temp.then((data) =>
+                    await temp.then((data: any[]) =>
                     {
                         for(var i = 0; i < data.length; i++)
                         {
@@ -496,7 +496,7 @@ export class FullScreenMapElementComponent
                     var temp = this.getClickedFeatureInfoFromLayer(layers[i], event, buffer);
                     if(temp == null) continue;
 
-                    await temp.then((data) =>
+                    await temp.then((data: any[]) =>
                     {
                         for(var i = 0; i < data.length; i++)
                         {
@@ -1665,8 +1665,8 @@ export class FullScreenMapElementComponent
 
         var errorWhenFirstRecordStore = false;
         
-        var selectedFeatures = this.getSelectedFeatures();
-        selectedFeatures = selectedFeatures[this.inFormTargetData['subTable']['type']];        
+        var temp = this.getSelectedFeatures();
+        var selectedFeatures = temp[this.inFormTargetData['subTable']['type']];        
         for(var i = 0; i < selectedFeatures.length; i++)
         {
             if(errorWhenFirstRecordStore) break;

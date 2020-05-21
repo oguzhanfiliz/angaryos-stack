@@ -808,7 +808,7 @@ export abstract class MapHelper
           geom = new Point(geoServerGeometry['coordinates']);
           break;
         case 'Linestring': 
-          geom = new Linestring(geoServerGeometry['coordinates']);
+          geom = new LineString(geoServerGeometry['coordinates']);
           break;
         case 'Polygon': 
           geom = new Polygon(geoServerGeometry['coordinates']);
@@ -886,7 +886,7 @@ export abstract class MapHelper
     
     var feature = indexOrFeature;
     if($.isNumeric(indexOrFeature))
-        feature = source.getFeatures()[index];
+        feature = source.getFeatures()[indexOrFeature];
         
     source.removeFeature(feature);
   }
