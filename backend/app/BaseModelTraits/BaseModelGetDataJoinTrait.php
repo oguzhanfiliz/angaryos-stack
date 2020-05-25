@@ -69,6 +69,49 @@ trait BaseModelGetDataJoinTrait
                                                         $params);
         }
     }
+
+    public function addJoinWithColumnForTableIdAndColumnNames($params)
+    {
+        $params->join_table = get_attr_from_cache('tables', 'id', $params->relation->relation_table_id, '*');
+        $params->join_source = $params->relation->relation_source_column;
+        
+        $params->join_table_alias = $params->column->name.'___'.$params->join_table->name.$params->relation->id;
+        
+        if(isset($params->column->join_table_alias)) 
+            $params->join_table_alias = $params->column->join_table_alias;
+        
+        ColumnClassificationLibrary::relationDbTypes(   $this, 
+                                                        __FUNCTION__, 
+                                                        $params->column, 
+                                                        $params->relation, 
+                                                        $params);
+    }
+
+    public function addJoinWithColumnForTableIdAndColumnNamesForOneToOne($params)
+    {
+        if(isset($params->column->join_table_alias)) 
+            $params->join_table_alias = $params->column->join_table_alias;
+        
+        $params->model->leftJoin(
+                $params->join_table->name . ' as ' . $params->join_table_alias, 
+                $params->join_table_alias.'.'.$params->join_source,
+                '=',
+                $this->getTable().'.'.$params->column->name);
+    }
+                    
+    public function addJoinWithColumnForTableIdAndColumnNamesForOneToMany($params)
+    {
+        $lateral = 'lateral jsonb_array_elements('
+                .$this->getTable().'.'.$params->column->name.') with ordinality ' 
+                .' as '.$params->join_table_alias.'_lateral';
+        $params->model->leftJoin(DB::raw($lateral), DB::raw('true'), '=', DB::raw('true'));
+        
+        $params->model->leftJoin(
+                $params->join_table->name . ' as ' . $params->join_table_alias, 
+                DB::raw('('.$params->join_table_alias.'_lateral.value->>0)::bigint'),
+                '=',
+                $params->join_table_alias.'.'.$params->join_source);
+    }
     
     public function addJoinWithColumnForJoinTableIdsForOneToOne($params)
     {

@@ -118,6 +118,38 @@ trait BaseModelGetRelationDataTrait
         
         $params->record->{$params->column->name . '__relation_data'} = $temp;
     }
+
+    public function fillRelationDataForTableIdAndColumnNames($params)
+    {
+        $table = get_attr_from_cache('tables', 'id', $params->relation->relation_table_id, 'name');
+        $source = $params->relation->relation_source_column;
+        $display = $params->relation->relation_display_column;
+        
+        $sorted = [];
+        $temp = new BaseModel($table);
+        $temp = $temp->selectRaw('*, ('.$display.') as tempdisplay');
+        $temp = $temp->whereIn($source, $params->data_array)->get();
+        
+        foreach($temp as $key => $value)
+        {
+            $temp[$key]->_source_column = $temp[$key]->{$source};
+            $temp[$key]->_display_column = $temp[$key]->tempdisplay;
+            $temp[$key]->_source_column_name = $source;
+            $temp[$key]->_display_column_name = '_display_column';
+            
+            $key = (int)array_search($value->id, $params->data_array);
+            $sorted[$key] = $value;
+        }
+        
+        $temp = [];
+        for($i = 0; $i < count($sorted); $i++)
+            array_push ($temp, $sorted[$i]);
+        
+        if($params->column->column_db_type_id == $params->relation->column_db_type_id) 
+            $temp = @$temp[0];
+        
+        $params->record->{$params->column->name . '__relation_data'} = $temp;
+    }
     
     public function fillRelationDataForRelationSql($params)
     {

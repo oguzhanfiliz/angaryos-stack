@@ -155,6 +155,8 @@ class CacheSubscriber
     
     private function clearAuthGroupsCache($record)
     {
+        $this->clearRecordCache('auth_groups', $record);//required
+        
         ClearCache::{$this->dispatchType}('allAuths');
         
         $users = \DB::table('users')->where('auths', '@>', $record->id)->get();

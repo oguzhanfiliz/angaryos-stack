@@ -14,7 +14,7 @@ $column_gui_type_override =
     'image' => $column_gui_types['files']->id,
     'password' => $column_gui_types['password']->id,
         
-    'auths' => $column_gui_types['multiselect']->id,
+    'auths' => $column_gui_types['multiselectdragdrop']->id,
     
     'source_record_id' => $column_gui_types['numeric']->id,
 ];

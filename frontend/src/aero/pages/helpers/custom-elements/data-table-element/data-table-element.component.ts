@@ -545,6 +545,18 @@ export class DataTableElementComponent
         return type == "files";
     }
 
+    isImageFile(file)
+    {
+        if(file == null) return false;
+        if(file == "") return false;
+
+        var imgExts = ["jpg", "png", "gif"]
+        var temp = file["big"].split('.');
+        var ext = temp[temp.length-1];
+
+        return imgExts.includes(ext);
+    }
+
     getRecordOperations()
     {
         return DataHelper.recordOperations;
@@ -568,6 +580,20 @@ export class DataTableElementComponent
         return this.sanitizer.bypassSecurityTrustHtml(data);
     }
 
+    getFileIconUrl(fileUrl)
+    {
+        var temp = fileUrl.split('.');
+        var ext = temp[temp.length-1];
+
+        var iconBaseUrl = "assets/img/";
+        
+        switch(ext)
+        {
+            default: return iconBaseUrl+"download_file.png";
+        }
+    }
+
+
     getFileUrls(data)
     {
         if(data == null) return [];
@@ -581,6 +607,7 @@ export class DataTableElementComponent
             var temp = { };
             temp['small'] = BaseHelper.getFileUrl(data[i], 's_');
             temp['big'] = BaseHelper.getFileUrl(data[i], 'b_');
+            temp['org'] = BaseHelper.getFileUrl(data[i], '');
 
             rt.push(temp);
         }

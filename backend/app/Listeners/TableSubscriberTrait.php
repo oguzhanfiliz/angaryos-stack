@@ -678,6 +678,22 @@ trait TableSubscriberTrait
             'display' => $params->record{$displayColumnName}
         ];
     }
+
+    public function getDataForSelectElementForTableIdAndColumnNames($params)
+    {
+        $source = $params->relation->relation_source_column;
+        $display = $params->relation->relation_display_column;
+        
+        $temp = new BaseModel($params->record->getTable());
+        $temp = $temp->selectRaw('*, ('.$display.') as tempdisplay');
+        $temp = $temp->where($source, $params->record{$source})->first();
+
+        return
+        [
+            'source' => $temp->{$source},
+            'display' => $temp->tempdisplay
+        ];
+    }
     
     public function getDataForSelectElementForBasicColumn($params)
     {

@@ -351,6 +351,20 @@ trait BaseModelGetDataColumnTrait
             'display_column_name' => $displayColumnName,
         ];
     }
+
+    public function getRelationTableNameForTableIdAndColumnNames($params)
+    {
+        $tableName = get_attr_from_cache('tables', 'id', $params->relation->relation_table_id, 'name');
+        $sourceColumnName = $params->relation->relation_source_column;
+        $displayColumnName = $params->relation->relation_display_column;
+        
+        return 
+        [
+            'table_name' => $tableName,
+            'source_column_name' => $sourceColumnName,
+            'display_column_name' => $displayColumnName,
+        ];
+    }
     
     public function getRelationTableNameForRelationSql($params)
     {
@@ -364,8 +378,6 @@ trait BaseModelGetDataColumnTrait
             'display_column_name' => $params->relation->relation_display_column
         ];
     }
-    
-    
     
     public function getRelationTableNameForDataSource($params)
     {

@@ -13,6 +13,7 @@ declare var $: any;
 export class MoneyElementComponent
 {
     @Input() defaultData: string;
+    @Input() upFormId: string;
     @Input() value: string;
     @Input() name: string;
     @Input() class: string;
@@ -49,14 +50,18 @@ export class MoneyElementComponent
     
     dataChanged(event)
     {
-        var temp = $('#'+this.name+"-display").val();
+        var upId = this.upFormId;
+        if(upId.length > 0)
+            upId = '[ng-reflect-id="'+upId+'"] ';
+
+        var temp = $(upId + ' #'+this.name+"-display").val();
         temp = temp.trim();
         temp = BaseHelper.replaceAll(temp, '.', '');
         temp = BaseHelper.replaceAll(temp, ',', '.');
         
-        $('[name="'+this.name+'"]').val(temp);
+        $(upId + ' [name="'+this.name+'"]').val(temp);
         
-        event.target = $('[name="'+this.name+'"]')[0];
+        event.target = $(upId + ' [name="'+this.name+'"]')[0];
         
         var params =
         {

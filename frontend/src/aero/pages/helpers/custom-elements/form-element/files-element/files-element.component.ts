@@ -66,4 +66,29 @@ export class FilesElementComponent
             if(file.file_name == this.val[i].file_name)
                 this.val.splice(i,1);
     }
+
+    isImageFile(file)
+    {
+        if(file == null) return false;
+        if(file == "") return false;
+
+        var imgExts = ["jpg", "png", "gif"]
+        var temp = file.split('.');
+        var ext = temp[temp.length-1];
+
+        return imgExts.includes(ext);
+    }
+
+    getFileIconUrl(fileUrl)
+    {
+        var temp = fileUrl.split('.');
+        var ext = temp[temp.length-1];
+
+        var iconBaseUrl = "assets/img/";
+        
+        switch(ext)
+        {
+            default: return iconBaseUrl+"download_file.png";
+        }
+    }
 }

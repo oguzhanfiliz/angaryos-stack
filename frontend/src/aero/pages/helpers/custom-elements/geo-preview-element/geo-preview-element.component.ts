@@ -72,6 +72,11 @@ export class GeoPreviewElementComponent
         return true;
     }
     
+    getBaseUrl()
+    {
+        return BaseHelper.baseUrl;
+    }
+    
     getZoomToJson()
     {
         var params = 

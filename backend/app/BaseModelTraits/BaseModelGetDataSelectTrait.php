@@ -57,6 +57,19 @@ trait BaseModelGetDataSelectTrait
         
         $this->addSelectForColumnsDBTypesStatus($params);
     }
+
+    public function addSelectForTableIdAndColumnNames($params)
+    {
+        $table = get_attr_from_cache('tables', 'id', $params->relation->relation_table_id, '*');
+        $source = $params->relation->relation_source_column;
+        $display = ' '.$params->relation->relation_display_column;        
+        
+        $params->table_alias  = $params->column->name.'___'.$table->name.$params->relation->id;
+        $params->relation_source_column_with_alias = $params->table_alias.'.'.$source;
+        $params->column_with_alias = str_replace(' "', ' '.$params->table_alias.'."', $display);
+        
+        $this->addSelectForColumnsDBTypesStatus($params);
+    }
     
     public function addSelectForDataSource($params)
     {
@@ -75,13 +88,6 @@ trait BaseModelGetDataSelectTrait
         $joinIds = json_decode($params->relation->join_table_ids);
         $joinId = $joinIds[0];
         $params->table_alias = get_attr_from_cache('join_tables', 'id', $joinId, 'join_table_alias');
-        
-        
-        /*if(strstr($params->relation->relation_display_column, '.'))
-            $params->table_alias = explode('.', $params->relation->relation_display_column)[0];
-        else if(strstr($params->relation->relation_source_column, '.'))
-            $params->table_alias = explode('.', $params->relation->relation_source_column)[0];*/
-        
         
         if(strstr($params->relation->relation_display_column, '.'))
             $params->column_with_alias  = $params->relation->relation_display_column;

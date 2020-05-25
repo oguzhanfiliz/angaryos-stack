@@ -8,7 +8,7 @@ class ColumnClassificationLibrary
     
     public static function relation($controller, $prefix, $column, $relation, $params)
     {
-        $functions = ['BasicColumn', 'JoinedColumn', 'TableIdAndColumnIds', 'RelationSql', 'JoinTableIds', 'DataSource'];
+        $functions = ['BasicColumn', 'JoinedColumn', 'TableIdAndColumnIds', 'RelationSql', 'JoinTableIds', 'DataSource', 'TableIdAndColumnNames'];
         
         if(strlen($column->column_table_relation_id) > 0)
         {
@@ -19,7 +19,7 @@ class ColumnClassificationLibrary
             {
                 if(strlen($relation->relation_source_column_id) > 0) $id = 2;
                 else if(strlen($relation->join_table_ids) > 0) $id = 4;
-                else abort(helper('response_error', 'not.be.null.relation_source_column_id.and.join_table_ids'));
+                else $id = 6;//abort(helper('response_error', 'not.be.null.relation_source_column_id.and.join_table_ids'));
             }
             else if(strlen($relation->relation_sql) > 0) $id = 3;
             else if(strlen($relation->column_data_source_id) > 0) $id = 5;

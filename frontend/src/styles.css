@@ -7,6 +7,10 @@ html > body
 body
 {
     font-size: 13px !important;
+    -webkit-user-select: text;
+    -moz-user-select: text;
+    -ms-user-select: text;
+    user-select: text;
 }
 table
 {

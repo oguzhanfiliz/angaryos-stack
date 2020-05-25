@@ -111,13 +111,13 @@ export class FormComponent
         return id;
     }
 
-    addFormElementMessage(columnName, type, message, cls)
+    addFormElementMessage(columnName, type, message, cls = "")
     {
         columnName = columnName.split('.')[0];
 
-        var html = "<span id='"+columnName+"-message-"+type+"' ";
+        var html = "<span class='"+columnName+"-message-"+type+" "+cls+" badge badge-"+type+"' ";
         html += " style='margin-right: 5px;' ";
-        html += " class='"+cls+" badge badge-"+type+"'>"+message+"</span>";
+        html += " >"+message+"</span>";
 
         var id = this.getMessageGroupId(columnName);
 
@@ -257,6 +257,11 @@ export class FormComponent
     {
         this.loading = false;
         this.generalHelper.stopLoading(); 
+    }
+    
+    getElementTitle(title, defaultTitle = "")
+    {
+        return BaseHelper.getElementTitle(title, defaultTitle);
     }
 
 
@@ -642,17 +647,21 @@ export class FormComponent
 
     guiTriggered(columnName, data = null)
     {
-        var cls = columnName+"-message";
-        
-        var temp = this.getElementId(cls);
-        temp = temp.replace('#', '.');
-        $(temp).remove();
-        
+        this.clearOldGuiTriggerMessage(columnName);
         if(data == null) return;
 
         var types = Object.keys(data);
         for(var i = 0; i < types.length; i++)
-            this.addFormElementMessage(columnName, types[i], data[types[i]], cls);
+            this.addFormElementMessage(columnName, types[i], data[types[i]]);
+    }
+
+    clearOldGuiTriggerMessage(columnName)
+    {
+        var types = ['success', 'danger', 'warning'];
+
+        var id = this.getMessageGroupId(columnName);
+        for(var i = 0; i < types.length; i++)
+            $(id+" > ."+columnName+"-message-"+types[i]).remove();
     }
 
     addEventForFeatures()

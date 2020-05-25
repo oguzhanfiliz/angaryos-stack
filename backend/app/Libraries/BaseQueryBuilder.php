@@ -33,6 +33,7 @@ class BaseQueryBuilder extends Builder
     {
         $count = $this->aggregate(__FUNCTION__, Arr::wrap($columns));
         
+        if($count == NULL) return 0;
         if(is_numeric($count)) return $count;
         
         return count($count);
@@ -42,6 +43,7 @@ class BaseQueryBuilder extends Builder
     {
         $sum = $this->aggregate(__FUNCTION__, [$columns]);
         
+        if($sum == NULL) return 0;
         if(is_numeric($sum)) return $sum;
         
         return array_sum($sum);
@@ -51,6 +53,7 @@ class BaseQueryBuilder extends Builder
     {
         $max = $this->aggregate(__FUNCTION__, [$columns]);
         
+        if($max == NULL) return 0;
         if(is_numeric($max)) return $max;
         
         return max($max);
@@ -60,6 +63,7 @@ class BaseQueryBuilder extends Builder
     {
         $min = $this->aggregate(__FUNCTION__, [$columns]);
         
+        if($min == NULL) return 0;
         if(is_numeric($min)) return $min;
         
         return min($min);
@@ -69,6 +73,7 @@ class BaseQueryBuilder extends Builder
     {
         $avg = $this->aggregate(__FUNCTION__, [$columns]);
         
+        if($avg == NULL) return 0;
         if(is_numeric($avg)) return $avg;
         
         $divide = 0;

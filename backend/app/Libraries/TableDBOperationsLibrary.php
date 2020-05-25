@@ -275,6 +275,8 @@ class TableDBOperationsLibrary
     
     private function ColumnEventForCreate($params) { }
     
+    private function ColumnEventForClone($params) { }
+    
     private function ColumnEventForImport($params) { }
     
     
