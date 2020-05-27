@@ -13,6 +13,7 @@ declare var $: any;
 export class MultiSelectElementComponent
 {
     @Input() defaultData: string;
+    @Input() recordJson: string; 
     @Input() baseUrl: string;
     @Input() value: string;
     @Input() valueJson: string = "";
@@ -26,6 +27,8 @@ export class MultiSelectElementComponent
     @Input() upFormId: string = "";
     @Input() showClearDataButton;
     @Input() createForm: boolean = false;
+    
+    record = null;
     
     baseElementSelector = "";
     val = [];
@@ -48,9 +51,12 @@ export class MultiSelectElementComponent
 
         this.elementOperations();
     }
-
+    
     ngOnChanges()
     {              
+        if(typeof this.recordJson != "undefined" && this.recordJson != "")
+            this.record = BaseHelper.jsonStrToObject(this.recordJson);
+            
         if(this.valueJson.length > 0) 
         {
             var key = "user:"+BaseHelper.loggedInUserInfo.user.id+"."+this.baseUrl+".data";
@@ -110,11 +116,16 @@ export class MultiSelectElementComponent
                     r['search'] = params['term'];
                     r['page'] = params['page'];
 
+                    if(!th.createForm) r['editRecordId'] = th.record['id'];
+                    
                     if(th.upColumnName.length == 0) return r;
 
                     r['upColumnName'] = th.upColumnName;
                     r['upColumnData'] = $('#'+th.upColumnName).val();
-
+                    
+                    var temp = BaseHelper.getAllFormsData(this.baseElementSelector);
+                    r['currentFormData'] = BaseHelper.objectToJsonStr(temp);
+                    
                     return r;
                 }
             },

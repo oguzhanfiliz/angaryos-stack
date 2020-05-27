@@ -1,5 +1,5 @@
-import { Component, EventEmitter, Input, Output, /*ViewEncapsulation*/ } from '@angular/core';
-//import { SessionHelper } from './../../session';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { BaseHelper } from './../../base';
 
 @Component(
 {
@@ -11,6 +11,7 @@ import { Component, EventEmitter, Input, Output, /*ViewEncapsulation*/ } from '@
 export class FormElementComponent
 {
     @Input() type: string;
+    @Input() recordJson: string; 
     @Input() baseUrl: string;
     @Input() name: string;
     @Input() guiType: string;
@@ -28,8 +29,16 @@ export class FormElementComponent
     @Input() showClearDataButton: boolean = false;
     @Input() createForm: boolean = false;
     
+    record = null;
+    
     
     @Output() changed = new EventEmitter();
+    
+    ngOnChanges()
+    {
+        if(typeof this.recordJson != "undefined" && this.recordJson != "")
+            this.record = BaseHelper.jsonStrToObject(this.recordJson);
+    }
 
     handleChanged(event)
     {

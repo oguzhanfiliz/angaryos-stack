@@ -13,6 +13,7 @@ declare var $: any;
 export class RichTextElementComponent
 {
     @Input() defaultData: string;
+    @Input() upFormId: string = "";
     @Input() value: string;
     @Input() name: string;
     @Input() class: string;
@@ -26,27 +27,32 @@ export class RichTextElementComponent
     
     setRichTextElement()
     {
-        var id = this.name+"-rich-text";
+        var selector = " [name='"+this.name+"-rich-text']";
+        if(this.upFormId.length > 0) selector = '[ng-reflect-id="'+this.upFormId+'"] '+selector;
         
         $.trumbowyg.svgPath = 'assets/ext_modules/trumbowyg/dist/ui/icons.svg';
         
-        $("#"+id).trumbowyg({lang: 'tr'});
+        $(selector).trumbowyg({lang: 'tr'});
         
         setTimeout(() =>
         {
-            $('#'+id).html(this.value);
+            $(selector).html(this.value);
         }, 500);
         
         var th = this;
-        $('body').on('DOMSubtreeModified', "#"+id, function()
+        $('body').on('DOMSubtreeModified', selector, function()
         {
             function func()
             {
-                var html = $('#'+id).html();
-                $('#'+th.name).val(html);
+                var html = $(selector).html();
+
+                var elementSelector = '[name="'+th.name+'"]';
+                if(th.upFormId.length > 0) elementSelector = '[ng-reflect-id="'+th.upFormId+'"] '+elementSelector;
+
+                $(elementSelector).val(html);
             }
 
-            return BaseHelper.doInterval('update'+id+'RichTextElement', func, null, 500);
+            return BaseHelper.doInterval('update'+selector+'RichTextElement', func, null, 500);
         });
     }
 }

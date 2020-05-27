@@ -19,6 +19,7 @@ declare var $: any;
 export class MultiSelectDragDropElementComponent
 {
     @Input() defaultData: string;
+    @Input() recordJson: string; 
     @Input() baseUrl: string;
     @Input() value: string;
     @Input() valueJson: string = "";
@@ -31,6 +32,8 @@ export class MultiSelectDragDropElementComponent
     @Input() upColumnName: string;
     @Input() upFormId: string = "";
     @Input() createForm: boolean = false;
+    
+    record = null;
 
     @Output() changed = new EventEmitter();
 
@@ -69,6 +72,9 @@ export class MultiSelectDragDropElementComponent
 
     ngOnChanges()
     {
+        if(typeof this.recordJson != "undefined" && this.recordJson != "")
+            this.record = BaseHelper.jsonStrToObject(this.recordJson);
+            
         if(this.valueJson.length > 0)
             this.fillSelectedElements();
 
@@ -157,6 +163,8 @@ export class MultiSelectDragDropElementComponent
         var url = this.sessionHelper.getBackendUrlWithToken()+this.baseUrl+"/getSelectColumnData/"+this.columnName;
         var params = this.getParamsForSearch(search);
         
+        if(!this.createForm) params['editRecordId'] = this.record['id'];
+        
         this.generalHelper.startLoading();
 
         $.ajax(
@@ -187,9 +195,12 @@ export class MultiSelectDragDropElementComponent
         }
         
         if(this.upColumnName.length > 0)
-        {
+        {   
             params['upColumnName'] = this.upColumnName;
             params['upColumnData'] = $(this.baseElementSelector+' #'+this.upColumnName).val();
+            
+            var temp = BaseHelper.getAllFormsData(this.baseElementSelector);
+            params['currentFormData'] = BaseHelper.objectToJsonStr(temp);
         }
 
         return params;

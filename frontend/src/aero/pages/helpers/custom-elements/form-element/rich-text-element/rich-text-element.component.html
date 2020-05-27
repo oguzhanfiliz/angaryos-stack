@@ -1,5 +1,5 @@
 <textarea style="display: none" 
     value="{{ value }}"               
-    name="{{ name }}" id="{{ name }}"></textarea>
+    name="{{ name }}"></textarea>
 
-<div id="{{ name }}-rich-text" [attr.placeholder]="placeholder"></div>
+<div [attr.name]="name + '-rich-text'" [attr.placeholder]="placeholder"></div>

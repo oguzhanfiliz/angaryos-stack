@@ -20,6 +20,8 @@ trait BaseModelSelectColumnDataTrait
         $temp->search = $params->search;
         $temp->up_column_name = $params->upColumnName;
         $temp->up_column_data = $params->upColumnData;
+        $temp->request = $params->currentFormData;
+        $temp->record = @$params->upColumnDataRecord;
         $temp->column = $this;
         $temp->record_per_page = $params->limit;
         
@@ -160,6 +162,42 @@ trait BaseModelSelectColumnDataTrait
         
         return $this->getSelectColumnDataFromRecords($params);
     }
+
+    public function getSelectColumnDataForTableIdAndColumnNames($params)
+    {
+        global $pipe;
+        
+        $relationTable = $params->column->getRelationData('column_table_relation_id');
+        
+        $table = $relationTable->getRelationData('relation_table_id');
+        $sourceColumn = $relationTable->relation_source_column;
+        $displayColumn = $relationTable->relation_display_column;
+        
+        $offset = ($params->page - 1) * $params->record_per_page;
+        $model = DB::table($table->name)
+                ->selectRaw('*, '.$sourceColumn.', '.$displayColumn.' as tempdisplay');
+        
+        $model->where(function ($query) use($params, $displayColumn, $sourceColumn)
+        {
+            $where = '(('.$displayColumn.')::text ilike  \'%'.$params->search.'%\') or ('.$sourceColumn.'::text ilike  \'%'.$params->search.'%\')';
+            $query->whereRaw($where);
+        });
+        
+        $sourceSpace = $this->getSourceSpaceFromUpColumn($params);
+        if($sourceSpace != FALSE)
+            $model->whereIn($sourceColumn, $sourceSpace);
+        
+        if(in_array($table->name, $this->deletables) && $pipe['SHOW_DELETED_TABLES_AND_COLUMNS'] != '1')
+            $model->where($table->name.'.name', 'not like', 'deleted\_%');
+        
+        $params->count = $model->count();
+        $params->records = $model->limit($params->record_per_page)->offset($offset)->get();
+        
+        $params->relation_source_column_name = $sourceColumn;
+        $params->relation_display_column_name = 'tempdisplay';
+        
+        return $this->getSelectColumnDataFromRecords($params);
+    }
     
     public function getSelectColumnDataForDataSource($params)
     {
@@ -193,6 +231,7 @@ trait BaseModelSelectColumnDataTrait
     
     private function getSourceSpaceFromUpColumn($params)
     {
+        //dd($params);
         if(strlen($params->up_column_data) == 0) return FALSE;
         
         $params->upColumnRule = get_attr_from_cache('up_columns', 'id', $params->column->up_column_id, '*');
@@ -201,9 +240,13 @@ trait BaseModelSelectColumnDataTrait
             custom_abort ('invalid.up.column.'.$params->up_column_name);
         
         $data = $params->up_column_data;
+        $request = (array)$params->request;
+        $record = (array)$params->record;
         
         $return = NULL;
         eval(helper('clear_php_code', $params->upColumnRule->php_code)); 
+        
+        if($return == '***') return FALSE;
         
         return $return;
     }
@@ -237,7 +280,7 @@ trait BaseModelSelectColumnDataTrait
         $relation = $this->getRelationData('up_column_id');
         $relation->fillVariables();
         
-        if(!in_array($tableId, $relation->table_ids)) return FALSE;
+        if(!@in_array($tableId, $relation->table_ids)) return FALSE;
               
         $columnDisplayName = get_attr_from_cache('columns', 'name', $params->upColumnName, 'display_name');
         

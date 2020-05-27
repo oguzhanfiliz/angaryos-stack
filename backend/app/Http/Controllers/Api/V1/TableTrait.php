@@ -328,6 +328,21 @@ trait TableTrait
         $return->upColumnName = read_from_response_data('get', 'upColumnName');
         $return->upColumnData = read_from_response_data('get', 'upColumnData');
         
+        $return->currentFormData = read_from_response_data('get', 'currentFormData');        
+        if(strlen($return->currentFormData) > 0) 
+        {
+            $return->currentFormData = str_replace('&#34;', '"', $return->currentFormData);
+            $return->currentFormData = urldecode($return->currentFormData);
+            $return->currentFormData = json_decode($return->currentFormData);
+        }
+        
+        $editRecordId = read_from_response_data('get', 'editRecordId');
+        if(strlen($editRecordId) > 0)
+            $return->upColumnDataRecord = get_attr_from_cache($table->getTable(), 'id', $editRecordId, '*');
+        
+        if(strlen($return->upColumnName) > 0 && strlen($return->upColumnData) == 0 && strlen($editRecordId) > 0)
+            $return->upColumnData = $return->upColumnDataRecord->{$return->upColumnName};
+        
         return $return;
     }
     

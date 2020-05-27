@@ -16,7 +16,7 @@ export class BooleanElementComponent
     @Input() name: string;
     @Input() placeholder: string;
     @Input() showFilterTypesSelect: boolean;
-    @Input() createForm: string = "false";
+    @Input() createForm: boolean = false;
     @Input() filterType: string;
 
     displayNameForTrue = "true";
@@ -43,7 +43,7 @@ export class BooleanElementComponent
             this.displayNameForFalse = DataHelper.convertDataByGuiTypeBoolean(this.guiType, false);
 
             if(this.value.length > 0) return;
-            if(this.createForm != "true") return;
+            if(this.createForm != true) return;
             if(this.defaultData.length == 0) return;
 
             this.setDefaultData();

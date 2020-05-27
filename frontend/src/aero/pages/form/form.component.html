@@ -35,7 +35,7 @@
                                     (formSaved)="inFormSavedSuccess($event)"
                                     (inFormOpened)="inFormload($event)"
                                     columnArrayJson="{{ getJson(columnArray) }}"
-                                    createForm="{{ (recordId == 0) }}"
+                                    [createForm]="recordId == 0"
                                     recordJson="{{ getJson(getData('record')) }}">
                                 </column-array-form-element>
                             </div>

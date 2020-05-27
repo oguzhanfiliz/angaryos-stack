@@ -12,6 +12,7 @@ declare var $: any;
 export class SelectElementComponent
 {
     @Input() defaultData: string;
+    @Input() recordJson: string; 
     @Input() baseUrl: string;
     @Input() value: string;
     @Input() valueJson: string;
@@ -23,7 +24,9 @@ export class SelectElementComponent
     @Input() filterType: string;
     @Input() upColumnName: string;
     @Input() upFormId: string = "";
-    @Input() createForm: string = "false";
+    @Input() createForm: boolean = false;
+    
+    record = null;
 
     baseElementSelector = "";
     val = [];
@@ -40,14 +43,17 @@ export class SelectElementComponent
 
     ngOnChanges()
     {
-        if(this.createForm == "true" || this.valueJson.substr(0,1) == '[')
+        if(typeof this.recordJson != "undefined" && this.recordJson != "")
+            this.record = BaseHelper.jsonStrToObject(this.recordJson);
+            
+        if(this.createForm || this.valueJson.substr(0,1) == '[')
         {
             var key = "user:"+BaseHelper.loggedInUserInfo.user.id+"."+this.baseUrl+".data";
             
             this.val = [];
             var temp = [];
             
-            if(this.createForm == "true")
+            if(this.createForm)
             {
                 if(this.defaultData == null || this.defaultData == "") return;
 
@@ -106,12 +112,17 @@ export class SelectElementComponent
                     
                     r['search'] = params['term'];
                     r['page'] = params['page'];
-
+                    
+                    if(!th.createForm) r['editRecordId'] = th.record['id'];
+                    
                     if(th.upColumnName.length == 0) return r;
 
                     r['upColumnName'] = th.upColumnName;
                     r['upColumnData'] = $('#'+th.upColumnName).val();
-
+                    
+                    var temp = BaseHelper.getAllFormsData(this.baseElementSelector);
+                    r['currentFormData'] = BaseHelper.objectToJsonStr(temp);
+                    
                     return r;
                 }
             },

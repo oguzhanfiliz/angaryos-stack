@@ -9,8 +9,20 @@ $up_columns['column_ids'] =
     'table_ids' => [],////Tablo yada kolon eklenme sırası değişirse güncellenmesi gerekir
     
     'php_code' => '<?php 
+
+$columnArrayTypeId = @$request[\'column_array_type_id\'];
+if(strlen($columnArrayTypeId) == 0) $columnArrayTypeId = @$record[\'column_array_type_id\'];
+
+global $pipe;
+if($pipe[\'table\'] == \'column_arrays\' &&  (int)$columnArrayTypeId == 2)
+{
+    $return = \'***\';
+    return;
+}
+
 $return = get_attr_from_cache(\'tables\', \'id\', (int)$data, \'column_ids\');
 $return = json_decode($return);
+
 ?>'
 ];
 $up_columns['column_id'] = $up_columns['column_ids'];

@@ -83,10 +83,9 @@
                                                 <i class="zmdi zmdi-arrow-left"></i>
                                             </button>
                                         </td>
-                                        <td 
-                                            style="width:50%; padding: 15 30 30 30; font-size: 15;text-align: justify;"
-                                            [innerHTML]="types[currentListIndex]['description']">
-                                        
+                                        <td style="width:50%; padding: 15 30 30 30; font-size: 15;text-align: justify;" >
+                                            <h6>{{ types[currentListIndex]['title'] }}</h6>
+                                            <span [innerHTML]="types[currentListIndex]['description']"></span>
                                         </td>
                                         <td rowspan="2" style="text-align: right;">
                                             <button (click)="nextList()" class="btn btn-primary btn-icon" style="height: 250px;" type="button">

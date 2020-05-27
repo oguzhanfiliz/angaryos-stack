@@ -182,6 +182,36 @@ export abstract class BaseHelper
 
 
   /***   Data Functions    ****/
+  
+  public static getAllFormsData(baseElementSelector)
+  {
+    var data = {};
+    
+    var temp = $(baseElementSelector+' input');
+    for(var i = 0; i < temp.length; i++)
+    {
+        var element = $(temp[i]);
+        data[element.attr('name')] = element.val();
+    }
+    
+    var temp = $(baseElementSelector+' select');
+    for(var i = 0; i < temp.length; i++)
+    {
+        var element = $(temp[i]);
+        data[element.attr('name')] = element.val();
+    }  
+   
+    return data;   
+  }
+
+  public static getElementTitle(title, defaultTitle = "")
+  {
+    if(title == null) return defaultTitle;
+    if(title == "") return defaultTitle;
+    if(title.substr(0, 1) == "*") return defaultTitle;
+    
+    return title;
+  }
 
   public static getFileUrl(file, prefix)
   {

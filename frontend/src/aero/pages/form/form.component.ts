@@ -623,6 +623,13 @@ export class FormComponent
     {
         var val = $(elementId).val();
         
+        var temp = [];
+        for(var i = 0; i < val.length; i++)
+            if(val[i].length > 0)
+                temp.push(val[i]);
+        
+        val = temp;
+
         var option = '<option value="'+data['source']+'">';
         option += data['display']+'</option>';
         
