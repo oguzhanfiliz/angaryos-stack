@@ -13,6 +13,7 @@ declare var $: any;
 export class DateTimeElementComponent
 {
     @Input() defaultData: string;
+    @Input() upFormId: string;
     @Input() value: string;
     @Input() name: string;
     @Input() class: string;

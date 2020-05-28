@@ -56,12 +56,14 @@ export class AuthWizardComponent
             this.auths[this.types[i]['source']] = [];
 
         var th = this;
-        setTimeout(() => {
+        setTimeout(() => 
+        {
             route.params.subscribe(val => 
             {
                 th.tableName = val.tableName;
                 th.tableId = val.tableId;
-                //this.searchWithWord(th.tableName);
+                
+                this.aeroThemeHelper.pageRutine();
             });
 
             th.showCurrentList();

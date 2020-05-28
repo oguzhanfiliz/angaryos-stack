@@ -29,5 +29,7 @@ export class PublicMapComponent
            this.loggedInUserInfoJson = BaseHelper.objectToJsonStr(loggedInUserInfo)
         })
         .catch((e) => { this.messageHelper.toastMessage("Bir hata oluştu. Sonra tekrar deneyin"); });
+        
+        this.aeroThemeHelper.pageRutine();
     }
 }

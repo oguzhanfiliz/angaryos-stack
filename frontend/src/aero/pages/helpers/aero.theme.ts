@@ -14,6 +14,19 @@ export class AeroThemeHelper
 
 
     /****    GUI Features Functions    ****/
+    
+    public pageRutine()
+    {
+        setTimeout(() =>
+        {
+            $(".page-loader-wrapper").fadeOut();
+            $('span.select2-results').parent().remove();
+
+            $('.tooltip-inner').remove();
+            $('[data-toggle="tooltip"]').tooltip();
+            
+        }, 100);
+    }
 
     public loadPageScripts()
     {
@@ -103,9 +116,6 @@ export class AeroThemeHelper
     {
       this.removeThemeClass();
       this.addThemeClass();
-
-      $('.tooltip-inner').remove();
-      $('[data-toggle="tooltip"]').tooltip();
     }
 
     public addMobileMenuButtonEvents()
@@ -309,6 +319,18 @@ export class AeroThemeHelper
       return mapPage;
     }
     
+    public getLogsPageMenuItem()
+    {
+      var mapPage =
+      {
+        title: 'Sunucu Logları',
+        icon: 'zmdi-code-setting',
+        link: '',
+        func: 'openBackendLogs',
+      };
+      return mapPage;
+    }
+    
     public updateBaseMenu(search = "")
     {
       this.baseMenu =  [ ];
@@ -322,6 +344,9 @@ export class AeroThemeHelper
           
         if(this.sessionHelper.recordImportAuthControl())
           this.baseMenu.push(this.getRecordImportPageMenuItem());
+          
+        if(this.sessionHelper.debugUserAuthControl())
+          this.baseMenu.push(this.getLogsPageMenuItem());
         
         this.baseMenu.push(this.getDashboardPageMenuItem());
       }

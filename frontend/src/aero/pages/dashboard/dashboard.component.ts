@@ -26,6 +26,8 @@ export class DashboardComponent
     private aeroThemeHelper: AeroThemeHelper
     ) 
     {
+      this.aeroThemeHelper.pageRutine();
+      
       if(typeof BaseHelper.loggedInUserInfo.auths['dashboards'] == "undefined")
         return;
 

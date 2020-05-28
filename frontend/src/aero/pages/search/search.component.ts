@@ -40,6 +40,8 @@ export class SearchComponent
             th.searchOnAllTables(th.words);
 
             this.aeroThemeHelper.addEventForFeature("standartElementEvents");
+            
+            this.aeroThemeHelper.pageRutine();
         });
 
         setTimeout(() => 

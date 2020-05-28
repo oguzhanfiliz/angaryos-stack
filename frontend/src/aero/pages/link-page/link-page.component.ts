@@ -24,6 +24,8 @@ export class LinkPageComponent
     ) 
   {
     this.sessionHelper.getLoggedInUserInfo();
+    
+    this.aeroThemeHelper.pageRutine();
   }
 
   private keyEvent(event)
@@ -65,7 +67,14 @@ export class LinkPageComponent
 
   getTablesGroups()
   {
-    return BaseHelper.loggedInUserInfo['menu']['tableGroups'];
+    var rt = [];
+    
+    var temp = BaseHelper.loggedInUserInfo['menu']['tableGroups'];
+    for(var i = 0; i < temp.length; i++)
+      if(temp[i]['table_ids'].length > 0)
+        rt.push(temp[i]);
+
+    return rt;
   }
 
   getTableName(tableGroupId, tableId)

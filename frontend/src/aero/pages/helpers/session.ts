@@ -305,6 +305,14 @@ export class SessionHelper
 
       return true;
     }
+    
+    public debugUserAuthControl()
+    {
+      if(BaseHelper.loggedInUserInfo == null) return false;
+      if(typeof BaseHelper.loggedInUserInfo['debug_user'] == "undefined") return false;
+      
+      return BaseHelper.loggedInUserInfo['debug_user'];
+    }
 
     public kmzAuthControl()
     {

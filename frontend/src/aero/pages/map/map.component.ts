@@ -36,5 +36,7 @@ export class MapComponent
         {
             this.loggedInUserInfoJson = BaseHelper.objectToJsonStr(loggedInUserInfo);
         });
+        
+        this.aeroThemeHelper.pageRutine();
     }
 }

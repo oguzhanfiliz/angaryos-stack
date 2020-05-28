@@ -25,6 +25,7 @@ export class NotFoundComponent
         private messageHelper: MessageHelper
         )
     {
+        this.aeroThemeHelper.pageRutine();
     }
 
     ngAfterViewInit() 

@@ -51,7 +51,9 @@ export class ShowComponent
 
                 th.addEventForFeatures();
                 th.addEventForThemeIcons();
-                th.dataReload();    
+                th.dataReload(); 
+                
+                this.aeroThemeHelper.pageRutine();   
             });
         }, 100);
     }

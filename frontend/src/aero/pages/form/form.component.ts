@@ -60,6 +60,8 @@ export class FormComponent
                 else return;
 
                 th.formRender();
+                
+                this.aeroThemeHelper.pageRutine();
             });
         }, 100);
     }

@@ -10,12 +10,11 @@ Route::group(['prefix' => '{token}'], function ()
 {
     require 'api_binding.php';
 
-    Route::get('test', function()
-    {
-        return 'test';
-    });
     
-    Route::get('logs', '\Rap2hpoutre\LaravelLogViewer\LogViewerController@index');
+    Route::any('test', '\App\Http\Controllers\GeneralController@test');
+    
+    
+    Route::get('logs', '\App\Http\Controllers\GeneralController@logs');
     
     Route::any('/', '\App\Http\Controllers\GeneralController@serviceOk');
     Route::get('getLoggedInUserInfo', 'AuthController@getLoggedInUserInfo');

@@ -59,13 +59,16 @@ class AuthController extends Controller
     {
         send_log('info', 'Request For Logged In User Info');
         
+        $debugUserIds = json_decode(DEBUG_USER_IDS);
+        
         $data =
         [
             'user' => $user->toSafeArray(),
             'menu' => $user->getMenuArray(),
             'map' => $user->getMapArray(),
             'dashboards' => $user->getDashboardArray(),
-            'auths' => $user->auths
+            'auths' => $user->auths,
+            'debug_user' => in_array($user->id, $debugUserIds)
         ];
         
         send_log('info', 'Response Logged In User Info', $data);

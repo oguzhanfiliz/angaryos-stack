@@ -59,6 +59,7 @@ export class DataTableElementComponent
         var th = this;
         this.route.params.subscribe(val => 
         {
+            this.aeroThemeHelper.pageRutine();
             setTimeout(() => th.preload(), 50);
         });
     }
@@ -507,6 +508,7 @@ export class DataTableElementComponent
             
             this.generalHelper.stopLoading();
             this.addEventForFeatures();
+            this.aeroThemeHelper.pageRutine();
 
             this.dataChanged.emit(data);
         })

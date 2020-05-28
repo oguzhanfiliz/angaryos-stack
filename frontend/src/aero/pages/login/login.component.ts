@@ -37,6 +37,8 @@ export class LoginComponent
             window.location.href = BaseHelper.dashboardUrl;
 
         this.aeroThemeHelper.removeThemeClass();
+        
+        this.aeroThemeHelper.pageRutine();
     }
 
     validate()

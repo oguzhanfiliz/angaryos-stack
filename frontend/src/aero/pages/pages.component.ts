@@ -34,10 +34,12 @@ export class PagesComponent
 
     $('body').keydown((event) => this.keyEvent(event));
     $('body').keyup((event) => this.keyEvent(event));
+    
+    $(".page-loader-wrapper").fadeOut()
   }
   
   private pageRutine() 
-  {
+  {        
       setTimeout(() =>
       {
         $('#shortcuts').removeClass('show');
@@ -117,9 +119,17 @@ export class PagesComponent
       case 'importRecord':
         this.importRecordLinkClicked();
         break;
+      case 'openBackendLogs':
+        this.openBackendLogs();
+        break;
       default:
         console.log(func);
     }
+  }
+  
+  openBackendLogs()
+  {
+    window.open(this.sessionHelper.getBackendUrlWithToken()+"logs");
   }
   
   importRecordLinkClicked()

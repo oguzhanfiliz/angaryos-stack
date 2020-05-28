@@ -14,6 +14,20 @@ class GeneralController extends Controller
         //\Cache::flush();
     }
     
+    public function test($user)
+    {
+        return 'test';
+    }
+    
+    public function logs($user)
+    {
+        $debugUserIds = json_decode(DEBUG_USER_IDS);
+        if(!in_array($user->id, $debugUserIds)) custom_abort('no.auth');
+            
+        $ctrl = new \Rap2hpoutre\LaravelLogViewer\LogViewerController();
+        return $ctrl->index();
+    }
+    
     public function initializeDB()
     {
         $output = helper('initialize_db');

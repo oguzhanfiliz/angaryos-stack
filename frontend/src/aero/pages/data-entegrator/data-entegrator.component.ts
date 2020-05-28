@@ -48,6 +48,8 @@ export class DataEntegratorComponent
                 th.tableId = val.tableId;
 
                 th.fillColumns();
+                
+                this.aeroThemeHelper.pageRutine();
             });
         }, 100);
     }
