@@ -9,6 +9,8 @@ class TableAfterTriggerSubscriber
     private function triggerSubscriber($record, $table, $column, $subscriber, $type)
     {
         if($column != NULL) $value = $record->{$column->name};
+        
+        $requests = \Request::all();
         $user = \Auth::user();
         
         $return = NULL;

@@ -819,6 +819,8 @@ trait TableSubscriberTrait
             $helper = new ChangeDataLibrary();
             $record = $helper->updateData($columns, $dataArray, $record);
         }
+        else
+            custom_abort('record.not.copy.top.archive');
         
         $user = \Auth::user();
         if($user == NULL) $user = \App\User::find(ROBOT_USER_ID);

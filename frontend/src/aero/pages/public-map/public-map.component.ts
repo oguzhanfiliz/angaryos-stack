@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { BaseHelper } from './../helpers/base';
 import { MessageHelper } from './../helpers/message';
 import { SessionHelper } from './../helpers/session';
+import { AeroThemeHelper } from './../helpers/aero.theme';
 
 declare var $: any;
 
@@ -20,7 +21,8 @@ export class PublicMapComponent
 
     constructor(
         private messageHelper: MessageHelper,
-        private sessionHelper: SessionHelper
+        private sessionHelper: SessionHelper,
+        private aeroThemeHelper: AeroThemeHelper
         )
     {
         sessionHelper.doHttpRequest("GET", BaseHelper.backendUrl+"public/getLoggedInUserInfo")

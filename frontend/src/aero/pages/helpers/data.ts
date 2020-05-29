@@ -291,6 +291,7 @@ export abstract class DataHelper
                 data = this.convertDataByGuiTypeBoolean(type, data);
                 break;
             case "datetime":
+            case "date":
                 data = this.convertDataByGuiTypeDateTime(type, data);
                 break;
             case "jsonb":
@@ -375,6 +376,7 @@ export abstract class DataHelper
         switch(guiType)
         {
             case 'datetime': return BaseHelper.dBDateTimeStringToHumanDateTimeString(data);
+            case 'date': return BaseHelper.dBDateStringToHumanDateString(data);
             default: return data;
         }
     }

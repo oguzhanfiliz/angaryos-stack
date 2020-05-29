@@ -94,6 +94,6 @@ class LdapLibrary
     
     public function delete($dn)
     {
-        ldap_delete($this->connection, $dn);
+        @ldap_delete($this->connection, $dn);
     }
 }

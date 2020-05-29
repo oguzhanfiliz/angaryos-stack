@@ -34,9 +34,7 @@ export class DataTableElementComponent
     selectedFilter = {};
     selectedRecord = null;
     selectedRecordList = [];
-    //loadDataIntervalId = -1;
     loadDataTimeout = 2000;
-    //editData = {};
 
     inFormColumnName = "";
     inFormTableName = "";
@@ -573,6 +571,25 @@ export class DataTableElementComponent
         if(url.substr(url.length -1, 1) != '/') url += "/";
         url += operation['link'].replace("[id]", record['id']);
         return url;
+    }
+
+    getColumns()
+    {
+        if(this.params == null) return [];
+        if(this.params.columns == null) return [];
+
+        var rt = [];
+
+        for(var i = 0; i < this.params.columns.length; i++)
+        {
+            var columnName = this.params.columns[i];
+            var temp = this.getData('columns.'+columnName+'.display_name');
+            if(temp == null) continue;
+
+            rt.push(columnName);
+        }
+        
+        return rt;
     }
     
     convertDataForGui(record, columnName)

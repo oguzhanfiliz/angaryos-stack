@@ -126,7 +126,7 @@
                                                 </ul>
                                             </td>
                                             <td cdkDrag style="cursor: pointer;"
-                                                *ngFor="let columnName of params.columns"
+                                                *ngFor="let columnName of getColumns()"
                                                 (click)="sortByColumn(columnName)">
                                                 <table class="light-table">
                                                     <tr>
@@ -146,7 +146,7 @@
                                         </tr>
                                         <tr id="filter-tr">
                                             <td></td>
-                                            <td style="padding: 0;" *ngFor="let columnName of params.columns">                            
+                                            <td style="padding: 0;" *ngFor="let columnName of getColumns()">                            
                                                 <table class="light-table">
                                                     <tr>
                                                         <td class="filter-cell" style="width: 99%;">
@@ -245,7 +245,7 @@
                                                     </tr>
                                                 </table>
                                             </td>
-                                            <td *ngFor="let columnName of params.columns" [class]="getEditTdClass(record, columnName)">
+                                            <td *ngFor="let columnName of getColumns()" [class]="getEditTdClass(record, columnName)">
                                                 <table class="light-table-force">
                                                     <tr>
                                                         <td>
@@ -301,7 +301,7 @@
                                             >
 
                                             <td></td>
-                                            <td *ngFor="let columnName of params.columns">
+                                            <td *ngFor="let columnName of getColumns()">
                                                 <b [innerHTML]="getCollectiveInfo(columnName)"></b>
                                             </td>
                                         </tr>
