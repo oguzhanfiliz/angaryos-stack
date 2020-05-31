@@ -124,7 +124,9 @@ export class DashboardComponent
     var url = this.sessionHelper.getBackendUrlWithToken()+"dashboards/getData/dashboards:RefreshableNumber:"+dashName+":0";
 
     var th = this;
-
+    
+    this.generalHelper.startLoading();
+    
     await this.sessionHelper.doHttpRequest("GET", url) 
     .then((data) => 
     {
@@ -132,12 +134,15 @@ export class DashboardComponent
         th.dashboardDatas['RefreshableNumber'] = [];
 
       th.dashboardDatas['RefreshableNumber'][dashName] = data;
+      
+      th.generalHelper.stopLoading();
 
       return true;
     })
     .catch((e) => 
     {
-      this.messageHelper.toastMessage("Bazı göstergeler için data alınamadı!");
+      th.messageHelper.toastMessage("Bazı göstergeler için data alınamadı!");
+      th.generalHelper.stopLoading();
     });
   }
 }
