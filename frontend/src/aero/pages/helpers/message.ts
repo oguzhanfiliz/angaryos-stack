@@ -21,15 +21,16 @@ export class MessageHelper
 
         const Toast = Swal.mixin(
         {
-        toast: true,
-        position: 'top-end',
-        showConfirmButton: false,
-        timer: duration
+            toast: true,
+            position: 'top-end',
+            showConfirmButton: false,
+            timer: duration
         })
 
-        Toast.fire({
-        icon: iconType,
-        title: message
+        Toast.fire(
+        {
+            icon: iconType,
+            title: message
         });
     }
     

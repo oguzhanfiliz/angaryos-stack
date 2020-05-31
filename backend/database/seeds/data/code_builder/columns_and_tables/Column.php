@@ -17,6 +17,23 @@ $column_gui_type_override =
     'auths' => $column_gui_types['multiselectdragdrop']->id,
     
     'source_record_id' => $column_gui_types['numeric']->id,
+    
+    //select ve multiselect elemanlardan hanginler static olmalı bunları bi incele
+    'department_id' => $column_gui_types['select:static']->id,
+    'column_validation_ids' => $column_gui_types['multiselect:static']->id,
+    'column_collective_info_id' => $column_gui_types['select:static']->id,
+    'subscriber_type_id' => $column_gui_types['select:static']->id,
+    'data_filter_type_id' => $column_gui_types['select:static']->id,
+    'column_array_type_id' => $column_gui_types['select:static']->id,
+    'column_set_type_id' => $column_gui_types['select:static']->id,
+    'sub_linestring_type_id' => $column_gui_types['select:static']->id,
+    'sub_point_type_id' => $column_gui_types['select:static']->id,
+    'sub_polygon_type_id' => $column_gui_types['select:static']->id,
+    'custom_layer_type_id' => $column_gui_types['select:static']->id,
+    'log_level_id' => $column_gui_types['select:static']->id,
+    'data_source_direction_id' => $column_gui_types['select:static']->id,
+    'data_source_direction_id' => $column_gui_types['select:static']->id,
+    'data_source_type_id' => $column_gui_types['select:static']->id,
 ];
 
 $columnDefaults =

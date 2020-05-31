@@ -56,6 +56,31 @@ class TableSubscriber
         return $this->deleteRecord($record);
     }
     
+    public function getCloneDataForUniqueColumn($dbTypeName, $dataArray, $columnName, $repeat = 1)
+    {
+        global $pipe;
+        
+        $temp = $dataArray[$columnName];
+        
+        switch($dbTypeName)
+        {
+            case 'string':
+            case 'text':
+                for($i = 0; $i <$repeat; $i++) $temp .= 'klon';
+                break;
+            case 'integer':
+                for($i = 0; $i <$repeat; $i++) $temp += 1000;
+                break;
+            default:
+                custom_abort('db.type.'.$dbTypeName.'.not.clonable');
+        }
+        
+        $recs = \DB::table($pipe['table'])->where($columnName, $temp)->get();
+        if(count($recs) == 0) return $temp;
+        
+        return $this->getCloneDataForUniqueColumn($dbTypeName, $dataArray, $columnName, $repeat+1);
+    }
+    
     public function cloneRequested($dataArray)
     {
         foreach($dataArray as $key => $value)
@@ -77,20 +102,7 @@ class TableSubscriber
                 {
                     $dbTypeId = get_attr_from_cache('columns', 'name', $columnName, 'column_db_type_id');
                     $dbTypeName = get_attr_from_cache('column_db_types', 'id', $dbTypeId, 'name');
-                    
-                    switch($dbTypeName)
-                    {
-                        case 'string':
-                        case 'text':
-                            $dataArray[$columnName] = $dataArray[$columnName] . 'klon';
-                            break;
-                        case 'integer':
-                            $dataArray[$columnName] = $dataArray[$columnName] + 1000;
-                            break;
-                        default:
-                            custom_abort('db.type.'.$dbTypeName.'.not.clonable');
-                    }
-                    
+                    $dataArray[$columnName] = $this->getCloneDataForUniqueColumn($dbTypeName, $dataArray, $columnName);
                 }
             }
         }

@@ -21,6 +21,7 @@ export class MultiSelectDragDropElementComponent
     @Input() defaultData: string;
     @Input() recordJson: string; 
     @Input() baseUrl: string;
+    @Input() type: string;
     @Input() value: string;
     @Input() valueJson: string = "";
     @Input() class: string;
@@ -33,6 +34,7 @@ export class MultiSelectDragDropElementComponent
     @Input() upFormId: string = "";
     @Input() createForm: boolean = false;
     
+    staticElement = false;
     record = null;
 
     @Output() changed = new EventEmitter();
@@ -52,6 +54,8 @@ export class MultiSelectDragDropElementComponent
         {
             if(this.upFormId.length > 0)
                 this.baseElementSelector = '[ng-reflect-id="'+this.upFormId+'"] ';
+                
+            if(this.type == "multiselectdragdrop:static") this.staticElement = true;
 
             var elementId = this.baseElementSelector + ' .selected-list .dragdrop-box';
             
@@ -62,6 +66,8 @@ export class MultiSelectDragDropElementComponent
 
                 $(e.target).addClass('selected-option');
             });
+            
+            if(this.staticElement) this.fillListElements("***");
 
         }, 100);
     }
@@ -75,7 +81,7 @@ export class MultiSelectDragDropElementComponent
         if(typeof this.recordJson != "undefined" && this.recordJson != "")
             this.record = BaseHelper.jsonStrToObject(this.recordJson);
             
-        if(this.valueJson.length > 0)
+        if(this.createForm || this.valueJson.length > 0)
             this.fillSelectedElements();
 
         this.selectedChanged();
@@ -140,7 +146,16 @@ export class MultiSelectDragDropElementComponent
 
     fillSelectedElements()
     {
-        var temp = BaseHelper.jsonStrToObject(this.valueJson);
+        var temp = null;
+        if(this.createForm)
+        {
+            if(this.defaultData == null || this.defaultData == "") return;
+
+            temp = BaseHelper.jsonStrToObject(this.defaultData);
+        }
+        else
+            temp = BaseHelper.jsonStrToObject(this.valueJson);
+                
         for(var i = 0; i < temp.length; i++)
         {
             var control = false;

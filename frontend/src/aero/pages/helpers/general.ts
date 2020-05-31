@@ -2,6 +2,9 @@ import { BaseHelper } from './base';
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 
+import Swal from 'sweetalert2';
+import 'sweetalert2/dist/sweetalert2.min.css';
+
 declare var $: any;
 
 @Injectable()
@@ -30,13 +33,35 @@ export class GeneralHelper
 
   public startLoading()
   {
-    $('#loading').html("Yükleniyor...");
-    $('#loading').fadeIn(500);
+    const Toast = Swal.mixin(
+    {
+        toast: true,
+        position: 'top',
+        showConfirmButton: false,
+        timer: 1000 * 60 * 15
+    })
+
+    Toast.fire(
+    {
+        icon: "info",
+        title: "Bekleyin..." 
+    });
   }
 
   public stopLoading()
   {
-    $('#loading').html("Yüklendi!");
-    $('#loading').fadeOut(500);
+    const Toast = Swal.mixin(
+    {
+        toast: true,
+        position: 'top',
+        showConfirmButton: false,
+        timer: 100
+    })
+
+    Toast.fire(
+    {
+        icon: "success",
+        title: "Tamamlandı..." 
+    });
   }
 }

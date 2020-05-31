@@ -194,6 +194,14 @@
                                                     <span class="ti-user"></span>
                                                 </button>
                                                 
+                                                <button *ngIf="can('missionTrigger', record) && !archiveTable"
+                                                    data-toggle="tooltip" title="Görevi tetikle"
+                                                    class="btn btn-sm float-right btn-primary btn-icon pull-right" 
+                                                    (click)="missionTrigger(record)"> 
+                                                    
+                                                    <span class="ti-control-forward"></span>
+                                                </button>
+                                                
                                                 <button *ngIf="can('selectAsUpTable') && !archiveTable"
                                                     data-toggle="tooltip" title="Data aktarma kaydı olarak belirle"
                                                     class="btn btn-sm float-right btn-primary btn-icon pull-right" 

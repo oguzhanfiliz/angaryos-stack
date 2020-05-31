@@ -94,6 +94,7 @@ export class DataTableElementComponent
             case 'archive': columnName = '_is_restorable'; break;
             case 'export': columnName = '_is_exportable'; break;
             case 'show': columnName = '_is_showable'; break;
+            case 'clone':
             case 'create':
                 if(typeof BaseHelper.loggedInUserInfo.auths.tables[this.tableName]['creates'] == "undefined") return false;
                 return BaseHelper.loggedInUserInfo.auths.tables[this.tableName]['creates'].length > 0
@@ -102,14 +103,15 @@ export class DataTableElementComponent
                 if(typeof BaseHelper.loggedInUserInfo.auths.tables[this.tableName]['deleteds'] == "undefined") return false;
                 return BaseHelper.loggedInUserInfo.auths.tables[this.tableName]['deleteds'].length > 0
                 break;
-            case 'clone': columnName = '_is_showable'; break;
+            //case 'clone': columnName = '_is_showable'; break;
             case 'userImitation': return this.canUserImitation(record);
+            case 'missionTrigger': return this.canMissionTrigger(record);
             case 'authWizard': return this.canAuthWizard(record);
             case 'dataEntegrator': return this.canDataEntegrator(record);
             case 'selectAsUpTable': return this.canSelectUpTable();
             case 'isRecordDataTransportTarget': return this.isRecordDataTransportTarget(record);
             
-            default: alert(policyType + ': not have can function'); return true;
+            default: console.log(policyType + ': not have can function'); return true;
         }
 
         if(typeof record[columnName] == "undefined" || record[columnName]) return true;
@@ -153,6 +155,15 @@ export class DataTableElementComponent
 
         return this.canAdminAuth('userImitation');
     }
+    
+    canMissionTrigger(record)
+    {
+        if(this.tableName != 'missions') return false;
+        if(typeof BaseHelper['loggedInUserInfo']['auths']['missions'] == "undefined") return false;
+        if(typeof BaseHelper['loggedInUserInfo']['auths']['missions'][record['id']] == "undefined") return false;
+        
+        return true;
+    }
 
     canAdminAuth(auth)
     {
@@ -171,6 +182,35 @@ export class DataTableElementComponent
     userImitation(user)
     {
         this.sessionHelper.userImitation(user);
+    }
+    
+    missionTrigger(record)
+    {
+        this.messageHelper.swalConfirm('Görev tetiklenecek', "Bu görevi tetikleme istediğinize emin misiniz?", "warning")
+        .then(async (r) =>
+        {
+            if(r != true) return;
+
+            var url = this.sessionHelper.getBackendUrlWithToken()+"missions/"+record['id'];
+        
+            this.generalHelper.startLoading();
+
+            this.sessionHelper.doHttpRequest("GET", url)
+            .then((data) => 
+            {
+                this.generalHelper.stopLoading();
+
+                if(typeof data['message'] == "undefined")
+                    this.messageHelper.sweetAlert("Beklenmedik cevap geldi!", "Hata", "warning");
+                else
+                    this.messageHelper.sweetAlert("Tetikleme başarılı: "+data['message'], "Başarı", "success");
+            })
+            .catch((e) => 
+            { 
+                this.generalHelper.stopLoading(); 
+                this.messageHelper.sweetAlert("Beklenmedik cevap geldi!", "Hata", "warning");
+            }); 
+        });
     }
     
     selectAsUpTableRecord(record)
@@ -207,7 +247,7 @@ export class DataTableElementComponent
             case 'edit': this.edit(record); break;
             case 'archive': this.archive(record); break;
             case 'export': this.export(record); break;
-            default: alert(policyType + ": " + record.id);
+            default: console.log(policyType + ": " + record.id);
         }
     }
 
@@ -281,13 +321,17 @@ export class DataTableElementComponent
             else
                 this.messageHelper.sweetAlert("Beklenmedik cevap geldi!", "Hata", "warning");
         })
-        .catch((e) => { this.generalHelper.stopLoading(); });
+        .catch((e) => 
+        { 
+            this.generalHelper.stopLoading(); 
+            this.messageHelper.sweetAlert("Beklenmedik cevap geldi!", "Hata", "warning");
+        });
     }
 
     deleteSuccess(record)
     {
         this.messageHelper.toastMessage("Silme başarılı", 'success');
-
+        console.log(333);
         var data = BaseHelper.readFromPipe(this.getLocalKey("data"));
         var recs = data[this.params.page].records;
 
@@ -688,6 +732,8 @@ export class DataTableElementComponent
     {
         if(typeof guiType == "undefined") return "";
         if(guiType == null) return "";
+        
+        if(guiType == "multiselect:static") guiType = "multiselect";
         
         switch (guiType.split(':')[0]) 
         {

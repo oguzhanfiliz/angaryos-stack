@@ -14,6 +14,7 @@ $files =
     'DataFilterTypes',
     'DataFilters',
     'Settings',
+    'Missions',
     'Departments',
     'TableGroups',    
     'LogLevels',

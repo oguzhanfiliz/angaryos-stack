@@ -3,6 +3,8 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { BaseHelper } from './../../base';
 import { DataHelper } from './../../data';
 import { MessageHelper } from './../../message';
+import { SessionHelper } from './../../session';
+import { GeneralHelper } from './../../general';
  
 declare var $: any;
 
@@ -36,8 +38,11 @@ export class ColumnArrayFormElementComponent
     record = null;
 
     constructor(
-        private messageHelper: MessageHelper
-    ) { }
+        private messageHelper: MessageHelper,
+        private sessionHelper: SessionHelper,
+        private generalHelper: GeneralHelper
+    ) 
+    { }
 
 
 
@@ -60,6 +65,7 @@ export class ColumnArrayFormElementComponent
 
     inFormSavedSuccess(data)
     {
+        console.log(data);
         this.formSaved.emit(data);
         this.closeModal(this.inFormElementId+'inFormModal');
     }
@@ -85,6 +91,101 @@ export class ColumnArrayFormElementComponent
             $('#'+this.inFormElementId+'inFormModal').modal('show');
         }, 100);
     }
+    
+    cloneRelationRecord(columnName)
+    {
+        var tableName = this.getDataFromColumnArray('columns.'+columnName+'.relation.table_name');
+        var recordId = this.getSelectedOptionValue(columnName);
+        
+        var url = this.sessionHelper.getBackendUrlWithToken()+"tables/"+tableName+"/"+recordId+"/clone";
+        
+        this.generalHelper.startLoading();
+
+        this.sessionHelper.doHttpRequest("GET", url)
+        .then((data) => 
+        {
+            this.generalHelper.stopLoading();
+
+            if(typeof data['message'] == "undefined")
+                this.messageHelper.sweetAlert("Beklenmedik cevap geldi!", "Hata", "warning");
+            else if(data['message'] == 'error')
+            {
+                var list = '';
+                var keys = Object.keys(data['errors']);
+                for(var i = 0; i < keys.length; i++)
+                    for(var j = 0; j < data['errors'][keys[i]].length; j++)
+                        list += ' - '+data['errors'][keys[i]][j] + '<br>';
+
+                this.messageHelper.sweetAlert("Klon esnasında bazı hatalar oluştu!<br><br>"+(list), "Hata", "warning");
+            }
+            else if(data['message'] == 'success')
+            {
+                var params =
+                {
+                    inFormColumnName: columnName,
+                    inFormRecordId: recordId,
+                    inFormTableName: tableName,
+                    in_form_data: {},//{source: 101, display: "test"}
+                    data: data,
+                    columnName: columnName,
+                    tableName: tableName,
+                    recordId: recordId,
+                    inelementId: "ife-000",
+                    message: "success"
+                }
+
+                this.cloneSuccess(params);
+            }
+            else
+                this.messageHelper.sweetAlert("Beklenmedik cevap geldi!", "Hata", "warning");
+        })
+        .catch((e) => { this.generalHelper.stopLoading(); });
+    }
+    
+    cloneSuccess(params)
+    {
+        var url = this.sessionHelper.getBackendUrlWithToken()+"tables/"+this.tableName;
+        url += "/getSelectColumnData/"+params['columnName']+"?search="+params['data']['id']+"&page=1&limit=500";
+        url += "&editRecordId="+params['recordId'];
+        
+        var upColumnName = this.getDataFromColumnArray('columns.'+params['columnName']+'.up_column_name');
+        if(upColumnName != null) url += "&upColumnName="+upColumnName;
+        
+        this.generalHelper.startLoading();
+        
+        $.ajax(
+        {
+            url : url,
+            type : "GET",
+            data : params,
+            success : (data) =>
+            {
+                this.generalHelper.stopLoading();
+                
+                if(typeof data['results'] == 'undefined')
+                {
+                    this.messageHelper.sweetAlert("Klonlama yapıldı ama yeni kayıt bilgisi alınırken beklenmedik bir cevap geldi!", "Hata", "warning");
+                }
+                else
+                {
+                    for(var i = 0; i < data['results'].length; i++)
+                        if(data['results'][i]['id'] == params['data']['id'])
+                        { 
+                            params['in_form_data']['source'] = data['results'][i]['id'];
+                            params['in_form_data']['display'] = data['results'][i]['text'];
+                            this.formSaved.emit(params);
+                            this.messageHelper.toastMessage("Klonlama başarılı", "success");
+                        }
+                }
+            },
+            error : (e) =>
+            {
+                this.generalHelper.stopLoading();
+                this.messageHelper.toastMessage("Bir hata oluştu", "warning");
+            }
+        });
+    }
+    
 
     editRelationRecord(columnName)
     {
@@ -112,7 +213,7 @@ export class ColumnArrayFormElementComponent
         var val = $(elementId).val();
         var guiType = this.getDataFromColumnArray('columns.'+columnName+'.gui_type_name');
 
-        switch (guiType) 
+        switch (guiType.split(':')[0]) 
         {
             case "select": 
                 val = this.getSelectedOptionValueSelect(val);

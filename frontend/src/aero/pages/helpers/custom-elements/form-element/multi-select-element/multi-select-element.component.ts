@@ -1,6 +1,8 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { BaseHelper } from './../../../base';
 import { DataHelper } from './../../../data';
+import { SessionHelper } from './../../../session';
+import { MessageHelper } from './../../../message';
 
 declare var $: any;
 
@@ -15,6 +17,7 @@ export class MultiSelectElementComponent
     @Input() defaultData: string;
     @Input() recordJson: string; 
     @Input() baseUrl: string;
+    @Input() type: string;
     @Input() value: string;
     @Input() valueJson: string = "";
     @Input() class: string;
@@ -32,10 +35,14 @@ export class MultiSelectElementComponent
     
     baseElementSelector = "";
     val = [];
+    selectedVal = [];
 
     @Output() changed = new EventEmitter();
 
-    constructor()
+    constructor(
+        private messageHelper: MessageHelper,
+        private sessionHelper: SessionHelper
+    ) 
     {
         if(this.showClearDataButton == null)
             this.showClearDataButton = false;
@@ -57,24 +64,44 @@ export class MultiSelectElementComponent
         if(typeof this.recordJson != "undefined" && this.recordJson != "")
             this.record = BaseHelper.jsonStrToObject(this.recordJson);
             
-        if(this.valueJson.length > 0) 
+        if(this.createForm || this.valueJson.length > 0) 
         {
             var key = "user:"+BaseHelper.loggedInUserInfo.user.id+"."+this.baseUrl+".data";
             
             this.val = [];
-            var temp = BaseHelper.jsonStrToObject(this.valueJson);
+            this.selectedVal = []
+            var temp = [];
+            
+            if(this.createForm)
+            {
+                if(this.defaultData == null || this.defaultData == "") return;
+
+                temp = BaseHelper.jsonStrToObject(this.defaultData);
+            }
+            else
+                temp = BaseHelper.jsonStrToObject(this.valueJson);
+            
             if(temp == null) return;
             
             for(var i = 0; i < temp.length; i++)
             {
                 this.val.push(temp[i]['source']);
+                this.selectedVal.push(temp[i]['source']);
 
                 var tempKey = key + ".selectQueryElementDataCache."+this.name+"."+temp[i]['source'];
                 BaseHelper.writeToLocal(tempKey, temp[i]['display']);
             }
+            
+            setTimeout(() => 
+            {
+                $(this.baseElementSelector+' [name="'+this.name+'"]').val(this.selectedVal);
+                $(this.baseElementSelector+' [name="'+this.name+'"]').trigger('change');
+            }, 200)
         }
         else if(this.value.substr(0,1) == '[')
             this.val = BaseHelper.jsonStrToObject(this.value);
+        else if(this.value == '')
+            this.val = [];
         else
             this.val = this.value.split(","); 
     }
@@ -83,14 +110,95 @@ export class MultiSelectElementComponent
     {      
         $.getScript('assets/ext_modules/select2/select2.min.js', () => 
         {
-            this.addSelect2()
-            this.addStyle(); 
+            switch(this.type)
+            {
+                case 'multiselect:static':
+                    this.addSelect2Static();
+                    break; 
+                default:
+                    this.addSelect2();
+                    break;
+            }
         });        
     }
 
     handleChange(event)
     {
         this.changed.emit(event);
+    }
+    
+    addSelect2Static()
+    {
+        var url = this.sessionHelper.getBackendUrlWithToken()+this.baseUrl;
+        url += "/getSelectColumnData/"+this.columnName+"?search=***&page=1&limit=500";
+        
+        if(!this.createForm && this.record != null) url += '&editRecordId='+this.record['id'];
+                    
+        if(this.upColumnName.length > 0) 
+        {
+            url += '&upColumnName='+this.upColumnName;
+            url += '&upColumnData='+$('#'+this.upColumnName).val();
+            
+            var temp = BaseHelper.getAllFormsData(this.baseElementSelector);
+            url += '&currentFormData='+BaseHelper.objectToJsonStr(temp);
+        }
+        
+        var th = this;
+        
+        $.ajax(
+        {
+            url : url,
+            type : "GET",
+            data : {},
+            success : (data) =>
+            {
+                if(typeof data['results'] == 'undefined')
+                {
+                    this.messageHelper.sweetAlert("Klonlama yapıldı ama yeni kayıt bilgisi alınırken beklenmedik bir cevap geldi!", "Hata", "warning");
+                }
+                else
+                {
+                    var element = $(this.baseElementSelector+' [name="'+this.name+'"]');
+                    var key = "user:"+BaseHelper.loggedInUserInfo.user.id+"."+this.baseUrl+".data";
+            
+                    for(var i = 0; i < data['results'].length; i++)
+                    {
+                        var item = data['results'][i];
+                        
+                        if(this.val.includes(item['id'])) continue;
+                        
+                        var tempKey = key + ".selectQueryElementDataCache."+this.name+"."+item['id'];
+                        BaseHelper.writeToLocal(tempKey, item['text']);
+                        
+                        this.val.push(item['id']);
+                    }
+                    
+                    element.select2(
+                    {
+                        allowClear: true,
+                        placeholder: $(this.baseElementSelector+' [name="'+this.name+'"] span').html(),
+                    })
+                    .on('select2:select', (event) => th.selected(event))
+                    .on('select2:unselect', (event) => th.unselected(event));
+                }
+            },
+            error : (e) =>
+            {
+                this.messageHelper.toastMessage("Bir hata oluştu", "warning");
+            }
+        });
+        
+        $(document).on('click', this.baseElementSelector+' [ng-reflect-name="'+this.name+'"] .select2-selection__choice', function(e) 
+        {
+            var elementId = 'multi-select-element[ng-reflect-name="'+th.name+'"]';
+
+            $(elementId+' .select2-selection__choice')
+            .each((i, opt) => $(opt).removeClass('selected-option'));
+
+            $(e.target).addClass('selected-option');
+
+            $(elementId+" select").select2('close');
+        });
     }
 
     addSelect2()
@@ -142,11 +250,11 @@ export class MultiSelectElementComponent
                 });
             }
         })
-        .on('select2:select', (event) => this.selected(event))
-        .on('select2:unselect', (event) => this.unselected(event));
+        .on('select2:select', (event) => th.selected(event))
+        .on('select2:unselect', (event) => th.unselected(event));
 
         var th = this;
-        $(document).on('click', '[ng-reflect-name="'+this.name+'"] .select2-selection__choice', function(e) 
+        $(document).on('click', this.baseElementSelector+' [ng-reflect-name="'+this.name+'"] .select2-selection__choice', function(e) 
         {
             var elementId = 'multi-select-element[ng-reflect-name="'+th.name+'"]';
 

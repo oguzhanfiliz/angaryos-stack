@@ -11,7 +11,7 @@ class ChangeDataLibrary
             if($key == 'single_column_name') continue;
             if(!isset($columns[$key])) continue;
                 
-            if($columns[$key]['type'] == 'jsonb' || $columns[$key]['type'] == 'json')
+            if(strstr($columns[$key]['type'], 'json'))
             {
                 try 
                 {

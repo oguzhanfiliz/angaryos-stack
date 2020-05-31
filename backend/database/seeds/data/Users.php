@@ -161,6 +161,11 @@ array_push($adminAuths, 'map:kmz:upload:0');
 
 
 
+foreach($missions as $mission)
+    array_push($adminAuths, 'missions:'.$mission->id.':0:0');
+
+
+
 $adminAuth->auths = $adminAuths;
 $adminAuth->save();
 

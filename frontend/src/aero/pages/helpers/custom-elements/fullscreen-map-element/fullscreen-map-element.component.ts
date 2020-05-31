@@ -171,12 +171,12 @@ export class FullScreenMapElementComponent
     
     startLoading()
     {
-        this.loading = true;
+        this.generalHelper.startLoading();
     }
     
     stopLoading()
     {   
-        this.loading = false;
+        this.generalHelper.stopLoading();
     }
     
     getKeys(obj)

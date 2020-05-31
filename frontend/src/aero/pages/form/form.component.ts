@@ -561,7 +561,7 @@ export class FormComponent
         var elementId = this.getElementId(data['inFormColumnName']);
         
         var guiType = this.getGuiTypeByColumnName(data['inFormColumnName']);
-        switch (guiType) 
+        switch (guiType.split(':')[0]) 
         {
             case 'select':
                 this.inFormSavedSuccessSelect(elementId, data['in_form_data']);

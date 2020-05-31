@@ -341,7 +341,7 @@ trait TableTrait
             $return->upColumnDataRecord = get_attr_from_cache($table->getTable(), 'id', $editRecordId, '*');
         
         if(strlen($return->upColumnName) > 0 && strlen($return->upColumnData) == 0 && strlen($editRecordId) > 0)
-            $return->upColumnData = $return->upColumnDataRecord->{$return->upColumnName};
+            $return->upColumnData = @$return->upColumnDataRecord->{$return->upColumnName};
         
         return $return;
     }

@@ -272,6 +272,7 @@ trait BaseModelSelectColumnDataTrait
     
     private function getUpColumnControl($params)
     {
+        if(strlen($this->up_column_id) == 0) return FALSE;
         if(strlen($params->upColumnName) == 0) return FALSE;
         if(strlen($params->upColumnData) > 0) return FALSE;
         

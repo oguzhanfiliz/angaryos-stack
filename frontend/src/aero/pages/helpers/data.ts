@@ -387,7 +387,7 @@ export abstract class DataHelper
 
     public static changeDataForFormByGuiType(guiType, data)
     {
-        switch (guiType) 
+        switch (guiType.split(':')[0]) 
         {
             case 'boolean':
                 data = this.changeDataForFormByGuiTypeBoolean(data);
