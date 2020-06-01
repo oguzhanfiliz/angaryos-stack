@@ -203,7 +203,7 @@ export class SessionHelper
 
     public userImitation(user)
     {
-      var url = this.getBackendUrlWithToken()+"getUserToken/"+user.id;
+        var url = this.getBackendUrlWithToken()+"getUserToken/"+user.id;
         
         this.generalHelper.startLoading();
 
@@ -235,26 +235,36 @@ export class SessionHelper
       BaseHelper.writeToLocal("realUserToken", BaseHelper.token);
 
       BaseHelper.setToken(token);
-      this.fillLoggedInUserInfo();
-
-      this.messageHelper.toastMessage("Kullanıcı taklit ediliyor");
-
-      this.navigateToPage('dashboard');
+      this.fillLoggedInUserInfo()
+      .then((data) =>
+      {
+        this.messageHelper.toastMessage("Kullanıcı taklit ediliyor");
+        this.navigateToPage('dashboard');
+      });
     }
 
     public logoutForImitationUser()
     {
-      var token = BaseHelper.readFromLocal("realUserToken");
+      var url = this.getBackendUrlWithToken() + "logOut";
 
-      BaseHelper.setToken(token);
-      this.fillLoggedInUserInfo()
-      .then((data) =>
+      return this.doHttpRequest("GET", url, null) 
+      .then((data) =>  
       {
-        BaseHelper.removeFromLocal("realUserToken");
+        BaseHelper.clearUserData();
+        
+        var token = BaseHelper.readFromLocal("realUserToken");
+        BaseHelper.setToken(token);
+        
+        this.fillLoggedInUserInfo()
+        .then((data) =>
+        {
+          BaseHelper.removeFromLocal("realUserToken");
 
-        this.messageHelper.toastMessage("Gerçek kullanıcıya dönüldü");
+          this.messageHelper.toastMessage("Gerçek kullanıcıya dönüldü");
 
-        this.navigateToPage('table/users');
+          this.navigateToPage('table/users');
+        });
+        
       });
     }
 
@@ -292,6 +302,7 @@ export class SessionHelper
       if(BaseHelper.loggedInUserInfo == null) return false;
       if(typeof BaseHelper.loggedInUserInfo['auths'] == "undefined") return false;
       if(typeof BaseHelper.loggedInUserInfo['auths']['map'] == "undefined") return false;
+      if(typeof BaseHelper.loggedInUserInfo['auths']['map'][0] == "undefined") return false;
 
       return true;
     }

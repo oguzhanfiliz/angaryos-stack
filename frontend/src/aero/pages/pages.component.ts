@@ -230,8 +230,10 @@ export class PagesComponent
 
   isUserEditOwn()
   {
-    if(typeof BaseHelper.loggedInUserInfo.auths.tables['users'] == "undefined") return false;
-    if(typeof BaseHelper.loggedInUserInfo.auths.tables['users']['edits'] == "undefined") return false;
+    if(typeof BaseHelper.loggedInUserInfo['auths'] == "undefined") return false;
+    if(typeof BaseHelper.loggedInUserInfo['auths']['tables'] == "undefined") return false;
+    if(typeof BaseHelper.loggedInUserInfo['auths']['tables']['users'] == "undefined") return false;
+    if(typeof BaseHelper.loggedInUserInfo['auths']['tables']['users']['edits'] == "undefined") return false;
     
     return true;
   }

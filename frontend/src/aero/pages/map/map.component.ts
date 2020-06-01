@@ -35,6 +35,9 @@ export class MapComponent
         sessionHelper.getLoggedInUserInfo().then((loggedInUserInfo) =>
         {
             this.loggedInUserInfoJson = BaseHelper.objectToJsonStr(loggedInUserInfo);
+            
+            if(!this.sessionHelper.mapAuthControl())
+                this.generalHelper.navigate('/map');
         });
         
         this.aeroThemeHelper.pageRutine();

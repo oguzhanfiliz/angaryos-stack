@@ -122,6 +122,8 @@ export class SelectElementComponent
             url += '&currentFormData='+BaseHelper.objectToJsonStr(temp);
         }
         
+        var th = this;
+        
         $.ajax(
         {
             url : url,
