@@ -1,7 +1,7 @@
 <?php
 
 $logLevelName = $params[0];
-$logLevelId = get_attr_from_cache('log_levels', 'id', $params[0], 'id');
+$logLevelId = get_attr_from_cache('log_levels', 'name', $params[0], 'id');
 
 send_log($logLevelName, 'Data entegrator log: ' . json_encode($params));
 

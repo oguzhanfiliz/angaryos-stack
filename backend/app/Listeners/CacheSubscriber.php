@@ -158,22 +158,22 @@ class CacheSubscriber
         $this->clearRecordCache('auth_groups', $record);//required
         
         ClearCache::{$this->dispatchType}('allAuths');
-        
-        $users = \DB::table('users')->where('auths', '@>', $record->id)->get();
-        foreach($users as $user)
-            $this->clearUserCache($user);
-        
-        $groups = \DB::table('auth_groups')->where('auths', '@>', $record->id)->get();
-        foreach($groups as $group)
-            $this->clearAuthGroupsCache($group);
-        
+
         $users = \DB::table('users')
                     ->where('auths', '@>', $record->id)
                     ->orWhere('auths', '@>', '"'.$record->id.'"')
                     ->get();
-        
         foreach($users as $user)
             $this->clearUserCache($user);
+        
+        $groups = \DB::table('auth_groups')
+                    ->where('auths', '@>', $record->id)
+                    ->orWhere('auths', '@>', '"'.$record->id.'"')
+                    ->get();
+        foreach($groups as $group)
+            $this->clearAuthGroupsCache($group);
+        
+        
         
         //niye burada anlaşılamadı
         /*$keys = $this->getCacheKeys();

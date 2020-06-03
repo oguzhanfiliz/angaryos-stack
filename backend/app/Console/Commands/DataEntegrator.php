@@ -33,12 +33,15 @@ class DataEntegrator extends Command
         } 
         catch (\Exception $ex) 
         {
+            $temp = (array)$ex;
+            
             DB::rollBack();
             helper('data_entegrator_log', ['danger', 'Data entegrator exception', 
             [
                 $ex->getMessage(),
                 $ex->getFile(),
                 $ex->getLine(),
+                ["exceptionObject" => json_encode($temp)],
             ]]);
         }
         

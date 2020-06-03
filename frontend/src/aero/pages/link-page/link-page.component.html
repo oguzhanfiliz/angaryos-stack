@@ -17,6 +17,7 @@
                                       
                                         <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
                                             <a *ngFor="let tableId of tableGroup.table_ids" 
+                                            [hidden] = "getTableName(tableGroup.id, tableId) == null"
                                             class="dropdown-item" (click)="linkClicked()"
                                             href="{{ getTableUrl(tableGroup.id, tableId) }}">
                                             

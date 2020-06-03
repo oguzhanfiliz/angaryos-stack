@@ -15,6 +15,7 @@ services:
         volumes:
             - /var/run/docker.sock:/var/run/docker.sock
             - ./services/portainer/data:/data 
+            - '/etc/localtime:/etc/localtime:ro'
 
 
 

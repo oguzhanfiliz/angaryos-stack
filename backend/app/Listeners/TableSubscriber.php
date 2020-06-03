@@ -2,6 +2,8 @@
 
 namespace App\Listeners;
 
+use DB;
+
 class TableSubscriber 
 {
     use TableSubscriberTrait;
@@ -146,7 +148,11 @@ class TableSubscriber
     
     public function authAssignRequested($params)
     {
+        DB::beginTransaction();
+        
         $this->authAssign($params);
+        
+        DB::commit();
     }
     
     public function quickSearch($model, $params, $words)

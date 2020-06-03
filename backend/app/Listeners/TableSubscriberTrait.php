@@ -1081,13 +1081,9 @@ trait TableSubscriberTrait
         $temp = DB::table('users')->whereIn('department_id', $params['department_ids'])->get();
         $userIds = $this->mergeUserIdsList($userIds, $temp);
 
-        foreach($params['auths'] as $auth)
-        {
-            $temp = DB::table('users')->whereRaw('auths @> \''.$auth.'\'::jsonb or auths @> \'"'.$auth.'"\'::jsonb')->get();
-            $userIds = $this->mergeUserIdsList($userIds, $temp);
-        }
-
-        $this->addAuthWithUserList($userIds, $params['auth_id']);
+        if(count($userIds) > 0) $this->addAuthWithUserList($userIds, $params['auth_id']);
+        
+        if(count($params['auths']) > 0 ) $this->addAuthWithAuthGruoupsList($params['auths'], $params['auth_id']);        
     }
     
     private function mergeUserIdsList($base, $new)
@@ -1099,8 +1095,35 @@ trait TableSubscriberTrait
         return $base;
     }
     
+    private function addAuthWithAuthGruoupsList($authGroupIds, $authId)
+    {
+        $cacheSubscriber = new CacheSubscriber(TRUE);
+        foreach($authGroupIds as $authGroupId)
+        {
+            $authGroup = get_attr_from_cache('auth_groups', 'id', $authGroupId, '*');
+            $temp = json_decode($authGroup->auths);
+            
+            if(in_array($authId, $temp) || in_array('"'.$authId.'"', $temp)) continue;
+            
+            copy_record_to_archive($authGroup, 'auth_groups');
+            
+            $sql = 'UPDATE auth_groups SET auths  = auths || \'["'.$authId.'"]\'::jsonb ';
+            $sql .= ' where id = '.$authGroupId.'';
+
+            DB::select($sql);
+            $cacheSubscriber->recordChangedSuccess('auth_group', $authGroup, 'update');
+        }
+    }
+    
     private function addAuthWithUserList($userIds, $authId)
     {
+        $model = DB::table('users');
+        if($userIds != '*') $model = $model->whereIn('id', $userIds);
+        $users = $model->get();
+
+        foreach($users as $user)
+            copy_record_to_archive($user, 'users');
+        
         $inSql = 'select id from users where auths @> \'"'.$authId.'"\'::jsonb or auths @> \''.$authId.'\'::jsonb';
         
         $sql = 'UPDATE users SET auths  = auths || \'["'.$authId.'"]\'::jsonb ';

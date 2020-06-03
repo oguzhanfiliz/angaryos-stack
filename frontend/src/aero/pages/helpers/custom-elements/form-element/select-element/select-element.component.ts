@@ -198,7 +198,7 @@ export class SelectElementComponent
                     r['search'] = params['term'];
                     r['page'] = params['page'];
                     
-                    if(!th.createForm) r['editRecordId'] = th.record['id'];
+                    if(!th.createForm && th.record != null) r['editRecordId'] = th.record['id'];
                     
                     if(th.upColumnName.length == 0) return r;
 
