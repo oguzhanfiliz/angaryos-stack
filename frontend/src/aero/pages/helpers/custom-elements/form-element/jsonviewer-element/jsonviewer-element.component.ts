@@ -2,6 +2,9 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { BaseHelper } from './../../../base';
 import { MessageHelper } from './../../../message';
 
+declare var jsonTree: any;
+declare var $: any;
+
 @Component(
 {
     selector: 'jsonviewer-element',

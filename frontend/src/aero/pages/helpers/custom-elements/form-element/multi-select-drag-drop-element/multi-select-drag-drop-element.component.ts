@@ -195,7 +195,17 @@ export class MultiSelectDragDropElementComponent
                 }
 
             if(control) continue;
-
+            
+            control = false;
+            for(var j = 0; j < this.deleted.length; j++)
+                if(this.deleted[j]['source'] == temp[i]['source'])
+                {
+                    control = true;
+                    break;
+                }
+                
+            if(control) continue;
+            
             this.val.push({source: temp[i]['source'], display: temp[i]['display']});
         }
     }

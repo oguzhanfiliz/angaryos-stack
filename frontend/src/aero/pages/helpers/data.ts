@@ -298,7 +298,7 @@ export abstract class DataHelper
                 data = this.convertDataByGuiTypeFiles(type, data, relation);
                 break;
             case "boolean":
-                data = this.convertDataByGuiTypeBoolean(type, data, relation);
+                data = this.convertDataByGuiTypeBoolean(type, data);
                 break;
             case "datetime":
             case "date":
@@ -363,7 +363,7 @@ export abstract class DataHelper
         return BaseHelper.objectToJsonStr(data);
     }
 
-    public static convertDataByGuiTypeBoolean(guiType, data, relation)
+    public static convertDataByGuiTypeBoolean(guiType, data)
     {
         switch(guiType)
         {

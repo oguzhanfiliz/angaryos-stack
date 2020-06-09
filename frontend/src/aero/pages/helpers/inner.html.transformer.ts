@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { BaseHelper } from './base';
 import { SessionHelper } from './session';
 import { GeneralHelper } from './general';
+import { MessageHelper } from './message';
 
 declare var $: any;
 
@@ -17,7 +18,8 @@ export class InnerHtmlTransformerDirective
         private el: ElementRef, 
         private router: Router,
         private sessionHelper: SessionHelper,
-        private generalHelper: GeneralHelper
+        private generalHelper: GeneralHelper,
+        private messageHelper: MessageHelper
     ) { }
 
     @HostListener('click', ['$event'])
