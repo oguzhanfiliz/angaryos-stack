@@ -54,6 +54,31 @@ export class ColumnArrayElementComponent
         return type == "files";
     }
     
+    isImageFile(file)
+    {
+        if(file == null) return false;
+        if(file == "") return false;
+
+        var imgExts = ["jpg", "png", "gif"]
+        var temp = file["big"].split('.');
+        var ext = temp[temp.length-1];
+
+        return imgExts.includes(ext);
+    }
+    
+    getFileIconUrl(fileUrl)
+    {
+        var temp = fileUrl.split('.');
+        var ext = temp[temp.length-1];
+
+        var iconBaseUrl = "assets/img/";
+        
+        switch(ext)
+        {
+            default: return iconBaseUrl+"download_file.png";
+        }
+    }
+    
     isJsonViewerColumn(columnName)
     {
         var type = this.getDataFromColumnArray('columns.'+columnName+'.gui_type_name').split(":")[0];
@@ -78,6 +103,7 @@ export class ColumnArrayElementComponent
             var temp = { };
             temp['small'] = BaseHelper.getFileUrl(data[i], 's_');
             temp['big'] = BaseHelper.getFileUrl(data[i], 'b_');
+            temp['org'] = BaseHelper.getFileUrl(data[i], '');
 
             rt.push(temp);
         }

@@ -11,15 +11,27 @@
                 [style.cursor]="getCursorStyleForDataColumn(columnName)"
                 [innerHTML]="getConvertedDataForGuiByColumnName(columnName)" innerHtmlTransformer>
             </td>
+            
             <td *ngIf="isFileColumn(columnName)">
-                <a data-fancybox="gallery"
-                    *ngFor="let i of getObjectKeys(getFileUrls(record[columnName]))"
-                    href="{{ getFileUrls(record[columnName])[i]['big'] }}"
-                    >
+                <span *ngFor="let i of getObjectKeys(getFileUrls(record[columnName]))">                                                                    
+                    <a  data-fancybox="gallery" *ngIf="isImageFile(getFileUrls(record[columnName])[i])"
+                        href="{{ getFileUrls(record[columnName])[i]['big'] }}"
+                        >
 
                     <img class='rounded-circle file-preview' src="{{ getFileUrls(record[columnName])[i]['small'] }}">
-                </a>
+                    </a>
+
+                    <a target="_blank" *ngIf="!isImageFile(getFileUrls(record[columnName])[i])"
+                        href="{{ getFileUrls(record[columnName])[i]['org'] }}"
+                        >
+
+                    <img 
+                        class='rounded-circle file-preview' 
+                        src="{{ getFileIconUrl(getFileUrls(record[columnName])[i]['org']) }}">
+                    </a>
+                </span>                                                                                                                             
             </td>
+            
             <td *ngIf="isGeoColumn(columnName)">
                 <geo-preview-element 
                     *ngIf="isGeoColumn(columnName)" 
