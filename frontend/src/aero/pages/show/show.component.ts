@@ -62,6 +62,11 @@ export class ShowComponent
 
     /****    Data Functions     ****/
 
+    getTitleOrDefault(title, defaultTitle)
+    {
+        return DataHelper.getTitleOrDefault(title, defaultTitle);
+    }
+
     getJson(data)
     {
         return BaseHelper.objectToJsonStr(data);

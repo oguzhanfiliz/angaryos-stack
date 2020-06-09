@@ -1,0 +1,18 @@
+<textarea *ngIf="!readOnly" style="background-color: white;"
+    (change)="handleChange($event)" 
+    value="{{ value }}" 
+    class="{{ class }}"        
+    placeholder="{{ placeholder }}"        
+    name="{{ name }}" id="{{ name }}"></textarea>
+
+<div *ngIf="readOnly && !newPage" class="jsonviewer">
+    <div [id]="getRecordData('id')+'-'+name"></div>
+</div>
+
+<span *ngIf="newPage && value != ''"
+    style="cursor: pointer" 
+    (click)="openInNewPage()" 
+    class="badge badge-primary">
+    
+    {{ placeholder }}
+</span>

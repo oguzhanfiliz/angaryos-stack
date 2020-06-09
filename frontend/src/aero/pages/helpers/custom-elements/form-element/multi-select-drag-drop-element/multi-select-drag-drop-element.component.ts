@@ -43,6 +43,7 @@ export class MultiSelectDragDropElementComponent
     baseElementSelector = "";
     val = [];
     list = [];
+    deleted = [];
 
     constructor(
         private sessionHelper: SessionHelper,
@@ -107,15 +108,41 @@ export class MultiSelectDragDropElementComponent
 
     drop(event: CdkDragDrop<string[]>) 
     {
-        if (event.previousContainer === event.container) 
+        if (event.previousContainer === event.container)
             moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);
         else 
+        {
+            if(event.container.id == "cdk-drop-list-0")
+                this.addToDeletedList(event.previousContainer.data[event.previousIndex]);
+            else
+                this.removeFromDeletedList(event.previousContainer.data[event.previousIndex]);
+            
             transferArrayItem(event.previousContainer.data,
                                 event.container.data,
                                 event.previousIndex,
                                 event.currentIndex);
+        }
 
         this.selectedChanged();
+    }
+    
+    addToDeletedList(item)
+    {
+        for(var i = 0; i < this.deleted.length; i++)
+            if(this.deleted[i]['source'] == item['source'])
+                return;
+                
+        this.deleted.push(item);
+    }
+    
+    removeFromDeletedList(item)
+    {
+        for(var i = 0; i < this.deleted.length; i++)
+            if(this.deleted[i]['source'] == item['source'])
+            {
+                this.deleted.splice(i, 1);
+                return;
+            }
     }
 
     selectedChanged()
@@ -147,13 +174,13 @@ export class MultiSelectDragDropElementComponent
     fillSelectedElements()
     {
         var temp = null;
-        if(this.createForm)
+        if(this.createForm && this.valueJson == "")
         {
             if(this.defaultData == null || this.defaultData == "") return;
 
             temp = BaseHelper.jsonStrToObject(this.defaultData);
         }
-        else
+        else if(this.valueJson != null && this.valueJson != "")
             temp = BaseHelper.jsonStrToObject(this.valueJson);
                 
         for(var i = 0; i < temp.length; i++)

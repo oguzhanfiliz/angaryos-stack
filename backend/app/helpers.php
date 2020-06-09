@@ -74,6 +74,8 @@ function dd_live(...$data)
     $userId = @\Auth::user()->id;
     if(strlen($userId) == 0) return;
     
+    if(count($data) == 1) $data = $data[0];
+
     $ids = json_decode(DEBUG_USER_IDS);
     if(in_array($userId, $ids)) dd($data);
 } 

@@ -7,7 +7,9 @@
             <th class="title">
                 {{ getDataFromColumnArray('columns.'+columnName+'.display_name') }}
             </th>
-            <td *ngIf="!isGeoColumn(columnName) && !isFileColumn(columnName)" [innerHTML]="getConvertedDataForGuiByColumnName(columnName)">
+            <td *ngIf="!isGeoColumn(columnName) && !isFileColumn(columnName) && !isJsonViewerColumn(columnName)" 
+                [style.cursor]="getCursorStyleForDataColumn(columnName)"
+                [innerHTML]="getConvertedDataForGuiByColumnName(columnName)" innerHtmlTransformer>
             </td>
             <td *ngIf="isFileColumn(columnName)">
                 <a data-fancybox="gallery"
@@ -26,6 +28,16 @@
                     srid="{{ getDataFromColumnArray('columns.'+columnName+'.srid') }}"
                     wkt="{{ this.getDataFromRecord(columnName) }}">
                 </geo-preview-element>
+            </td>
+            <td *ngIf="isJsonViewerColumn(columnName)">
+                <jsonviewer-element *ngIf="isJsonViewerColumn(columnName)" 
+                    type="{{ getDataFromColumnArray('columns.'+columnName+'.gui_type_name') }}"
+                    placeholder="{{ getDataFromColumnArray('columns.'+columnName+'.display_name') }}"
+                    value="{{ this.getDataFromRecord(columnName) }}"
+                    name="{{ columnName }}"
+                    recordJson="{{ getJsonStrFromObject(record) }}"
+                    [readOnly]="true"                                                                
+                    class="{{ class }}"></jsonviewer-element>
             </td>
         </tr>
     </tbody>

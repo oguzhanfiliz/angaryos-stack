@@ -52,6 +52,8 @@ class BaseSubscriber
         
         $events->listen('record.selectColummnData.requested', 'App\Listeners\TableSubscriber@selectColumnDataRequested');
         $events->listen('record.realtionTableData.requested', 'App\Listeners\TableSubscriber@realtionTableDataRequested');
+                
+        $events->listen('record.relation.data.info.requested', 'App\Listeners\TableSubscriber@relationDataInfoRequested');
         
         
         $events->listen('record.quickSearch.requested', 'App\Listeners\TableSubscriber@quickSearch');

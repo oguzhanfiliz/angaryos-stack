@@ -3,10 +3,9 @@
         <div class="block-header"> 
             <div class="row">
                 <div class="col-lg-7 col-md-6 col-sm-12">
-                    <h2 [hidden]="getData('column_set.name_basic') != null && getData('column_set.name_basic').length > 0">
-                        {{ recordId == 0 ? 'Ekle' : 'Düzenle (' + recordId +')' }} 
+                    <h2>
+                        {{ getTitleOrDefault(getData('column_set.name_basic'), recordId == 0 ? 'Ekle' : 'Düzenle (' + recordId +')') }}
                     </h2>
-                    <h2 [hidden]="getData('column_set.name_basic') == null || getData('column_set.name_basic').length == 0">{{ getData('column_set.name_basic') }}</h2>
                     <button class="btn btn-sm btn-secondary btn-icon mobile_menu" type="button"><i class="zmdi zmdi-sort-amount-desc"></i></button>
                 </div>
                 <div class="col-lg-5 col-md-6 col-sm-12">                

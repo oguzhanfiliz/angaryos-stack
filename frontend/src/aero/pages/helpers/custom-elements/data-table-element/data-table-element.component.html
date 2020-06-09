@@ -163,7 +163,9 @@
                                                                 <!-- {{ getColumnGuiTypeForQuery(getData('columns.'+columnName+'.gui_type_name')) }} -->
                                                         </td>
                                                         <td>&nbsp;</td>
-                                                        <td class="clear-filter">
+                                                        <td *ngIf="getColumnGuiTypeForQuery(getData('columns.'+columnName+'.gui_type_name')) != 'disable'" 
+                                                            class="clear-filter">
+                                                            
                                                             <span (click)="clearColumnFilter(columnName)" class="ti-close"></span>
                                                         </td>
                                                         <td>&nbsp;</td>
@@ -257,7 +259,10 @@
                                                 <table class="light-table-force">
                                                     <tr>
                                                         <td>
-                                                            <div *ngIf="!isGeoColumn(columnName) && !isFileColumn(columnName)" [innerHTML]="convertDataForGui(record, columnName)"></div> 
+                                                            <div *ngIf="!isGeoColumn(columnName) && !isFileColumn(columnName) && !isJsonViewerColumn(columnName)" 
+                                                                [style.cursor]="getCursorStyleForDataColumn(columnName)"
+                                                                [innerHTML]="convertDataForGui(record, columnName)" 
+                                                                innerHtmlTransformer></div> 
                                                             
                                                             <div *ngIf="isFileColumn(columnName)">
                                                                 <span *ngFor="let i of getObjectKeys(getFileUrls(record[columnName]))">                                                                    
@@ -286,6 +291,17 @@
                                                                 srid="{{ getData('columns.'+columnName+'.srid') }}"
                                                                 wkt="{{ record[columnName] }}">
                                                             </geo-preview-element>
+                                                    
+                                                            <jsonviewer-element *ngIf="isJsonViewerColumn(columnName)" 
+                                                                type="{{ getData('columns.'+columnName+'.gui_type_name') }}"
+                                                                placeholder="{{ getData('columns.'+columnName+'.display_name') }}"
+                                                                value="{{ record[columnName] }}"
+                                                                name="{{ columnName }}"
+                                                                recordJson="{{ getJsonStrFromObject(record) }}"
+                                                                [readOnly]="true"                                                              
+                                                                [newPage]="true"                                                              
+                                                                class="{{ class }}"></jsonviewer-element>
+                                                    
                                                         </td><td align="right">
                                                             <span style="cursor: pointer;visibility: hidden;"
                                                                     *ngIf="getEditMode()" 

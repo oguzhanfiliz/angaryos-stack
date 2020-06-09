@@ -3,8 +3,9 @@
         <div class="block-header">
             <div class="row">
                 <div class="col-lg-7 col-md-6 col-sm-12">
-                    <h2 [hidden]="getData('column_set.name') != null && getData('column_set.name').length > 0">Bilgi Kartı</h2>
-                    <h2 [hidden]="getData('column_set.name') == null || getData('column_set.name').length == 0">{{ getData('column_set.name') }}</h2>
+                    <h2>
+                        {{ getTitleOrDefault(getData('column_set.name'), "Bilgi Kartı") }}
+                    </h2>
                     <button class="btn btn-secondary btn-sm btn-icon mobile_menu" type="button"><i class="zmdi zmdi-sort-amount-desc"></i></button>
                 </div>
                 <div class="col-lg-5 col-md-6 col-sm-12">                
@@ -20,7 +21,9 @@
                         <!-- None -->
                         <div *ngIf="getData('column_set.column_set_type') == 'none'">                           
                             <div *ngFor="let columnArray of getData('column_set.column_arrays');">
-                                <h4 *ngIf="columnArray.name_basic.substr(0,1) != ' '"> {{ columnArray.name_basic }}</h4>
+                                <h4>
+                                    {{ getTitleOrDefault(columnArray.name_basic, "") }}
+                                </h4>
                                 <column-array-element 
                                     defaultLimit = "{{ defaultLimit }}" 
                                     tableName = "{{ tableName }}" 

@@ -50,6 +50,16 @@ export abstract class DataHelper
 
     /****    Data Functions    ****/
 
+    public static getTitleOrDefault(title, defaultTitle)
+    {
+        if(title == null) return defaultTitle;
+        if(title == "") return defaultTitle;        
+        if(title.substr(0, 1) == " ") return defaultTitle;
+        if(title.substr(0, 1) == "*") return defaultTitle;
+
+        return title;
+    }
+
     public static getData(data, path = '')
     {        
         var array = path.split(".");
@@ -264,7 +274,7 @@ export abstract class DataHelper
 
     /****    Gui Type Function    ****/
 
-    public static convertDataForGui(record, columnName, type)
+    public static convertDataForGui(record, columnName, type, relation = null)
     {
         if(typeof type == "undefined") return "";
         if(type == null) return;
@@ -275,37 +285,57 @@ export abstract class DataHelper
         switch(type.split(':')[0])
         {
             case "codeeditor":
-                data = this.convertDataByGuiTypeText(type, data);
+                data = this.convertDataByGuiTypeText(type, data, relation);
                 return BaseHelper.htmlStripTags(data).replace("\n", '<br>');
                 break;
             case "text":
-                data = this.convertDataByGuiTypeText(type, data);
+                data = this.convertDataByGuiTypeText(type, data, relation);
                 break;
             case "money":
-                data = this.convertDataByGuiTypeMoney(type, data);
+                data = this.convertDataByGuiTypeMoney(type, data, relation);
                 break;
             case "files":
-                data = this.convertDataByGuiTypeFiles(type, data);
+                data = this.convertDataByGuiTypeFiles(type, data, relation);
                 break;
             case "boolean":
-                data = this.convertDataByGuiTypeBoolean(type, data);
+                data = this.convertDataByGuiTypeBoolean(type, data, relation);
                 break;
             case "datetime":
             case "date":
-                data = this.convertDataByGuiTypeDateTime(type, data);
+                data = this.convertDataByGuiTypeDateTime(type, data, relation);
                 break;
             case "jsonb":
-                data = this.convertDataByGuiTypeJsonb(type, data);
+            case "json":
+                data = this.convertDataByGuiTypeJsonb(type, data, relation);
                 break;
             case "multiselect":
             case "multiselectdragdrop":
-                data = this.convertDataByGuiTypeMultiSelect(type, data);
+                data = this.convertDataByGuiTypeMultiSelect(type, data, relation);
+                break;
+            case "select":
+                data = this.convertDataByGuiTypeSelect(record, columnName, type, data, relation);
                 break;
         }
         return data;
     }
+    
+    private static getRelationDataLink(record, columnName, guiType, data, relation)
+    {
+        if(relation == null) return "";
+        
+        var temp = window.location.href;
+        temp = temp.replace(BaseHelper.baseUrl, "");
+        var segments = temp.split('/');
+        
+        var url = BaseHelper.backendUrl + BaseHelper.token;
+        url += "/tables/"+segments[1]+"/"+record['id']+"/getRelationDataInfo/"+columnName;        
+        
+        var html = " <i type='relationDataInfo' info-url='"+url+"' style='font-size: 12;' class='zmdi zmdi-open-in-new'></i innerHtmlTransformer>";
+        
+        return html;
+    }
 
-    public static convertDataByGuiTypeMultiSelect(guiType, data)
+    public static convertDataByGuiTypeMultiSelect(guiType, data, relation)
     {
         if(typeof data != "object")
             data = BaseHelper.jsonStrToObject(data);
@@ -320,14 +350,20 @@ export abstract class DataHelper
         
         return html;
     }
+    
+    public static convertDataByGuiTypeSelect(record, columnName, guiType, data, relation)
+    {
+        data = data + this.getRelationDataLink(record, columnName, guiType, data, relation);
+        return data;
+    }
 
-    public static convertDataByGuiTypeJsonb(guiType, data)
+    public static convertDataByGuiTypeJsonb(guiType, data, relation)
     {
         if(typeof data == "string") return data;
         return BaseHelper.objectToJsonStr(data);
     }
 
-    public static convertDataByGuiTypeBoolean(guiType, data)
+    public static convertDataByGuiTypeBoolean(guiType, data, relation)
     {
         switch(guiType)
         {
@@ -336,7 +372,7 @@ export abstract class DataHelper
         }
     }
 
-    public static convertDataByGuiTypeFiles(guiType, data)
+    public static convertDataByGuiTypeFiles(guiType, data, relation)
     {
         if(data == null) return null;
 
@@ -357,13 +393,13 @@ export abstract class DataHelper
         return rt;
     }
 
-    public static convertDataByGuiTypeText(guiType, data)
+    public static convertDataByGuiTypeText(guiType, data, relation)
     {
         if(data == null) return null;
         return data.substr(0, 100) + (data.length > 100 ? '...' : '');
     }
     
-    public static convertDataByGuiTypeMoney(guiType, data)
+    public static convertDataByGuiTypeMoney(guiType, data, relation)
     {
         var unit = guiType.split(':')[1].toUpperCase();
         data = BaseHelper.formatMoney(data, 2, '.', ',')//data.replace(/(\d)(?=(\d{3})+\.)/g, '$1,');  
@@ -371,7 +407,7 @@ export abstract class DataHelper
         return  data + " " + unit;
     }
     
-    public static convertDataByGuiTypeDateTime(guiType, data)
+    public static convertDataByGuiTypeDateTime(guiType, data, relation)
     {
         switch(guiType)
         {

@@ -16,9 +16,9 @@ $table_id_relation =
 
 $column_id_relation =
 [
-    'relation_sql' => 'select id, display_name from columns',
+    'relation_sql' => 'select * from columns',
     'relation_source_column' => 'id',
-    'relation_display_column' => 'display_name',
+    'relation_display_column' => '"display_name" || \' (\' || "name" || \')\'',
 ];
 
 /*$srid_relation =

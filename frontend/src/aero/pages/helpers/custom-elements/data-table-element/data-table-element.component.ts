@@ -363,8 +363,19 @@ export class DataTableElementComponent
     {
         this.generalHelper.navigate("table/"+this.tableName+"/"+record.id+"/edit")
     }
-
+    
     clone(record)
+    {
+        this.messageHelper.swalConfirm("Emin misiniz?", "Bu kaydı klonlamak istediğinize emin misiniz?", "warning")
+        .then(async (r) =>
+        {
+            if(r != true) return;
+
+            this.cloneConfirmed(record);
+        });
+    }
+
+    cloneConfirmed(record)
     {
         var url = this.sessionHelper.getBackendUrlWithToken()+"tables/"+this.tableName+"/"+record.id+"/clone";
         
@@ -588,6 +599,12 @@ export class DataTableElementComponent
         var type = this.getData('columns.'+columnName+'.gui_type_name');
         return type == "files";
     }
+    
+    isJsonViewerColumn(columnName)
+    {
+        var type = this.getData('columns.'+columnName+'.gui_type_name').split(":")[0];
+        return type == "jsonviewer";
+    }
 
     isImageFile(file)
     {
@@ -636,10 +653,19 @@ export class DataTableElementComponent
         return rt;
     }
     
+    getCursorStyleForDataColumn(columnName)
+    {
+        var relation = this.getData('columns.'+columnName+'.column_table_relation_id');
+        if(relation == null) return "";
+        
+        return  'pointer';
+    }
+    
     convertDataForGui(record, columnName)
     {
         var type = this.getData('columns.'+columnName+".gui_type_name");
-        var data = DataHelper.convertDataForGui(record, columnName, type);
+        var relation = this.getData('columns.'+columnName+".column_table_relation_id");
+        var data = DataHelper.convertDataForGui(record, columnName, type, relation);
         return this.sanitizer.bypassSecurityTrustHtml(data);
     }
 
@@ -738,10 +764,11 @@ export class DataTableElementComponent
         switch (guiType.split(':')[0]) 
         {
             case 'text': 
-            case 'rich_text': 
+            case 'richtext': 
             case 'codeeditor': 
-            case 'files': 
-            case 'password': 
+            case 'json': 
+            case 'jsonb': 
+            case 'jsonviewer': 
                 return 'string';
             case 'select':
             case 'multiselectdragdrop':
@@ -752,6 +779,9 @@ export class DataTableElementComponent
             case 'multilinestring':
             case 'polygon': 
                 return 'multipolygon';
+            case 'files': 
+            case 'password': 
+                return 'disable';
             default: return guiType;
         }
     }  
@@ -759,6 +789,11 @@ export class DataTableElementComponent
     getFilterJson(selectedFilter)
     {
         return BaseHelper.objectToJsonStr(this.selectedFilter);
+    }
+    
+    getJsonStrFromObject(obj)
+    {
+        return BaseHelper.objectToJsonStr(obj);
     } 
 
     getBasicFilterObject(columnName)
@@ -983,7 +1018,11 @@ export class DataTableElementComponent
 
         this.params.page = 1;
         this.saveParamsToLocal();
-        this.loadDataInterval(this.loadDataTimeout, true);
+        
+        var to = this.loadDataTimeout;
+        if(typeof event['enterKey'] != "undefined") to = 10;
+        
+        this.loadDataInterval(to, true);
     }
 
     addFilterFromEvent(columnName, event, filterType = -1)
@@ -1050,7 +1089,7 @@ export class DataTableElementComponent
         delete this.params.filters[columnName];
 
         this.saveParamsToLocal()
-        this.loadDataInterval(this.loadDataTimeout, true);
+        this.loadDataInterval(10, true);
     }
 
     dropColumn(event: CdkDragDrop<string[]>) 

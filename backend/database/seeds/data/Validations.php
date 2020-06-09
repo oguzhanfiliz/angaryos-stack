@@ -119,9 +119,19 @@ $return = ($temp == $value);
 ?>';
 
 $validations['valid_validations']['php_code'] = '<?php 
+
+$defaultRules = ["accepted", "active_url", "after", "after_or_equal", "alpha", "alpha_dash", "alpha_num", "array", "bail", "before", "before_or_equal", "between", "boolean", "confirmed", "date", "date_equals", "date_format", "different", "digits", "digits_between", "dimensions", "distinct", "email", "ends_with", "exclude_if", "exclude_unless", "exists", "file", "filled", "gt", "gte", "image", "in", "in_array", "integer", "ip", "ipv4", "ipv6", "json", "lt", "lte", "max", "mimetypes", "mimes", "min", "not_in", "not_regex", "nullable", "numeric", "password", "present", "regex", "required", "required_if", "required_unless", "required_with", "required_with_all", "required_without", "required_without_all", "same", "size", "starts_with", "string", "timezone", "unique", "url", "uuid"];
+
 $temp = explode(\':\', $value)[0];
+if(in_array($temp, $defaultRules))
+{
+    $return = TRUE;
+    return;
+}
+
 $temp = get_attr_from_cache(\'validations\', \'name\', $temp, \'id\');
 $return = ($temp != NULL);
+
 ?>';
 
 $validations['column_table_relation_control']['php_code'] = '<?php

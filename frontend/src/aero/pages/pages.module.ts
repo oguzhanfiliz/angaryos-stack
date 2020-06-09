@@ -8,11 +8,14 @@ import { DragDropModule } from '@angular/cdk/drag-drop';
 
 import { RouterModule } from '@angular/router';
 
+import { InnerHtmlTransformerDirective } from './helpers/inner.html.transformer';
+
 import { PagesRoutingModule } from './pages-routing.module';
 
 import { PagesComponent } from './pages.component';
 
 import { DashboardComponent } from './dashboard/dashboard.component';
+import { RedirectComponent } from './redirect/redirect.component';
 import { NotFoundComponent } from './not-found/not-found.component';
 import { ListComponent } from './list/list.component';
 import { SearchComponent } from './search/search.component';
@@ -53,12 +56,17 @@ import { ColumnArrayFormElementComponent } from './helpers/custom-elements/colum
 import { GeoPreviewElementComponent } from './helpers/custom-elements/geo-preview-element/geo-preview-element.component';
 
 
+import { JsonViewerElementComponent } from './helpers/custom-elements/form-element/jsonviewer-element/jsonviewer-element.component';
+
+
 
 @NgModule({
   declarations: 
   [ 
+    InnerHtmlTransformerDirective,
     PagesComponent,
     DashboardComponent,
+    RedirectComponent,
     ListComponent,
     SearchComponent,
     ArchiveComponent,
@@ -89,6 +97,8 @@ import { GeoPreviewElementComponent } from './helpers/custom-elements/geo-previe
     PhoneElementComponent,
     MoneyElementComponent,
     RichTextElementComponent,
+    
+    JsonViewerElementComponent,
     
 
     DataTableElementComponent,
@@ -135,6 +145,8 @@ import { GeoPreviewElementComponent } from './helpers/custom-elements/geo-previe
     PhoneElementComponent,
     MoneyElementComponent,
     RichTextElementComponent,
+    
+    JsonViewerElementComponent,
 
     DataTableElementComponent,
     DetailFilterElementComponent,
@@ -170,6 +182,8 @@ export class PagesModule
     'phone-element': PhoneElementComponent,
     'money-element': MoneyElementComponent,
     'rich-text-element': RichTextElementComponent,
+    
+    'jsonviewer-element': JsonViewerElementComponent,
     
     'data-table-element': DataTableElementComponent,
     'detail-filter-element': DetailFilterElementComponent,

@@ -120,7 +120,7 @@ trait TableSubscriberTrait
         $model->addSorts($params->model, $params->columns, $params->sorts);
         $model->addWheres($params->model, $params->columns, $params->filters);
         $model->addSelects($params->model, $params->columns);
-        $model->addFilters($params->model, $params->table_name);
+        $model->addFilters($params->model, $params->table_name/*, 'list'*/);//select içinde edit ve delete filtreleri de olması için gerekli
         
         $params->model->addSelect($params->table_name.'.id');
         $params->model->groupBy($params->table_name.'.id');
@@ -144,7 +144,27 @@ trait TableSubscriberTrait
         foreach($records as $i => $record)
             foreach($infos as $columnName => $authPrefix)
             {
-                if(isset($record->{$columnName})) continue;
+                if(!isset($auths[$authPrefix]))
+                {
+                    $records[$i]->{$columnName} = FALSE;
+                    continue;
+                }
+
+                if(is_object($record))
+                {
+                    if(get_class($record) == 'stdClass')
+                        $keys = array_keys((array)$record);
+                    else
+                        dd('fillRecordCanInfos66');//uzun süre buraya düşmezse else kısmını sil. bellki tüm kayıtlar DB::ile çekilip geliyor
+                }
+                
+                if(in_array($columnName, $keys))
+                {
+                    if(strlen($records[$i]->{$columnName}) == 0) 
+                        $records[$i]->{$columnName} = FALSE;
+
+                    continue;
+                }
                 
                 $records[$i]->{$columnName} = isset($auths[$authPrefix]);
             }
@@ -898,7 +918,7 @@ trait TableSubscriberTrait
         //edit fomdaki datalar için belki gerekebilir
         //$model->addJoinsWithColumns($params->model, $params->columns);
         
-        $model->addFilters($params->model, $params->table);        
+        $model->addFilters($params->model, $params->table, 'update');        
         $params->model->where($params->table.'.id', $model->id);        
         $params->model->groupBy($params->table.'.id');
         
@@ -997,7 +1017,7 @@ trait TableSubscriberTrait
         $model->addSelects($params->model, $params->columns);
         $params->model->addSelect($params->table.'.id');
         
-        $model->addFilters($params->model, $params->table);
+        $model->addFilters($params->model, $params->table, 'show');
         
         $params->model->where($params->table.'.id', $model->id);
         

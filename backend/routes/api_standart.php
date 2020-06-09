@@ -53,6 +53,7 @@ Route::group(['prefix' => '{token}'], function ()
     Route::get('tables/{table_name}/{id}/archive', 'TableController@archive');
     Route::get('tables/{table_name}/{archive_id}/restore', 'TableController@restore');
     Route::get('tables/{table_name}/{id}', 'TableController@show');
+    Route::get('tables/{table_name}/{id}/getRelationDataInfo/{column_name}', 'TableController@getRelationDataInfo'); 
 
     
     Route::get('tables/{table_name}/{id}/getRelationTableData/{tree}', 'TableController@getRelationTableData');

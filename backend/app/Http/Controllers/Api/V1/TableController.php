@@ -276,6 +276,17 @@ class TableController extends Controller
         return helper('response_success', $data);
     }
     
+    public function getRelationDataInfo(User $user, BaseModel $table, BaseModel $record, BaseModel $column)
+    {
+        send_log('info', 'Request Get Reletion Data Info');
+        
+        $data = Event::dispatch('record.relation.data.info.requested', [$record, $column])[0];
+        
+        send_log('info', 'Response Get Reletion Data Info', $data);
+        
+        return helper('response_success', $data);
+    }
+    
     
     
     /****    Additional Functions    ****/

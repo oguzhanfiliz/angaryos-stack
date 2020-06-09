@@ -182,8 +182,6 @@ class BaseModel extends Model
             if(is_array($this->{$columnName}))
                 $json = json_encode($this->{$columnName});
           
-        //Kaydın id si önemli değil kim olursa olsun deparment_id = 1 ise bilgi işlem müdürlüğüdür
-        //$cacheName = 'tableName:'.$this->getTable().'|id:'.$this->id.'|columnName:'.$columnName.'|columnData:'.$json.'|relationData';
         $cacheName = 'tableName:'.$this->getTable().'|columnName:'.$columnName.'|columnData:'.$json.'|relationData';
         $th = $this;
         

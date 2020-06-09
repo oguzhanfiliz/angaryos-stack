@@ -270,6 +270,11 @@ export class FormComponent
 
     /****    Data Functions    ****/
 
+    getTitleOrDefault(title, defaultTitle)
+    {
+        return DataHelper.getTitleOrDefault(title, defaultTitle);
+    }
+
     save()
     {
         var url = this.sessionHelper.getBackendUrlWithToken()+"tables/"+this.tableName+"/";

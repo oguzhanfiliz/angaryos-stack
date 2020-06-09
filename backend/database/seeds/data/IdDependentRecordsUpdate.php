@@ -76,11 +76,9 @@ $update_data =
     $column_id_relation['relation_sql'] => 
     [
         'relation_table_id' => $tables['columns']->id,
-        'relation_source_column_id' => $columns['id']->id,
-        'relation_display_column_id' => $columns['display_name']->id,
-        'relation_sql' => NULL,
-        'relation_source_column' => NULL,
-        'relation_display_column' => NULL
+        'relation_source_column' => 'id',
+        'relation_display_column' => '"display_name" || \' (\' || "name" || \')\'',
+        'relation_sql' => NULL
     ],
     $column_validation_ids_relation['relation_sql'] => 
     [

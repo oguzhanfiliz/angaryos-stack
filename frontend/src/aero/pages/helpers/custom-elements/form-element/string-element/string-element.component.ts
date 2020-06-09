@@ -23,4 +23,15 @@ export class StringElementComponent
     {
         this.changed.emit(event);
     }
+    
+    handleKeyDown(event)
+    {
+        switch(event.keyCode)
+        {
+            case 13://enter
+                event['enterKey'] = true;
+                this.changed.emit(event);
+                break;
+        }
+    }
 }

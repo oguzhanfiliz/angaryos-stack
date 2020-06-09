@@ -1,6 +1,7 @@
 import { PagesComponent } from './pages.component';
 
-import { DashboardComponent } from './dashboard/dashboard.component';
+import { DashboardComponent } from './dashboard/dashboard.component'; 
+import { RedirectComponent } from './redirect/redirect.component';
 import { LinkPageComponent } from './link-page/link-page.component';
 import { ListComponent } from './list/list.component';
 import { SearchComponent } from './search/search.component';
@@ -49,6 +50,10 @@ export const routeRules =
         {
             path: 'table/:tableName/:recordId',
             component: ShowComponent 
+        },
+        {
+            path: 'table/:tableName/:recordId/getRelationDataId/:columnName',
+            component: RedirectComponent 
         },
         {
             path: 'table/:tableName/:recordId/edit',

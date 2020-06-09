@@ -72,6 +72,9 @@ trait BaseModelGetRelationDataTrait
             $recs[$key]->_source_column_name = 'source';
             $recs[$key]->_display_column_name = 'display';
             
+            $recs[$key]->tableName = $table->name;
+            $recs[$key]->recordId = $recs[$key]->id;
+            
             $key = (int)array_search($value->id, $params->data_array);
             $sorted[$key] = $value;
         }
@@ -105,6 +108,9 @@ trait BaseModelGetRelationDataTrait
             $temp[$key]->_source_column_name = $source;
             $temp[$key]->_display_column_name = $display;
             
+            $temp[$key]->tableName = $table;
+            $temp[$key]->recordId = $temp[$key]->id;
+            
             $key = (int)array_search($value->id, $params->data_array);
             $sorted[$key] = $value;
         }
@@ -137,6 +143,9 @@ trait BaseModelGetRelationDataTrait
             $temp[$key]->_source_column_name = $source;
             $temp[$key]->_display_column_name = '_display_column';
             
+            $temp[$key]->tableName = $table;
+            $temp[$key]->recordId = $temp[$key]->id;
+            
             $key = (int)array_search($value->id, $params->data_array);
             $sorted[$key] = $value;
         }
@@ -165,6 +174,9 @@ trait BaseModelGetRelationDataTrait
                     $params->data_array);
 
             $temp = DB::select($sql);
+            
+            $tableName = explode(' from ', strtolower($sql))[1];
+            $tableName = explode(' ', $tableName)[0];
         }
         
         foreach($temp as $key => $value)
@@ -173,6 +185,9 @@ trait BaseModelGetRelationDataTrait
             $temp[$key]->_display_column = $temp[$key]->{$params->relation->relation_display_column};
             $temp[$key]->_source_column_name = $params->relation->relation_source_column;
             $temp[$key]->_display_column_name = $params->relation->relation_display_column;
+            
+            $temp[$key]->tableName = $tableName;
+            $temp[$key]->recordId = $temp[$key]->id;
         }
         
         if($params->column->column_db_type_id == $params->relation->column_db_type_id) $temp = @$temp[0];

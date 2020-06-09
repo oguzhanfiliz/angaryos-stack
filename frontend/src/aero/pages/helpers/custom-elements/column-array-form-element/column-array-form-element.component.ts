@@ -65,7 +65,6 @@ export class ColumnArrayFormElementComponent
 
     inFormSavedSuccess(data)
     {
-        console.log(data);
         this.formSaved.emit(data);
         this.closeModal(this.inFormElementId+'inFormModal');
     }
@@ -93,6 +92,17 @@ export class ColumnArrayFormElementComponent
     }
     
     cloneRelationRecord(columnName)
+    {
+        this.messageHelper.swalConfirm("Emin misiniz?", "Bu kaydı klonlamak istediğinize emin misiniz?", "warning")
+        .then(async (r) =>
+        {
+            if(r != true) return;
+
+            this.cloneRelationRecordConfirmed(columnName);
+        });
+    }
+    
+    cloneRelationRecordConfirmed(columnName)
     {
         var tableName = this.getDataFromColumnArray('columns.'+columnName+'.relation.table_name');
         var recordId = this.getSelectedOptionValue(columnName);

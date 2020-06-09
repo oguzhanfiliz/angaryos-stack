@@ -53,6 +53,17 @@ export class ColumnArrayElementComponent
         var type = this.getDataFromColumnArray('columns.'+columnName+'.gui_type_name');
         return type == "files";
     }
+    
+    isJsonViewerColumn(columnName)
+    {
+        var type = this.getDataFromColumnArray('columns.'+columnName+'.gui_type_name').split(":")[0];
+        return type == "jsonviewer";
+    }
+    
+    getJsonStrFromObject(obj)
+    {
+        return BaseHelper.objectToJsonStr(obj);
+    } 
 
     getFileUrls(data)
     {
@@ -83,11 +94,21 @@ export class ColumnArrayElementComponent
     {
         return DataHelper.getData(this.record, path);
     }
+    
+    getCursorStyleForDataColumn(columnName)
+    {
+        var relation = this.getDataFromColumnArray('columns.'+columnName+'.column_table_relation_id');
+        if(relation == null) return "";
+        
+        return  'pointer';
+    }
 
     getConvertedDataForGuiByColumnName(columnName)
     {
         var type = this.getDataFromColumnArray('columns.'+columnName+".gui_type_name");
-        var data = DataHelper.convertDataForGui(this.getDataFromRecord(), columnName, type);
+        var relation = this.getDataFromColumnArray('columns.'+columnName+".column_table_relation_id");
+        var data = DataHelper.convertDataForGui(this.getDataFromRecord(), columnName, type, relation);
+        
         return this.sanitizer.bypassSecurityTrustHtml(data);        
     }
 

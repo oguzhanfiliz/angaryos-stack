@@ -159,4 +159,28 @@ class TableSubscriber
     {
         return $this->getDataForQuickSearch($model, $params, $words);
     }
+    
+    public function relationDataInfoRequested($record, $column)
+    {
+        $relationRecord = $record->getRelationData($column->name);
+        
+        $array = is_array($relationRecord);
+        
+        if(!$array) $relationRecord = [$relationRecord];
+        $return = [];
+        
+        foreach($relationRecord as $temp)
+        {
+            $temp = 
+            [
+                'tableName' => $temp->tableName,
+                'tableId' => get_attr_from_cache('tables', 'name', $temp->tableName, 'id'),
+                'recordId' => $temp->recordId
+            ];
+            
+            array_push($return, $temp);
+        }
+      
+        return $array ? $return : $return[0]; 
+    }
 }

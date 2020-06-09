@@ -62,11 +62,11 @@ trait BaseModelGetDataSelectTrait
     {
         $table = get_attr_from_cache('tables', 'id', $params->relation->relation_table_id, '*');
         $source = $params->relation->relation_source_column;
-        $display = ' '.$params->relation->relation_display_column;        
+        $display = $params->relation->relation_display_column;        
         
         $params->table_alias  = $params->column->name.'___'.$table->name.$params->relation->id;
         $params->relation_source_column_with_alias = $params->table_alias.'.'.$source;
-        $params->column_with_alias = str_replace(' "', ' '.$params->table_alias.'."', $display);
+        $params->column_with_alias = $display;
         
         $this->addSelectForColumnsDBTypesStatus($params);
     }
@@ -109,6 +109,8 @@ trait BaseModelGetDataSelectTrait
     
     public function addSelectForColumnsDBTypesStatus($params)
     {
+        $params->column_with_alias = str_replace(' "', ' '.$params->table_alias.'."', ' '.$params->column_with_alias);
+
         ColumnClassificationLibrary::relationDbTypes(   $this, 
                                                         __FUNCTION__, 
                                                         $params->column, 
@@ -118,8 +120,8 @@ trait BaseModelGetDataSelectTrait
     
     public function addSelectForColumnsDBTypesStatusForOneToOne($params)
     {
-        $temp = "string_agg($params->column_with_alias::text, ',')";
-        $temp = "split_part($temp, ',', 1)";
+        $temp = "string_agg($params->column_with_alias::text, '***')";
+        $temp = "split_part($temp, '***', 1)";
         $temp .= ' as ' . $params->column->name;
         
         $params->model->addSelect(DB::raw($temp));

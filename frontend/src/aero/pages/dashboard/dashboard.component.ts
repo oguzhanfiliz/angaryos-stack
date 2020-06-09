@@ -1,5 +1,7 @@
 import {Component} from '@angular/core';
 
+import Swal from 'sweetalert2';
+
 import { BaseHelper } from './../helpers/base';
 import { SessionHelper } from './../helpers/session';
 import { MessageHelper } from './../helpers/message';

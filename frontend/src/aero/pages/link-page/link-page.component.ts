@@ -114,6 +114,16 @@ export class LinkPageComponent
     return url;
   }
   
+  goToPage(page)
+  {
+      this.generalHelper.navigate(page);
+  }
+  
+  getDashboardImageUrl()
+  {
+      return BaseHelper.backendBaseUrl+"uploads/2020/01/01/dashboard.png";
+  }
+  
   linkClicked()
   {
     BaseHelper.writeToPipe('loadPageScriptsLoaded', false);

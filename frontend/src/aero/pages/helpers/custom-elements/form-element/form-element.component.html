@@ -9,7 +9,7 @@ showFilterTypesSelect="{{ showFilterTypesSelect }}"
 filterType="{{ filterType }}"
 class="{{ class }}"></text-element>
 
-<text-element *ngIf="type == 'jsonb'" 
+<text-element *ngIf="type == 'jsonb' || type == 'json'" 
 (changed)="handleChanged($event)"
 value="{{ valueJson }}"
 defaultData="{{ defaultData }}"
@@ -20,7 +20,16 @@ showFilterTypesSelect="{{ showFilterTypesSelect }}"
 filterType="{{ filterType }}"
 class="{{ class }}"></text-element>
 
-<rich-text-element *ngIf="type == 'rich_text'" 
+<jsonviewer-element *ngIf="type == 'jsonviewer'" 
+(changed)="handleChanged($event)"
+value="{{ valueJson }}"
+defaultData="{{ defaultData }}"
+name="{{ name }}"
+[createForm]="createForm"
+placeholder="{{ placeholder }}"
+class="{{ class }}"></jsonviewer-element>
+
+<rich-text-element *ngIf="type == 'richtext'" 
 value="{{ value }}"
 defaultData="{{ defaultData }}"
 name="{{ name }}"

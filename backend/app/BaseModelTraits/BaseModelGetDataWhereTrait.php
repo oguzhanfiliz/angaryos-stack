@@ -187,6 +187,15 @@ trait BaseModelGetDataWhereTrait
                 $query->{$params->where_word_for_filter}($params->column_name_with_alias." = '$filter'");
         });
     }
+
+    public function addWhereForJoinTableIdsForOneToMany($params)
+    {
+        $params->model->where(function ($query) use ($params) 
+        {
+            foreach($params->filter->filter as $filter)
+                $query->{$params->where_word_for_filter}($params->column_name_with_alias." @> '$filter' or ".$params->column_name_with_alias." @> '\"$filter\"'");
+        });
+    }
     
     public function addWhereForTableIdAndColumnIds($params)
     {

@@ -74,7 +74,9 @@ $column_gui_types['multiselectdragdrop:static'] = 'Static Taşı Bırak Liste';
 $column_gui_types['phone'] = 'Telefon';
 $column_gui_types['money:tl'] = 'Para Birimi (TL)';
 $column_gui_types['money:usd'] = 'Para Birimi (USD)';
-$column_gui_types['rich_text'] = 'Zengin Metin Editörü';
+$column_gui_types['richtext'] = 'Zengin Metin Editörü';
+$column_gui_types['jsonviewer'] = 'Json Görüntüleyici';
+$column_gui_types['jsonviewer:newpage'] = 'Json Görüntüleyici (Yeni Sayfa)';
 
 $temp = $this->get_base_record();
 

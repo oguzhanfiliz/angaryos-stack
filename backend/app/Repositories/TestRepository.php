@@ -17,6 +17,9 @@ class TestRepository
 
         $temp->_source_column_name = '_source_column';
         $temp->_display_column_name = '_display_column';
+        
+        $temp->tableName = NULL;
+        $temp->recordId = NULL;
 
         return [$temp];
     }
