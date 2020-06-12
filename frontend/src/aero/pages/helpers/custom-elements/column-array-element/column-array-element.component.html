@@ -9,14 +9,13 @@
             </th>
             <td *ngIf="!isGeoColumn(columnName) && !isFileColumn(columnName) && !isJsonViewerColumn(columnName)" 
                 [style.cursor]="getCursorStyleForDataColumn(columnName)"
-                [innerHTML]="getConvertedDataForGuiByColumnName(columnName)" innerHtmlTransformer>
+                [innerHtml]="getConvertedDataForGuiByColumnName(columnName)" innerHtmlTransformer>
             </td>
             
             <td *ngIf="isFileColumn(columnName)">
                 <span *ngFor="let i of getObjectKeys(getFileUrls(record[columnName]))">                                                                    
                     <a  data-fancybox="gallery" *ngIf="isImageFile(getFileUrls(record[columnName])[i])"
-                        href="{{ getFileUrls(record[columnName])[i]['big'] }}"
-                        >
+                        href="{{ getFileUrls(record[columnName])[i]['big'] }}" >
 
                     <img class='rounded-circle file-preview' src="{{ getFileUrls(record[columnName])[i]['small'] }}">
                     </a>

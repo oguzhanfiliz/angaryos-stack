@@ -184,33 +184,39 @@ export class DataTableElementComponent
         this.sessionHelper.userImitation(user);
     }
     
-    missionTrigger(record)
+    missionTriggerConfirm(record)
     {
-        this.messageHelper.swalConfirm('Görev tetiklenecek', "Bu görevi tetikleme istediğinize emin misiniz?", "warning")
-        .then(async (r) =>
+        this.messageHelper.swalPrompt('Tetikleme görevi için veri girmek ister misiniz?')
+        .then(async (data) =>
         {
-            if(r != true) return;
-
-            var url = this.sessionHelper.getBackendUrlWithToken()+"missions/"+record['id'];
-        
-            this.generalHelper.startLoading();
-
-            this.sessionHelper.doHttpRequest("GET", url)
-            .then((data) => 
-            {
-                this.generalHelper.stopLoading();
-
-                if(typeof data['message'] == "undefined")
-                    this.messageHelper.sweetAlert("Beklenmedik cevap geldi!", "Hata", "warning");
-                else
-                    this.messageHelper.sweetAlert("Tetikleme başarılı: "+data['message'], "Başarı", "success");
-            })
-            .catch((e) => 
-            { 
-                this.generalHelper.stopLoading(); 
-                this.messageHelper.sweetAlert("Beklenmedik cevap geldi!", "Hata", "warning");
-            }); 
+            if(typeof data["dismiss"] != "undefined") return;
+            
+            this.missionTrigger(record, data["value"]);
         });
+        
+    }
+    
+    missionTrigger(record, data)
+    {
+        var url = this.sessionHelper.getBackendUrlWithToken()+"missions/"+record['id']+"?"+data;
+        
+        this.generalHelper.startLoading();
+
+        this.sessionHelper.doHttpRequest("GET", url)
+        .then((data) => 
+        {
+            this.generalHelper.stopLoading();
+
+            if(typeof data['message'] == "undefined")
+                this.messageHelper.sweetAlert("Beklenmedik cevap geldi!", "Hata", "warning");
+            else
+                this.messageHelper.sweetAlert("Tetikleme cevabı: "+data['message'], "Bilgi", "info");
+        })
+        .catch((e) => 
+        { 
+            this.generalHelper.stopLoading(); 
+            this.messageHelper.sweetAlert("Beklenmedik cevap geldi!", "Hata", "warning");
+        }); 
     }
     
     selectAsUpTableRecord(record)
@@ -782,6 +788,8 @@ export class DataTableElementComponent
             case 'files': 
             case 'password': 
                 return 'disable';
+            case 'boolean': 
+                return 'boolean';
             default: return guiType;
         }
     }  
@@ -1019,8 +1027,25 @@ export class DataTableElementComponent
         this.params.page = 1;
         this.saveParamsToLocal();
         
+        var guiType = this.getData('columns.'+columnName+'.gui_type_name')  
+        console.log(guiType);
         var to = this.loadDataTimeout;
         if(typeof event['enterKey'] != "undefined") to = 10;
+        else
+        {
+            switch(guiType.split(':')[0])
+            {
+                case 'boolean':
+                case 'select':
+                case 'multiselect':
+                case 'multiselectdragdrop':
+                case 'date':
+                case 'time':
+                case 'datetime':
+                    to = 10;
+                    break;
+            }
+        }
         
         this.loadDataInterval(to, true);
     }

@@ -39,8 +39,8 @@ export class BooleanElementComponent
     {
         setTimeout(() => 
         {
-            this.displayNameForTrue = DataHelper.convertDataByGuiTypeBoolean(this.guiType, true);
-            this.displayNameForFalse = DataHelper.convertDataByGuiTypeBoolean(this.guiType, false);
+            this.displayNameForTrue = DataHelper.convertDataByGuiTypeBoolean(null, null, this.guiType, true);
+            this.displayNameForFalse = DataHelper.convertDataByGuiTypeBoolean(null, null, this.guiType, false);
 
             if(this.value.length > 0) return;
             if(this.createForm != true) return;

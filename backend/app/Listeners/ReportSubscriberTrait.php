@@ -32,6 +32,7 @@ trait ReportSubscriberTrait
         
         $records = $params->model->get();
         $records = $model->updateRecordsDataForResponse($records, $params->columns);
+        $records = $this->UpdateRecordsDataForReport($records, $params->columns);
         
         $tableInfo = $model->getTableInfo($params->table_name);
         
@@ -44,6 +45,35 @@ trait ReportSubscriberTrait
             'collectiveInfos' => $collectiveInfos, 
             'columns' => $columns
         ];
+    }
+    
+    public function UpdateRecordsDataForReport($records, $columns)
+    {
+        $jsonColumns = [];
+        
+        foreach($columns as $column)
+        {
+            $dbTypeName = get_attr_from_cache('column_db_types', 'id', $column->column_db_type_id, 'name');
+        
+            if(strstr($dbTypeName, 'json')) array_push($jsonColumns, $column->name);
+        }
+        
+        foreach($records as $i => $record)
+            foreach($jsonColumns as $columnName)
+                $records[$i]->{$columnName} = $this->UpdateRecordColumnDataForReport($records[$i]->{$columnName});
+    
+        return $records;
+    }
+    
+    public function UpdateRecordColumnDataForReport($json)
+    {
+        if(strlen($json) == 0) return '';
+        
+        $return = '';
+        foreach(json_decode($json) as $item) $return .=  $item->display .', ';        
+        $return = substr($return, 0, -2);
+        
+        return $return;
     }
     
     public function getModelForStandartList($model, $params)

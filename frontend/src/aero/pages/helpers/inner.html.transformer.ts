@@ -25,10 +25,13 @@ export class InnerHtmlTransformerDirective
     @HostListener('click', ['$event'])
     public onClick(event) 
     {
+        console.log(123)
         var html = event.target.innerHTML;
         
         if(html.indexOf('type="relationDataInfo"') > -1)
             this.openRelationDataInfoPage(html, event);
+        else if(html.indexOf('type="boolean:fastchange"') > -1)
+            this.booleanFastChangeClicked(html, event);
     }
     
     openRelationDataInfoPage(html, event)
@@ -60,6 +63,12 @@ export class InnerHtmlTransformerDirective
         if(typeof auth[data['tableName']]['shows'] == "undefined") return false;
         
         return true;
+    }
+    
+    booleanFastChangeClicked(html, event)
+    {
+        console.log(html);
+        this.messageHelper.toastMessage("Hızlı değiştirme");
     }
 
 };

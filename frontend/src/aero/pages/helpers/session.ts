@@ -175,9 +175,21 @@ export class SessionHelper
         {
           if(url.indexOf('initialize-db') > -1) reject(error.message);
 
-          if(this.redirectInitializeIfDbNotInitialized(error)) return;          
-          else if(this.redirectLoginPageIfTokenIsFail(error)) return;          
-          else if(this.alertIfErrorHaveServerMessage(error)) return;     
+          if(this.redirectInitializeIfDbNotInitialized(error)) 
+          {
+            reject(error.message);
+            return;
+          }          
+          else if(this.redirectLoginPageIfTokenIsFail(error)) 
+          {
+            reject(error.message);
+            return;
+          }           
+          else if(this.alertIfErrorHaveServerMessage(error)) 
+          {
+            reject(error.message);
+            return;
+          }    
 
           if(!this.disableDoHttpRequestErrorControl)
             this.messageHelper.sweetAlert("Sunucuyla iletişimde bir hata oldu: " + error.message);

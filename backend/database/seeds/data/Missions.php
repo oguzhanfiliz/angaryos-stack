@@ -9,6 +9,20 @@ $missions['cache_clear']['php_code'] = '<?php
 $return = \'Cache Cleared\';
 ?>';
 
+$missions['trigger_data_entegrate']['name'] = 'Veri aktarıcıyı tetikle';
+$missions['trigger_data_entegrate']['php_code'] = '<?php
+$id = (int)@$requests[\'id\'];
+if($id < 1)
+{
+    $return = \'Geçersiz ID\';
+    return;
+}
+
+\App\Jobs\DoSingleEntegrate::dispatch($id);
+$return = "Görev kuyruğa eklendi";
+
+?>';
+
 foreach($missions as $name => $array)
 {
     $temp = $this->get_base_record();

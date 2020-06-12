@@ -254,7 +254,13 @@ export abstract class DataHelper
     {
         switch(filterType)
         {
-            case 1: return this.convertDataByGuiTypeBoolean(guiType, data);
+            case 1: 
+                return this.convertDataByGuiTypeBoolean(
+                                                    null, 
+                                                    null, 
+                                                    guiType.split(':')[0], 
+                                                    data);
+                                                    
             default: return "no boolean filter type for " + filterType;
         }
     }
@@ -298,7 +304,7 @@ export abstract class DataHelper
                 data = this.convertDataByGuiTypeFiles(type, data, relation);
                 break;
             case "boolean":
-                data = this.convertDataByGuiTypeBoolean(type, data);
+                data = this.convertDataByGuiTypeBoolean(record, columnName, type, data);
                 break;
             case "datetime":
             case "date":
@@ -310,7 +316,7 @@ export abstract class DataHelper
                 break;
             case "multiselect":
             case "multiselectdragdrop":
-                data = this.convertDataByGuiTypeMultiSelect(type, data, relation);
+                data = this.convertDataByGuiTypeMultiSelect(record, columnName, type, data, relation);
                 break;
             case "select":
                 data = this.convertDataByGuiTypeSelect(record, columnName, type, data, relation);
@@ -330,12 +336,12 @@ export abstract class DataHelper
         var url = BaseHelper.backendUrl + BaseHelper.token;
         url += "/tables/"+segments[1]+"/"+record['id']+"/getRelationDataInfo/"+columnName;        
         
-        var html = " <i type='relationDataInfo' info-url='"+url+"' style='font-size: 12;' class='zmdi zmdi-open-in-new'></i innerHtmlTransformer>";
+        var html = " <i innerHtmlTransformer type='relationDataInfo' info-url='"+url+"' style='font-size: 12;' class='zmdi zmdi-open-in-new'></i>";
         
         return html;
     }
 
-    public static convertDataByGuiTypeMultiSelect(guiType, data, relation)
+    public static convertDataByGuiTypeMultiSelect(record, columnName, guiType, data, relation)
     {
         if(typeof data != "object")
             data = BaseHelper.jsonStrToObject(data);
@@ -345,7 +351,9 @@ export abstract class DataHelper
         for(var i = 0; i < keys.length; i++)
         {
             var temp = data[keys[i]];
-            html += "<span source='"+temp["source"]+"' style='margin-left: 3px' class='badge badge-primary'>"+temp["display"]+"&nbsp;</span>";
+            html += "<span source='"+temp["source"]+"' style='margin-left: 3px' class='badge badge-primary' innerHtmlTransformer>"+temp["display"]+"&nbsp;";
+            html += this.getRelationDataLink(record, columnName, guiType, data, relation);
+            html += "</span>";
         }
         
         return html;
@@ -363,11 +371,17 @@ export abstract class DataHelper
         return BaseHelper.objectToJsonStr(data);
     }
 
-    public static convertDataByGuiTypeBoolean(guiType, data)
+    public static convertDataByGuiTypeBoolean(record, columnName, guiType, data)
     {
         switch(guiType)
         {
             case 'boolean': return data ? 'Aktif' : 'Pasif';
+            case 'boolean:fastchange':
+                var html = '<span type="'+guiType+'" ';
+                html += 'record-id="'+record['id']+'" >';
+                html += data ? 'Aktif' : 'Pasif';
+                html += ' (hızlı)</span>'
+                return html;
             default: return data.toString();
         }
     }

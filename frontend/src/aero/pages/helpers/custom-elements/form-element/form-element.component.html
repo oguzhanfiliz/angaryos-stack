@@ -114,7 +114,7 @@ filterType="{{ filterType }}"
 upFormId="{{ upFormId }}"
 class="{{ class }}"></date-element>
 
-<boolean-element *ngIf="type == 'boolean'" 
+<boolean-element *ngIf="type.split(':')[0] == 'boolean'" 
 (changed)="handleChanged($event)"
 value="{{ value }}"
 defaultData="{{ defaultData }}"
