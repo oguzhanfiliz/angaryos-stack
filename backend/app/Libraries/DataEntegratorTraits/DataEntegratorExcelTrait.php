@@ -25,6 +25,8 @@ trait DataEntegratorExcelTrait
         
         $this->EntegrateExcelFromDataSourceUpdateRecords($remoteConnection, $tableRelation, $table,  $remoteTable, $columnRelations, $direction->name);   
         $this->EntegrateExcelToDataSourceUpdateRecords($remoteConnection, $tableRelation, $table,  $remoteTable, $columnRelations, $direction->name);   
+    
+        $this->WriteDataEntegratorLog($tableRelation, 'success');
     } 
     
     private function CreateExcelFakeConnectionByDataSource($dataSource)

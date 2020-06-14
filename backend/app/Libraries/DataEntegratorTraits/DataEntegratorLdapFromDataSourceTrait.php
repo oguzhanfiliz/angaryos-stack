@@ -11,6 +11,9 @@ trait DataEntegratorLdapFromDataSourceTrait
         $filter='(cn=*)';
         $remoteRecords = $remoteConnection->search($filter, $remoteTable->name_basic); 
         
+        $count = count($remoteRecords);
+        $step = 0;
+        
         $lastId = -1;
         $remoteIdColumnName = $this->getRelatedColumnName($columnRelations, 'id');
 
@@ -24,6 +27,8 @@ trait DataEntegratorLdapFromDataSourceTrait
                                                             $columnRelations, 
                                                             $remoteRecord,
                                                             $direction);
+            
+            $this->WriteDataEntegratorLog($tableRelation, 'fromDataSource', $count, ++$step);
                         
             if($lastId < (int)$remoteRecord[$remoteIdColumnName])
                 $lastId = (int)$remoteRecord[$remoteIdColumnName];

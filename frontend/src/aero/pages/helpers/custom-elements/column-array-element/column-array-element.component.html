@@ -9,7 +9,9 @@
             </th>
             <td *ngIf="!isGeoColumn(columnName) && !isFileColumn(columnName) && !isJsonViewerColumn(columnName)" 
                 [style.cursor]="getCursorStyleForDataColumn(columnName)"
-                [innerHtml]="getConvertedDataForGuiByColumnName(columnName)" innerHtmlTransformer>
+                [innerHtml]="getConvertedDataForGuiByColumnName(columnName)" 
+                innerHtmlTransformer>
+                
             </td>
             
             <td *ngIf="isFileColumn(columnName)">

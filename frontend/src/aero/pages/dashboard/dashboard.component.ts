@@ -52,6 +52,7 @@ export class DashboardComponent
   {
     this.fillDashboardsDataRecordCount();
     this.fillDashboardsDataRefreshableNumber();
+    this.fillDashboardsDataDataEntegratorStatus();
   }
 
   isDashboardDataNull()
@@ -121,6 +122,16 @@ export class DashboardComponent
         await this.refreshableNumberRefresh(dashNames[i]);
   }
   
+  async fillDashboardsDataDataEntegratorStatus()
+  {
+    if(typeof this.dashboardAuths['DataEntegratorStatus'] == "undefined") return;
+    
+    var dashNames = Object.keys(this.dashboardAuths['DataEntegratorStatus']);
+
+    for(var i = 0; i < dashNames.length; i++)
+        await this.dataEntegratorStatusRefresh(dashNames[i]);
+  }
+  
   async refreshableNumberRefresh(dashName)
   {
     var url = this.sessionHelper.getBackendUrlWithToken()+"dashboards/getData/dashboards:RefreshableNumber:"+dashName+":0";
@@ -146,6 +157,63 @@ export class DashboardComponent
       th.messageHelper.toastMessage("Bazı göstergeler için data alınamadı!");
       th.generalHelper.stopLoading();
     });
+  }
+  
+  async dataEntegratorStatusRefresh(dashName)
+  {
+    var url = this.sessionHelper.getBackendUrlWithToken()+"dashboards/getData/dashboards:DataEntegratorStatus:"+dashName+":0";
+
+    var th = this;
+    
+    this.generalHelper.startLoading();
+    
+    await this.sessionHelper.doHttpRequest("GET", url) 
+    .then((data) => 
+    {
+      if(typeof th.dashboardDatas['DataEntegratorStatus'] == "undefined")
+        th.dashboardDatas['DataEntegratorStatus'] = [];
+
+      th.dashboardDatas['DataEntegratorStatus'][dashName] = data;
+      
+      th.generalHelper.stopLoading();
+
+      return true;
+    })
+    .catch((e) => 
+    {
+      th.messageHelper.toastMessage("Bazı göstergeler için data alınamadı!");
+      th.generalHelper.stopLoading();
+    });
+  }
+  
+  dataEntegratorStatus(itemName)
+  {
+      var temp = this.dashboardDatas['DataEntegratorStatus'][itemName]['message'];
+      
+      if(temp == 'success.0.0') return 'success';
+      else if(temp == 'no.data') return 'no.data';
+      else return 'continue';
+  }
+  
+  fillDataEntegratorStatusDetail(itemName)
+  {
+    var temp = this.dashboardDatas['DataEntegratorStatus'][itemName]['message'].split('.');
+    
+    this.dashboardDatas['DataEntegratorStatus'][itemName]['detail'] =
+    {
+        'type': temp[0],
+        'count': temp[1],
+        'step': temp[2],
+        'percent': (temp[2] * 100 / temp[1]).toFixed(0)
+    };
+  }
+  
+  dataEntegratorStatusDetail(itemName, type)
+  {
+    if(typeof this.dashboardDatas['DataEntegratorStatus'][itemName]['detail'] == "undefined")
+        this.fillDataEntegratorStatusDetail(itemName);
+        
+    return this.dashboardDatas['DataEntegratorStatus'][itemName]['detail'][type];
   }
 }
 

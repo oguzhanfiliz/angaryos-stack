@@ -248,6 +248,16 @@ if(strlen($record->cron) > 0) return;
 ?>'
 ];
 
+$subscribers['table']['data_source_tbl_relations'][1] =
+[
+    'name_basic' => 'Yöneticiye gösterge yetkisi tanımlama tetikleyici',
+    'subscriber_type_id' => $subscriber_types['after']->id,
+    'php_code' => '<?php
+$lib = new \App\Libraries\TableDBOperationsLibrary;
+$lib->AddAuthsToAdminUser([\'dashboards:DataEntegratorStatus:\'.$record->id.\':0\']);
+?>'
+];
+
 
 
 foreach($subscribers as $type => $set)

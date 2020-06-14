@@ -431,4 +431,13 @@ class DataEntegratorLibrary
         $archive->disable_data_entegrates = json_decode($archive->disable_data_entegrates);
         return @$archive->disable_data_entegrates->{$tableRelationId};
     }
+    
+    private static function WriteDataEntegratorLog($relation, $direction, $count = 0, $step = 0)
+    {
+        $disk = env('FILESYSTEM_DRIVER', 'uploads');
+        
+        Storage::disk($disk)->put(
+                        'dataentegratorstatus/'.$relation->id.'.status', 
+                        $direction.'.'.$count.'.'.$step);
+    }
 }

@@ -15,6 +15,9 @@ trait DataEntegratorExcelToDataSourceTrait
         $data = helper('get_data_from_excel_file', $filePath);
         $remoteRecords = $data[$remoteTable->name_basic]['data'];
         
+        $count = DB::table($table->name)->count('id');
+        $step = 0;
+        
         $start = 0;
         while(TRUE)
         {
@@ -25,6 +28,9 @@ trait DataEntegratorExcelToDataSourceTrait
             $records = $this->UpdateDataEntegratorColumnsData($records);
 
             foreach($records as $record) 
+            {
+                $this->WriteDataEntegratorLog($tableRelation, 'toDataSource', $count, ++$step);
+                
                 if(!@$record->disable_data_entegrates->{$tableRelation->id})
                     $this->EntegrateExcelToDataSourceUpdateRecord(
                                                                 $remoteConnection, 
@@ -34,6 +40,7 @@ trait DataEntegratorExcelToDataSourceTrait
                                                                 $remoteTable, 
                                                                 $columnRelations, 
                                                                 $record);
+            }
         }
     }
     

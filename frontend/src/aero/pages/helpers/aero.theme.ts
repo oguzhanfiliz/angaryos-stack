@@ -25,6 +25,8 @@ export class AeroThemeHelper
             $('.tooltip-inner').remove();
             $('[data-toggle="tooltip"]').tooltip();
             
+            $.getScript('assets/themes/aero/assets/bundles/libscripts.bundle.js');
+            
         }, 100);
     }
 

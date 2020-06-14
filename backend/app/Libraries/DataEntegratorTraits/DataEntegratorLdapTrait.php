@@ -25,6 +25,8 @@ trait DataEntegratorLdapTrait
         
         $this->EntegrateLdapToDataSourceUpdateRecords($remoteConnection, $tableRelation, $table, $remoteTable, $columnRelations, $direction->name); 
         $this->EntegrateLdapFromDataSourceUpdateRecords($remoteConnection, $tableRelation, $table,  $remoteTable, $columnRelations, $direction->name);   
+    
+        $this->WriteDataEntegratorLog($tableRelation, 'success');
     } 
     
     private function CreateLdapDBConnectionByDataSource($dataSource)

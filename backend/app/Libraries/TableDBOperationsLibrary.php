@@ -45,6 +45,23 @@ class TableDBOperationsLibrary
         return $this->{'ColumnArrayEventFor'.ucfirst($params['type'])}($params);
     }
     
+    public function AddAuthsToAdminUser($auths)
+    {
+        $adminAuth = new \App\BaseModel('auth_groups');
+        $adminAuth = $adminAuth->find(1);
+        $adminAuth->fillVariables();
+        
+        copy_record_to_archive($adminAuth);
+        
+        $temp = $adminAuth->auths;
+        $adminAuth->auths = array_merge($temp, $auths);
+        
+        $adminAuth->save();
+        
+        $cacheSubscriber = new \App\Listeners\CacheSubscriber();
+        $cacheSubscriber->recordChangedSuccess('auth_groups', $adminAuth, 'update');
+    }
+    
     public function UpdateTableFullAuthToAdminUser($table)
     {
         $geometryColumnTypes = ['point', 'linestring', 'polygon', 'multipoint', 'multilinestring', 'multipolygon'];

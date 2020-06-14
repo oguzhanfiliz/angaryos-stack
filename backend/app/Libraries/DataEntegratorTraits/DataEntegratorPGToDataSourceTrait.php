@@ -2,12 +2,16 @@
 
 namespace App\Libraries\DataEntegratorTraits;
 
+use Storage;
 use DB;
 
 trait DataEntegratorPGToDataSourceTrait 
 {    
     private function EntegratePostgresqlToDataSourceUpdateRecords($remoteConnection, $tableRelation, $table, $remoteTable, $columnRelations, $direction)
     {
+        $count = DB::table($table->name)->count('id');
+        $step = 0;
+        
         $start = 0;
         while(TRUE)
         {
@@ -18,6 +22,9 @@ trait DataEntegratorPGToDataSourceTrait
             $records = $this->UpdateDataEntegratorColumnsData($records);
             
             foreach($records as $record)
+            {
+                $this->WriteDataEntegratorLog($tableRelation, 'toDataSource', $count, ++$step);
+                
                 if(!@$record->disable_data_entegrates->{$tableRelation->id})
                     $this->EntegratePostgresqlToDataSourceUpdateRecord(
                                                                     $remoteConnection, 
@@ -27,6 +34,7 @@ trait DataEntegratorPGToDataSourceTrait
                                                                     $columnRelations, 
                                                                     $record,
                                                                     $direction);
+            }
         }
     }
     

@@ -15,6 +15,9 @@ trait DataEntegratorExcelFromDataSourceTrait
         $data = helper('get_data_from_excel_file', $filePath);
         $remoteRecords = $data[$remoteTable->name_basic]['data'];
         
+        $count = count($remoteRecords);
+        $step = 0;
+        
         $lastId = -1;
         $remoteIdColumnName = $this->getRelatedColumnName($columnRelations, 'id');
 
@@ -27,6 +30,8 @@ trait DataEntegratorExcelFromDataSourceTrait
                                                             $remoteTable, 
                                                             $columnRelations, 
                                                             $remoteRecord);
+            
+            $this->WriteDataEntegratorLog($tableRelation, 'fromDataSource', $count, ++$step);
                         
             if($lastId < (int)$remoteRecord[$remoteIdColumnName])
                 $lastId = (int)$remoteRecord[$remoteIdColumnName];

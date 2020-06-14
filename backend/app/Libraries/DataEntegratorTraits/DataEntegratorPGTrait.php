@@ -23,6 +23,8 @@ trait DataEntegratorPGTrait
         
         $this->EntegratePostgresqlToDataSourceUpdateRecords($remoteConnection, $tableRelation, $table, $remoteTable, $columnRelations, $direction->name); 
         $this->EntegratePostgresqlFromDataSourceUpdateRecords($remoteConnection, $tableRelation, $table,  $remoteTable, $columnRelations, $direction->name);
+    
+        $this->WriteDataEntegratorLog($tableRelation, 'success');
     } 
     
     private function CreatePGDBConnectionByDataSource($dataSource)

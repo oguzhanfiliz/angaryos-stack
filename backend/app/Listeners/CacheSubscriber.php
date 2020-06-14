@@ -64,6 +64,7 @@ class CacheSubscriber
                 $this->clearColumnSetOrArrayCache($record);
                 break;
             
+            case 'data_source_tbl_relations':
             case 'data_filter_types':
             case 'missions':
                 ClearCache::{$this->dispatchType}('allAuths');

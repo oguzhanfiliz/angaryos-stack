@@ -336,7 +336,7 @@ export abstract class DataHelper
         var url = BaseHelper.backendUrl + BaseHelper.token;
         url += "/tables/"+segments[1]+"/"+record['id']+"/getRelationDataInfo/"+columnName;        
         
-        var html = " <i innerHtmlTransformer type='relationDataInfo' info-url='"+url+"' style='font-size: 12;' class='zmdi zmdi-open-in-new'></i>";
+        var html = " <i type='relationDataInfo' info-url='"+url+"' style='font-size: 12;' class='zmdi zmdi-open-in-new'></i>";
         
         return html;
     }
@@ -373,12 +373,15 @@ export abstract class DataHelper
 
     public static convertDataByGuiTypeBoolean(record, columnName, guiType, data)
     {
+        var id = 0;
+        if(record != null) id = record['id'];
+        
         switch(guiType)
         {
             case 'boolean': return data ? 'Aktif' : 'Pasif';
             case 'boolean:fastchange':
                 var html = '<span type="'+guiType+'" ';
-                html += 'record-id="'+record['id']+'" >';
+                html += 'record-id="'+id+'" >';
                 html += data ? 'Aktif' : 'Pasif';
                 html += ' (hızlı)</span>'
                 return html;

@@ -8,6 +8,9 @@ trait DataEntegratorPGFromDataSourceTrait
 {    
     private function EntegratePostgresqlFromDataSourceUpdateRecords($remoteConnection, $tableRelation, $table, $remoteTable, $columnRelations, $direction)
     {
+        $count = $remoteConnection->table($table->name)->count('id');
+        $step = 0;
+        
         $start = 0;
         while(TRUE)
         {
@@ -16,6 +19,7 @@ trait DataEntegratorPGFromDataSourceTrait
             $start += 100;
             
             foreach($remoteRecords as $remoteRecord)
+            {
                 $this->EntegratePostgresqlFromDataSourceUpdateRecord(
                                                                     $remoteConnection, 
                                                                     $tableRelation,
@@ -24,6 +28,9 @@ trait DataEntegratorPGFromDataSourceTrait
                                                                     $columnRelations, 
                                                                     $remoteRecord,
                                                                     $direction);
+                
+                $this->WriteDataEntegratorLog($tableRelation, 'fromDataSource', $count, ++$step);
+            }
 
             $lastId = $remoteRecords[count($remoteRecords) -1]->id;
             

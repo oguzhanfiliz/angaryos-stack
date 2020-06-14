@@ -234,11 +234,12 @@
                                                             <button 
                                                                 class="btn btn-sm float-right btn-primary btn-icon pull-right" 
                                                                 data-toggle="dropdown" role="button" aria-haspopup="true" 
+                                                                [attr.dataTarget]="'#menu-'+record['id']"
                                                                 aria-expanded="false"> 
                                                                 
                                                                 <i class="zmdi zmdi-settings"></i>
                                                             </button>
-                                                            <ul class="dropdown-menu">
+                                                            <ul class="dropdown-menu" id="menu-{{ record['id'] }}">
                                                                 <li 
                                                                     *ngFor="let operation of getRecordOperations()"
                                                                     [hidden] = "!can(operation.type, record)"

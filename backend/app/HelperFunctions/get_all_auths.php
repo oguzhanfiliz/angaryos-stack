@@ -166,6 +166,12 @@ return Cache::rememberForever($key, function()
     foreach(\DB::table('auth_groups')->where('state', TRUE)->get() as $auth)
         $auths[$auth->id] = $auth->name_basic;
     
+    foreach(\DB::table('data_source_tbl_relations')->where('state', TRUE)->get() as $relation)
+    {
+        $source = 'dashboards:DataEntegratorStatus:'.$relation->id.':0';
+        $display = 'Göstergeler Veri Aktarıcı Durumu '.$relation->id;
+        $auths[$source] = $display;
+    }
 
     
     return $auths;        

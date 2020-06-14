@@ -8,6 +8,9 @@ trait DataEntegratorLdapToDataSourceTrait
 {    
     private function EntegrateLdapToDataSourceUpdateRecords($remoteConnection, $tableRelation, $table, $remoteTable, $columnRelations, $direction)
     {
+        $count = DB::table($table->name)->count('id');
+        $step = 0;
+        
         $start = 0;
         while(TRUE)
         {
@@ -18,6 +21,9 @@ trait DataEntegratorLdapToDataSourceTrait
             $records = $this->UpdateDataEntegratorColumnsData($records);
 
             foreach($records as $record) 
+            {
+                $this->WriteDataEntegratorLog($tableRelation, 'toDataSource', $count, ++$step);
+                
                 if(!@$record->disable_data_entegrates->{$tableRelation->id})
                     $this->EntegrateLdapToDataSourceUpdateRecord(
                                                                 $remoteConnection, 
@@ -27,6 +33,7 @@ trait DataEntegratorLdapToDataSourceTrait
                                                                 $columnRelations, 
                                                                 $record,
                                                                 $direction);
+            }
         }
     }
     

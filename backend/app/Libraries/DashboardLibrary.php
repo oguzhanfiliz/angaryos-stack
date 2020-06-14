@@ -2,6 +2,7 @@
 
 namespace App\Libraries;
 
+use Storage;
 use Cache;
 use DB;
 
@@ -46,5 +47,37 @@ class DashboardLibrary
             'display_name' => 'Kuyruktaki İş Sayısı',
             'number' => DB::table('jobs')->count('*')
         ];
+    }
+    
+    public function DataEntegratorStatus($param1, $params2)
+    {
+        $relation = get_model_from_cache('data_source_tbl_relations', 'id', $param1);
+        
+        try
+        {
+            $disk = env('FILESYSTEM_DRIVER', 'uploads');
+            $message = Storage::disk($disk)->get('dataentegratorstatus/'.$param1.'.status');
+            
+            global $pipe;
+            $pipe['table'] = 'data_source_tbl_relations';
+            
+            return 
+            [
+                'message' => $message,
+                'source' => $relation->getRelationData('data_source_rmt_table_id')->display,
+                'table' => $relation->getRelationData('table_id')->display_name,
+                'direction' => $relation->getRelationData('data_source_direction_id')->name
+            ];
+        } 
+        catch (\Exception $ex) 
+        {
+            return
+            [
+                'message' => 'no.data',
+                'source' => @$relation->getRelationData('data_source_rmt_table_id')->display,
+                'table' => @$relation->getRelationData('table_id')->display_name,
+                'direction' => @$relation->getRelationData('data_source_direction_id')->name
+            ];
+        }
     }
 }
