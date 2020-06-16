@@ -67,6 +67,7 @@ export class AeroThemeHelper
         $.getScript('assets/ext_modules/select2/select2.min.js');
         
         $.getScript('assets/ext_modules/jsonTreeViewer/libs/jsonTree/jsonTree.js');
+        $.getScript('assets/ext_modules/slimscrool/jquery.slimscroll.min.js');
       }, 10);
     }
 

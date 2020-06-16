@@ -260,11 +260,10 @@
                                                 <table class="light-table-force">
                                                     <tr>
                                                         <td>
-                                                            <div *ngIf="!isGeoColumn(columnName) && !isFileColumn(columnName) && !isJsonViewerColumn(columnName)" 
-                                                                [style.cursor]="getCursorStyleForDataColumn(columnName)"
+                                                            <div *ngIf="getColumnType(columnName) == 'default'" 
                                                                 [innerHTML]="convertDataForGui(record, columnName)" 
-                                                                innerHtmlTransformer></div> 
-                                                            
+                                                                innerHtmlTransformer></div>
+
                                                             <div *ngIf="isFileColumn(columnName)">
                                                                 <span *ngFor="let i of getObjectKeys(getFileUrls(record[columnName]))">                                                                    
                                                                     <a  data-fancybox="gallery" *ngIf="isImageFile(getFileUrls(record[columnName])[i])"
@@ -273,7 +272,7 @@
 
                                                                     <img class='rounded-circle file-preview' src="{{ getFileUrls(record[columnName])[i]['small'] }}">
                                                                     </a>
-                                                                    
+
                                                                     <a target="_blank" *ngIf="!isImageFile(getFileUrls(record[columnName])[i])"
                                                                         href="{{ getFileUrls(record[columnName])[i]['org'] }}"
                                                                         >
@@ -284,7 +283,15 @@
                                                                     </a>
                                                                 </span>                                                                                                                             
                                                             </div>
-                                                            
+                                                    
+                                                            <boolean-fastchange-element
+                                                                *ngIf="isBooleanFastChangeColumn(columnName)"
+                                                                value="{{ record[columnName] }}"
+                                                                name="{{ columnName }}"
+                                                                recordJson="{{ getJsonStrFromObject(record) }}"
+                                                                (change)="booleanFastChanged($event, record, columnName)">
+                                                            </boolean-fastchange-element >
+
                                                             <geo-preview-element 
                                                                 *ngIf="isGeoColumn(columnName)" 
                                                                 name="{{ columnName }}"
@@ -292,8 +299,18 @@
                                                                 srid="{{ getData('columns.'+columnName+'.srid') }}"
                                                                 wkt="{{ record[columnName] }}">
                                                             </geo-preview-element>
-                                                    
-                                                            <jsonviewer-element *ngIf="isJsonViewerColumn(columnName)" 
+
+                                                            <relation-column-element 
+                                                                *ngIf="isRelationColumn(columnName)"
+                                                                type="{{ getData('columns.'+columnName+'.gui_type_name') }}"
+                                                                name="{{ columnName }}"
+                                                                relationJson = "{{ getColumnRelationJson(columnName) }}"
+                                                                recordJson="{{ getJsonStrFromObject(record) }}" >
+
+                                                            </relation-column-element>
+
+                                                            <jsonviewer-element 
+                                                                *ngIf="isJsonViewerColumn(columnName)" 
                                                                 type="{{ getData('columns.'+columnName+'.gui_type_name') }}"
                                                                 placeholder="{{ getData('columns.'+columnName+'.display_name') }}"
                                                                 value="{{ record[columnName] }}"
@@ -301,7 +318,8 @@
                                                                 recordJson="{{ getJsonStrFromObject(record) }}"
                                                                 [readOnly]="true"                                                              
                                                                 [newPage]="true"                                                              
-                                                                class="{{ class }}"></jsonviewer-element>
+                                                                class="{{ class }}">                                                                    
+                                                            </jsonviewer-element> 
                                                     
                                                         </td><td align="right">
                                                             <span style="cursor: pointer;visibility: hidden;"

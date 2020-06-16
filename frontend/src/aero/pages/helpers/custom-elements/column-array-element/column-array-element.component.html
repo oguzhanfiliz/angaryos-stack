@@ -7,11 +7,20 @@
             <th class="title">
                 {{ getDataFromColumnArray('columns.'+columnName+'.display_name') }}
             </th>
-            <td *ngIf="!isGeoColumn(columnName) && !isFileColumn(columnName) && !isJsonViewerColumn(columnName)" 
-                [style.cursor]="getCursorStyleForDataColumn(columnName)"
+            <td *ngIf="getColumnType(columnName) == 'default'" 
                 [innerHtml]="getConvertedDataForGuiByColumnName(columnName)" 
                 innerHtmlTransformer>
                 
+            </td>
+            
+            <td *ngIf="isRelationColumn(columnName)">
+                <relation-column-element 
+                    type="{{ getDataFromColumnArray('columns.'+columnName+'.gui_type_name') }}"
+                    name="{{ columnName }}"
+                    relationJson = "{{ getColumnRelationJson(columnName) }}"
+                    recordJson="{{ getJsonStrFromObject(record) }}" >
+
+                </relation-column-element>
             </td>
             
             <td *ngIf="isFileColumn(columnName)">
@@ -42,6 +51,15 @@
                     wkt="{{ this.getDataFromRecord(columnName) }}">
                 </geo-preview-element>
             </td>
+            
+            <td *ngIf="isBooleanFastChangeColumn(columnName)">
+                <boolean-fastchange-element
+                    value="{{ this.getDataFromRecord(columnName) }}"
+                    name="{{ columnName }}"
+                    recordJson="{{ getJsonStrFromObject(record) }}">
+                </boolean-fastchange-element >
+            </td>
+            
             <td *ngIf="isJsonViewerColumn(columnName)">
                 <jsonviewer-element *ngIf="isJsonViewerColumn(columnName)" 
                     type="{{ getDataFromColumnArray('columns.'+columnName+'.gui_type_name') }}"

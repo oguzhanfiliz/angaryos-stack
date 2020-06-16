@@ -56,7 +56,11 @@ import { ColumnArrayFormElementComponent } from './helpers/custom-elements/colum
 import { GeoPreviewElementComponent } from './helpers/custom-elements/geo-preview-element/geo-preview-element.component';
 
 
-import { JsonViewerElementComponent } from './helpers/custom-elements/form-element/jsonviewer-element/jsonviewer-element.component';
+import { JsonViewerElementComponent } from './helpers/custom-elements/jsonviewer-element/jsonviewer-element.component';
+import { RelationColumnElementComponent } from './helpers/custom-elements/relation-column-element/relation-column-element.component';
+
+
+import { BooleanFastChangeElementComponent } from './helpers/custom-elements/boolean-fastchange-element/boolean-fastchange-element.component';
 
 
 
@@ -99,6 +103,10 @@ import { JsonViewerElementComponent } from './helpers/custom-elements/form-eleme
     RichTextElementComponent,
     
     JsonViewerElementComponent,
+    
+    RelationColumnElementComponent,
+    
+    BooleanFastChangeElementComponent,
     
 
     DataTableElementComponent,
@@ -147,6 +155,10 @@ import { JsonViewerElementComponent } from './helpers/custom-elements/form-eleme
     RichTextElementComponent,
     
     JsonViewerElementComponent,
+    
+    RelationColumnElementComponent,
+    
+    BooleanFastChangeElementComponent,
 
     DataTableElementComponent,
     DetailFilterElementComponent,
@@ -184,6 +196,10 @@ export class PagesModule
     'rich-text-element': RichTextElementComponent,
     
     'jsonviewer-element': JsonViewerElementComponent,
+    
+    'relation-column-element': RelationColumnElementComponent,
+    
+    'boolean-fastchange-element': BooleanFastChangeElementComponent,
     
     'data-table-element': DataTableElementComponent,
     'detail-filter-element': DetailFilterElementComponent,

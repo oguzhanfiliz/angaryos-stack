@@ -53,6 +53,7 @@ $column_gui_types['multiselect'] = 'Dinamik Açılır Liste (Çoklu)';
 $column_gui_types['multiselect:static'] = 'Static Açılır Liste (Çoklu)';
 //$column_gui_types['radio'] = 'Çoktan Seçmeli';
 $column_gui_types['boolean'] = 'Mantıksal';
+$column_gui_types['boolean:fastchange'] = 'Mantıksal (Hızlı Düzenleme)';
 $column_gui_types['password'] = 'Şifre';
 //$column_gui_types['tel'] = 'Telefon';
 $column_gui_types['files'] = 'Dosya/Resim';

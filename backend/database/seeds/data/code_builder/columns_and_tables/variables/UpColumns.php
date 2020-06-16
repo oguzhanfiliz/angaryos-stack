@@ -20,6 +20,19 @@ if($pipe[\'table\'] == \'column_arrays\' &&  (int)$columnArrayTypeId == 2)
     return;
 }
 
+if(!isset($request[\'join_table_ids\']))
+{
+    $id = (int)\Request::input(\'editRecordId\');
+    
+    if($id == 0) $request[\'join_table_ids\'] = [];
+    else
+    {
+        $temp = \DB::table($pipe[\'table\'])->find($id);
+        $request[\'join_table_ids\'] = json_decode($temp->join_table_ids);
+        if($request[\'join_table_ids\'] == null) $request[\'join_table_ids\'] = [];   
+    }
+}
+
 if(count($request[\'join_table_ids\']) > 0)
 {
     $return = \'***\';

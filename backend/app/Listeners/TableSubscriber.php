@@ -162,6 +162,7 @@ class TableSubscriber
     
     public function relationDataInfoRequested($record, $column)
     {
+        $source = \Request::input('source');
         $relationRecord = $record->getRelationData($column->name);
         
         $array = is_array($relationRecord);
@@ -169,8 +170,19 @@ class TableSubscriber
         if(!$array) $relationRecord = [$relationRecord];
         $return = [];
         
+        $auths = @\Auth::user()->auths['tables'];
+        if($auths == NULL) $auths = [];
+        
         foreach($relationRecord as $temp)
         {
+            if(strlen($source) > 0) 
+                if($temp->_source_column != $source) 
+                    continue;
+              
+            if(strlen($temp->tableName) > 0)
+                if(!isset($auths[$temp->tableName]['shows']))
+                    custom_abort('no.auth.for.'.$temp->tableName.'.shows');
+                
             $temp = 
             [
                 'tableName' => $temp->tableName,
@@ -181,6 +193,8 @@ class TableSubscriber
             array_push($return, $temp);
         }
       
-        return $array ? $return : $return[0]; 
+        if(strlen($source) > 0) $array = FALSE;
+        
+        return $array ? $return : @$return[0]; 
     }
 }

@@ -197,6 +197,63 @@ trait BaseModelGetDataWhereTrait
         });
     }
     
+    public function addWhereForTableIdAndColumnNames($params)
+    {
+        $column = $params->column->table_alias.'.'.$params->column->name;
+        
+        switch ($params->filter->type)
+        {
+            case 1://table filter (basic)
+                $params->where_word_for_filter = 'orWhereRaw';
+                ColumnClassificationLibrary::relationDbTypes(   
+                                                            $this, 
+                                                            __FUNCTION__, 
+                                                            $params->column, 
+                                                            NULL, 
+                                                            $params);
+                break;
+            case 2://has all
+                $params->where_word_for_filter = 'whereRaw';
+                ColumnClassificationLibrary::relationDbTypes(   
+                                                            $this, 
+                                                            __FUNCTION__, 
+                                                            $params->column, 
+                                                            NULL, 
+                                                            $params);
+                break;
+            
+            case 100:
+                $where = '('.$column.'::text = \'\') IS NOT FALSE';
+                $params->model->whereRaw($where);
+                break;
+            case 101:
+                $where = 'length('.$column.'::text) > 0';
+                $params->model->whereRaw($where);
+                break;
+            default: dd('filtre tipi eklenmmis5');
+        }
+    }
+    
+    public function addWhereForTableIdAndColumnNamesForOneToOne($params)
+    {
+        $column = $params->column->table_alias.'.'.$params->column->name;
+        
+        $params->model->where(function ($query) use ($column, $params) 
+        {
+            foreach($params->filter->filter as $filter)
+                $query->{$params->where_word_for_filter}("$column = '$filter'");
+        });
+    }
+    
+    public function addWhereForTableIdAndColumnNamesForOneToMany($params)
+    {
+        $params->model->where(function ($query) use ($params) 
+        {
+            foreach($params->filter->filter as $filter)
+                $query->{$params->where_word_for_filter}("$params->column_name_with_alias @> '$filter'");
+        });
+    }
+    
     public function addWhereForTableIdAndColumnIds($params)
     {
         $column = $params->column->table_alias.'.'.$params->column->name;

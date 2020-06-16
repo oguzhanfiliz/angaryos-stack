@@ -280,7 +280,7 @@ export abstract class DataHelper
 
     /****    Gui Type Function    ****/
 
-    public static convertDataForGui(record, columnName, type, relation = null)
+    public static convertDataForGui(record, columnName, type)
     {
         if(typeof type == "undefined") return "";
         if(type == null) return;
@@ -291,41 +291,41 @@ export abstract class DataHelper
         switch(type.split(':')[0])
         {
             case "codeeditor":
-                data = this.convertDataByGuiTypeText(type, data, relation);
+                data = this.convertDataByGuiTypeText(type, data);
                 return BaseHelper.htmlStripTags(data).replace("\n", '<br>');
                 break;
             case "text":
-                data = this.convertDataByGuiTypeText(type, data, relation);
+                data = this.convertDataByGuiTypeText(type, data);
                 break;
             case "money":
-                data = this.convertDataByGuiTypeMoney(type, data, relation);
+                data = this.convertDataByGuiTypeMoney(type, data);
                 break;
             case "files":
-                data = this.convertDataByGuiTypeFiles(type, data, relation);
+                data = this.convertDataByGuiTypeFiles(type, data);
                 break;
             case "boolean":
                 data = this.convertDataByGuiTypeBoolean(record, columnName, type, data);
                 break;
             case "datetime":
             case "date":
-                data = this.convertDataByGuiTypeDateTime(type, data, relation);
+                data = this.convertDataByGuiTypeDateTime(type, data);
                 break;
             case "jsonb":
             case "json":
-                data = this.convertDataByGuiTypeJsonb(type, data, relation);
+                data = this.convertDataByGuiTypeJsonb(type, data);
                 break;
-            case "multiselect":
-            case "multiselectdragdrop":
-                data = this.convertDataByGuiTypeMultiSelect(record, columnName, type, data, relation);
-                break;
-            case "select":
-                data = this.convertDataByGuiTypeSelect(record, columnName, type, data, relation);
-                break;
+            //case "multiselect":
+            //case "multiselectdragdrop":
+            //    data = this.convertDataByGuiTypeMultiSelect(record, columnName, type, data);
+            //    break;
+            //case "select":
+            //    data = this.convertDataByGuiTypeSelect(record, columnName, type, data);
+            //    break;
         }
         return data;
     }
     
-    private static getRelationDataLink(record, columnName, guiType, data, relation)
+    /*private static getRelationDataLink(record, columnName, guiType, data, relation)
     {
         if(relation == null) return "";
         
@@ -363,9 +363,9 @@ export abstract class DataHelper
     {
         data = data + this.getRelationDataLink(record, columnName, guiType, data, relation);
         return data;
-    }
+    }*/
 
-    public static convertDataByGuiTypeJsonb(guiType, data, relation)
+    public static convertDataByGuiTypeJsonb(guiType, data)
     {
         if(typeof data == "string") return data;
         return BaseHelper.objectToJsonStr(data);
@@ -378,18 +378,14 @@ export abstract class DataHelper
         
         switch(guiType)
         {
-            case 'boolean': return data ? 'Aktif' : 'Pasif';
+            case 'boolean': 
             case 'boolean:fastchange':
-                var html = '<span type="'+guiType+'" ';
-                html += 'record-id="'+id+'" >';
-                html += data ? 'Aktif' : 'Pasif';
-                html += ' (hızlı)</span>'
-                return html;
+                return data ? 'Aktif' : 'Pasif';
             default: return data.toString();
         }
     }
 
-    public static convertDataByGuiTypeFiles(guiType, data, relation)
+    public static convertDataByGuiTypeFiles(guiType, data)
     {
         if(data == null) return null;
 
@@ -410,13 +406,13 @@ export abstract class DataHelper
         return rt;
     }
 
-    public static convertDataByGuiTypeText(guiType, data, relation)
+    public static convertDataByGuiTypeText(guiType, data)
     {
         if(data == null) return null;
         return data.substr(0, 100) + (data.length > 100 ? '...' : '');
     }
     
-    public static convertDataByGuiTypeMoney(guiType, data, relation)
+    public static convertDataByGuiTypeMoney(guiType, data)
     {
         var unit = guiType.split(':')[1].toUpperCase();
         data = BaseHelper.formatMoney(data, 2, '.', ',')//data.replace(/(\d)(?=(\d{3})+\.)/g, '$1,');  
@@ -424,7 +420,7 @@ export abstract class DataHelper
         return  data + " " + unit;
     }
     
-    public static convertDataByGuiTypeDateTime(guiType, data, relation)
+    public static convertDataByGuiTypeDateTime(guiType, data)
     {
         switch(guiType)
         {

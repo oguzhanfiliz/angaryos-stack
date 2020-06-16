@@ -477,6 +477,22 @@ export class DataTableElementComponent
 
     /****    Data Functions     *****/
 
+    booleanFastChanged(event, record, columnName)
+    {
+        var val = $(event.target).prop("checked");
+        
+        var temp = BaseHelper.readFromPipe(this.getLocalKey("data"));
+        
+        for(var i = 0; i < temp[this.params.page]['records'].length; i++)
+            if(temp[this.params.page]['records'][i]['id'] == record['id'])
+            {
+                temp[this.params.page]['records'][i][columnName] = val;
+                break;
+            }
+        
+        BaseHelper.writeToPipe(this.getLocalKey("data"), temp); 
+    }
+    
     getLocalKey(attr)
     {
         return "user:"+BaseHelper.loggedInUserInfo.user.id+"."+this.baseUrl+"."+attr;
@@ -592,12 +608,35 @@ export class DataTableElementComponent
         
         return 'edit-td';
     }
+    
+    getColumnType(columnName)
+    {
+        if(this.isFileColumn(columnName)) return 'file';
+        else if(this.isJsonViewerColumn(columnName)) return 'jsonviewer';
+        else if(this.isRelationColumn(columnName)) return 'relation';
+        else if(this.isGeoColumn(columnName)) return 'geo';
+        else if(this.isBooleanFastChangeColumn(columnName)) return 'boolean:fastchange';
+        else return 'default';
+    }
 
     isGeoColumn(columnName)
     {
         var geoColumns = ['point', 'linestring', 'polygon', 'multipoint', 'multilinestring', 'multipolygon'];
         var type = this.getColumnGuiTypeForQuery(this.getData('columns.'+columnName+'.gui_type_name'));
         return geoColumns.includes(type);
+    }
+    
+    isBooleanFastChangeColumn(columnName)
+    {
+        var type = this.getData('columns.'+columnName+'.gui_type_name');
+        return type == "boolean:fastchange";
+    }
+    
+    
+    isRelationColumn(columnName)
+    {
+        var relation = this.getData('columns.'+columnName+'.column_table_relation_id');
+        return relation != null;
     }
 
     isFileColumn(columnName)
@@ -622,6 +661,12 @@ export class DataTableElementComponent
         var ext = temp[temp.length-1];
 
         return imgExts.includes(ext);
+    }
+    
+    getColumnRelationJson(columnName)
+    {
+        var relation = this.getData('columns.'+columnName+'.column_table_relation_id');
+        return BaseHelper.objectToJsonStr(relation);
     }
 
     getRecordOperations()
@@ -659,19 +704,10 @@ export class DataTableElementComponent
         return rt;
     }
     
-    getCursorStyleForDataColumn(columnName)
-    {
-        var relation = this.getData('columns.'+columnName+'.column_table_relation_id');
-        if(relation == null) return "";
-        
-        return  'pointer';
-    }
-    
     convertDataForGui(record, columnName)
     {
         var type = this.getData('columns.'+columnName+".gui_type_name");
-        var relation = this.getData('columns.'+columnName+".column_table_relation_id");
-        var data = DataHelper.convertDataForGui(record, columnName, type, relation);
+        var data = DataHelper.convertDataForGui(record, columnName, type);
         return this.sanitizer.bypassSecurityTrustHtml(data);
     }
 

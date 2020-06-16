@@ -1,0 +1,9 @@
+<label class="switch">
+    <input type="checkbox" 
+        [checked]="record[name]"
+        (change)="onChanged($event)"
+        id="{{ name + '-' + record['id'] }}" 
+        name="{{ name + '-' + record['id'] }}">
+        
+    <span class="slider round"></span>
+</label>

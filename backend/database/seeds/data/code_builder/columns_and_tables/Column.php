@@ -34,6 +34,9 @@ $column_gui_type_override =
     'data_source_direction_id' => $column_gui_types['select:static']->id,
     'data_source_direction_id' => $column_gui_types['select:static']->id,
     'data_source_type_id' => $column_gui_types['select:static']->id,
+    
+    
+    'tokens' => $column_gui_types['jsonviewer:newpage']->id,
 ];
 
 $columnDefaults =

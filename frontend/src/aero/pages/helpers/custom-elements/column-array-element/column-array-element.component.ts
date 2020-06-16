@@ -40,12 +40,40 @@ export class ColumnArrayElementComponent
     {
         return BaseHelper.getObjectKeys(obj)
     }
+    
+    getColumnRelationJson(columnName)
+    {
+        var relation = this.getDataFromColumnArray('columns.'+columnName+'.column_table_relation_id');
+        return BaseHelper.objectToJsonStr(relation);
+    }
+    
+    getColumnType(columnName)
+    {
+        if(this.isFileColumn(columnName)) return 'file';
+        else if(this.isJsonViewerColumn(columnName)) return 'jsonviewer';
+        else if(this.isRelationColumn(columnName)) return 'relation';
+        else if(this.isGeoColumn(columnName)) return 'geo';
+        else if(this.isBooleanFastChangeColumn(columnName)) return 'boolean:fastchange';
+        else return 'default';
+    }
+    
+    isRelationColumn(columnName)
+    {
+        var relation = this.getDataFromColumnArray('columns.'+columnName+'.column_table_relation_id');
+        return relation != null;
+    }
 
     isGeoColumn(columnName)
     {
         var geoColumns = ['point', 'linestring', 'polygon', 'multipoint', 'multilinestring', 'multipolygon'];
         var type = this.getDataFromColumnArray('columns.'+columnName+".gui_type_name");
         return geoColumns.includes(type);
+    }
+    
+    isBooleanFastChangeColumn(columnName)
+    {
+        var type = this.getDataFromColumnArray('columns.'+columnName+'.gui_type_name');
+        return type == "boolean:fastchange";
     }
 
     isFileColumn(columnName)
@@ -120,20 +148,11 @@ export class ColumnArrayElementComponent
     {
         return DataHelper.getData(this.record, path);
     }
-    
-    getCursorStyleForDataColumn(columnName)
-    {
-        var relation = this.getDataFromColumnArray('columns.'+columnName+'.column_table_relation_id');
-        if(relation == null) return "";
-        
-        return  'pointer';
-    }
 
     getConvertedDataForGuiByColumnName(columnName)
     {
         var type = this.getDataFromColumnArray('columns.'+columnName+".gui_type_name");
-        var relation = this.getDataFromColumnArray('columns.'+columnName+".column_table_relation_id");
-        var data = DataHelper.convertDataForGui(this.getDataFromRecord(), columnName, type, relation);
+        var data = DataHelper.convertDataForGui(this.getDataFromRecord(), columnName, type);
         
         return this.sanitizer.bypassSecurityTrustHtml(data);        
     }

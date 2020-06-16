@@ -13,7 +13,6 @@ declare var $: any;
 })
 export class InnerHtmlTransformerDirective 
 {
-
     constructor(
         private el: ElementRef, 
         private router: Router,
@@ -25,50 +24,6 @@ export class InnerHtmlTransformerDirective
     @HostListener('click', ['$event'])
     public onClick(event) 
     {
-        console.log(123)
         var html = event.target.innerHTML;
-        
-        if(html.indexOf('type="relationDataInfo"') > -1)
-            this.openRelationDataInfoPage(html, event);
-        else if(html.indexOf('type="boolean:fastchange"') > -1)
-            this.booleanFastChangeClicked(html, event);
     }
-    
-    openRelationDataInfoPage(html, event)
-    {
-        var url = html.split('info-url="')[1].split('"')[0];
-        
-        this.generalHelper.startLoading();
-        
-        this.sessionHelper.doHttpRequest("GET", url) 
-        .then((data) => 
-        {
-            this.generalHelper.stopLoading();
-            
-            if(!this.authControlForRelationDataInfoPage(data)) 
-            {
-                this.messageHelper.toastMessage("Bilgi kartı için yetkiniz yok");  
-                return;
-            }
-            
-            this.generalHelper.navigate('table/'+data['tableName']+"/"+data['recordId'], event.ctrlKey);
-        })
-        .catch((e) => { this.generalHelper.stopLoading(); });
-    }
-    
-    authControlForRelationDataInfoPage(data)
-    {
-        var auth = BaseHelper.loggedInUserInfo['auths']['tables'];
-        if(typeof auth[data['tableName']] == "undefined") return false;
-        if(typeof auth[data['tableName']]['shows'] == "undefined") return false;
-        
-        return true;
-    }
-    
-    booleanFastChangeClicked(html, event)
-    {
-        console.log(html);
-        this.messageHelper.toastMessage("Hızlı değiştirme");
-    }
-
 };
