@@ -239,7 +239,7 @@ trait BaseModelGetDataJoinTrait
     
     /****    Join For Column Array's Join Tables    ****/
     
-    private function addJoinForColumnArray($model, $join)
+    public function addJoinForColumnArray($model, $join)
     {
         $params = helper('get_null_object');
         

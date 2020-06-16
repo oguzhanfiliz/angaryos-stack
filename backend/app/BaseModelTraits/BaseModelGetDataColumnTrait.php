@@ -14,15 +14,30 @@ trait BaseModelGetDataColumnTrait
     public function getColumns($model, $tableName, $columnArrayOrSetId)
     {
         $cacheName = 'table:'.$this->getTable().'|type:'.$tableName.'|id:'.$columnArrayOrSetId;        
-        return Cache::rememberForever($cacheName, function() use($model, $tableName, $columnArrayOrSetId)
+        [$data, $joins]  = Cache::rememberForever($cacheName, function() use($model, $tableName, $columnArrayOrSetId)
         {
+            global $pipe;
+
             switch($tableName)
             {
-                case 'column_arrays': return $this->getColumnsByColumnArrayId($model, $columnArrayOrSetId);
-                case 'column_sets': return $this->getColumnsByColumnSetId($model, $columnArrayOrSetId);
+                case 'column_arrays': 
+                    $data = $this->getColumnsByColumnArrayId($model, $columnArrayOrSetId);
+                    break;
+                case 'column_sets': 
+                    $data =  $this->getColumnsByColumnSetId($model, $columnArrayOrSetId);
+                    break;
                 default: abort(helper('response_error', 'undefined.type:'.$tableName));  
             }
+
+            if(isset($pipe['joins'])) $joins = $pipe['joins'];
+            else $joins = [];
+
+            return [$data, $joins];
         });
+
+        foreach( $joins as  $join) $this->addJoinForColumnArray($model, $join);
+
+        return $data;
     }
         
     private function getColumnsByColumnArrayId($model, $id, $form = FALSE)
@@ -48,6 +63,8 @@ trait BaseModelGetDataColumnTrait
     
     private function getAllColumnsFromColumnArrayDirectData($model, $columnArray, $form = FALSE)
     {
+        global $pipe;
+
         $columns = helper('get_null_object');
         
         if(strlen($columnArray->column_ids) > 0)
@@ -68,7 +85,10 @@ trait BaseModelGetDataColumnTrait
                 foreach(json_decode($columnArray->join_table_ids) as $joinId)
                 {
                     $join = get_attr_from_cache('join_tables', 'id', $joinId, '*');
-                    $this->addJoinForColumnArray($model, $join);
+
+                    if(!isset($pipe['joins'])) $pipe['joins'] = [];
+
+                    array_push($pipe['joins'], $join);
                 }
         
         if($form) return $columns;
@@ -80,10 +100,13 @@ trait BaseModelGetDataColumnTrait
             
             $column = (Object)[];
             $temp = helper('get_column_data_for_joined_column', $c);
+
+            $displayName = get_attr_from_cache('columns', 'name', $temp[1], 'display_name');
+            if(strlen($displayName) == 0) $displayName = ucfirst($temp[1]);
             
             $column->id = -1;
             $column->name = $temp[1];
-            $column->display_name = 'display '.$temp[1];
+            $column->display_name = $displayName;
             $column->column_table_relation_id = NULL;
             $column->gui_type_name = 'string';
             $column->column_gui_type_id = get_attr_from_cache('column_gui_types', 'name', 'string', 'id');
