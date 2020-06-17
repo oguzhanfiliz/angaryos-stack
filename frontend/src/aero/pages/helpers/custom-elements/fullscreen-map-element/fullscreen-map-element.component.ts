@@ -115,6 +115,11 @@ export class FullScreenMapElementComponent
 
     /****    Gui Operations    ****/
     
+    closeModal(id)
+    {
+        $(id).modal('hide');
+    }
+    
     search()
     {
         var th = this;

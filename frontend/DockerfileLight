@@ -1,2 +1,2 @@
 FROM nginx:alpine
-COPY ./dist/angular-nginx-docker/. /usr/share/nginx/html
+COPY ./dist/light/. /usr/share/nginx/html

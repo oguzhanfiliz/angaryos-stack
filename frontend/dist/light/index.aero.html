@@ -1,4 +1,4 @@
-<script src="runtime-es2015.73849af14f705b7469aa.js" type="module"></script><script src="runtime-es5.73849af14f705b7469aa.js" nomodule defer></script><script src="polyfills-es5.3e8196928d184a6e5319.js" nomodule defer></script><script src="polyfills-es2015.5b10b8fd823b6392f1fd.js" type="module"></script><script src="scripts.5cf6821179a8f3ade49c.js" defer></script><script src="main-es2015.3bdc253025fc6ff6931c.js" type="module"></script><script src="main-es5.3bdc253025fc6ff6931c.js" nomodule defer></script><!doctype html>
+<script src="runtime-es2015.4c79b6eb004dc7dbe8cc.js" type="module"></script><script src="runtime-es5.4c79b6eb004dc7dbe8cc.js" nomodule defer></script><script src="polyfills-es5.3e8196928d184a6e5319.js" nomodule defer></script><script src="polyfills-es2015.5b10b8fd823b6392f1fd.js" type="module"></script><script src="scripts.6807175946338e09c32e.js" defer></script><script src="main-es2015.7f85375925d43330eaf9.js" type="module"></script><script src="main-es5.7f85375925d43330eaf9.js" nomodule defer></script><!doctype html>
 <html class="no-js " lang="en">
     <head>
         <base href="/">
@@ -6,19 +6,25 @@
         <meta http-equiv="X-UA-Compatible" content="IE=Edge">
         <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
 
+        <link href="https://fonts.googleapis.com/css?family=PT+Mono" rel="stylesheet" />
+        <link href=" assets/ext_modules/jsonTreeViewer/libs/app/reset.css" rel="stylesheet" />
+        <link href=" assets/ext_modules/jsonTreeViewer/libs/app/app.css" rel="stylesheet" />
+        <link rel="stylesheet" href="assets/ext_modules/jsonTreeViewer/libs/jsonTree/jsonTree.css"/>
+        
+        
         <link rel="stylesheet" href="https://openlayers.org/en/v6.1.1/css/ol.css" type="text/css">
 
         <link rel="stylesheet" href="assets/themes/aero/assets/plugins/jvectormap/jquery-jvectormap-2.0.3.min.css"/>
         <link rel="stylesheet" href="assets/themes/aero/assets/plugins/charts-c3/plugin.css"/>
-
+        
         <link rel="stylesheet" href="assets/themes/aero/assets/plugins/morrisjs/morris.min.css" />
         
         <link rel="stylesheet" href="assets/ext_modules/trumbowyg/dist/ui/trumbowyg.min.css" />
         
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/openlayers/openlayers.github.io@master/en/v6.2.1/css/ol.css"> 
-        
+            
         <title>Angaryos!</title>
-    <link rel="stylesheet" href="styles.6afd2c7bd5c8b0340663.css"></head>
+    <link rel="stylesheet" href="styles.9cbf5d5139c4adf6c4b9.css"></head>
 
     <aero-root></aero-root>
 
@@ -42,7 +48,8 @@
             }
         }
         
-        XMLHttpRequest.prototype.send = function(a,b) {
+        XMLHttpRequest.prototype.send = function(a,b) 
+        {
             if(customAjaxListener.url.indexOf("tawk.to") > -1)
             {
                 //console.log("Canceled: " + customAjaxListener.url);
