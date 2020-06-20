@@ -58,26 +58,10 @@ services:
 
     #######       FRONTEND       #######
     
-    frontend: 
-        image: karapazar/angular-serve-light:0.3
-        volumes:
-            - ./frontend/dist/light/:/usr/share/nginx/html 
-        networks:
-            - frontend-nw
-        deploy:
-            mode: replicated
-            replicas: 1
-            labels:
-                traefik.frontend.rule: "PathPrefix:/"
-                traefik.port: "80"
-                traefik.enable: "true"
-                traefik.backend: "frontend"
-                traefik.docker.network: "angaryos_frontend-nw"
-
     #frontend: 
-    #    image: karapazar/angular-serve:0.19
+    #    image: karapazar/angular-serve-light:0.3
     #    volumes:
-    #        - ./frontend:/usr/src/app 
+    #        - ./frontend/dist/light/:/usr/share/nginx/html 
     #    networks:
     #        - frontend-nw
     #    deploy:
@@ -85,10 +69,26 @@ services:
     #        replicas: 1
     #        labels:
     #            traefik.frontend.rule: "PathPrefix:/"
-    #            traefik.port: "4200"
+    #            traefik.port: "80"
     #            traefik.enable: "true"
     #            traefik.backend: "frontend"
     #            traefik.docker.network: "angaryos_frontend-nw"
+
+    frontend: 
+        image: karapazar/angular-serve:0.19
+        volumes:
+            - ./frontend:/usr/src/app 
+        networks:
+            - frontend-nw
+        deploy:
+            mode: replicated
+            replicas: 1
+            labels:
+                traefik.frontend.rule: "PathPrefix:/"
+                traefik.port: "4200"
+                traefik.enable: "true"
+                traefik.backend: "frontend"
+                traefik.docker.network: "angaryos_frontend-nw"
 
 
 

@@ -372,8 +372,8 @@ class CacheSubscriber
                 else
                 {
                     $customLayers = DB::table('custom_layers')->where('table_id', $tableId)->get();
-                    foreach($customLayers as $customLayer)
-                        dd('clearTablesAndColumnCommonCache');
+                    //foreach($customLayers as $customLayer)
+                        //dd('clearTablesAndColumnCommonCache');
                 }
             }
             else if(substr($key, -16, 16) == '|tableGroups')
