@@ -19,66 +19,97 @@ export class ColumnArrayElementComponent
     @Input() tableName: string;
     @Input() defaultLimit: number;
 
-    loadedRelationTable = [];
+    relationTableLoaded = false;
     columnArray = null;
     record = null;
 
     constructor(private sanitizer:DomSanitizer) 
-    { }
+    {
+        this.fillDefaultVariables(); 
+    }
 
     ngOnChanges()
     {
-        if(typeof this.columnArrayJson != "undefined" && this.columnArrayJson != "")
-            this.columnArray = BaseHelper.jsonStrToObject(this.columnArrayJson);
-
-        if(typeof this.recordJson != "undefined" && this.recordJson != "")
-            this.record = BaseHelper.jsonStrToObject(this.recordJson);
-    }
-
-    getObjectKeys(obj)
-    {
-        return BaseHelper.getObjectKeys(obj)
+        this.fillVariables();
     }
     
-    getColumnRelationJson(columnName)
+    fillDefaultVariables()
     {
-        var relation = this.getDataFromColumnArray('columns.'+columnName+'.column_table_relation_id');
-        return BaseHelper.objectToJsonStr(relation);
+        this.columnArray = 
+        {
+            name: '',
+            tree: '',
+            columnNames: []
+        };
+    }
+    
+    fillVariables()
+    {
+        if(typeof this.recordJson != "undefined" && this.recordJson != "")
+            this.record = BaseHelper.jsonStrToObject(this.recordJson);
+            
+        if(typeof this.columnArrayJson != "undefined" && this.columnArrayJson != "")
+            this.columnArray = BaseHelper.jsonStrToObject(this.columnArrayJson);
+            
+        if(typeof this.columnArray['tree'] == "undefined") this.columnArray['tree'] = '';
+        this.columnArray['baseUrlForRelationDataTable'] = this.getBaseUrlForRelationDataTable();
+        this.columnArray['columnNames'] = Object.keys(this.columnArray['columns']);
+        for(var i = 0; i < this.columnArray['columnNames'].length; i++)
+        {
+            var columnName = this.columnArray['columnNames'][i];
+            
+            var columnType = this.getColumnType(columnName);
+            this.columnArray['columns'][columnName]['columnType'] = columnType;
+            if(columnType == 'default')
+            {
+                var html = this.getConvertedDataForGuiByColumnName(columnName);
+                this.columnArray['columns'][columnName]['innerHtml'] = html;
+            }
+            else if(columnType == 'relation')
+            {
+                var relation = this.columnArray['columns'][columnName]['column_table_relation_id']
+                this.columnArray['columns'][columnName]['relationJson'] = BaseHelper.objectToJsonStr(relation);
+            }
+            else if(columnType == 'file')
+            { 
+                var fileUrls = this.getFileUrls(this.record[columnName]);
+                for(var j = 0 ; j < fileUrls.length; j++)
+                {
+                    fileUrls[j]['isImage'] = this.isImageFile(fileUrls[j]);
+                    fileUrls[j]['iconUrl'] = this.getFileIconUrl(fileUrls[j]['org']);
+                }
+                
+                this.columnArray['columns'][columnName]['fileUrls'] = fileUrls;
+            }
+        }
     }
     
     getColumnType(columnName)
     {
-        if(this.isFileColumn(columnName)) return 'file';
-        else if(this.isJsonViewerColumn(columnName)) return 'jsonviewer';
-        else if(this.isRelationColumn(columnName)) return 'relation';
+        var guiType = this.columnArray['columns'][columnName]['gui_type_name'];
+        var relation = this.columnArray['columns'][columnName]['column_table_relation_id'];
+        
+        if(guiType == "files") return 'file';
+        else if(guiType.split(':')[0] == "jsonviewer") return 'jsonviewer';
+        else if(guiType == 'boolean:fastchange') return 'boolean:fastchange';
+        else if(relation != null) return 'relation';
         else if(this.isGeoColumn(columnName)) return 'geo';
-        else if(this.isBooleanFastChangeColumn(columnName)) return 'boolean:fastchange';
         else return 'default';
     }
     
-    isRelationColumn(columnName)
+    getConvertedDataForGuiByColumnName(columnName)
     {
-        var relation = this.getDataFromColumnArray('columns.'+columnName+'.column_table_relation_id');
-        return relation != null;
+        var guiType = this.columnArray['columns'][columnName]['gui_type_name'];
+        var data = DataHelper.convertDataForGui(this.record, columnName, guiType);
+        
+        return this.sanitizer.bypassSecurityTrustHtml(data);        
     }
-
+    
     isGeoColumn(columnName)
     {
         var geoColumns = ['point', 'linestring', 'polygon', 'multipoint', 'multilinestring', 'multipolygon'];
-        var type = this.getDataFromColumnArray('columns.'+columnName+".gui_type_name");
-        return geoColumns.includes(type);
-    }
-    
-    isBooleanFastChangeColumn(columnName)
-    {
-        var type = this.getDataFromColumnArray('columns.'+columnName+'.gui_type_name');
-        return type == "boolean:fastchange";
-    }
-
-    isFileColumn(columnName)
-    {
-        var type = this.getDataFromColumnArray('columns.'+columnName+'.gui_type_name');
-        return type == "files";
+        var guiType = this.columnArray['columns'][columnName]['gui_type_name'];
+        return geoColumns.includes(guiType);
     }
     
     isImageFile(file)
@@ -106,17 +137,6 @@ export class ColumnArrayElementComponent
         }
     }
     
-    isJsonViewerColumn(columnName)
-    {
-        var type = this.getDataFromColumnArray('columns.'+columnName+'.gui_type_name').split(":")[0];
-        return type == "jsonviewer";
-    }
-    
-    getJsonStrFromObject(obj)
-    {
-        return BaseHelper.objectToJsonStr(obj);
-    } 
-
     getFileUrls(data)
     {
         if(data == null) return [];
@@ -127,7 +147,7 @@ export class ColumnArrayElementComponent
         var rt = [];
         for(var i = 0; i < data.length; i++)
         {
-            var temp = { };
+            var temp = {};
             temp['small'] = BaseHelper.getFileUrl(data[i], 's_');
             temp['big'] = BaseHelper.getFileUrl(data[i], 'b_');
             temp['org'] = BaseHelper.getFileUrl(data[i], '');
@@ -137,50 +157,17 @@ export class ColumnArrayElementComponent
         
         return rt;
     }
-
-    getDataFromColumnArray(path = '')
-    {
-        return DataHelper.getData(this.columnArray, path);
-    }
-
-    getDataFromRecord(path = '')
-    {
-        return DataHelper.getData(this.record, path);
-    }
-
-    getConvertedDataForGuiByColumnName(columnName)
-    {
-        var type = this.getDataFromColumnArray('columns.'+columnName+".gui_type_name");
-        var data = DataHelper.convertDataForGui(this.getDataFromRecord(), columnName, type);
-        
-        return this.sanitizer.bypassSecurityTrustHtml(data);        
-    }
-
-    columnArrayIsRelationTable(columnArray)
-    {
-        return (typeof columnArray['tree']) != "undefined";
-    }
-
-    getColumnNamesFromColumnArray(columnArray)
-    {
-        return Object.keys(columnArray.columns);
-    }
-
-    getBaseUrlByColumnArray(columnArray)
+    
+    getBaseUrlForRelationDataTable()
     {
         var url = "tables/"+this.tableName+"/"
-        url += this.getDataFromRecord('id')+"/getRelationTableData/"
-        url += this.getDataFromColumnArray('tree');
+        url += this.record['id']+"/getRelationTableData/"
+        url += this.columnArray['tree'];
         return url;    
     }
-
-    relationTableDataChanged(columnArray, event)
+    
+    relationTableDataChanged(event)
     {
-        this.loadedRelationTable[columnArray.id] = true;
-    }
-
-    relationTableIsLoaded(columnArray)
-    {
-        return (typeof this.loadedRelationTable[columnArray.id]) != "undefined";
+        this.relationTableLoaded = true;
     }
 }

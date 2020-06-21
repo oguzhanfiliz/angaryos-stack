@@ -21,7 +21,7 @@ export class ShowComponent
     
     @Output() showLoad = new EventEmitter();
     
-    public data;
+    public data = null;
     public tableName = "";
     public recordId = -1;
     public defaultLimit = 3;
@@ -33,66 +33,58 @@ export class ShowComponent
         private aeroThemeHelper: AeroThemeHelper
         ) 
     {
+        this.fillDefaultVariables();
+        
         var th = this;
-        setTimeout(() => 
+        setTimeout(() => route.params.subscribe(val => th.preLoad(val)), 100);
+    }
+    
+    preLoad(val)
+    {
+        this.fillDefaultVariables();
+        
+        this.fillTableNameAndRecordId(val);
+        
+        this.addEventForFeatures();
+        this.addEventForThemeIcons();
+        
+        this.dataReload(); 
+
+        this.aeroThemeHelper.pageRutine();   
+    }
+    
+    fillDefaultVariables()
+    {
+        this.data = {};
+        
+        this.data['title'] = '';
+        
+        this.data['column_set'] = [];
+        this.data['column_set']['column_set_type'] = 'none';
+        this.data['column_set']['column_arrays'] = [];
+    }
+    
+    fillTableNameAndRecordId(val)
+    {
+        if(this.inShowTableName == "")
         {
-            route.params.subscribe(val => 
-            {
-                if(th.inShowTableName.length == 0)
-                {
-                    th.tableName = val.tableName;
-                    th.recordId = val.recordId; 
-                }
-                else
-                {
-                    th.tableName = th.inShowTableName;
-                    th.recordId = parseInt(th.id);
-                }
-
-                th.addEventForFeatures();
-                th.addEventForThemeIcons();
-                th.dataReload(); 
-                
-                this.aeroThemeHelper.pageRutine();   
-            });
-        }, 100);
+            this.tableName = val.tableName;
+            this.recordId = val.recordId; 
+        }
+        else
+        {
+            this.tableName = this.inShowTableName;
+            this.recordId = parseInt(this.id);
+        }
     }
-
-
-
-    /****    Data Functions     ****/
-
-    getTitleOrDefault(title, defaultTitle)
-    {
-        return DataHelper.getTitleOrDefault(title, defaultTitle);
-    }
-
-    getJson(data)
-    {
-        return BaseHelper.objectToJsonStr(data);
-    }
-
-    getLocalKey()
-    {
-        if(typeof BaseHelper.loggedInUserInfo == "undefined") return "";
-        if(BaseHelper.loggedInUserInfo == null) return "";
-        
-        return "user:"+BaseHelper.loggedInUserInfo.user.id+".tables/"+this.tableName+".show."+this.recordId+".data";
-    }
-
-    getData(path = '')
-    {
-        var data = BaseHelper.readFromPipe(this.getLocalKey()); 
-        if(data == null) return null;
-        
-        return DataHelper.getData(data, path);
-    }
-
+    
     getParamsForShow()
     {
+        var auths = BaseHelper.loggedInUserInfo['auths'];
+        
         var params = 
         {
-            column_set_id: BaseHelper.loggedInUserInfo.auths.tables[this.tableName]['shows'][0],
+            column_set_id: auths['tables'][this.tableName]['shows'][0],
         };
 
         return params;
@@ -100,26 +92,38 @@ export class ShowComponent
 
     dataReload()
     {
-        if(this.getData() != null) return;
-
         var url = this.sessionHelper.getBackendUrlWithToken()+"tables/"+this.tableName+"/"+this.recordId;
         var params = this.getParamsForShow();
-
-        this.generalHelper.startLoading();
-
-        this.sessionHelper.doHttpRequest("GET", url, {'params': BaseHelper.objectToJsonStr(params)})
-        .then((data) => 
-        {
-            //data.column_set.column_set_type = 'group_box';
-
-            BaseHelper.writeToPipe(this.getLocalKey(), data);
-
-            this.generalHelper.stopLoading();
-            this.addEventForFeatures();
+        var data = {'params': BaseHelper.objectToJsonStr(params)};
+        
+        this.sessionHelper.doHttpRequest("GET", url, data)
+        .then((data) => this.dataLoaded(data));
+    }
+    
+    dataLoaded(data)
+    {
+        this.data = this.fillDataAdditionalVariables(data);
+        
+        this.addEventForFeatures();
+        this.showLoad.emit(data);
+    }
+    
+    fillDataAdditionalVariables(data)
+    {
+        data['title'] = DataHelper.getTitleOrDefault(data['column_set']['name'], 'Bilgi Kartı');
+        
+        data['record']['json'] = BaseHelper.objectToJsonStr(data['record']);
             
-            this.showLoad.emit(data);
-        })
-        .catch((e) => { this.generalHelper.stopLoading(); });
+        for(var i = 0; i < data['column_set']['column_arrays'].length; i++)
+        {
+            var json = BaseHelper.objectToJsonStr(data['column_set']['column_arrays'][i]);
+            data['column_set']['column_arrays'][i]['json'] = json;
+            
+            var title = DataHelper.getTitleOrDefault(data['column_set']['column_arrays'][i]['name_basic'], '');
+            data['column_set']['column_arrays'][i]['title'] = title;
+        }  
+        
+        return data;
     }
 
 

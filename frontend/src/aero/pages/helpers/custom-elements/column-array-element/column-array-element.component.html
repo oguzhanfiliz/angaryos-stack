@@ -1,90 +1,90 @@
-<h5 *ngIf="getDataFromColumnArray('name') != null && getDataFromColumnArray('name').length != 0" style="margin: 25px 0 10px 0">                            
-    <strong>{{ getDataFromColumnArray('name') }}</strong>
+<h5 *ngIf="columnArray['name'] != ''" style="margin: 25px 0 10px 0">                            
+    <strong>{{ columnArray['name'] }}</strong>
 </h5>
-<table *ngIf="!columnArrayIsRelationTable(columnArray)" width="100%" class="table table-hover">
+
+<table *ngIf="columnArray['tree'].length == 0" width="100%" class="table table-hover">
     <tbody>
-        <tr *ngFor="let columnName of getColumnNamesFromColumnArray(columnArray)">
+        <tr *ngFor="let columnName of columnArray['columnNames']">
             <th class="title">
-                {{ getDataFromColumnArray('columns.'+columnName+'.display_name') }}
+                {{ columnArray['columns'][columnName]['display_name'] }}
             </th>
-            <td *ngIf="getColumnType(columnName) == 'default'" 
-                [innerHtml]="getConvertedDataForGuiByColumnName(columnName)" 
+            
+            <td *ngIf="columnArray['columns'][columnName]['columnType'] == 'default'" 
+                [innerHtml]="columnArray['columns'][columnName]['innerHtml']" 
                 innerHtmlTransformer>
                 
             </td>
             
-            <td *ngIf="isRelationColumn(columnName)">
+            <td *ngIf="columnArray['columns'][columnName]['columnType'] == 'relation'">
                 <relation-column-element 
-                    type="{{ getDataFromColumnArray('columns.'+columnName+'.gui_type_name') }}"
+                    type="{{ columnArray['columns'][columnName]['gui_type_name'] }}"
                     name="{{ columnName }}"
-                    relationJson = "{{ getColumnRelationJson(columnName) }}"
-                    recordJson="{{ getJsonStrFromObject(record) }}" >
+                    relationJson = "{{ columnArray['columns'][columnName]['relationJson']  }}"
+                    recordJson="{{ recordJson }}" >
 
                 </relation-column-element>
             </td>
             
-            <td *ngIf="isFileColumn(columnName)">
-                <span *ngFor="let i of getObjectKeys(getFileUrls(record[columnName]))">                                                                    
-                    <a  data-fancybox="gallery" *ngIf="isImageFile(getFileUrls(record[columnName])[i])"
-                        href="{{ getFileUrls(record[columnName])[i]['big'] }}" >
+            <td *ngIf="columnArray['columns'][columnName]['columnType'] == 'file'">
+                <span *ngFor="let fileUrl of columnArray['columns'][columnName]['fileUrls']">                                                                    
+                    <a *ngIf="fileUrl['isImage']"
+                        data-fancybox="gallery"
+                        href="{{ fileUrl['big'] }}" >
 
-                    <img class='rounded-circle file-preview' src="{{ getFileUrls(record[columnName])[i]['small'] }}">
+                        <img class='rounded-circle file-preview' src="{{ fileUrl['small'] }}">
                     </a>
 
-                    <a target="_blank" *ngIf="!isImageFile(getFileUrls(record[columnName])[i])"
-                        href="{{ getFileUrls(record[columnName])[i]['org'] }}"
-                        >
+                    <a target="_blank" *ngIf="!fileUrl['isImage']" href="{{ fileUrl['org'] }}">
 
-                    <img 
-                        class='rounded-circle file-preview' 
-                        src="{{ getFileIconUrl(getFileUrls(record[columnName])[i]['org']) }}">
+                        <img 
+                            class='rounded-circle file-preview' 
+                            src="{{ fileUrl['iconUrl'] }}">
                     </a>
                 </span>                                                                                                                             
             </td>
             
-            <td *ngIf="isGeoColumn(columnName)">
+            <td *ngIf="columnArray['columns'][columnName]['columnType'] == 'geo'">
                 <geo-preview-element 
-                    *ngIf="isGeoColumn(columnName)" 
                     name="{{ columnName }}"
-                    type="{{ getDataFromColumnArray('columns.'+columnName+'.gui_type_name') }}"
-                    srid="{{ getDataFromColumnArray('columns.'+columnName+'.srid') }}"
-                    wkt="{{ this.getDataFromRecord(columnName) }}">
+                    type="{{ columnArray['columns'][columnName]['gui_type_name'] }}"
+                    srid="{{ columnArray['columns'][columnName]['srid'] }}"
+                    wkt="{{ record[columnName] }}">
                 </geo-preview-element>
             </td>
             
-            <td *ngIf="isBooleanFastChangeColumn(columnName)">
+            <td *ngIf="columnArray['columns'][columnName]['columnType'] == 'boolean:fastchange'">
                 <boolean-fastchange-element
-                    value="{{ this.getDataFromRecord(columnName) }}"
+                    value="{{ record[columnName] }}"
                     name="{{ columnName }}"
-                    recordJson="{{ getJsonStrFromObject(record) }}">
-                </boolean-fastchange-element >
+                    recordJson="{{ recordJson }}">
+                </boolean-fastchange-element>
             </td>
             
-            <td *ngIf="isJsonViewerColumn(columnName)">
-                <jsonviewer-element *ngIf="isJsonViewerColumn(columnName)" 
-                    type="{{ getDataFromColumnArray('columns.'+columnName+'.gui_type_name') }}"
-                    placeholder="{{ getDataFromColumnArray('columns.'+columnName+'.display_name') }}"
-                    value="{{ this.getDataFromRecord(columnName) }}"
+            <td *ngIf="columnArray['columns'][columnName]['columnType'] == 'jsonviewer'">
+                <jsonviewer-element 
+                    type="{{ columnArray['columns'][columnName]['gui_type_name'] }}"
+                    placeholder="{{ columnArray['columns'][columnName]['display_name'] }}"
+                    value="{{ record[columnName] }}"
                     name="{{ columnName }}"
-                    recordJson="{{ getJsonStrFromObject(record) }}"
+                    recordJson="{{ recordJson }}"
                     [readOnly]="true" ></jsonviewer-element>
             </td>
         </tr>
     </tbody>
 </table>
 
-<div *ngIf="columnArrayIsRelationTable(columnArray)" id="relation-data-{{ getDataFromColumnArray('id') }}">
-    <table [hidden]="relationTableIsLoaded(columnArray)" width="100%">
+<div *ngIf="columnArray['tree'].length > 0" id="relation-data-{{ columnArray['id'] }}">
+    <table [hidden]="relationTableLoaded" width="100%">
         <tr>
             <td align="center">
                 <img src="assets/img/loading.gif">
             </td>
         </tr>
     </table>
-    <data-table-element [hidden]="!relationTableIsLoaded(columnArray)"
-        (dataChanged)="relationTableDataChanged(columnArray, $event)" 
-        baseUrl="{{ getBaseUrlByColumnArray(columnArray) }}"
-        lightTable = "true" tableName="tree:{{ columnArray.tree }}"
+    <data-table-element [hidden]="!relationTableLoaded"
+        (dataChanged)="relationTableDataChanged($event)" 
+        baseUrl="{{ columnArray['baseUrlForRelationDataTable'] }}"
+        lightTable = "true" tableName="tree:{{ columnArray['tree'] }}"
         defaultLimit="{{ defaultLimit }}">
     </data-table-element>
 </div>

@@ -167,12 +167,20 @@ export class SessionHelper
 
     public doHttpRequest(type: string, url: string, data: object = {})
     {
+      this.generalHelper.startLoading();
+      
       return new Promise((resolve, reject) =>
       {
         this.getHttpObject(type, url, data)
-        .subscribe( response => resolve(response["data"]),
+        .subscribe( 
+        response => 
+        {
+          this.generalHelper.stopLoading();
+          resolve(response["data"]);
+        },
         error =>
         {
+          this.generalHelper.stopLoading();
           if(url.indexOf('initialize-db') > -1) reject(error.message);
 
           if(this.redirectInitializeIfDbNotInitialized(error)) 

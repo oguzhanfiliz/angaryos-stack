@@ -4,12 +4,17 @@
             <div class="row">
                 <div class="col-lg-7 col-md-6 col-sm-12">
                     <h2>
-                        {{ getTitleOrDefault(getData('column_set.name'), "Bilgi Kartı") }}
+                        {{ data['title'] }}
                     </h2>
                     <button class="btn btn-secondary btn-sm btn-icon mobile_menu" type="button"><i class="zmdi zmdi-sort-amount-desc"></i></button>
                 </div>
                 <div class="col-lg-5 col-md-6 col-sm-12">                
-                    <button *ngIf="inShowTableName == ''" class="btn btn-sm btn-secondary btn-icon float-right right_icon_toggle_btn" type="button"><i class="zmdi zmdi-arrow-right"></i></button>
+                    <button *ngIf="inShowTableName == ''" 
+                        class="btn btn-sm btn-secondary btn-icon float-right right_icon_toggle_btn" 
+                        type="button">
+                            
+                        <i class="zmdi zmdi-arrow-right"></i>
+                    </button>
                 </div>
             </div>
         </div>
@@ -19,16 +24,16 @@
                     <div class="card">
 
                         <!-- None -->
-                        <div *ngIf="getData('column_set.column_set_type') == 'none'">                           
-                            <div *ngFor="let columnArray of getData('column_set.column_arrays');">
+                        <div *ngIf="data['column_set']['column_set_type'] == 'none'">                           
+                            <div *ngFor="let columnArray of data['column_set']['column_arrays']">
                                 <h4>
-                                    {{ getTitleOrDefault(columnArray.name_basic, "") }}
+                                    {{ columnArray['title'] }}
                                 </h4>
                                 <column-array-element 
                                     defaultLimit = "{{ defaultLimit }}" 
                                     tableName = "{{ tableName }}" 
-                                    columnArrayJson="{{ getJson(columnArray) }}"
-                                    recordJson="{{ getJson(getData('record')) }}">
+                                    columnArrayJson="{{ columnArray['json'] }}"
+                                    recordJson="{{ data['record']['json'] }}">
                                 </column-array-element>
                             </div>
                         </div>
@@ -37,22 +42,26 @@
                         
                         
                         <!--- Accordion -->
-                        <div class="body" *ngIf="getData('column_set.column_set_type') == 'accordion'">
+                        <div *ngIf="data['column_set']['column_set_type'] == 'accordion'" class="body">
                             <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
-                                <div *ngFor="let columnArray of getData('column_set.column_arrays')" class="panel panel-primary">
+                                <div *ngFor="let columnArray of data['column_set']['column_arrays']" 
+                                    class="panel panel-primary">
                         
-                                    <div class="panel-heading" role="tab" id="heading{{ columnArray.id }}">
+                                    <div class="panel-heading" role="tab" id="heading{{ columnArray['id'] }}">
                                         <h4 class="panel-title">
                                             <a role="button" data-toggle="collapse" 
-                                                data-parent="#accordion" href="#collapse{{ columnArray.id }}"
+                                                data-parent="#accordion" href="#collapse{{ columnArray['id'] }}"
                                                 aria-expanded="false" [attr.aria-controls]="'collapse' + columnArray.id " 
                                                 class="collapsed"> 
 
-                                                {{ columnArray.name_basic }}
+                                                {{ columnArray['name_basic'] }}
                                             </a> 
                                         </h4>
                                     </div>
-                                    <div id="collapse{{ columnArray.id }}" class="panel-collapse collapse in" role="tabpanel" [attr.aria-labelledby]="'heading' + columnArray.id ">
+                                    <div id="collapse{{ columnArray['id'] }}" 
+                                         class="panel-collapse collapse in" 
+                                         role="tabpanel"
+                                         [attr.aria-labelledby]="'heading' + columnArray['id'] ">
                         
                                         <div class="panel-body">
                         <!--- /Accordion -->
@@ -61,8 +70,8 @@
                         <column-array-element 
                             defaultLimit = "{{ defaultLimit }}" 
                             tableName = "{{ tableName }}" 
-                            columnArrayJson="{{ getJson(columnArray) }}"
-                            recordJson="{{ getJson(getData('record')) }}">
+                            columnArrayJson="{{ columnArray['json'] }}"
+                            recordJson="{{ data['record']['json'] }}">
                         </column-array-element>
                         <!--- /Common -->
 
@@ -74,28 +83,34 @@
                         </div>
                         <!--- /Accordion -->
 
-                        <!--- Tabs -->
-                        <div class="body" *ngIf="getData('column_set.column_set_type') == 'tabs'">
-                            <ul class="nav nav-tabs p-0 mb-3 nav-tabs-primary">
-                                <li *ngFor="let columnArray of getData('column_set.column_arrays'); let i = index" class="nav-item">
+
                         
-                                    <a [class]="'nav-link '+(i == 0 ? 'active' : '')" data-toggle="tab" href="#tab{{ columnArray.id }}">                            
-                                        {{ columnArray.name_basic }}
+                        <!--- Tabs -->
+                        <div class="body" *ngIf="data['column_set']['column_set_type'] == 'tabs'">
+                            <ul class="nav nav-tabs p-0 mb-3 nav-tabs-primary">
+                                <li *ngFor="let columnArray of data['column_set']['column_arrays']; let i = index" class="nav-item">
+                        
+                                    <a [class]="'nav-link '+(i == 0 ? 'active' : '')" data-toggle="tab" href="#tab{{ columnArray['id'] }}">                            
+                                        {{ columnArray['name_basic'] }}
                                     </a>
                                 </li>
                             </ul>
                         
                             <div class="tab-content">
                         
-                                <div *ngFor="let columnArray of getData('column_set.column_arrays'); let i = index" [class]="'tab-pane '+(i == 0 ? 'active' : '')" role="tabpanel" id="tab{{ columnArray.id }}">
+                                <div 
+                                    *ngFor="let columnArray of data['column_set']['column_arrays']; let i = index" 
+                                    [class]="'tab-pane '+(i == 0 ? 'active' : '')" 
+                                    role="tabpanel" 
+                                    id="tab{{ columnArray['id'] }}">
                         <!--- /Tabs -->
 
                         <!--- Common -->
                         <column-array-element 
                             defaultLimit = "{{ defaultLimit }}" 
                             tableName = "{{ tableName }}" 
-                            columnArrayJson="{{ getJson(columnArray) }}"
-                            recordJson="{{ getJson(getData('record')) }}">
+                            columnArrayJson="{{ columnArray['json'] }}"
+                            recordJson="{{ data['record']['json'] }}">
                         </column-array-element>
                         <!--- /Common -->
 
@@ -104,21 +119,21 @@
                             </div>
                         </div>
                         <!--- /Tabs -->
-
-
-
+                        
+                        
+                        
                         <!--- Group Box -->
-                        <div class="body" *ngIf="getData('column_set.column_set_type') == 'group_box'">
-                            <div *ngFor="let columnArray of getData('column_set.column_arrays')" class="box box-primary">
-                                <h5 style="margin: 5px 0 15px 0">{{ columnArray.name_basic }}</h5>                    
+                        <div class="body" *ngIf="data['column_set']['column_set_type'] == 'group_box'">
+                            <div *ngFor="let columnArray of data['column_set']['column_arrays']" class="box box-primary">
+                                <h5 style="margin: 5px 0 15px 0">{{ columnArray['name_basic'] }}</h5>                    
                         <!--- /Group Box -->
 
                         <!--- Common -->
                         <column-array-element 
                             defaultLimit = "{{ defaultLimit }}" 
                             tableName = "{{ tableName }}" 
-                            columnArrayJson="{{ getJson(columnArray) }}"
-                            recordJson="{{ getJson(getData('record')) }}">
+                            columnArrayJson="{{ columnArray['json'] }}"
+                            recordJson="{{ data['record']['json'] }}">
                         </column-array-element>
                         <!--- /Common -->
 
@@ -126,7 +141,7 @@
                             </div>
                         </div>
                         <!--- /Group Box -->
-
+                        
                     </div>
                 </div>
             </div>
