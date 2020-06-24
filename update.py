@@ -149,8 +149,8 @@ try:
 
     def main():
         pre_load()
+        stop_stack()  
         save_ignored_files()
-        stop_stack()   
         clone_repo()     
         clone_ignored_files()
         remove_temp()
