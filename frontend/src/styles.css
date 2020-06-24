@@ -27,10 +27,21 @@ input::placeholder, .select2-selection__placeholder, textarea::placeholder
     color:#ccc !important;
 }
 
+::selection {
+  color: #ffffff;
+  background: #0b76fbc2;
+}
+
 #defaultFeatureInfoModal in-show-element section
 {
     padding: 0px !important;
     margin: 0px !important;
+}
+
+.bootstrap-select
+{
+    display: none !important;
+    visibility: hidden;
 }
 
 .selected-option

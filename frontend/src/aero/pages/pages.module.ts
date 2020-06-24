@@ -1,4 +1,6 @@
 import { Injector, NgModule } from '@angular/core';
+import {NgbModule} from '@ng-bootstrap/ng-bootstrap';
+
 import { createCustomElement } from '@angular/elements';
 
 import { CommonModule } from '@angular/common';
@@ -122,7 +124,8 @@ import { BooleanFastChangeElementComponent } from './helpers/custom-elements/boo
     PagesRoutingModule,
     CommonModule,
     DragDropModule,
-    FormsModule
+    FormsModule,
+    NgbModule
   ],
   providers: [ ],
   bootstrap: [PagesComponent],

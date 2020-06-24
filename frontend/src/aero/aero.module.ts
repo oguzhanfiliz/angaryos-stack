@@ -52,7 +52,7 @@ import { AeroThemeHelper } from './pages/helpers/aero.theme';
     HttpClientModule,
     FormsModule,
     DragDropModule,
-    PagesModule,
+    PagesModule
   ],
   providers: 
   [

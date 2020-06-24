@@ -39,6 +39,7 @@ export class DataEntegratorComponent
     {
         this.aeroThemeHelper.addEventForFeature("standartElementEvents"); 
         this.aeroThemeHelper.addEventForFeature("layoutCommonEvents"); 
+        $.getScript('assets/ext_modules/select2/select2.min.js');
 
         var th = this;
         setTimeout(() => {

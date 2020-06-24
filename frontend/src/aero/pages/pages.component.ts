@@ -78,7 +78,7 @@ export class PagesComponent
     this.sessionHelper.getLoggedInUserInfo()
     .then((data) =>
     {
-      this.user = data.user;
+      this.user = data['user'];
       this.aeroThemeHelper.updateBaseMenu();
     })
   }

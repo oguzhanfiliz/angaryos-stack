@@ -99,6 +99,20 @@ form-element
       padding: 2px 0 2px 5px !important;
     }
   }
+  
+  button
+  {
+    font-size: 12px !important;
+    padding: 5px !important;
+    color: #666 !important;
+    
+    a
+    {
+        font-size: 12px !important;
+        padding: 0px !important;
+        color: #666 !important;
+    }
+  }
 }
 
 .column-visibility li
@@ -191,5 +205,5 @@ form-element
 
 .data-transport
 {
-    background-color: #ffffe0 !important;
+    background-color: khaki !important;
 }

@@ -112,7 +112,7 @@ export class MultiSelectDragDropElementComponent
             moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);
         else 
         {
-            if(event.container.id == "cdk-drop-list-0")
+            if(event.previousContainer.id > event.container.id)
                 this.addToDeletedList(event.previousContainer.data[event.previousIndex]);
             else
                 this.removeFromDeletedList(event.previousContainer.data[event.previousIndex]);

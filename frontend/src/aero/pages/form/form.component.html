@@ -1,10 +1,10 @@
-<section class="{{ getSectionClass() }}">
+<section class="{{ data['sectionClass'] }}">
     <div class="body_scroll">
         <div class="block-header"> 
             <div class="row">
                 <div class="col-lg-7 col-md-6 col-sm-12">
                     <h2>
-                        {{ getTitleOrDefault(getData('column_set.name_basic'), recordId == 0 ? 'Ekle' : 'Düzenle (' + recordId +')') }}
+                        {{ data['title'] }}
                     </h2>
                     <button class="btn btn-sm btn-secondary btn-icon mobile_menu" type="button"><i class="zmdi zmdi-sort-amount-desc"></i></button>
                 </div>
@@ -22,10 +22,9 @@
                     <div class="card">
 
                         <!-- None -->
-                        <div *ngIf="getData('column_set.column_set_type') == 'none'">
-                            <div *ngFor="let columnArray of getData('column_set.column_arrays')">
+                        <div *ngIf="data['column_set']['column_set_type'] == 'none'">
+                            <div *ngFor="let columnArray of data['column_set']['column_arrays']">
                                 <column-array-form-element 
-                                    *ngIf="getKeys(columnArray.columns).length > 0"
                                     upFormId="{{ id }}"
                                     tableName="{{ tableName }}"
                                     (dataChanged)="change($event)"
@@ -33,93 +32,22 @@
                                     inFormDataTransportSelectOptionsJson="{{ inFormDataTransportSelectOptionsJson }}"
                                     (formSaved)="inFormSavedSuccess($event)"
                                     (inFormOpened)="inFormload($event)"
-                                    columnArrayJson="{{ getJson(columnArray) }}"
+                                    columnArrayJson="{{ columnArray['json'] }}"
                                     [createForm]="recordId == 0"
-                                    recordJson="{{ getJson(getData('record')) }}">
+                                    recordJson="{{ data['record']['json'] }}"
+                                    messagesJson="{{ data['messagesJson'] }}">
                                 </column-array-form-element>
                             </div>
                         </div>
                         <!-- /None -->
 
-
-
-                        <!--- Accordion -->
-                        <div class="body" *ngIf="getData('column_set.column_set_type') == 'accordion'">
-                            <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
-                                <div *ngFor="let columnArray of getData('column_set.column_arrays')" class="panel panel-primary">
                         
-                                    <div class="panel-heading" role="tab" id="heading{{ columnArray.id }}">
-                                        <h4 class="panel-title">
-                                            <a role="button" data-toggle="collapse" 
-                                                data-parent="#accordion" href="#collapse{{ columnArray.id }}"
-                                                aria-expanded="false" [attr.aria-controls]="'collapse' + columnArray.id " 
-                                                class="collapsed"> 
 
-                                                {{ columnArray.name_basic }}
-                                            </a> 
-                                        </h4>
-                                    </div>
-                                    <div id="collapse{{ columnArray.id }}" class="panel-collapse collapse in" role="tabpanel" [attr.aria-labelledby]="'heading' + columnArray.id ">
-                        
-                                        <div class="panel-body">
-                        <!--- /Accordion -->
-
-                        <!--- Common -->
-                        
-                        <!--- /Common -->
-
-                        <!--- Accordion -->
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <!--- /Accordion -->
-
-                        <!--- Tabs -->
-                        <div class="body" *ngIf="getData('column_set.column_set_type') == 'tabs'">
-                            <ul class="nav nav-tabs p-0 mb-3 nav-tabs-primary">
-                                <li *ngFor="let columnArray of getData('column_set.column_arrays'); let i = index" class="nav-item">
-                        
-                                    <a [class]="'nav-link '+(i == 0 ? 'active' : '')" data-toggle="tab" href="#tab{{ columnArray.id }}">                            
-                                        {{ columnArray.name }}
-                                    </a>
-                                </li>
-                            </ul>
-                        
-                            <div class="tab-content">
-                        
-                                <div *ngFor="let columnArray of getData('column_set.column_arrays'); let i = index" [class]="'tab-pane '+(i == 0 ? 'active' : '')" role="tabpanel" id="tab{{ columnArray.id }}">
-                        <!--- /Tabs -->
-
-                        <!--- Common -->
-                        
-                        <!--- /Common -->
-
-                        <!--- Tabs -->
-                                </div>            
-                            </div>
-                        </div>
-                        <!--- /Tabs -->
-
-
-
-                        <!--- Group Box -->
-                        <div class="body" *ngIf="getData('column_set.column_set_type') == 'group_box'">
-                            <div *ngFor="let columnArray of getData('column_set.column_arrays')" class="box box-primary">
-                                <h5 style="margin: 5px 0 15px 0">{{ columnArray.name_basic }}</h5>
-                        <!--- /Group Box -->
-
-                        <!--- Common -->
-                        
-                        <!--- /Common -->
-
-                        <!--- Group Box -->
-                            </div>
-                        </div>
-                        <!--- /Group Box -->
-
-                        <button id="save-button" type="button" [class]="'btn btn-primary float-right btn-block ' + (loading ? 'disabled' : '')" (click)="save()">
+                        <button 
+                            id="save-button" type="button" 
+                            [class]="'btn btn-primary float-right btn-block ' + (loading ? 'disabled' : '')" 
+                            (click)="save()">
+                            
                             {{ recordId == 0 ? 'Ekle' : 'Düzenle' }} 
                         </button>
                     </div>

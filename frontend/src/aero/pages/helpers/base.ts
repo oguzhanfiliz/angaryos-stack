@@ -176,7 +176,7 @@ export abstract class BaseHelper
 
   public static closeModal(id)
   {
-    $('#'+id).modal('hide');
+    $('#'+id).click();
   }
  
 

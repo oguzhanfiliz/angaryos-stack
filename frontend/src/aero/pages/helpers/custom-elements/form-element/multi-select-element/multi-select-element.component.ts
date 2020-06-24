@@ -60,7 +60,7 @@ export class MultiSelectElementComponent
     }
     
     ngOnChanges()
-    {              
+    {         
         if(typeof this.recordJson != "undefined" && this.recordJson != "")
             this.record = BaseHelper.jsonStrToObject(this.recordJson);
             
@@ -177,9 +177,20 @@ export class MultiSelectElementComponent
                     {
                         allowClear: true,
                         placeholder: $(this.baseElementSelector+' [name="'+this.name+'"] span').html(),
+                        templateSelection: function (data, container) 
+                        {
+                            $(data.element).attr('item-source', data.id);
+                            return data.text;
+                        }
                     })
                     .on('select2:select', (event) => th.selected(event))
                     .on('select2:unselect', (event) => th.unselected(event));
+                    
+                    setTimeout(() => 
+                    {
+                        $(this.baseElementSelector+' [name="'+this.name+'"]').val(this.selectedVal);
+                        $(this.baseElementSelector+' [name="'+this.name+'"]').trigger('change');
+                    }, 200)
                 }
             },
             error : (e) =>
@@ -248,6 +259,11 @@ export class MultiSelectElementComponent
                 {
                     return a.text < b.text ? -1 : a.text > b.text ? 1 : 0;
                 });
+            },
+            templateSelection: function (data, container) 
+            {
+                $(data.element).attr('item-source', data.id);
+                return data.text;
             }
         })
         .on('select2:select', (event) => th.selected(event))

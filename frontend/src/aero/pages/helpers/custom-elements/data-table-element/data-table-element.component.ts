@@ -31,7 +31,7 @@ export class DataTableElementComponent
     @Output() dataChanged = new EventEmitter();
 
     showEditButton = {};
-    selectedFilter = {};
+    selectedFilter = null;
     selectedRecord = null;
     selectedRecordList = [];
     loadDataTimeout = 2000;
@@ -41,7 +41,11 @@ export class DataTableElementComponent
     inFormRecordId = 0;
     inFormElementId = "";
 
+    data = null;
     params = null;
+    iconVisibility = null;
+    recordOperations = null;
+    fullBaseUrl = "";
 
     constructor(
         public route: ActivatedRoute,
@@ -52,41 +56,368 @@ export class DataTableElementComponent
         private sanitizer:DomSanitizer
     ) 
     {
-        this.params = this.getDefaultParams();
-
-        var th = this;
-        this.route.params.subscribe(val => 
-        {
-            this.aeroThemeHelper.pageRutine();
-            setTimeout(() => th.preload(), 50);
-        });
+        this.fillDefaultVariables();
+        this.addEventForThemeIcons();
+        
+        setTimeout(() => this.preLoadInterval(), 100);
     }
     
-    preload()
+    ngOnChanges()
     {
+        this.preLoadInterval();
+    }
+    
+    preLoadInterval()
+    {
+        return BaseHelper.doInterval(
+                'dataTablePreLoad', 
+                (th) => th.preLoad(), 
+                this, 
+                200);
+    }
+    
+    preLoad()
+    {
+        this.fillDefaultVariables();
         this.fillParamsFromLocal();
+        
+        this.dataReload(); 
+    }
+    
+    fillDefaultVariables()
+    {
+        this.recordOperations = DataHelper.recordOperations;
+        this.fullBaseUrl = this.getTablePageBaseUrl();
+        
+        this.data = {};        
+        this.data['table_info'] = {};
+        this.data['table_info']['display_name'] = ""; 
+        this.data['table_info']['up_table'] = ""; 
+        this.data['columns'] = {};        
+        this.data['records'] = [];        
+        this.data['loaded'] = false;
+        
+        this.iconVisibility = {};
+        this.iconVisibility['download'] = !this.lightTable && !this.archiveTable;
+        this.iconVisibility['deleted'] = !this.lightTable && !this.archiveTable && this.can('deleted');
+        this.iconVisibility['create'] = !this.lightTable && !this.archiveTable && this.can('create');
+        this.iconVisibility['editMode'] = !this.lightTable && !this.archiveTable;
+        this.iconVisibility['recodOperations'] = !this.lightTable && !this.archiveTable;
+        this.iconVisibility['selectAsUpTable'] = this.can('selectAsUpTable') && !this.archiveTable;
+        this.iconVisibility['authWizard'] = this.can('authWizard') && !this.archiveTable
+        this.iconVisibility['dataEntegrator'] = this.can('dataEntegrator') && !this.archiveTable;
+        
+        this.params = this.getDefaultParams();
+        
+        
+    }
+    
+    getDefaultParams()
+    {
+        return {
+            page: 1,
+            limit: 10,
+            column_array_id: 0,
+            column_array_id_query: 0,
+            sorts: {},
+            filters: {},
+            editMode: true,
+            columnNames: []
+        };
+    }
+    
+    fillParamsFromLocal()
+    {  
+        this.params = this.getDefaultParams();
+        this.params.limit = this.defaultLimit;
 
-        this.loadData();  
-        this.addEventForThemeIcons();
+        var temp = this.getLocalVariable("params");
+        if(temp != null) this.params = temp;
+        
+        this.params['filterColumnNames'] = Object.keys(this.params['filters']);
+        for(var i = 0; i < this.params['filterColumnNames'].length; i++)
+        {
+            var filterColumnName = this.params['filterColumnNames'][i];
+            var desc = this.getFilterDescription(filterColumnName);
+            this.params['filters'][filterColumnName]['description'] = desc;            
+        }
+             
+        if(this.params["columnNames"].length == 0) 
+            this.params["columnNames"] = Object.keys(this.data['columns']);
+        
+        if(this.tableName.indexOf('tree:') == -1)
+        {
+            var auth = BaseHelper.loggedInUserInfo.auths.tables[this.tableName];
+
+            var segments = this.baseUrl.split('/');
+            var segment = segments[segments.length -1];
+            
+            var listAuthType = (segment == 'deleted') ? 'deleteds' : 'lists';            
+            var listId = 0;
+            if(typeof auth[listAuthType] != "undefined" && typeof auth[listAuthType][0] != "undefined")
+                listId = auth[listAuthType][0]
+
+            var queryId = 0;
+            if(typeof auth['queries'] != "undefined" && typeof auth['queries'][0] != "undefined")
+                queryId = auth['queries'][0]
+                
+            this.params.column_array_id = listId;
+            this.params.column_array_id_query = queryId;
+        }
+        else
+        {
+            var temp:any = this.tableName.replace('tree:', '').split(':');
+            this.params.column_array_id = temp[1];
+            this.params.column_array_id_query = temp[1];
+        }
+        
+        console.log(this.params, this.data);
+    }
+    
+    getLocalVariable(name)
+    {
+        var key = this.getLocalKey(name);
+        return BaseHelper.readFromLocal(key);
+    }
+    
+    getLocalKey(name)
+    {
+        return "user:"+BaseHelper.loggedInUserInfo.user.id+"."+this.baseUrl+"."+name;
+    }
+    
+    dataReloadInterval(timeout = null)
+    {
+        if(timeout == null) timeout = this.loadDataTimeout;
+        
+        return BaseHelper.doInterval(
+                'dataTableDataReload', 
+                (th) => th.dataReload(), 
+                this, 
+                timeout);
     }
     
     dataReload()
     {
-        BaseHelper.writeToPipe(this.getLocalKey("data"), []); 
-            
-        this.preload();
+        var url = this.sessionHelper.getBackendUrlWithToken()+this.baseUrl;
+        var temp = 
+        {
+            'params': BaseHelper.objectToJsonStr(this.params)
+        };
+        
+        this.sessionHelper.doHttpRequest("GET", url, temp)
+        .then((data) => this.dataLoaded(data));
     }
     
+    dataLoaded(data)
+    {
+        this.data = this.fillDataAdditionalVariables(data);
+        
+        this.iconVisibility['selectAsUpTable'] = this.can('selectAsUpTable') && !this.archiveTable;
+        
+        this.fillParamsFromLocal();    
+        
+        this.themeOperations();
+            
+        this.dataChanged.emit(data);
+    }
     
+    fillDataAdditionalVariables(data)
+    {
+        data['queryColumnNames'] = Object.keys(data['query_columns']);
+        data['columnNames'] = Object.keys(data['columns']);
+        
+        data['filterDatas'] = {}
+        data['collectiveInfosHtml'] = {};
+        
+        for(var i = 0; i < data['columnNames'].length; i++)
+        {
+            var columnName = data['columnNames'][i];
+            var guiType = data['columns'][columnName]['gui_type_name'];
+            data['columns'][columnName]['filterTypeName'] = this.getColumnGuiTypeForQuery(guiType);
+            
+            data['columns'][columnName]['guiElementTypeName'] = this.getColumnType(data, columnName); 
+            if(data['columns'][columnName]['guiElementTypeName'] == 'relation')
+                data['columns'][columnName]['relationJson'] = this.getColumnRelationJson(data, columnName);
+            
+            data['filterDatas'][columnName] = "";
+            if(typeof this.params['filters'][columnName] != "undefined")
+                data['filterDatas'][columnName] = this.params['filters'][columnName]['filter'];
+                
+            data['collectiveInfosHtml'][columnName] = "";
+            if(typeof data['collectiveInfos'] != "undefined")
+                if(typeof data['collectiveInfos'][columnName] != "undefined")
+                    data['collectiveInfosHtml'][columnName] = this.getCollectiveInfo(data, columnName);
+        }
+        
+        var sortedColumns = Object.keys(this.params['sorts']);
+        data['sorted'] = {}
+        for(var i = 0; i < data['columnNames'].length; i++)
+        {
+            var columnName = data['columnNames'][i];
+            data['sorted'][columnName] = sortedColumns.includes(columnName);
+        }
+        
+        data['sortPriority'] = {};
+        for(var i = 0; i < sortedColumns.length; i++) 
+        {
+            var columnName = sortedColumns[i];
+            data['sortPriority'][columnName] = i+1;
+        }
+        
+        for(var i = 0; i < data['records'].length; i++)
+        {
+            data['records'][i]['recordClass'] = this.getRecordRowClass(i, data['records'][i]);
+            data['records'][i]['tdClases'] = {};
+            data['records'][i]['convertedDatasForGui'] = {};
+            data['records'][i]['operations'] = {};
+            data['records'][i]['operationLinks'] = {};
+            
+            data['records'][i]['iconVisibility'] = {};
+            data['records'][i]['iconVisibility']['userImitation'] = this.can('userImitation', data['records'][i]);
+            data['records'][i]['iconVisibility']['missionTrigger'] = this.can('missionTrigger', data['records'][i]);
+            
+            for(var j = 0; j < DataHelper.recordOperations.length; j++)
+            {
+                var opt = DataHelper.recordOperations[j];
+                data['records'][i]['operations'][opt['type']] = this.can(opt['type'], data['records'][i]);
+                data['records'][i]['operationLinks'][opt['type']] = this.getOpperationLink(opt, data['records'][i]);
+            }
+            for(var j = 0; j < data['columnNames'].length; j++)
+            {
+                var columnName = data['columnNames'][j];
+                data['records'][i]['tdClases'][columnName] = this.getEditTdClass(data['records'][i], columnName);
+                
+                switch(data['columns'][columnName]['guiElementTypeName'])
+                {
+                    case 'file':
+                        if(typeof data['records'][i]['fileUrls'] == "undefined") data['records'][i]['fileUrls'] = {};
+                        
+                        var fileUrls = this.getFileUrls(data['records'][i][columnName]);
+                        for(var k = 0 ; k < fileUrls.length; k++)
+                        {
+                            fileUrls[k]['isImage'] = this.isImageFile(fileUrls[k]);
+                            fileUrls[k]['iconUrl'] = this.getFileIconUrl(fileUrls[k]['org']);
+                        }
+                        
+                        data['records'][i]['fileUrls'][columnName] = fileUrls;
+                        break;
+                    default:
+                        var guiTypeName = data['columns'][columnName]["gui_type_name"];
+                        var temp = this.convertDataForGui(data['records'][i], columnName, guiTypeName);
+                        data['records'][i]['convertedDatasForGui'][columnName] = temp;
+                }
+                
+            }
+            
+            data['records'][i]['json'] = BaseHelper.objectToJsonStr(data['records'][i]);
+        }
+        
+        data['loaded'] = true; 
+        
+        return data;
+    }
     
+    getFileUrls(data)
+    {
+        if(data == null) return [];
 
+        if(typeof data == "string")
+            data = BaseHelper.jsonStrToObject(data);
 
+        var rt = [];
+        for(var i = 0; i < data.length; i++)
+        {
+            var temp = {};
+            temp['small'] = BaseHelper.getFileUrl(data[i], 's_');
+            temp['big'] = BaseHelper.getFileUrl(data[i], 'b_');
+            temp['org'] = BaseHelper.getFileUrl(data[i], '');
 
-    /****    Operation Functions    *****/
+            rt.push(temp);
+        }
+        
+        return rt;
+    }
+    
+    getFilterDescription(columnName) 
+    {
+        if(typeof this.data['columns'] == "undefined") return "";
+        if(typeof this.data['columns'][columnName] == "undefined") return "";
+        
+        var displayName = this.data['columns'][columnName]['display_name'];
+        
+        var guiType = this.data['columns'][columnName]['gui_type_name'];
+        guiType = this.getColumnGuiTypeForQuery(guiType);
 
+        switch (this.params.filters[columnName]['type']) 
+        {
+            case 100: return displayName + ": <b>Boş Olanlar</b>";
+            case 101: return displayName + ": <b>Boş Olmayanlar</b>";
+            default: return displayName + ": " + DataHelper.getFilterDescriptionByColumnGuiType(
+                                                        columnName,
+                                                        guiType,
+                                                        this.params.filters[columnName]['type'],
+                                                        this.params.filters[columnName]['filter'],
+                                                        this.getLocalKey("data"));
+        }
+    }
+    
+    getColumnGuiTypeForQuery(guiType)
+    {
+        if(guiType == "multiselect:static") guiType = "multiselect";
+        
+        switch (guiType.split(':')[0]) 
+        {
+            case 'text': 
+            case 'richtext': 
+            case 'codeeditor': 
+            case 'json': 
+            case 'jsonb': 
+            case 'jsonviewer': 
+                return 'string';
+            case 'select':
+            case 'multiselectdragdrop':
+                return 'multiselect';
+            case 'point': 
+            case 'multipoint': 
+            case 'linestring': 
+            case 'multilinestring':
+            case 'polygon': 
+                return 'multipolygon';
+            case 'files': 
+            case 'password': 
+                return 'disable';
+            case 'boolean': 
+                return 'boolean';
+            default: return guiType;
+        }
+    } 
+    
+    clearColumnFilter(columnName)
+    {
+        if(typeof this.params.filters[columnName] == "undefined") return;
+
+        delete this.params.filters[columnName];
+        
+        for(var i = 0; i < this.params['filterColumnNames'].length; i++)
+            if(this.params['filterColumnNames'][i] == columnName)
+            {
+                this.params['filterColumnNames'].splice(i, 1);
+                break;
+            }
+
+        this.saveParamsToLocal();
+        
+        this.dataReload();
+    }
+    
     can(policyType, record = null)
     {
+        if(this.tableName.length == 0) return false;
+        if(typeof BaseHelper.loggedInUserInfo['auths']['tables'] == "undefined") return false;
+        
+        var tablesAuths = BaseHelper.loggedInUserInfo['auths']['tables'];
         var columnName = '';
+        
         switch(policyType)
         {
             case 'edit': columnName = '_is_editable'; break;
@@ -96,18 +427,17 @@ export class DataTableElementComponent
             case 'show': columnName = '_is_showable'; break;
             case 'clone':
             case 'create':
-                if(typeof BaseHelper.loggedInUserInfo.auths.tables[this.tableName]['creates'] == "undefined") return false;
-                return BaseHelper.loggedInUserInfo.auths.tables[this.tableName]['creates'].length > 0
+                if(typeof tablesAuths[this.tableName]['creates'] == "undefined") return false;
+                return tablesAuths[this.tableName]['creates'].length > 0
                 break;
             case 'deleted':
-                if(typeof BaseHelper.loggedInUserInfo.auths.tables[this.tableName]['deleteds'] == "undefined") return false;
-                return BaseHelper.loggedInUserInfo.auths.tables[this.tableName]['deleteds'].length > 0
+                if(typeof tablesAuths[this.tableName]['deleteds'] == "undefined") return false;
+                return tablesAuths[this.tableName]['deleteds'].length > 0
                 break;
-            //case 'clone': columnName = '_is_showable'; break;
             case 'userImitation': return this.canUserImitation(record);
             case 'missionTrigger': return this.canMissionTrigger(record);
-            case 'authWizard': return this.canAuthWizard(record);
-            case 'dataEntegrator': return this.canDataEntegrator(record);
+            case 'authWizard': return this.canAuthWizard();
+            case 'dataEntegrator': return this.canDataEntegrator();
             case 'selectAsUpTable': return this.canSelectUpTable();
             case 'isRecordDataTransportTarget': return this.isRecordDataTransportTarget(record);
             
@@ -132,117 +462,436 @@ export class DataTableElementComponent
         
         return true;
     }
-
-    canDataEntegrator(record)
-    {
-        if(this.tableName != 'tables') return false;
-
-        return this.canAdminAuth('dataEntegrator'); 
-    }
-
-    canAuthWizard(table)
-    {
-        if(this.tableName != 'tables') return false;
-
-        return this.canAdminAuth('authWizard'); 
-    }
-
-    canUserImitation(user)
-    {
-        if(this.tableName != 'users') return false;
-
-        if(BaseHelper['loggedInUserInfo']['user']['id'] == user['id']) return false;
-
-        return this.canAdminAuth('userImitation');
-    }
     
-    canMissionTrigger(record)
+    openDetailFilterModal(columnName)
     {
-        if(this.tableName != 'missions') return false;
-        if(typeof BaseHelper['loggedInUserInfo']['auths']['missions'] == "undefined") return false;
-        if(typeof BaseHelper['loggedInUserInfo']['auths']['missions'][record['id']] == "undefined") return false;
-        
-        return true;
-    }
-
-    canAdminAuth(auth)
-    {
-        if(typeof BaseHelper['loggedInUserInfo']['auths']['admin'] == 'undefined') return false;
-        if(typeof BaseHelper['loggedInUserInfo']['auths']['admin'][auth] == 'undefined') return false;
-        
-        return true;
-    }
-    
-    canSelectUpTable()
-    {
-        var data = BaseHelper.readFromPipe(this.getLocalKey("data"));
-        return data[this.params.page]['table_info']['up_table'];
-    }
-
-    userImitation(user)
-    {
-        this.sessionHelper.userImitation(user);
-    }
-    
-    missionTriggerConfirm(record)
-    {
-        this.messageHelper.swalPrompt('Tetikleme görevi için veri girmek ister misiniz?')
-        .then(async (data) =>
-        {
-            if(typeof data["dismiss"] != "undefined") return;
+        if(typeof this.params.filters[columnName] == "undefined")
+            this.selectedFilter = this.getBasicFilterObject(columnName);
+        else
+            this.selectedFilter = this.params.filters[columnName];
             
-            this.missionTrigger(record, data["value"]);
-        });
+        this.selectedFilter['columnName'] = columnName;
         
+        this.selectedFilter['json'] = "";
+        this.selectedFilter['json'] = BaseHelper.objectToJsonStr(this.selectedFilter);
+        
+        setTimeout(() => $('#detailFilterModal').modal('show'), 200);
     }
     
-    missionTrigger(record, data)
+    getBasicFilterObject(columnName)
     {
-        var url = this.sessionHelper.getBackendUrlWithToken()+"missions/"+record['id']+"?"+data;
+        return {
+            type: 1,
+            guiType: this.data['columns'][columnName]['gui_type_name'],
+            filter: ""
+        };
+    }
+    
+    downloadStandartReport()
+    {
+        var types = ['excel', 'pdf', 'csv'];
+        var format = prompt("Hangi formatta indirmek istersiniz? (excel, csv yada pdf)", "excel");
+        if(!types.includes(format)) format = 'excel';
         
-        this.generalHelper.startLoading();
+        var url = this.sessionHelper.getBackendUrlWithToken()+this.baseUrl;
+        var temp = BaseHelper.getCloneFromObject(this.params);
+        temp['report_type'] = format;
+        url += "/report?params="+BaseHelper.objectToJsonStr(temp);
 
-        this.sessionHelper.doHttpRequest("GET", url)
-        .then((data) => 
+        window.open(url, "_blank");
+    }
+    
+    getTablePageBaseUrl()
+    {
+        return BaseHelper.baseUrl + "table/"+this.tableName+"/"; 
+    }
+    
+    detailFilterChanged(filter)
+    {
+        if(filter.filter != null && filter.filter.length == 0)
+            delete this.params.filters[filter.columnName];
+        else
+            this.params.filters[filter.columnName] = filter;
+        
+        this.saveParamsToLocal();
+        
+        this.dataReload();
+    }
+    
+    saveParamsToLocal()
+    {
+        BaseHelper.writeToLocal(this.getLocalKey("params"), this.params);
+    }
+    
+    toggleEditMode()
+    {
+        this.params.editMode = !this.params.editMode;
+        this.saveParamsToLocal();
+
+        this.messageHelper.toastMessage("Düzenleme modu " + (this.params.editMode ? "aktif" : "pasif"));
+    }
+    
+    dropColumn(event: CdkDragDrop<string[]>) 
+    {
+        moveItemInArray(this.params['columnNames'], event.previousIndex, event.currentIndex);
+        this.saveParamsToLocal();
+    }
+
+    showAllColumns()
+    {
+        this.params['columnNames'] = Object.keys(this.data['columns']);
+        this.saveParamsToLocal();
+    }
+
+    hideAllColumns()
+    {
+        this.params['columnNames'] = [];
+        this.saveParamsToLocal();
+    }
+
+    toggleColumnVisibility(columnName)
+    {
+        if(!this.params['columnNames'].includes(columnName))
         {
-            this.generalHelper.stopLoading();
-
-            if(typeof data['message'] == "undefined")
-                this.messageHelper.sweetAlert("Beklenmedik cevap geldi!", "Hata", "warning");
+            this.params['columnNames'].push(columnName);
+        }
+        else
+        {
+            var len = this.params['columnNames'].length;
+            for(var i = 0; i < len; i++)
+                if(columnName == this.params['columnNames'][i])
+                    this.params['columnNames'].splice(i, 1);
+        }
+        
+        this.saveParamsToLocal();
+    }
+    
+    sortByColumn(columnName)
+    {
+        if(typeof this.params['sorts'][columnName] == "undefined")
+        {
+            this.data['sorted'][columnName] = true;
+            this.params['sorts'][columnName] = true;
+        }
+        else
+        {
+            this.data['sorted'][columnName] = true;
+            
+            if(this.params['sorts'][columnName]) 
+                this.params['sorts'][columnName] = false;
             else
-                this.messageHelper.sweetAlert("Tetikleme cevabı: "+data['message'], "Bilgi", "info");
-        })
-        .catch((e) => 
-        { 
-            this.generalHelper.stopLoading(); 
-            this.messageHelper.sweetAlert("Beklenmedik cevap geldi!", "Hata", "warning");
-        }); 
+            {
+                delete this.params['sorts'][columnName];
+                this.data['sorted'][columnName] = false;
+            }
+        }
+        
+        this.saveParamsToLocal()
+        this.dataReload();
     }
     
-    selectAsUpTableRecord(record)
+    filterChanged(columnName, event)
     {
-        var loggedInUserId = BaseHelper.loggedInUserInfo['user']['id'];
-        var key = 'user:'+loggedInUserId+'.dataTransport';
+        if(!this.addFilterFromEvent(columnName, event)) return;
+
+        this.params['page'] = 1;
+        this.saveParamsToLocal();
         
-        BaseHelper.writeToLocal(key, 
+        var guiType = this.data['columns'][columnName]['gui_type_name'];
+        
+        var to = null;
+        if(typeof event['enterKey'] != "undefined") to = 10;
+        else
         {
-            'tableName': this.tableName,
-            'recordId' : record.id
-        });
+            switch(guiType.split(':')[0])
+            {
+                case 'boolean':
+                case 'select':
+                case 'multiselect':
+                case 'multiselectdragdrop':
+                case 'date':
+                case 'time':
+                case 'datetime':
+                    to = 10;
+                    break;
+            }
+        }
         
-        this.messageHelper.toastMessage('Veri aktarılacak kayıt olarak belirlendi');
+        this.dataReloadInterval(to);
     }
-
-    authWizard(table)
+    
+    addFilterFromEvent(columnName, event, filterType = -1)
     {
-        this.generalHelper.navigate('authWizard/'+table['name']+"/"+table['id']);
+        if(filterType == -1)
+        {
+            if(typeof this.params.filters[columnName] != "undefined")
+                filterType = this.params.filters[columnName].type;
+            else
+                filterType = 1;
+        }
+
+        return this.addFilterFromEventForBasicType(columnName, event, filterType);
     }
 
-    dataEntegrator(table)
+    addFilterFromEventForBasicType(columnName, event, filterType)
     {
-        this.generalHelper.navigate('dataEntegrator/'+table['name']+"/"+table['id']);
+        var guiType = this.data['columns'][columnName]['gui_type_name'];      
+        guiType = this.getColumnGuiTypeForQuery(guiType);
+        
+        var filter = event.target.value;
+        filter = DataHelper.changeDataForFilterByGuiType(guiType, filter, event.target.name, columnName, this.getLocalKey("data"));
+    
+        if(filter.toString().length == 0) 
+        {
+            delete this.params.filters[columnName];
+            return true;
+        }
+
+        this.params.filters[columnName] = 
+        {
+            type: filterType,
+            guiType: guiType,
+            filter: filter,
+            description: ""
+        };
+        
+        this.params.filters[columnName]['description'] = this.getFilterDescription(columnName);
+
+        return true;
+    }
+    
+    getRecordRowClass(index, record)
+    {
+        var cls = "odd operations";
+        for(var i = 0; i < this.selectedRecordList.length; i++)
+            if(index == this.selectedRecordList[i].index)
+            {
+                cls += " selected-row";
+                break;
+            }
+            
+        var control = this.can('isRecordDataTransportTarget', record);
+        if(control) cls += " data-transport ";
+        
+        return cls;
+    }
+    
+    getEditTdClass(record, columnName)
+    {
+        var notEditableColumns = ['id', 'created_at', 'updated_at', 'own_id', 'user_id'];
+        if(notEditableColumns.includes(columnName)) return "";
+
+        if(!this.can('edit', record)) return "";
+        
+        return 'edit-td';
+    }
+    
+    getColumnType(data, columnName)
+    {
+        if(typeof data['columns'][columnName] == "undefined") return "default";
+        
+        var guiType = data['columns'][columnName]['gui_type_name'];
+        var relation = data['columns'][columnName]['column_table_relation_id'];
+        
+        if(guiType == "files") return 'file';
+        else if(guiType.split(':')[0] == "jsonviewer") return 'jsonviewer';
+        else if(guiType == 'boolean:fastchange') return 'boolean:fastchange';
+        else if(relation != null) return 'relation';
+        else if(this.isGeoColumn(columnName, guiType)) return 'geo';
+        else return 'default';
+    }
+    
+    isGeoColumn(columnName, guiType)
+    {
+        var geoColumns = ['point', 'linestring', 'polygon', 'multipoint', 'multilinestring', 'multipolygon'];
+        return geoColumns.includes(guiType);
+    }
+    
+    convertDataForGui(record, columnName, guiTypeName)
+    {
+        if(typeof  record[columnName] == "undefined") return "";
+        
+        var data = DataHelper.convertDataForGui(record, columnName, guiTypeName);
+        return this.sanitizer.bypassSecurityTrustHtml(data);
+    }
+    
+    isImageFile(file)
+    {
+        if(file == null) return false;
+        if(file == "") return false;
+
+        var imgExts = ["jpg", "png", "gif"]
+        var temp = file["big"].split('.');
+        var ext = temp[temp.length-1];
+
+        return imgExts.includes(ext);
     }
 
+    getFileIconUrl(fileUrl)
+    {
+        var temp = fileUrl.split('.');
+        var ext = temp[temp.length-1];
+
+        var iconBaseUrl = "assets/img/";
+        
+        switch(ext)
+        {
+            default: return iconBaseUrl+"download_file.png";
+        }
+    }
+    
+    booleanFastChanged(event, record, columnName)
+    {
+        var val = $(event.target).prop("checked");
+        
+        for(var i = 0; i < this.data['records'].length; i++)
+            if(this.data['records'][i]['id'] == record['id'])
+            {
+                this.data['records'][i][columnName] = val;
+                return;
+            }
+    }
+    
+    getColumnRelationJson(data, columnName)
+    {
+        var relation = data['columns'][columnName]['column_table_relation_id'];
+        return BaseHelper.objectToJsonStr(relation);
+    }
+    
+    editRecodData(record, columnName)
+    {
+        this.inFormTableName = this.tableName;
+        this.inFormColumnName = columnName;
+        
+        this.inFormRecordId = record.id;
+        if(this.inFormRecordId < 1) return;
+
+        var rand = Math.floor(Math.random() * 10000) + 1;
+        this.inFormElementId = "ife-"+rand;
+        
+        setTimeout(() => 
+        {
+            $('#'+this.inFormElementId+'inFormModal').modal('show');
+        }, 100);
+    }
+    
+    closeModal(id)
+    {
+        BaseHelper.closeModal(id);
+    }
+    
+    inFormSavedSuccess(event)
+    {
+        var len = this.data['records'].length;
+        for(var i = 0; i < len; i++)
+            if(this.inFormRecordId == this.data['records'][i]['id'])
+            {
+                this.data['records'][i][this.inFormColumnName] = event.in_form_data.display;
+                
+                var guiTypeName = this.data['columns'][this.inFormColumnName]["gui_type_name"];
+                var temp = this.convertDataForGui(this.data['records'][i], this.inFormColumnName, guiTypeName);
+                this.data['records'][i]['convertedDatasForGui'][this.inFormColumnName] = temp;
+                break;
+            }
+        
+        this.closeModal(this.inFormElementId+'inFormModal');
+    }
+    
+    getCollectiveInfo(data, columnName)
+    {
+        var nameMap = 
+        {
+            'sum': 'Toplam',
+            'avg': 'Ortalama',
+            'min': 'En az',
+            'max': 'En çok',
+            'count': 'Adet'
+        };
+
+        var info = data['collectiveInfos'][columnName];
+        
+        if(info == null) return "";
+        if(info == "") return "";
+
+        
+        var html = nameMap[info['type']] + ': ';
+        
+        var temp = {};
+        temp[columnName] = info['data'];
+        var typeName = data['columns'][columnName]["gui_type_name"];
+        html += DataHelper.convertDataForGui(temp, columnName, typeName);
+        
+        return this.sanitizer.bypassSecurityTrustHtml(html);
+    }
+    
+    limitUpdated(limit)
+    {
+        this.params['page'] = 1;
+        this.params['limit'] = parseInt(limit);
+
+        this.saveParamsToLocal()
+        this.dataReload();
+    }
+
+    pageUpdated(page)
+    {
+        this.params['page'] = parseInt(page);
+
+        this.saveParamsToLocal();
+        this.dataReload();
+    }
+
+    prevPage()
+    {
+        this.pageUpdated(this.params.page-1);
+    }
+
+    nextPage()
+    {
+        this.pageUpdated(this.params.page+1);
+    }
+    
+    restore(record)
+    {
+        this.messageHelper.swalConfirm("Kayıt geri yüklenecek", record.id + " id 'li kaydı geri yüklemek istediğinize emin misiniz?", "warning")
+        .then((r) =>
+        {
+            if(r != true) return;
+            this.restoreRecord(record);
+        })
+    }
+
+    restoreRecord(record)
+    {
+        var url = this.sessionHelper.getBackendUrlWithToken()+"tables/"+this.tableName+"/"+record.id+"/restore";
+        
+        this.sessionHelper.doHttpRequest("GET", url)
+        .then((data) => this.restoreSuccess(data));
+    }
+
+    restoreSuccess(data)
+    {
+        if(data['message'] != 'success')
+        {
+            this.messageHelper.sweetAlert("Beklenmedik cevap geldi!", "Hata", "warning");
+            return;
+        }
+        
+        this.messageHelper.toastMessage("Geri yükleme başarılı", 'success');
+        this.generalHelper.navigate('table/'+this.tableName);
+    }
+    
+    getOpperationLink(operation, record)
+    {
+        var url = window.location.href;
+
+        if(operation['link'] == "") return url;
+
+        if(url.substr(url.length -1, 1) != '/') url += "/";
+        url += operation['link'].replace("[id]", record['id']);
+        return url;
+    }
+    
     doOperation(policyType, record)
     {
         switch(policyType)
@@ -271,7 +920,74 @@ export class DataTableElementComponent
     {
         this.generalHelper.navigate("table/"+this.tableName+"/"+record.id+"/archive")
     }
+    
+    edit(record)
+    {
+        this.generalHelper.navigate("table/"+this.tableName+"/"+record.id+"/edit")
+    }
+    
+    clone(record)
+    {
+        this.messageHelper.swalConfirm("Emin misiniz?", "Bu kaydı klonlamak istediğinize emin misiniz?", "warning")
+        .then(async (r) =>
+        {
+            if(r != true) return;
 
+            this.cloneConfirmed(record);
+        });
+    }
+
+    cloneConfirmed(record)
+    {
+        var url = this.sessionHelper.getBackendUrlWithToken()+"tables/"+this.tableName+"/"+record.id+"/clone";
+        
+        this.sessionHelper.doHttpRequest("GET", url)
+        .then((data) => this.cloneSuccess(data));
+    }
+
+    cloneSuccess(data)
+    {
+        if(data['message'] != 'success')
+        {
+            if(typeof data['message'] == "undefined")
+                this.messageHelper.sweetAlert("Beklenmedik cevap geldi!", "Hata", "warning");
+            else if(data['message'] == 'error')
+            {
+                var list = '';
+                var keys = Object.keys(data['errors']);
+                for(var i = 0; i < keys.length; i++)
+                    for(var j = 0; j < data['errors'][keys[i]].length; j++)
+                        list += ' - '+data['errors'][keys[i]][j] + '<br>';
+
+                this.messageHelper.sweetAlert("Klon esnasında bazı hatalar oluştu!<br><br>"+(list), "Hata", "warning");
+            }
+            else
+                this.messageHelper.sweetAlert("Beklenmedik cevap geldi!", "Hata", "warning");
+                
+            return;
+        }
+                
+        var id = data['id'];
+        
+        this.messageHelper.toastMessage("Klonlama başarılı", 'success');
+        
+        this.params.filters =
+        {
+            'id': 
+            {
+                'type': 1,
+                'guiType': 'numeric',
+                'filter': id
+            }
+        };
+        
+        this.params['filterColumnNames'] =['id'];
+        
+        this.saveParamsToLocal();
+        
+        this.dataReload();
+    }
+    
     delete(record)
     {
         var title = "Kayıt silinecek";
@@ -313,190 +1029,274 @@ export class DataTableElementComponent
     {
         var url = this.sessionHelper.getBackendUrlWithToken()+"tables/"+this.tableName+"/"+record.id+"/delete";
         
-        this.generalHelper.startLoading();
-
         this.sessionHelper.doHttpRequest("GET", url)
         .then((data) => 
         {
-            this.generalHelper.stopLoading();
-
             if(typeof data['message'] == "undefined")
                 this.messageHelper.sweetAlert("Beklenmedik cevap geldi!", "Hata", "warning");
             else if(data['message'] == 'success')
                 this.deleteSuccess(record);
             else
                 this.messageHelper.sweetAlert("Beklenmedik cevap geldi!", "Hata", "warning");
-        })
-        .catch((e) => 
-        { 
-            this.generalHelper.stopLoading(); 
-            this.messageHelper.sweetAlert("Beklenmedik cevap geldi!", "Hata", "warning");
         });
     }
 
     deleteSuccess(record)
     {
         this.messageHelper.toastMessage("Silme başarılı", 'success');
-        console.log(333);
-        var data = BaseHelper.readFromPipe(this.getLocalKey("data"));
-        var recs = data[this.params.page].records;
+        
+        var recs = this.data['records'];
 
         for(var i = 0; i < recs.length; i++)
             if(recs[i]['id'] == record['id'])
             {
-                data[this.params.page].records.splice(i, 1);
+                this.data['records'].splice(i, 1);
+                delete this.data['collectiveInfos'];
                 
-                var pages = Object.keys(data);
-                for(var j = 0; j < pages.length; j++)
+                for(var j = 0 ; j < this.data['columnNames'].length; j++)
                 {
-                    var p = pages[j];
-                    delete data[p].collectiveInfos;
+                    var columnName = this.data['columnNames'][j];
+                    this.data['collectiveInfosHtml'][columnName] = "";
                 }
-
-                BaseHelper.writeToPipe(this.getLocalKey("data"), data);
-                DataHelper.deleteDataOnPipe('deleted', this.tableName);
                 
                 return;
             }
     }
-
-    getTablePageBaseUrl()
+    
+    selectRecord(event, record, i)
     {
-        return BaseHelper.baseUrl + "table/"+this.tableName+"/"; 
-    }
+        if(BaseHelper["pipe"]["altKey"]) return true;
 
-    edit(record)
-    {
-        this.generalHelper.navigate("table/"+this.tableName+"/"+record.id+"/edit")
+        event.preventDefault();
+        record.index = i;
+
+        if(this.selectedRecord == null)
+        {
+            this.selectedRecord = record;
+            this.selectedRecordList = [record];
+        }
+        else if(this.selectedRecord.index == record.index)
+        {
+            this.selectedRecord = null;
+            this.selectedRecordList = [];
+        }
+        else if(BaseHelper['pipe']['shiftKey'])
+        {
+            var records = this.data['records'];
+            this.selectedRecordList = [];
+
+            var start = this.selectedRecord.index;
+            var end = i;
+
+            if(start > i)
+            {
+                var temp = end;
+                end = start;
+                start = temp;
+            }
+
+            for(var j = 0; j < records.length; j++)
+                if(j >= start && j <= end)
+                {
+                    records[j].index = j;
+                    this.selectedRecordList.push(records[j]);
+                }
+        }
+        else if(BaseHelper['pipe']['ctrlKey'])
+        {
+            this.selectedRecordList.push(record);   
+        }
+        else
+        {
+            this.selectedRecord = record;
+            this.selectedRecordList = [record];
+        }
+        
+        for(var j = 0; j < this.data['records'].length; j++)
+        {
+            var className = this.getRecordRowClass(j, this.data['records'][j]);
+            this.data['records'][j]['recordClass'] = className;
+        }
+        this.clearSelectionText()
     }
     
-    clone(record)
+    clearSelectionText()
     {
-        this.messageHelper.swalConfirm("Emin misiniz?", "Bu kaydı klonlamak istediğinize emin misiniz?", "warning")
-        .then(async (r) =>
-        {
-            if(r != true) return;
+        if (window.getSelection) {window.getSelection().removeAllRanges();}
+        else if (document['selection']) {document['selection'].empty();}
+    }
+    
+    canUserImitation(user)
+    {
+        if(this.tableName != 'users') return false;
 
-            this.cloneConfirmed(record);
+        if(BaseHelper['loggedInUserInfo']['user']['id'] == user['id']) return false;
+
+        return this.canAdminAuth('userImitation');
+    }
+    
+    canMissionTrigger(record)
+    {
+        if(this.tableName != 'missions') return false;
+        
+        if(typeof BaseHelper['loggedInUserInfo']['auths']['missions'] == "undefined") return false;
+        if(typeof BaseHelper['loggedInUserInfo']['auths']['missions'][record['id']] == "undefined") return false;
+        
+        return true;
+    }
+    
+    canDataEntegrator()
+    {
+        if(this.tableName != 'tables') return false;
+
+        return this.canAdminAuth('dataEntegrator'); 
+    }
+
+    canAuthWizard()
+    {
+        if(this.tableName != 'tables') return false;
+
+        return this.canAdminAuth('authWizard'); 
+    }
+    
+    canSelectUpTable()
+    {
+        return this.data['table_info']['up_table']; 
+    }
+
+    canAdminAuth(auth)
+    {
+        if(typeof BaseHelper['loggedInUserInfo']['auths']['admin'] == 'undefined') return false;
+        if(typeof BaseHelper['loggedInUserInfo']['auths']['admin'][auth] == 'undefined') return false;
+        
+        return true;
+    }
+    
+    userImitation(user)
+    {
+        this.sessionHelper.userImitation(user);
+    }
+    
+    missionTriggerConfirm(record)
+    {
+        this.messageHelper.swalPrompt('Tetikleme görevi için veri girmek ister misiniz?')
+        .then(async (data) =>
+        {
+            if(typeof data["dismiss"] != "undefined") return;
+            
+            this.missionTrigger(record, data["value"]);
         });
-    }
-
-    cloneConfirmed(record)
-    {
-        var url = this.sessionHelper.getBackendUrlWithToken()+"tables/"+this.tableName+"/"+record.id+"/clone";
         
-        this.generalHelper.startLoading();
-
+    }
+    
+    missionTrigger(record, data)
+    {
+        var url = this.sessionHelper.getBackendUrlWithToken()+"missions/"+record['id']+"?"+data;
+        
         this.sessionHelper.doHttpRequest("GET", url)
         .then((data) => 
         {
-            this.generalHelper.stopLoading();
-
             if(typeof data['message'] == "undefined")
                 this.messageHelper.sweetAlert("Beklenmedik cevap geldi!", "Hata", "warning");
-            else if(data['message'] == 'success')
-                this.cloneSuccess(data['id']);
-            else if(data['message'] == 'error')
-            {
-                var list = '';
-                var keys = Object.keys(data['errors']);
-                for(var i = 0; i < keys.length; i++)
-                    for(var j = 0; j < data['errors'][keys[i]].length; j++)
-                        list += ' - '+data['errors'][keys[i]][j] + '<br>';
-
-                this.messageHelper.sweetAlert("Klon esnasında bazı hatalar oluştu!<br><br>"+(list), "Hata", "warning");
-            }
             else
-                this.messageHelper.sweetAlert("Beklenmedik cevap geldi!", "Hata", "warning");
+                this.messageHelper.sweetAlert("Tetikleme cevabı: "+data['message'], "Bilgi", "info");
         })
-        .catch((e) => { this.generalHelper.stopLoading(); });
+        .catch((e) => 
+        { 
+            this.messageHelper.sweetAlert("Beklenmedik cevap geldi!", "Hata", "warning");
+        }); 
     }
-
-    cloneSuccess(id)
+    
+    selectAsUpTableRecord(record)
     {
-        this.messageHelper.toastMessage("Klonlama başarılı", 'success');
+        var loggedInUserId = BaseHelper.loggedInUserInfo['user']['id'];
+        var key = 'user:'+loggedInUserId+'.dataTransport';
         
-        this.params.filters =
+        BaseHelper.writeToLocal(key, 
         {
-            'id': 
-            {
-                'type': 1,
-                'guiType': 'numeric',
-                'filter': id
-            }
-        };
+            'tableName': this.tableName,
+            'recordId' : record.id
+        });
         
-        this.loadDataInterval(100, true);
+        for(var i = 0; i < this.data['records'].length; i++)
+            this.data['records'][i]['recordClass'] = this.getRecordRowClass(i, this.data['records'][i]);
+        
+        this.messageHelper.toastMessage('Veri aktarılacak kayıt olarak belirlendi');
     }
 
-    restore(record)
+    authWizard(table)
     {
-        this.messageHelper.swalConfirm("Kayıt geri yüklenecek", record.id + " id 'li kaydı geri yüklemek istediğinize emin misiniz?", "warning")
-        .then((r) =>
+        this.generalHelper.navigate('authWizard/'+table['name']+"/"+table['id']);
+    }
+
+    dataEntegrator(table)
+    {
+        this.generalHelper.navigate('dataEntegrator/'+table['name']+"/"+table['id']);
+    }
+    
+    /*fillTableNameAndRecordId(val)
+    {
+        if(this.inShowTableName == "")
         {
-            if(r != true) return;
-            this.restoreRecord(record);
-        })
-    }
-
-    restoreRecord(record)
-    {
-        var url = this.sessionHelper.getBackendUrlWithToken()+"tables/"+this.tableName+"/"+record.id+"/restore";
-        
-        this.generalHelper.startLoading();
-
-        this.sessionHelper.doHttpRequest("GET", url)
-        .then((data) => 
+            this.tableName = val.tableName;
+            this.recordId = val.recordId; 
+        }
+        else
         {
-            this.generalHelper.stopLoading();
-
-            if(typeof data['message'] == "undefined")
-                this.messageHelper.sweetAlert("Beklenmedik cevap geldi!", "Hata", "warning");
-            else if(data['message'] == 'success')
-                this.restoreSuccess();
-            else
-                this.messageHelper.sweetAlert("Beklenmedik cevap geldi!", "Hata", "warning");
-        })
-        .catch((e) => { this.generalHelper.stopLoading(); });
-    }
-
-    restoreSuccess()
+            this.tableName = this.inShowTableName;
+            this.recordId = parseInt(this.id);
+        }
+    }*/
+    
+    /*preload111()
     {
-        DataHelper.deleteDataOnPipe('list', this.tableName);
+        this.fillParamsFromLocal();
 
-        var id = this.baseUrl.split("/")[2];
-        DataHelper.deleteDataOnPipe('archive', this.tableName, parseInt(id));
-        DataHelper.deleteDataOnPipe('show', this.tableName, parseInt(id));        
-        DataHelper.deleteDataOnPipe('deleted', this.tableName);
-        
-        this.messageHelper.toastMessage("Geri yükleme başarılı", 'success');
-        this.generalHelper.navigate('table/'+this.tableName);
+        this.loadData();  
+        this.addEventForThemeIcons();
     }
+    
+    dataReload()
+    {
+        BaseHelper.writeToPipe(this.getLocalKey("data"), []); 
+            
+        this.preload111();
+    }
+    */
+    
+    
+
+
+
+    /****    Operation Functions    *****/
+
+    /*
+    
+    
+
+    
+
+    
+    
+    
+
+    
+
+    
+
+    
+
+    
+
+    */
 
 
 
     /****    Data Functions     *****/
 
-    booleanFastChanged(event, record, columnName)
-    {
-        var val = $(event.target).prop("checked");
-        
-        var temp = BaseHelper.readFromPipe(this.getLocalKey("data"));
-        
-        for(var i = 0; i < temp[this.params.page]['records'].length; i++)
-            if(temp[this.params.page]['records'][i]['id'] == record['id'])
-            {
-                temp[this.params.page]['records'][i][columnName] = val;
-                break;
-            }
-        
-        BaseHelper.writeToPipe(this.getLocalKey("data"), temp); 
-    }
+    /*
     
-    getLocalKey(attr)
-    {
-        return "user:"+BaseHelper.loggedInUserInfo.user.id+"."+this.baseUrl+"."+attr;
-    }
+    
 
     getData(path = '')
     {
@@ -513,111 +1313,24 @@ export class DataTableElementComponent
         return DataHelper.getData(this.params, path);
     }
 
-    getCollectiveInfo(columnName)
-    {
-        var nameMap = 
-        {
-            'sum': 'Toplam',
-            'avg': 'Ortalama',
-            'min': 'En az',
-            'max': 'En çok',
-            'count': 'Adet'
-        };
+    
 
-        var info = this.getData('collectiveInfos.'+columnName);
-        
-        if(info == null) return "";
-        if(info == "") return "";
+    
 
-        
-        var html = nameMap[info['type']] + ': ';
-        
-        var temp = {};
-        temp[columnName] = info['data'];
-        var typeName = this.getData('columns.'+columnName+".gui_type_name");
-        html += DataHelper.convertDataForGui(temp, columnName, typeName);
-        
-        return this.sanitizer.bypassSecurityTrustHtml(html);
-    }
-
-    loadDataInterval(timeout = null, del = false)
-    {
-        if(timeout == null) timeout = this.loadDataTimeout;
-        
-        var params =
-        {
-            del: del,
-            th: this
-        };
-
-        function func(params)
-        {
-            if(params.del) BaseHelper.deleteFromPipe(params.th.getLocalKey("data"));
-            params.th.loadData(); 
-        }
-
-        return BaseHelper.doInterval('dataTableLoadData', func, params, timeout);
-    }
-
-    loadData()
-    {
-        var temp = this.getData();
-        if(temp != null) 
-            return this.dataChanged.emit(temp);
-
-        var url = this.sessionHelper.getBackendUrlWithToken()+this.baseUrl;
-
-        this.generalHelper.startLoading();
-
-        this.sessionHelper.doHttpRequest("GET", url, {'params': BaseHelper.objectToJsonStr(this.params)})
-        .then((data) => 
-        {
-            var temp = BaseHelper.readFromPipe(this.getLocalKey("data"));
-            if(temp == null) temp = [];
-
-            temp[this.params.page] = data;
-            BaseHelper.writeToPipe(this.getLocalKey("data"), temp); 
-            
-            if(this.params.columns == null || this.params.columns.length == 0) 
-                this.params.columns = this.getObjectKeys(data['columns']);
-            
-            this.generalHelper.stopLoading();
-            this.addEventForFeatures();
-            this.aeroThemeHelper.pageRutine();
-
-            this.dataChanged.emit(data);
-        })
-        .catch((e) => { this.generalHelper.stopLoading(); });
-    }
+    
 
     getObjectKeys(obj)
     {
         return BaseHelper.getObjectKeys(obj)
-    }
+    }*/
 
 
 
     /****    Gui Helper Functions     ****/
 
-    getEditTdClass(record, columnName)
-    {
-        var notEditableColumns = ['id', 'created_at', 'updated_at', 'own_id', 'user_id'];
-        if(notEditableColumns.includes(columnName)) return "";
-
-        if(!this.can('edit', record)) return "";
-        
-        return 'edit-td';
-    }
+    /*
     
-    getColumnType(columnName)
-    {
-        if(this.isFileColumn(columnName)) return 'file';
-        else if(this.isJsonViewerColumn(columnName)) return 'jsonviewer';
-        else if(this.isRelationColumn(columnName)) return 'relation';
-        else if(this.isGeoColumn(columnName)) return 'geo';
-        else if(this.isBooleanFastChangeColumn(columnName)) return 'boolean:fastchange';
-        else return 'default';
-    }
+    
 
     isGeoColumn(columnName)
     {
@@ -651,39 +1364,16 @@ export class DataTableElementComponent
         return type == "jsonviewer";
     }
 
-    isImageFile(file)
-    {
-        if(file == null) return false;
-        if(file == "") return false;
-
-        var imgExts = ["jpg", "png", "gif"]
-        var temp = file["big"].split('.');
-        var ext = temp[temp.length-1];
-
-        return imgExts.includes(ext);
-    }
     
-    getColumnRelationJson(columnName)
-    {
-        var relation = this.getData('columns.'+columnName+'.column_table_relation_id');
-        return BaseHelper.objectToJsonStr(relation);
-    }
+    
+    
 
     getRecordOperations()
     {
         return DataHelper.recordOperations;
     }
 
-    getOpperationLink(operation, record)
-    {
-        var url = window.location.href;
-
-        if(operation['link'] == "") return url;
-
-        if(url.substr(url.length -1, 1) != '/') url += "/";
-        url += operation['link'].replace("[id]", record['id']);
-        return url;
-    }
+    
 
     getColumns()
     {
@@ -704,25 +1394,7 @@ export class DataTableElementComponent
         return rt;
     }
     
-    convertDataForGui(record, columnName)
-    {
-        var type = this.getData('columns.'+columnName+".gui_type_name");
-        var data = DataHelper.convertDataForGui(record, columnName, type);
-        return this.sanitizer.bypassSecurityTrustHtml(data);
-    }
-
-    getFileIconUrl(fileUrl)
-    {
-        var temp = fileUrl.split('.');
-        var ext = temp[temp.length-1];
-
-        var iconBaseUrl = "assets/img/";
-        
-        switch(ext)
-        {
-            default: return iconBaseUrl+"download_file.png";
-        }
-    }
+    
 
 
     getFileUrls(data)
@@ -773,62 +1445,9 @@ export class DataTableElementComponent
             return 2;
     }
 
-    getFilterDescription(columnName)
-    {
-        if(typeof this.params.filters[columnName] == "undefined") return "";
+    
 
-        var displayName = this.getData('columns.'+columnName+'.display_name');
-        if(displayName == null) return "";
-        
-        var guiType = this.getData('columns.'+columnName+'.gui_type_name');
-        guiType = this.getColumnGuiTypeForQuery(guiType);
-
-        switch (this.params.filters[columnName].type) 
-        {
-            case 100: return displayName + ": <b>Boş Olanlar</b>";
-            case 101: return displayName + ": <b>Boş Olmayanlar</b>";
-            default: return displayName + ": " + DataHelper.getFilterDescriptionByColumnGuiType(
-                                                        columnName,
-                                                        guiType,
-                                                        this.params.filters[columnName].type,
-                                                        this.params.filters[columnName].filter,
-                                                        this.getLocalKey("data"));
-        }
-    }
-
-    getColumnGuiTypeForQuery(guiType)
-    {
-        if(typeof guiType == "undefined") return "";
-        if(guiType == null) return "";
-        
-        if(guiType == "multiselect:static") guiType = "multiselect";
-        
-        switch (guiType.split(':')[0]) 
-        {
-            case 'text': 
-            case 'richtext': 
-            case 'codeeditor': 
-            case 'json': 
-            case 'jsonb': 
-            case 'jsonviewer': 
-                return 'string';
-            case 'select':
-            case 'multiselectdragdrop':
-                return 'multiselect';
-            case 'point': 
-            case 'multipoint': 
-            case 'linestring': 
-            case 'multilinestring':
-            case 'polygon': 
-                return 'multipolygon';
-            case 'files': 
-            case 'password': 
-                return 'disable';
-            case 'boolean': 
-                return 'boolean';
-            default: return guiType;
-        }
-    }  
+     
 
     getFilterJson(selectedFilter)
     {
@@ -840,407 +1459,72 @@ export class DataTableElementComponent
         return BaseHelper.objectToJsonStr(obj);
     } 
 
-    getBasicFilterObject(columnName)
-    {
-        return {
-            type: 1,
-            guiType: this.getData('columns.'+columnName+'.gui_type_name'),
-            filter: ""
-        };
-    }
+    
 
-    getRecordRowClass(index, record)
-    {
-        var cls = "odd operations";
-        for(var i = 0; i < this.selectedRecordList.length; i++)
-            if(index == this.selectedRecordList[i].index)
-            {
-                cls += " selected-row";
-                break;
-            }
-            
-        var control = this.can('isRecordDataTransportTarget', record);
-        if(control) cls += " data-transport";
-        
-        return cls;
-    }
+    */
 
     /****   Gui Action Functions   ****/
 
-    downloadStandartReport()
-    {
-        var types = ['excel', 'pdf', 'csv'];
-        var format = prompt("Hangi formatta indirmek istersiniz? (excel, csv yada pdf)", "excel");
-        if(!types.includes(format)) format = 'excel';
-        
-        var url = this.sessionHelper.getBackendUrlWithToken()+this.baseUrl;
-        var temp = BaseHelper.getCloneFromObject(this.params);
-        temp['report_type'] = format;
-        url += "/report?params="+BaseHelper.objectToJsonStr(temp);
-
-        window.open(url, "_blank");
-    }
-
-    closeModal(id)
-    {
-        BaseHelper.closeModal(id);
-    }
-
-    editRecodData(record, columnName)
-    {
-        this.inFormTableName = this.tableName;
-        this.inFormColumnName = columnName;
-        
-        this.inFormRecordId = record.id;
-        if(this.inFormRecordId < 1) return;
-
-        var rand = Math.floor(Math.random() * 10000) + 1;
-        this.inFormElementId = "ife-"+rand;
-        
-        setTimeout(() => 
-        {
-            $('#'+this.inFormElementId+'inFormModal').modal('show');
-        }, 100);
-    }
-
-    clearSelectionText()
-    {
-        if (window.getSelection) {window.getSelection().removeAllRanges();}
-        else if (document['selection']) {document['selection'].empty();}
-    }
-
-    selectRecord(event, record, i)
-    {
-        if(BaseHelper["pipe"]["altKey"]) return true;
-
-        event.preventDefault();
-        record.index = i;
-
-        if(this.selectedRecord == null)
-        {
-            this.selectedRecord = record;
-            this.selectedRecordList = [record];
-        }
-        else if(this.selectedRecord.index == record.index)
-        {
-            this.selectedRecord = null;
-            this.selectedRecordList = [];
-        }
-        else if(BaseHelper['pipe']['shiftKey'])
-        {
-            var records = this.getData('records');
-            this.selectedRecordList = [];
-
-            var start = this.selectedRecord.index;
-            var end = i;
-
-            if(start > i)
-            {
-                var temp = end;
-                end = start;
-                start = temp;
-            }
-
-            for(var j = 0; j < records.length; j++)
-                if(j >= start && j <= end)
-                {
-                    records[j].index = j;
-                    this.selectedRecordList.push(records[j]);
-                }
-        }
-        else if(BaseHelper['pipe']['ctrlKey'])
-        {
-            this.selectedRecordList.push(record);   
-        }
-        else
-        {
-            this.selectedRecord = record;
-            this.selectedRecordList = [record];
-        }
-
-        this.clearSelectionText()
-    }
-
-    detailFilterChanged(filter)
-    {
-        if(filter.filter != null && filter.filter.length == 0)
-            delete this.params.filters[filter.columnName];
-        else
-            this.params.filters[filter.columnName] = filter;
-        
-        this.saveParamsToLocal()
-        this.loadDataInterval(this.loadDataTimeout, true);
-    }
-
-    limitUpdated(limit)
-    {
-        this.params.page = 1;
-        this.params.limit = parseInt(limit);
-
-        this.saveParamsToLocal()
-        this.loadDataInterval(100, true);
-    }
-
-    pageUpdated(page)
-    {
-        this.params.page = parseInt(page);
-
-        this.saveParamsToLocal()
-        this.loadDataInterval(100);
-    }
-
-    prevPage()
-    {
-        this.pageUpdated(this.params.page-1);
-    }
-
-    nextPage()
-    {
-        this.pageUpdated(this.params.page+1);
-    }
-
-    getDefaultParams()
-    {
-        return {
-            page: 1,
-            limit: 10,
-            column_array_id: 0,
-            column_array_id_query: 0,
-            sorts: {},
-            filters: {},
-            edit: true,
-            columns: null
-        };
-    }
-    
-    fillParamsFromLocal()
-    {  
-        this.params = this.getDefaultParams();
-        this.params.limit = this.defaultLimit;
-
-        var temp = BaseHelper.readFromLocal(this.getLocalKey("params"));
-        if(temp != null) this.params = temp;
-
-        if(this.tableName.indexOf('tree:') == -1)
-        {
-            var auth = BaseHelper.loggedInUserInfo.auths.tables[this.tableName];
-
-            var segments = this.baseUrl.split('/');
-            var segment = segments[segments.length -1];
-            
-            var listAuthType = (segment == 'deleted') ? 'deleteds' : 'lists';            
-            var listId = 0;
-            if(typeof auth[listAuthType] != "undefined" && typeof auth[listAuthType][0] != "undefined")
-                listId = auth[listAuthType][0]
-
-            var queryId = 0;
-            if(typeof auth['queries'] != "undefined" && typeof auth['queries'][0] != "undefined")
-                queryId = auth['queries'][0]
-                
-            this.params.column_array_id = listId;
-            this.params.column_array_id_query = queryId;
-        }
-        else
-        {
-            var temp:any = this.tableName.replace('tree:', '').split(':');
-            this.params.column_array_id = temp[1];
-            this.params.column_array_id_query = temp[1];
-        }
-
-        if(this.params.columns == null || this.params.columns.length == 0)
-            this.params.columns = this.getObjectKeys(this.getData('columns'));
-    }
-
-    saveParamsToLocal()
-    {
-        BaseHelper.writeToLocal(this.getLocalKey("params"), this.params);
-    }
-
-    filterChanged(columnName, event)
-    {
-        if(!this.addFilterFromEvent(columnName, event)) return;
-
-        this.params.page = 1;
-        this.saveParamsToLocal();
-        
-        var guiType = this.getData('columns.'+columnName+'.gui_type_name')  
-        console.log(guiType);
-        var to = this.loadDataTimeout;
-        if(typeof event['enterKey'] != "undefined") to = 10;
-        else
-        {
-            switch(guiType.split(':')[0])
-            {
-                case 'boolean':
-                case 'select':
-                case 'multiselect':
-                case 'multiselectdragdrop':
-                case 'date':
-                case 'time':
-                case 'datetime':
-                    to = 10;
-                    break;
-            }
-        }
-        
-        this.loadDataInterval(to, true);
-    }
-
-    addFilterFromEvent(columnName, event, filterType = -1)
-    {
-        if(filterType == -1)
-        {
-            if(typeof this.params.filters[columnName] != "undefined")
-                filterType = this.params.filters[columnName].type;
-            else
-                filterType = 1;
-        }
-
-        var guiType = this.getData('columns.'+columnName+'.gui_type_name')      
-
-        return this.addFilterFromEventForBasicType(columnName, event, filterType);
-    }
-
-    addFilterFromEventForBasicType(columnName, event, filterType)
-    {
-        var guiType = this.getData('columns.'+columnName+'.gui_type_name');
-        guiType = this.getColumnGuiTypeForQuery(guiType);
-        
-        var filter = event.target.value;
-        filter = DataHelper.changeDataForFilterByGuiType(guiType, filter, event.target.name, columnName, this.getLocalKey("data"));
-    
-        if(filter.toString().length == 0) 
-        {
-            delete this.params.filters[columnName];
-            return true;
-        }
-
-        this.params.filters[columnName] = 
-        {
-            type: filterType,
-            guiType: guiType,
-            filter: filter
-        };
-
-        return true;
-    }
+    /*
 
     
 
-    sortByColumn(columnName)
-    {
-        if(typeof this.params.sorts[columnName] == "undefined")
-            this.params.sorts[columnName] = true;
-        else
-        {
-            if(this.params.sorts[columnName]) 
-                this.params.sorts[columnName] = false;
-            else
-                delete this.params.sorts[columnName];
-        }
-        
-        this.saveParamsToLocal()
-        this.loadDataInterval(this.loadDataTimeout, true);
-    }
+    
 
-    clearColumnFilter(columnName)
-    {
-        if(typeof this.params.filters[columnName] == "undefined") return;
+    
 
-        delete this.params.filters[columnName];
+    
 
-        this.saveParamsToLocal()
-        this.loadDataInterval(10, true);
-    }
+    
 
-    dropColumn(event: CdkDragDrop<string[]>) 
-    {
-        moveItemInArray(this.params.columns, event.previousIndex, event.currentIndex);
-        this.saveParamsToLocal();
-    }
+    
 
-    showAllColumns()
-    {
-        this.params.columns = this.getObjectKeys(this.getData('columns'));
-        this.saveParamsToLocal();
-    }
+    
+    
+    
 
-    hideAllColumns()
-    {
-        this.params.columns = [];
-        this.saveParamsToLocal();
-    }
+    
 
-    toggleColumnVisibility(columnName)
-    {
-        if(!this.params.columns.includes(columnName))
-        {
-            this.params.columns.push(columnName);
-        }
-        else
-        {
-            var len = this.params.columns.length;
-            for(var i = 0; i < len; i++)
-                if(columnName == this.params.columns[i])
-                    this.params.columns.splice(i, 1);
-        }
-        
-        this.saveParamsToLocal();
-    }
+    
 
-    toggleEditMode()
-    {
-        this.params.editMode = !this.params.editMode;
-        this.saveParamsToLocal();
+    
 
-        this.messageHelper.toastMessage("Düzenleme modu " + (this.params.editMode ? "aktif" : "pasif"));
-    }
+    
+
+    
+
+    
+
+    
+
+    
 
     getEditMode()
     {
         return this.params.editMode;
     }
 
-    openDetailFilterModal(columnName)
-    {
-        if(typeof this.params.filters[columnName] == "undefined")
-            this.selectedFilter = this.getBasicFilterObject(columnName);
-        else
-            this.selectedFilter = this.params.filters[columnName];
-            
-        this.selectedFilter['columnName'] = columnName;
-        
-        $('#detailFilterModal').modal('show');
-    }
+    */
 
 
 
     /****    Events Functions    ****/
 
-    inFormSavedSuccess(event)
-    {
-        var temp = BaseHelper.readFromPipe(this.getLocalKey("data"));
+    /*
 
-        var len = temp[this.params.page]['records'].length;
-        for(var i = 0; i < len; i++)
-            if(this.inFormRecordId == temp[this.params.page]['records'][i]['id'])
-            {
-                temp[this.params.page]['records'][i][this.inFormColumnName] = event.in_form_data.display;
-                break;
-            }
-        
-        BaseHelper.writeToPipe(this.getLocalKey("data"), temp); 
-        this.closeModal(this.inFormElementId+'inFormModal');
-    }
+    
 
-    addEventForFeatures()
-    {
-        this.aeroThemeHelper.addEventForFeature("standartElementEvents");
-    }
-
+    */
+    
     addEventForThemeIcons()
     {
         this.aeroThemeHelper.addEventForFeature("mobileMenuButton");
         this.aeroThemeHelper.addEventForFeature("rightIconToggleButton");
+    }
+    
+    themeOperations()
+    {
+        this.aeroThemeHelper.addEventForFeature("standartElementEvents");
+        this.aeroThemeHelper.pageRutine();  
     }
 }

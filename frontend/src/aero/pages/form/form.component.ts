@@ -1,5 +1,5 @@
 import { ActivatedRoute} from '@angular/router';
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, Input, Output, ChangeDetectorRef  } from '@angular/core';
 
 import { SessionHelper } from './../helpers/session';
 import { BaseHelper } from './../helpers/base';
@@ -33,10 +33,12 @@ export class FormComponent
     @Output() formLoad = new EventEmitter();
     @Output() inFormOpened = new EventEmitter();
 
-    public tableName = "";
-    public recordId = null;
+    tableName = "";
+    recordId = null;
+    
+    loading = false;
 
-    public loading = true;
+    data = null;
     
     constructor(
         public route: ActivatedRoute,
@@ -44,258 +46,184 @@ export class FormComponent
         public generalHelper: GeneralHelper,
         public aeroThemeHelper: AeroThemeHelper,
         public messageHelper: MessageHelper,
-        public guiTriggerHelper: GuiTriggerHelper
+        public guiTriggerHelper: GuiTriggerHelper,
+        private cdr: ChangeDetectorRef
         ) 
     {
+        this.fillDefaultVariables();
+        
+        console.log('cons');
         var th = this;
-        setTimeout(() => 
-        {
-            route.params.subscribe(val => 
-            {
-                if(th.inFormTableName.length == 0 && typeof val.tableName != "undefined")
-                {
-                    th.tableName = val.tableName;
-                    th.recordId = val.recordId;
-                }
-                else return;
-
-                th.formRender();
-                
-                this.aeroThemeHelper.pageRutine();
-            });
-        }, 100);
+        setTimeout(() => route.params.subscribe(val => th.preLoadInterval(val)), 100);
     }
-
+    
     ngOnChanges()
     {
-        if(this.inFormTableName.length > 0)
+        console.log('ngOnChanges');
+        this.preLoadInterval(); 
+    }
+    
+    preLoadInterval(val = null)
+    {
+        var params =
+        {
+            val: val,
+            th: this
+        };
+
+        function func(params)
+        {
+            params.th.preLoad(params.val);
+        }
+
+        return BaseHelper.doInterval('formPreLoad', func, params, 200);
+    }
+    
+    preLoad(val)
+    {
+        this.fillDefaultVariables();
+        this.fillTableNameAndRecordId(val);
+                
+        this.dataReload();
+        
+        this.cdr.detectChanges();
+        
+        this.addEventForFeatures();
+        this.addEventForThemeIcons();
+        
+        this.aeroThemeHelper.pageRutine();
+    }
+    
+    
+    fillDefaultVariables()
+    {
+        this.data = {};
+        
+        this.data['title'] = '';
+        
+        this.data['sectionClass'] = this.getSectionClass();
+        
+        this.data['column_set'] = [];
+        this.data['column_set']['column_set_type'] = 'none';
+        this.data['column_set']['column_arrays'] = [];
+        
+        this.data['messages'] = {};
+        this.data['messagesJson'] = "";
+    }
+    
+    fillTableNameAndRecordId(val = null)
+    {
+        if(this.inFormTableName.length == 0 && typeof val.tableName != "undefined")
+        {
+            this.tableName = val.tableName;
+            this.recordId = val.recordId;
+        }
+        else if(this.inFormTableName.length > 0)
         {
             this.tableName = this.inFormTableName;
             this.recordId = this.inFormRecordId;
         }
-        else return;
-
-        this.formRender();
-    }
-
-    formRender()
-    {
-        if(typeof this.recordId == "undefined") this.recordId = 0;
-
-        this.addEventForFeatures();
-        this.addEventForThemeIcons();
-
-        setTimeout(() => {
-            BaseHelper.deleteFromPipe(this.getLocalKey());
-            this.loadData();
-        }, 250);
-    }
-
-
-
-    /****    Gui Functions    ****/
-
-    getMessageGroupId(columnName)
-    {
-        var id = this.getElementId(columnName)
-                    .replace('[name="'+columnName+'"]', columnName)
-                    .replace(':last-child', '')
-                    .trim()
-                    .replace('  ', ' ');
-
-        if(id.indexOf('"ife-') > -1)
-            id = id.replace(' '+columnName, ' #'+columnName);
-        else 
-            id = "#"+id;
-
-        id += "-group";
-
-        return id;
-    }
-
-    addFormElementMessage(columnName, type, message, cls = "")
-    {
-        columnName = columnName.split('.')[0];
-
-        var html = "<span class='"+columnName+"-message-"+type+" "+cls+" badge badge-"+type+"' ";
-        html += " style='margin-right: 5px;' ";
-        html += " >"+message+"</span>";
-
-        var id = this.getMessageGroupId(columnName);
-
-        $(id).append(html);
-    }
-
-    writeErrors(errors)
-    {
-        var cls = "validation-errors";
-        $('.'+cls).remove();
-
-        var columnNames = Object.keys(errors);
-        for(var i = 0; i < columnNames.length; i++)
-        {
-            var messages = errors[columnNames[i]];
-            for(var j = 0; j < messages.length; j++)
-                this.addFormElementMessage(columnNames[i], 'danger', messages[j], cls)
-        }
-    }
-
-    change(event)
-    {
-        var params =
-        {
-            event: event,
-            th: this
-        };
         
-        function func(params)
-        {
-            var data = params.th.getElementsData();
-
-            params.th.guiTriggerHelper.changeColumnVisibility(params.th.tableName, params.event.columnName, params.th.getElementId(params.event.columnName), data);            
-
-            var forAllColumns = params.th.getData('gui_triggers.all');
-            if(forAllColumns != null)
-                for(var i = 0; i < forAllColumns.length; i++)
-                {
-                    if(typeof params.th.guiTriggerHelper[forAllColumns[i]] == "undefined")
-                    {
-                        params.th.messageHelper.toastMessage("Tetikleme fonksiyonu yok: " + forCurrentColumns[i], "error", 6000);
-                        continue;
-                    }
-    
-                    params.th.guiTriggerHelper[forAllColumns[i]](params.th.tableName, params.event.columnName, params.th.getElementId(params.event.columnName), data)
-                    .then((data) => params.th.guiTriggered(params.event.columnName, data));
-                }
-
-            var forCurrentColumns = params.th.getData('gui_triggers.'+params.event.columnName);
-            if(forCurrentColumns != null)
-                for(var i = 0; i < forCurrentColumns.length; i++)
-                {
-                    if(typeof params.th.guiTriggerHelper[forCurrentColumns[i]] == "undefined")
-                    {
-                        params.th.messageHelper.toastMessage("Tetikleme fonksiyonu yok: " + forCurrentColumns[i], "error", 6000);
-                        continue;
-                    }
-
-                    params.th.guiTriggerHelper[forCurrentColumns[i]](params.th.tableName, params.event.columnName, params.th.getElementId(params.event.columnName), data)
-                    .then((data) => params.th.guiTriggered(params.event.columnName, data));
-                }
-        }
-
-        return BaseHelper.doInterval('formElementChanged', func, params, 100);
-    }
-
-    getParamsForForm()
-    {
-        var type = null; 
-        if(this.recordId == 0) type = "creates";
-        else type = "edits";
-
-        var columnSetId = 0;
-        if(
-            typeof BaseHelper.loggedInUserInfo.auths.tables[this.tableName] != "undefined"
-            &&
-            typeof BaseHelper.loggedInUserInfo.auths.tables[this.tableName][type] != "undefined"
-            &&
-            typeof BaseHelper.loggedInUserInfo.auths.tables[this.tableName][type][0] != "undefined"
-            )
-
-            columnSetId = BaseHelper.loggedInUserInfo.auths.tables[this.tableName][type][0];
-
-        var params = 
-        {
-            column_set_id: columnSetId,
-        };
-
-        if(this.singleColumn)
-            params['single_column_name'] = this.inFormColumnName;
-
-        return params;
-    }
-
-    getLocalKey()
-    {
-        if(typeof BaseHelper.loggedInUserInfo == "undefined") return "";
-        if(BaseHelper.loggedInUserInfo == null) return "";
-        
-        return "user:"+BaseHelper.loggedInUserInfo.user.id+"."+this.tableName+".form."+this.recordId;
-    }
-
-    getData(path = '')
-    {
-        var data = BaseHelper.readFromPipe(this.getLocalKey());
-        if(data == null) return null;
-        
-        return DataHelper.getData(data, path);
-    }
-
-    getJson(data)
-    {
-        return BaseHelper.objectToJsonStr(data);
-    }
-
-    getKeys(obj)
-    {
-        return Object.keys(obj);
+        if(this.recordId == null) this.recordId = 0;
     }
 
     getSectionClass()
     {
         var c = "content";
-        if(this.id.length > 0)
-            c += " inFormElementSection";
-            
+        if(this.id.length > 0) c += " inFormElementSection";           
         return c;
     }
-
-    startLoading()
+    
+    getColumnSetId(type)
     {
-        this.loading = true;
-        this.generalHelper.startLoading();
-    }
-
-    stopLoading()
-    {
-        this.loading = false;
-        this.generalHelper.stopLoading(); 
+        var tables = BaseHelper.loggedInUserInfo['auths']['tables'];
+        
+        if(typeof tables[this.tableName] == "undefined") return 0;
+        if(typeof tables[this.tableName][type] == "undefined") return 0;
+        if(typeof tables[this.tableName][type][0] == "undefined") return 0;
+        
+        return tables[this.tableName][type][0];
     }
     
-    getElementTitle(title, defaultTitle = "")
+    getParamsForFormData()
     {
-        return BaseHelper.getElementTitle(title, defaultTitle);
+        var type = null; 
+        if(this.recordId == 0) type = "creates";
+        else type = "edits";
+
+        var params = {}
+        params['column_set_id'] = this.getColumnSetId(type)
+        if(this.singleColumn) params['single_column_name'] = this.inFormColumnName;
+
+        return params;
     }
-
-
-
-    /****    Data Functions    ****/
-
-    getTitleOrDefault(title, defaultTitle)
-    {
-        return DataHelper.getTitleOrDefault(title, defaultTitle);
-    }
-
-    save()
+            
+    dataReload()
     {
         var url = this.sessionHelper.getBackendUrlWithToken()+"tables/"+this.tableName+"/";
-        if(this.recordId == 0)
-            url += "store";
-        else
-            url += this.recordId + "/update";
+        if(this.recordId == 0) url += "create";
+        else url += this.recordId + "/edit";
 
-        var params = null;
+        var params = this.getParamsForFormData();
+
+        var data = {'params': BaseHelper.objectToJsonStr(params)};
+        this.sessionHelper.doHttpRequest("GET", url, data)
+        .then((data) => this.dataLoaded(data));
+    }
+    
+    dataLoaded(data)
+    {
+        this.data = this.fillDataAdditionalVariables(data);
         
+        this.addEventForFeatures();
+        setTimeout(() => 
+        {
+            this.changeColumnVisibilityGuiTrigger();
+            this.formLoad.emit(data);
+        }, 100);
+    }
+    
+    changeColumnVisibilityGuiTrigger()
+    {
+        var data = this.getElementsData();
+        var columnNames = Object.keys(data);
+        for(var i = 0; i < columnNames.length; i++)
+            this.guiTriggerHelper.changeColumnVisibility(this.tableName, columnNames[i], this.getElementId(columnNames[i]), data);
+    }
+    
+    fillDataAdditionalVariables(data)
+    {
+        data['title'] = DataHelper.getTitleOrDefault(data['column_set']['name'], this.recordId == 0 ? 'Ekle' : 'Düzenle');
+        
+        var recordJson = ''; 
+        if(typeof data['record'] != "undefined") recordJson = BaseHelper.objectToJsonStr(data['record']);
+        else data['record'] = {};
+        data['record']['json'] = recordJson;
+        
+        data['sectionClass'] = this.getSectionClass();
+            
+        for(var i = 0; i < data['column_set']['column_arrays'].length; i++)
+        {
+            var json = BaseHelper.objectToJsonStr(data['column_set']['column_arrays'][i]);
+            data['column_set']['column_arrays'][i]['json'] = json;
+            
+            var title = DataHelper.getTitleOrDefault(data['column_set']['column_arrays'][i]['name_basic'], '');
+            data['column_set']['column_arrays'][i]['title'] = title;
+        }
+        
+        return data;  
+    }
+    
+    getParamsForSave()
+    {
         if(this.inFormIsDataTransport)
         {
-            params = this.getElementsData();
+            var params = this.getElementsData();
             this.formSaved.emit(params);
             return;
         }
 
-        if(BaseHelper.formSendMethod == "POST")
-            params = this.getElementsDataForUpload(); 
-        else
-            params = this.getElementsData();
+        var params = this.getElementsData(BaseHelper.formSendMethod);
         
         if(this.inFormColumnName.length > 0)
         {
@@ -312,44 +240,50 @@ export class FormComponent
             else
                 params['single_column'] = this.inFormColumnName;
         }
+        
+        return params;
+    }
+    
+    save()
+    {
+        var url = this.sessionHelper.getBackendUrlWithToken()+"tables/"+this.tableName+"/";
+        if(this.recordId == 0) url += "store";
+        else url += this.recordId + "/update";
 
-        this.startLoading();
-        
-        if(BaseHelper.formSendMethod == "POST")
-            var request = this.sessionHelper.doHttpRequest("POST", url, params) 
-        else
-            var request = this.sessionHelper.doHttpRequest("GET", url, params) 
-        
-        request.then((data) => 
-        {
-            this.stopLoading();
-            
-            if(typeof data['message'] == "undefined")
-                this.messageHelper.sweetAlert("Beklenmedik cevap geldi!", "Hata", "warning");
-            else if(data['message'] == 'error')
-                this.writeErrors(data['errors']);
-            else if(data['message'] == 'success')
-                this.saveSuccess(data);
-            else
-                this.messageHelper.sweetAlert("Beklenmedik cevap geldi!", "Hata", "warning");
-        })
-        .catch((e) => { this.stopLoading(); });
+        var params = this.getParamsForSave();
+
+        this.sessionHelper.doHttpRequest(BaseHelper.formSendMethod, url, params) 
+        .then((data) => this.saveSuccess(data));
     }
 
+    saveSuccessMessageControl(data)
+    {
+        if(typeof data['message'] == "undefined")
+        {
+            this.messageHelper.sweetAlert("Beklenmedik cevap geldi!", "Hata", "warning");
+            return false;
+        }
+        else if(data['message'] == 'error')
+        {
+            this.fillFormErrorMessages(data['errors']);
+            return false;
+        }
+        else if(data['message'] == 'success')
+            return true;
+        else
+        {
+            this.messageHelper.sweetAlert("Beklenmedik cevap geldi!", "Hata", "warning");
+            return false;
+        }
+    }
+    
     saveSuccess(data)
     {
-        if(!this.singleColumn)
-            DataHelper.deleteDataOnPipe('list', this.tableName);
-
-        DataHelper.deleteDataOnPipe('archive', this.tableName, this.recordId);
-        DataHelper.deleteDataOnPipe('show', this.tableName, this.recordId);
-
+        if(!this.saveSuccessMessageControl(data)) return;
+        
         this.messageHelper.toastMessage("Kayıt başarılı", "success");
 
-        if(this.singleColumn)
-        {
-            this.formSaved.emit(data);
-        }
+        if(this.singleColumn) this.formSaved.emit(data);
         else if(this.id.length == 0)
         {
             if(typeof BaseHelper.loggedInUserInfo.auths.tables[this.tableName]['lists'] == "undefined")
@@ -366,77 +300,111 @@ export class FormComponent
             this.formSaved.emit(data);
         }
     }
-
-    getElementId(columnName)
+    
+    fillFormErrorMessages(errors)
     {
-        var id = '[name="'+columnName+'"]';
-        if(this.id.length > 0)
-            id = '[ng-reflect-id="'+this.id+'"] ' + id;
+        this.data['messages'] = {};
+        this.data['messagesJson'] = "";
 
-        if(columnName == "name")
-            id += ":last-child";
-        
-        return id;
-    }
-
-    getGuiTypeByColumnName(columnName)
-    {
-        var columnsArrays = this.getData('column_set.column_arrays');
-
-        for(var j = 0; j < columnsArrays.length; j++)
+        var columnNames = Object.keys(errors);
+        for(var i = 0; i < columnNames.length; i++)
         {
-            var columnArray = columnsArrays[j];
-            var columnNames = this.getKeys(columnArray.columns);
+            var columnName = columnNames[i];
+            var errorMessage = errors[columnName];
             
-            for(var k = 0; k < columnNames.length; k++)
-                if(columnName == columnNames[k])
-                    return columnArray.columns[columnName]['gui_type_name'];
+            if(typeof this.data['messages'][columnName] == "undefined") this.data['messages'][columnName] = [];
+                
+            var temp = 
+            {
+                type: 'danger',
+                message: errorMessage
+            };
+            
+            this.data['messages'][columnName].push(temp);            
         }
 
-        return "";
+        this.data['messagesJson'] = BaseHelper.objectToJsonStr(this.data['messages']);
     }
-
-    getElementsData()
+    
+    getElementsData(type = "GET")
     {
-        var data = {};
+        var data = null;
+        if(type == "GET") data = {};
+        else data = new FormData();
 
-        var columnArrays = this.getData('column_set.column_arrays')
-
+        var columnArrays = this.data['column_set']['column_arrays'];
         for(var i = 0; i < columnArrays.length; i++)
         {
             var columnArray = columnArrays[i];
+            if(columnArray['column_array_type'] != 'direct_data') continue;
 
-            if(columnArray.column_array_type != 'direct_data') continue;
-
-            var columnNames = this.getKeys(columnArray.columns);
-            
+            var columnNames = Object.keys(columnArray['columns']);            
             for(var k = 0; k < columnNames.length; k++)
             {
                 var columnName = columnNames[k];
-                var guiType = columnArray.columns[columnName]['gui_type_name'];
-
-                var val = "";
-                if(this.columnIsVisible(columnName))
-                {
-                    var temp = $(this.getElementId(columnName)).val();
-                    if(typeof temp == "undefined") continue;
-                    if(temp == null) temp = "";
-                    
-                    val = temp;
-                }
-                
-                data[columnName] = DataHelper.changeDataForFormByGuiType(guiType, val);
+                this.appendColumnDataForGetElementsData(type, data, columnArray, columnName);
             }
-                
         }
 
-        var type = null; 
-        if(this.recordId == 0) type = "creates";
-        else type = "edits";
+        var formType = null; 
+        if(this.recordId == 0) formType = "creates";
+        else formType = "edits";
 
-        data['column_set_id'] = BaseHelper.loggedInUserInfo.auths.tables[this.tableName][type][0];
-
+        var column_set_id = BaseHelper.loggedInUserInfo.auths.tables[this.tableName][formType][0];
+        if(type == "GET") data['column_set_id'] = column_set_id;
+        else data.append('column_set_id', column_set_id);
+        
         return data;
+    }
+    
+    getElementId(columnName)
+    {
+        var id = '[name="'+columnName+'"]';
+        if(this.id.length > 0) id = '[ng-reflect-id="'+this.id+'"] ' + id;
+        if(columnName == "name") id += ":last-child";
+        
+        return id;
+    }
+    
+    appendColumnDataForGetElementsData(type, data, columnArray, columnName)
+    {
+        
+        var guiType = columnArray['columns'][columnName]['gui_type_name'];
+        
+        if(type == "POST" && guiType == 'files')
+        {
+            var val = $(this.getElementId(columnName+"_old")).val(); 
+            if(typeof val == "undefined") return;
+            data.append(columnName+"_old", val);
+        }
+        
+        if(!this.columnIsVisible(columnName)) return;
+        
+        if(type == "POST" && guiType == 'files')
+        {            
+            var files = $(this.getElementId(columnName))[0].files;
+            for(var l = 0; l < files.length; l++)
+                data.append(columnName+"[]", files[l]);
+                
+            return;
+        }
+        
+        
+        if(type == "GET")
+        {
+            var temp = $(this.getElementId(columnName)).val();
+            if(typeof temp == "undefined") return;
+            if(temp == null) temp = "";
+            data[columnName] = DataHelper.changeDataForFormByGuiType(guiType, temp);
+        }
+        else
+        {
+            var temp = $(this.getElementId(columnName)).val();
+            if(typeof temp == "undefined") return;
+            if(temp == null) temp = "";
+            temp = DataHelper.changeDataForFormByGuiType(guiType, temp);
+            data.append(columnName, temp);
+        }    
     }
     
     columnIsVisible(columnName)
@@ -448,119 +416,85 @@ export class FormComponent
         
         return temp;
     }
-
-    getElementsDataForUpload()
+    
+    guiTriggerFunctionControl(colName, fncName)
     {
-        var data = new FormData();
-
-        var columnArrays = this.getData('column_set.column_arrays')
-
-        for(var i = 0; i < columnArrays.length; i++)
+        if(typeof this.guiTriggerHelper[colName] == "undefined")
         {
-            var columnArray = columnArrays[i];
+            this.messageHelper.toastMessage("Tetikleme fonksiyonu yok: " + fncName, "error", 6000);
+            return false;
+        }
+        
+        return true;
+    }
+    
+    change(event)
+    {
+        var params =
+        {
+            event: event,
+            th: this
+        };
+        
+        function func(params)
+        {
+            var data = params.th.getElementsData();
 
-            if(columnArray.column_array_type != 'direct_data') continue;
-
-            var columnNames = this.getKeys(columnArray.columns);
+            var tableName = params.th.tableName;
+            var columnName = params.event.columnName;
+            var elementId = params.th.getElementId(columnName);
             
-            for(var k = 0; k < columnNames.length; k++)
-            {
-                var columnName = columnNames[k];
-                var guiType = columnArray.columns[columnName]['gui_type_name'];
+            params.th.guiTriggerHelper.changeColumnVisibility(tableName, columnName, elementId, data);            
 
-                var val = "";
-                if(guiType == 'files')
-                {
-                    if(this.columnIsVisible(columnName))
-                    {
-                        var files = $(this.getElementId(columnName))[0].files;
-                        for(var l = 0; l < files.length; l++)
-                            data.append(columnName+"[]", files[l]);
-                    }
-                    
-                    val = $(this.getElementId(columnName+"_old")).val();
-                    if(typeof val == "undefined") continue;
-                    data.append(columnName+"_old", val);
-                }
-                else
-                {
-                    if(this.columnIsVisible(columnName))
-                    {
-                        var temp = $(this.getElementId(columnName)).val();
-                        if(typeof temp == "undefined") continue;
-                        if(temp == null) temp = "";
-                        
-                        val = temp;
-                    }
-                    
-                    var temp = DataHelper.changeDataForFormByGuiType(guiType, val);
-                    data.append(columnName, temp);
-                }
-            }
-                
+            var forAllColumns = params.th.data['gui_triggers']['all'];
+            if(forAllColumns != null)
+                for(var i = 0; i < forAllColumns.length; i++)
+                    if(params.th.guiTriggerFunctionControl(forAllColumns[i], forCurrentColumns[i]))
+                        params.th.guiTriggerHelper[forAllColumns[i]](tableName, columnName, elementId, data)
+                        .then((data) => params.th.guiTriggered(columnName, data));
+               
+            var forCurrentColumns = params.th.data['gui_triggers'][columnName];
+            if(forCurrentColumns != null)
+                for(var i = 0; i < forCurrentColumns.length; i++)
+                    if(params.th.guiTriggerFunctionControl(forCurrentColumns[i], forCurrentColumns[i]))
+                        params.th.guiTriggerHelper[forCurrentColumns[i]](tableName, columnName, elementId, data)
+                        .then((data) => params.th.guiTriggered(columnName, data));
         }
 
-        var type = null; 
-        if(this.recordId == 0) type = "creates";
-        else type = "edits";
-
-        var column_set_id = BaseHelper.loggedInUserInfo.auths.tables[this.tableName][type][0];
-        data.append('column_set_id', column_set_id);
-
-        return data;
+        return BaseHelper.doInterval('formElementChanged', func, params, 1000);
     }
-
-    loadData()
+    
+    guiTriggered(columnName, data = null)
     {
-        var url = this.sessionHelper.getBackendUrlWithToken()+"tables/"+this.tableName+"/";
-        if(this.recordId == 0)
-            url += "create";
-        else
-            url += this.recordId + "/edit";
-
-        var params = this.getParamsForForm();
-
-        this.loading = true;
-        this.generalHelper.startLoading();
-
-        this.sessionHelper.doHttpRequest("GET", url, {'params': BaseHelper.objectToJsonStr(params)})
-        .then((data) => 
+        this.data['messages'] = {};
+        this.data['messagesJson'] = "";
+        
+        if(data == null) return;
+                
+        var typeNames = Object.keys(data);
+        for(var i = 0; i < typeNames.length; i++)
         {
-            BaseHelper.writeToPipe(this.getLocalKey(), data);
-            setTimeout(() => {
-                this.changeColumnVisibilityGuiTrigger();
-                this.formLoad.emit(data);
-            }, 100);
+            var typeName = typeNames[i];
             
-         
-            this.loading = false;
-            this.generalHelper.stopLoading();
-            this.addEventForFeatures();
-        })
-        .catch((e) => 
-        { 
-            this.loading = false;
-            this.generalHelper.stopLoading(); 
-        });
+            if(typeof this.data['messages'][columnName] == "undefined") this.data['messages'][columnName] = [];
+                
+            var temp = 
+            {
+                type: typeName,
+                message: data[typeName]
+            };
+            
+            this.data['messages'][columnName].push(temp);
+        }
+
+        this.data['messagesJson'] = BaseHelper.objectToJsonStr(this.data['messages']);
     }
-
-    changeColumnVisibilityGuiTrigger()
-    {
-        var data = this.getElementsData();
-        var columnNames = Object.keys(data);
-        for(var i = 0; i < columnNames.length; i++)
-            this.guiTriggerHelper.changeColumnVisibility(this.tableName, columnNames[i], this.getElementId(columnNames[i]), data);
-    }
-     
-
-
-    /****    Events Functions    ****/
 
     inFormload(data)
     {
         this.inFormOpened.emit(data);
     }
-
+    
     inFormSavedSuccess(data)
     {
         var elementId = this.getElementId(data['inFormColumnName']);
@@ -598,32 +532,28 @@ export class FormComponent
         var columnName = data['inFormColumnName'];
         var inFormData = data['in_form_data'];
 
-        var data = BaseHelper.readFromPipe(this.getLocalKey());
         var control = false;
-        if(typeof data['record'] == "undefined")
-        {
-            data['record'] = {};
-            data['record'][columnName] = [];
-        }
+        if(this.data['record']['json']  == "")
+            this.data['record'][columnName] = [];
         else
         {
             var control = false;
-            for(var i = 0; i < data['record'][columnName].length; i++)
-                if(data['record'][columnName][i]['source'] == inFormData['source'])
+            for(var i = 0; i < this.data['record'][columnName].length; i++)
+                if(this.data['record'][columnName][i]['source'] == inFormData['source'])
                 {
-                    data['record'][columnName][i]['display'] = inFormData['display'];
+                    this.data['record'][columnName][i]['display'] = inFormData['display'];
                     control = true;
                 }
         }
 
         if(!control)
-            data['record'][columnName].push(
+            this.data['record'][columnName].push(
             {
                 source: inFormData['source'], 
                 display: inFormData['display']
             });
-        
-        BaseHelper.writeToPipe(this.getLocalKey(), data);
+            
+        this.data['record']['json'] = BaseHelper.objectToJsonStr(this.data['record']);
     }
 
     inFormSavedSuccessMultiSelect(elementId, data)
@@ -631,9 +561,7 @@ export class FormComponent
         var val = $(elementId).val();
         
         var temp = [];
-        for(var i = 0; i < val.length; i++)
-            if(val[i].length > 0)
-                temp.push(val[i]);
+        for(var i = 0; i < val.length; i++) if(val[i].length > 0) temp.push(val[i]);
         
         val = temp;
 
@@ -658,24 +586,21 @@ export class FormComponent
 
         $(elementId).val(val);
     }
-
-    guiTriggered(columnName, data = null)
+    
+    getGuiTypeByColumnName(columnName)
     {
-        this.clearOldGuiTriggerMessage(columnName);
-        if(data == null) return;
+        var columnsArrays = this.data['column_set']['column_arrays'];
+        for(var j = 0; j < columnsArrays.length; j++)
+        {
+            var columnArray = columnsArrays[j];
+            
+            var columnNames = Object.keys(columnArray['columns']);            
+            for(var k = 0; k < columnNames.length; k++)
+                if(columnName == columnNames[k])
+                    return columnArray['columns'][columnName]['gui_type_name'];
+        }
 
-        var types = Object.keys(data);
-        for(var i = 0; i < types.length; i++)
-            this.addFormElementMessage(columnName, types[i], data[types[i]]);
-    }
-
-    clearOldGuiTriggerMessage(columnName)
-    {
-        var types = ['success', 'danger', 'warning'];
-
-        var id = this.getMessageGroupId(columnName);
-        for(var i = 0; i < types.length; i++)
-            $(id+" > ."+columnName+"-message-"+types[i]).remove();
+        return "";
     }
 
     addEventForFeatures()
