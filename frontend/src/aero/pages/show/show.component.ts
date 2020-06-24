@@ -25,6 +25,7 @@ export class ShowComponent
     public tableName = "";
     public recordId = -1;
     public defaultLimit = 3;
+    public editable = false;
     
     constructor(
         private route: ActivatedRoute,
@@ -62,6 +63,15 @@ export class ShowComponent
         this.data['column_set'] = [];
         this.data['column_set']['column_set_type'] = 'none';
         this.data['column_set']['column_arrays'] = [];
+    }
+    
+    fillEditable()
+    {
+        if(typeof BaseHelper.loggedInUserInfo['auths'] == "undefined") return;
+        if(typeof BaseHelper.loggedInUserInfo['auths']['tables']== "undefined") return;
+        if(typeof BaseHelper.loggedInUserInfo['auths']['tables'][this.tableName] == "undefined") return;
+        if(typeof BaseHelper.loggedInUserInfo['auths']['tables'][this.tableName]['edits'] == "undefined") return;
+        this.editable = true;
     }
     
     fillTableNameAndRecordId(val)
@@ -104,6 +114,8 @@ export class ShowComponent
     {
         this.data = this.fillDataAdditionalVariables(data);
         
+        this.fillEditable();
+        
         this.addEventForFeatures();
         this.showLoad.emit(data);
     }
@@ -124,6 +136,11 @@ export class ShowComponent
         }  
         
         return data;
+    }
+    
+    edit()
+    {
+        this.generalHelper.navigate("table/"+this.tableName+"/"+this.recordId+"/edit");
     }
 
 

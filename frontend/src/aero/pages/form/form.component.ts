@@ -52,14 +52,12 @@ export class FormComponent
     {
         this.fillDefaultVariables();
         
-        console.log('cons');
         var th = this;
         setTimeout(() => route.params.subscribe(val => th.preLoadInterval(val)), 100);
     }
     
     ngOnChanges()
     {
-        console.log('ngOnChanges');
         this.preLoadInterval(); 
     }
     

@@ -263,8 +263,18 @@ export class ColumnArrayFormElementComponent
     
     inFormSavedSuccess(data)
     {
-        this.formSaved.emit(data);
         this.closeModal(this.inFormElementId+'inFormModal');
+        
+        setTimeout(() =>
+        {
+            this.inFormColumnName = "";
+            this.inFormTableName = "";
+            this.inFormRecordId = 0;
+            this.inFormElementId = "";
+            this.inFormDataTransportSelectValues = {};
+            
+            this.formSaved.emit(data);
+        }, 100);
     }
     
     cloneRelationRecord(columnName)

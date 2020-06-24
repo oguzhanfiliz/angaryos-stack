@@ -36,6 +36,8 @@ export class MultiSelectElementComponent
     baseElementSelector = "";
     val = [];
     selectedVal = [];
+    deletedVal = [];
+    addedVal = [];
 
     @Output() changed = new EventEmitter();
 
@@ -61,6 +63,8 @@ export class MultiSelectElementComponent
     
     ngOnChanges()
     {         
+        console.log(this.deletedVal);
+        
         if(typeof this.recordJson != "undefined" && this.recordJson != "")
             this.record = BaseHelper.jsonStrToObject(this.recordJson);
             
@@ -85,6 +89,8 @@ export class MultiSelectElementComponent
             
             for(var i = 0; i < temp.length; i++)
             {
+                if(this.deletedVal.includes(temp[i]['source'].toString())) continue;
+                
                 this.val.push(temp[i]['source']);
                 this.selectedVal.push(temp[i]['source']);
 
@@ -285,12 +291,26 @@ export class MultiSelectElementComponent
 
     selected(event)
     {
+        var id = event.params.data.id.toString();
+        if(this.deletedVal.includes(id))
+        {
+            for(var i = 0; i < this.deletedVal.length; i++)
+                if(id == this.deletedVal[i])
+                {
+                    this.deletedVal.splice(i, 1);
+                    break;
+                }
+        }
+        
         this.clearAndCacheDisplayNameOptions();
         this.changed.emit(event);
     }
 
     unselected(event)
     {
+        var id = event.params.data.id.toString();
+        if(!this.deletedVal.includes(id)) this.deletedVal.push(id);
+        
         this.clearAndCacheDisplayNameOptions();
         this.changed.emit(event);
     }

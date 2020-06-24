@@ -8,12 +8,20 @@
                     </h2>
                     <button class="btn btn-secondary btn-sm btn-icon mobile_menu" type="button"><i class="zmdi zmdi-sort-amount-desc"></i></button>
                 </div>
-                <div class="col-lg-5 col-md-6 col-sm-12">                
-                    <button *ngIf="inShowTableName == ''" 
+                <div class="col-lg-5 col-md-6 col-sm-12"> 
+                    <button 
                         class="btn btn-sm btn-secondary btn-icon float-right right_icon_toggle_btn" 
                         type="button">
                             
                         <i class="zmdi zmdi-arrow-right"></i>
+                    </button>
+                    
+                    <button *ngIf="editable" 
+                        class="btn btn-sm btn-primary btn-icon float-right right_icon_toggle_btn" 
+                        (click)="edit()"
+                        type="button">
+                            
+                        <span class="ti-pencil-alt2"></span>
                     </button>
                 </div>
             </div>
