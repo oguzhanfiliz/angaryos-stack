@@ -258,7 +258,7 @@ export class DataTableElementComponent
         data['sortPriority'] = {};
         for(var i = 0; i < sortedColumns.length; i++) 
         {
-            var columnName = sortedColumns[i];
+            var columnName:any = sortedColumns[i];
             data['sortPriority'][columnName] = i+1;
         }
         
