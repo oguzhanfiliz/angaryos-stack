@@ -37,8 +37,10 @@ export class AeroThemeHelper
       BaseHelper.writeToPipe('loadPageScriptsLoaded', true);
       BaseHelper.writeToPipe('loadPageScriptsLightLoaded', true);
       
-      setTimeout(() => 
+      setTimeout(async () => 
       {
+        await $.getScript('https://cdnjs.cloudflare.com/ajax/libs/jQuery-slimScroll/1.3.8/jquery.slimscroll.min.js');
+        
         $.getScript('assets/themes/aero/assets/bundles/libscripts.bundle.js', function()
         {
           $.getScript('assets/themes/aero/assets/bundles/vendorscripts.bundle.js', function()
