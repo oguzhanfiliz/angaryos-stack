@@ -367,7 +367,7 @@ export class AuthWizardComponent
 
     inFormSavedSuccess(event)
     {
-        $('#'+this.inFormElementId+'inFormModal').modal('hide');
+        this.closeModal(this.inFormElementId+'inFormModal');
 
         var item = this.getAuthItemForList(event);
         this.auths[this.inFormType['source']].push(item);

@@ -154,8 +154,13 @@ trait BaseModelGetDataJoinTrait
     
     public function addJoinWithColumnForJoinTableIdsForOneToMany($params)
     {
-        $lateral = 'lateral jsonb_array_elements('
-                .$params->join->connection_column_with_alias.') with ordinality ' 
+        $colName = $params->join->connection_column_with_alias;
+        if(!strstr($colName, '.'))
+            $colName = $this->getTable().'.'.$colName;
+
+        $lateral = 'lateral
+         jsonb_array_elements('
+                .$colName.') with ordinality ' 
                 .' as '.$params->join->join_table_alias.'_lateral';
         $params->model->leftJoin(DB::raw($lateral), DB::raw('true'), '=', DB::raw('true'));
         

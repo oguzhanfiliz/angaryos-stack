@@ -178,6 +178,7 @@ export class FormComponent
         {
             this.changeColumnVisibilityGuiTrigger();
             this.formLoad.emit(data);
+            data['record']['json'] += " ";
         }, 100);
     }
     
@@ -376,8 +377,6 @@ export class FormComponent
             data.append(columnName+"_old", val);
         }
         
-        if(!this.columnIsVisible(columnName)) return;
-        
         if(type == "POST" && guiType == 'files')
         {            
             var files = $(this.getElementId(columnName))[0].files;
@@ -387,22 +386,17 @@ export class FormComponent
             return;
         }
         
-        
-        if(type == "GET")
+        var columnData = "";
+        if(this.columnIsVisible(columnName))
         {
             var temp = $(this.getElementId(columnName)).val();
             if(typeof temp == "undefined") return;
             if(temp == null) temp = "";
-            data[columnName] = DataHelper.changeDataForFormByGuiType(guiType, temp);
+            columnData = DataHelper.changeDataForFormByGuiType(guiType, temp);
         }
-        else
-        {
-            var temp = $(this.getElementId(columnName)).val();
-            if(typeof temp == "undefined") return;
-            if(temp == null) temp = "";
-            temp = DataHelper.changeDataForFormByGuiType(guiType, temp);
-            data.append(columnName, temp);
-        }    
+        
+        if(type == "GET") data[columnName] = columnData;
+        else data.append(columnName, columnData);   
     }
     
     columnIsVisible(columnName)
@@ -459,7 +453,7 @@ export class FormComponent
                         .then((data) => params.th.guiTriggered(columnName, data));
         }
 
-        return BaseHelper.doInterval('formElementChanged', func, params, 1000);
+        return BaseHelper.doInterval('formElementChanged', func, params, 100);
     }
     
     guiTriggered(columnName, data = null)

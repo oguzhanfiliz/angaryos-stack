@@ -42,7 +42,13 @@ trait BaseModelGetDataSelectTrait
     
     public function addSelectForJoinedColumn($params)
     {
-        $params->model->addSelect(DB::raw($params->column->select_raw));
+        global $pipe;
+        $table = $pipe['table'];
+
+        $temp  = str_replace('("', '( "', $params->column->select_raw);
+        $temp  = str_replace(' "', ' '.$table.'."', ' '.$temp);
+        
+        $params->model->addSelect(DB::raw($temp));
     }
     
     public function addSelectForTableIdAndColumnIds($params)

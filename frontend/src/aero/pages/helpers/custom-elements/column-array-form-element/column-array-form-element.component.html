@@ -3,7 +3,10 @@
 </h5>
 
 
-<div class="form-group" id="{{ columnArray['id'] }}-group" *ngFor="let columnName of columnArray['columnNames']">  
+<div 
+    class="form-group" 
+    *ngFor="let columnName of columnArray['columnNames']"
+    id="{{ columnName }}-group" >  
     <table *ngIf="columnArray['columns'][columnName]['visible']" class="light-table">
         <tbody>
             <tr class="{{ columnArray['columns'][columnName]['relationClass'] }}">

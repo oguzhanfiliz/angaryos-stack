@@ -1,5 +1,6 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import {NgbModule} from '@ng-bootstrap/ng-bootstrap';
 
 import { PagesModule } from './pages/pages.module';
 
@@ -52,7 +53,8 @@ import { AeroThemeHelper } from './pages/helpers/aero.theme';
     HttpClientModule,
     FormsModule,
     DragDropModule,
-    PagesModule
+    PagesModule,
+    NgbModule
   ],
   providers: 
   [

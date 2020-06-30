@@ -369,13 +369,15 @@ trait BaseModelGetDataWhereTrait
                 $query->orWhereRaw($params->column_name_with_alias. ' = '.$filter);
         });
     }
-    
-    
-    
-    
-        
+     
     public function addWhereForJoinedColumn($params)
     {
+        global $pipe;
+        $table = $pipe['table'];
+
+        $params->column->select_raw  = str_replace('("', '( "', $params->column->select_raw);
+        $params->column->select_raw  = str_replace(' "', ' '.$table.'."', ' '.$params->column->select_raw);
+    
         return $this->addWhereForJoinedColumnAsString($params);
     }
 }

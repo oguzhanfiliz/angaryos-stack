@@ -58,13 +58,11 @@ export class MultiSelectElementComponent
         if(this.showClearDataButton == "false")
             this.showClearDataButton = false;
 
-        this.elementOperations();
+        this.elementOperationsInterval();
     }
     
     ngOnChanges()
     {         
-        console.log(this.deletedVal);
-        
         if(typeof this.recordJson != "undefined" && this.recordJson != "")
             this.record = BaseHelper.jsonStrToObject(this.recordJson);
             
@@ -110,10 +108,26 @@ export class MultiSelectElementComponent
             this.val = [];
         else
             this.val = this.value.split(","); 
+            
+        //this.elementOperationsInterval();
     }
-
+    
+    elementOperationsInterval()
+    {
+        var intervalName = 'multiselectElementOperations.'+this.name+".";
+        if(this.record != null) intervalName += this.record['id'];
+        
+        return BaseHelper.doInterval(
+                intervalName, 
+                (th) => th.elementOperations(), 
+                this, 
+                200);
+    }
+    
     elementOperations()
     {      
+        //$('multi-select-element[ng-reflect-name="'+this.name+'"] .select2-container--default').remove();
+        
         $.getScript('assets/ext_modules/select2/select2.min.js', () => 
         {
             switch(this.type)
@@ -338,7 +352,7 @@ export class MultiSelectElementComponent
         $('.select2-selection__choice').css('margin', '2px 2px 2px 0');
         $('.select2-selection--multiple').css('width', '100%');
         
-        setTimeout(() => $('.select2-selection--multiple').css('display', 'inline-table'), 200);
+        setTimeout(() => $('.select2-selection--multiple').css('display', 'inline-table'), 600);
     }
 
     getDisplayName(value)

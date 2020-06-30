@@ -508,9 +508,20 @@ export class DataTableElementComponent
     detailFilterChanged(filter)
     {
         if(filter.filter != null && filter.filter.length == 0)
+        {
             delete this.params.filters[filter.columnName];
+            
+            for(var i = 0; i < this.params['filterColumnNames'].length; i++)
+            if(this.params['filterColumnNames'][i] == filter.columnName)
+            {
+                this.params['filterColumnNames'].splice(i, 1);
+                break;
+            }
+        }
         else
+        {
             this.params.filters[filter.columnName] = filter;
+        }
         
         this.saveParamsToLocal();
         
@@ -643,6 +654,13 @@ export class DataTableElementComponent
         if(filter.toString().length == 0) 
         {
             delete this.params.filters[columnName];
+            
+            for(var i = 0; i < this.params['filterColumnNames'].length; i++)
+                if(this.params['filterColumnNames'][i] == columnName)
+                {
+                    this.params['filterColumnNames'].splice(i, 1);
+                    break;
+                }
             return true;
         }
 
@@ -790,6 +808,10 @@ export class DataTableElementComponent
                 var guiTypeName = this.data['columns'][this.inFormColumnName]["gui_type_name"];
                 var temp = this.convertDataForGui(this.data['records'][i], this.inFormColumnName, guiTypeName);
                 this.data['records'][i]['convertedDatasForGui'][this.inFormColumnName] = temp;
+                
+                this.data['records'][i]['json'] = "";
+                this.data['records'][i]['json'] = BaseHelper.objectToJsonStr(this.data['records'][i]);
+                
                 break;
             }
         

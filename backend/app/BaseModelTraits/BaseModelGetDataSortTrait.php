@@ -45,6 +45,12 @@ trait BaseModelGetDataSortTrait
     
     public function addSortForJoinedColumn($params)
     {
+        global $pipe;
+        $table = $pipe['table'];
+
+        $params->column->select_raw  = str_replace('("', '( "', $params->column->select_raw);
+        $params->column->select_raw  = str_replace(' "', ' '.$table.'."', ' '.$params->column->select_raw);
+        
         $temp = helper('get_column_data_for_joined_column', $params->column->select_raw);
         $params->model->orderBy(DB::raw($temp[0]), $params->direction);
     }

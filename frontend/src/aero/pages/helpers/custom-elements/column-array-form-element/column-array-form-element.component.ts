@@ -110,6 +110,16 @@ export class ColumnArrayFormElementComponent
             }
         }
     }
+
+    fillColumnVisibility()
+    {
+        this.columnArray['columnNames'] = Object.keys(this.columnArray['columns']);
+        for(var i = 0; i < this.columnArray['columnNames'].length; i++)
+        {
+            var columnName = this.columnArray['columnNames'][i];
+            this.columnArray['columns'][columnName]['visible'] = this.columnIsVisible(columnName);
+        }
+    }
     
     columnIsVisible(columnName)
     {
@@ -135,6 +145,8 @@ export class ColumnArrayFormElementComponent
 
     changed(columnName, event)
     {
+        setTimeout(() => this.fillColumnVisibility(), 200);
+
         event['columnName'] = columnName;
         this.dataChanged.emit(event);
     }

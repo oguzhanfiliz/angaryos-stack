@@ -19,23 +19,71 @@
     <table id="light-table" style="width: 100%">
         <tr>
             <td width="5px">
-                <div [hidden]="drawingInteraction != null" class="dropdown">
-                    <button class="btn btn-sm btn-primary dropdown-toggle" type="button" id="drawButtom" 
-                        data-toggle="dropdown" aria-haspopup="true" 
-                        aria-expanded="false">
-            
+                
+                <div 
+                    [hidden]="drawingInteraction"                                                   
+                    class="btn-group" 
+                    ngbDropdown role="group"
+                    aria-label="Button group with nested dropdown">
+
+                    <button
+                        class="btn btn-sm float-right btn-primary pull-right" 
+                        id="drawButton"  
+                        ngbDropdownToggle> 
+
                         Ekle
                     </button>
-                    <div class="dropdown-menu" aria-labelledby="drawButtom">
-                        <a class="dropdown-item" (click)="drawStart('Point')">Nokta</a>
-                        <a class="dropdown-item" (click)="drawStart('Point', true)">Noktalar</a>
-                        <a class="dropdown-item" (click)="drawStart('LineString')">Çizgi</a>
-                        <a class="dropdown-item" (click)="drawStart('LineString', true, true)">Serbest Çizgi</a>
-                        <a class="dropdown-item" (click)="drawStart('LineString', true)">Çizgiler</a>
-                        <a class="dropdown-item" (click)="drawStart('Polygon')">Poligon</a>
-                        <a class="dropdown-item" (click)="drawStart('Polygon', true)">Poligonlar</a>
+
+                    <div ngbDropdownMenu>
+                        <a 
+                            (click)="drawStart('Point')"
+                            class="dropdown-item"
+                            ngbDropdownItem>
+                            
+                            Nokta
+                        </a>    
+                        <a 
+                            (click)="drawStart('Point', true)"
+                            class="dropdown-item"
+                            ngbDropdownItem>
+                            
+                            Noktalar
+                        </a>  
+                        <a 
+                            (click)="drawStart('LineString')"
+                            class="dropdown-item"
+                            ngbDropdownItem>
+                            
+                            Çizgi
+                        </a>    
+                        <a 
+                            (click)="drawStart('LineString', true)"
+                            class="dropdown-item"
+                            ngbDropdownItem>
+                            
+                            Çizgiler
+                        </a>  
+                        <a 
+                            (click)="drawStart('Polygon')"
+                            class="dropdown-item"
+                            ngbDropdownItem>
+                            
+                            Alan
+                        </a>    
+                        <a 
+                            (click)="drawStart('Polygon', true)"
+                            class="dropdown-item"
+                            ngbDropdownItem>
+                            
+                            Alanlar
+                        </a>    
                         <div class="divider"></div>
-                        <a class="dropdown-item">Netcad 'den Al</a>
+                        <a 
+                            class="dropdown-item"
+                            ngbDropdownItem>
+                            
+                            NetCAD 'den al
+                        </a>  
                     </div>
                 </div>
 
@@ -213,32 +261,62 @@
     </div>
 </div>
 
+<div 
+                    [hidden]="drawingInteraction"                                                   
+                    class="btn-group" 
+                    id="menu-button"
+                    ngbDropdown role="group"
+                    aria-label="Button group with nested dropdown">
 
-<div class="dropdown" id="menu-button">
-    <button class="btn btn-sm btn-primary btn-icon" type="button" 
-        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-        
-        <span style="font-size: 15px;" class="ti-menu" ></span>
-    </button>
-    <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-        
-        <a href="{{ getHomePageUrl() }}" class="dropdown-item">Anasayfa</a>
-        
-        <div class="dropdown-divider"></div>
-        
-        <a (click)="search()" class="dropdown-item">Arama Yap</a>
-        
-        <div class="dropdown-divider"></div>
-        
-        <a (click)="layers()" class="dropdown-item">Katmanlar</a>
-        <a (click)="setToolsBarVisible(true)" class="dropdown-item">Araç Çubuğu</a>
-        <a  [hidden]="isVectorFeaturesTreeNull()"
-            (click)="setFeaturesTreeVisible(true)" 
-            class="dropdown-item">Nesne Ağacı</a>
-        
-    </div>
-</div>
+                    <button
+                        class="btn btn-icon btn-sm float-right btn-primary pull-right" 
+                        id="drawButton"  
+                        ngbDropdownToggle> 
 
+                        <span style="font-size: 15px;" class="ti-menu" ></span>
+                    </button>
+
+                    <div ngbDropdownMenu>
+                        <a 
+                            href="{{ getHomePageUrl() }}"
+                            class="dropdown-item"
+                            ngbDropdownItem>
+                            
+                            Anasayfa
+                        </a>    
+                        <div class="dropdown-divider"></div>
+                        <a 
+                            (click)="search()"
+                            class="dropdown-item"
+                            ngbDropdownItem>
+                            
+                            Arama Yap
+                        </a>  
+                        <div class="dropdown-divider"></div>
+                        <a 
+                            (click)="layers()"
+                            class="dropdown-item"
+                            ngbDropdownItem>
+                            
+                            Katmanlar
+                        </a>    
+                        <a 
+                            (click)="setToolsBarVisible(true)" 
+                            class="dropdown-item"
+                            ngbDropdownItem>
+                            
+                            Araç Çubuğu
+                        </a>  
+                        <a 
+                            [hidden]="isVectorFeaturesTreeNull()"
+                            (click)="setFeaturesTreeVisible(true)" 
+                            class="dropdown-item"
+                            ngbDropdownItem>
+                            
+                            Nesne Ağacı
+                        </a> 
+                    </div>
+                </div>
 
 
 <div id="mouse-position-fullScreenMap" class="mouse-position"></div>
