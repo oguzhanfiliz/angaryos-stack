@@ -178,7 +178,10 @@ export class FormComponent
         {
             this.changeColumnVisibilityGuiTrigger();
             this.formLoad.emit(data);
-            data['record']['json'] += " ";
+
+            data['record']['random'] = Math.random();
+            data['record']['json'] = "";
+            data['record']['json'] = BaseHelper.objectToJsonStr(data['record']);
         }, 100);
     }
     
