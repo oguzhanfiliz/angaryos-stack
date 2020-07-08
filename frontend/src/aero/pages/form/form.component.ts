@@ -178,10 +178,6 @@ export class FormComponent
         {
             this.changeColumnVisibilityGuiTrigger();
             this.formLoad.emit(data);
-
-            data['record']['random'] = Math.random();
-            data['record']['json'] = "";
-            data['record']['json'] = BaseHelper.objectToJsonStr(data['record']);
         }, 100);
     }
     
@@ -291,7 +287,12 @@ export class FormComponent
             if(typeof BaseHelper.loggedInUserInfo.auths.tables[this.tableName]['lists'] == "undefined")
                 this.formSaved.emit(data);
             else
+            {
+                var ext = ['subscribers', 'missions'];
+                if(this.recordId > 0 && ext.includes(this.tableName)) return;
+
                 this.generalHelper.navigate('table/'+this.tableName);
+            }
         }    
         else
         {
@@ -299,7 +300,7 @@ export class FormComponent
             data['inFormColumnName'] = this.inFormColumnName;
             data['inelementId'] = this.id;
             data['inFormRecordId'] = this.inFormRecordId;
-            this.formSaved.emit(data);
+            this.formSaved.emit(data); 
         }
     }
     
@@ -390,6 +391,7 @@ export class FormComponent
         }
         
         var columnData = "";
+
         if(this.columnIsVisible(columnName))
         {
             var temp = $(this.getElementId(columnName)).val();
@@ -397,9 +399,9 @@ export class FormComponent
             if(temp == null) temp = "";
             columnData = DataHelper.changeDataForFormByGuiType(guiType, temp);
         }
-        
+
         if(type == "GET") data[columnName] = columnData;
-        else data.append(columnName, columnData);   
+        else data.append(columnName, columnData);
     }
     
     columnIsVisible(columnName)
@@ -456,7 +458,7 @@ export class FormComponent
                         .then((data) => params.th.guiTriggered(columnName, data));
         }
 
-        return BaseHelper.doInterval('formElementChanged', func, params, 100);
+        return BaseHelper.doInterval('formElementChanged', func, params, 1000);
     }
     
     guiTriggered(columnName, data = null)
