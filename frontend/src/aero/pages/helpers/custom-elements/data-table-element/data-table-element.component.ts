@@ -280,10 +280,11 @@ export class DataTableElementComponent
                 data['records'][i]['operations'][opt['type']] = this.can(opt['type'], data['records'][i]);
                 data['records'][i]['operationLinks'][opt['type']] = this.getOpperationLink(opt, data['records'][i]);
             }
+            
             for(var j = 0; j < data['columnNames'].length; j++)
             {
                 var columnName = data['columnNames'][j];
-                data['records'][i]['tdClases'][columnName] = this.getEditTdClass(data['records'][i], columnName);
+                data['records'][i]['tdClases'][columnName] = this.getEditTdClass(data['records'][i], columnName, data['columns'][columnName]['guiElementTypeName']);
                 
                 switch(data['columns'][columnName]['guiElementTypeName'])
                 {
@@ -693,8 +694,10 @@ export class DataTableElementComponent
         return cls;
     }
     
-    getEditTdClass(record, columnName)
+    getEditTdClass(record, columnName, typeName)
     {
+        if(typeName == 'boolean:fastchange') return "";
+        
         var notEditableColumns = ['id', 'created_at', 'updated_at', 'own_id', 'user_id'];
         if(notEditableColumns.includes(columnName)) return "";
 
@@ -814,6 +817,8 @@ export class DataTableElementComponent
                 
                 break;
             }
+        
+        if(this.inFormColumnName == "php_code") return;
         
         this.closeModal(this.inFormElementId+'inFormModal');
     }

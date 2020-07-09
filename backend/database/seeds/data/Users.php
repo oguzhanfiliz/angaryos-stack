@@ -157,6 +157,10 @@ array_push($adminAuths, 'dashboards:RefreshableNumber:JobCount:0');
 
 
 
+array_push($adminAuths, 'dashboards:GraphicXY:Test:0');
+
+
+
 array_push($adminAuths, 'map:0:0:0');
 array_push($adminAuths, 'map:kmz:upload:0');
 

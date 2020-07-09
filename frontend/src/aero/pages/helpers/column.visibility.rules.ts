@@ -43,8 +43,8 @@ function columnDbTypeIdTrigger(tableName, columnName, elementId, data)
 
 function joinTableIdsTrigger(tableName, columnName, elementId, data)
 {
-    var visible = !elementIsNull(data, columnName);
-    setElementVisibility(elementId, "join_columns", visible);
+    var visible = elementIsNull(data, columnName);
+    setElementVisibility(elementId, "join_columns", !visible);
 }
 
 function relationTableIdTrigger(tableName, columnName, elementId, data)

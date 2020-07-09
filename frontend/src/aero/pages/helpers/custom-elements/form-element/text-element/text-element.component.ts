@@ -24,7 +24,6 @@ export class TextElementComponent
     
     ngAfterViewInit() 
     {
-        console.log(123);
         if(this.type == "json" || this.type == "jsonb")
         {
             this.value = BaseHelper.replaceAll(this.value, '\\"', '"');

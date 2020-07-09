@@ -43,6 +43,13 @@
                         </div>
                     </div>
                     
+                    <button
+                        (click)="resetDashboards()"
+                        class="btn btn-sm float-right btn-primary btn-icon pull-right"> 
+
+                        <span class="ti-reload" data-toggle="tooltip" title="Göstergeleri sıfırla"></span> 
+                    </button>
+                    
                 </div>
             </div>
         </div>
@@ -64,7 +71,7 @@
                                 <h6>{{ item['data']['table_display_name']  }}</h6>
                                 <h2> {{ item['data']['count']  }}<small class="info"> kayıt</small></h2>
                                 <small>Toplam kayıt sayısının %{{ item['data']['percent'] }} 'i</small>
-                                <div class="progress">
+                                <div class="progress" style="margin-bottom: 7px;">
                                     <div 
                                         class="progress-bar l-blue" role="progressbar" 
                                         [attr.aria-valuenow]="item['data']['percent']" 
@@ -81,7 +88,7 @@
                         (click)="fillDashboardsItemDataRefreshableNumber(item['dashboardId'], item['subClass'], item['item'])"
                         class="row clearfix">
                         
-                        <div class="card widget_2 big_icon data">
+                        <div class="card widget_2 big_icon traffic"> 
                             <div class="body">
                                 <h6>{{ item['data']['display_name']  }}</h6>
                                 <h2> {{ item['data']['number']  }}<small class="info"> adet</small></h2>
@@ -161,6 +168,16 @@
                                 </div>
                             </div>
                         
+                    </div>
+                    
+                    <div *ngIf="item['class'] == 'GraphicXY' || item['class'] == 'GraphicPie'">
+                        <h5 style="padding:5 0 0 10">{{ item['data']['title'] }}</h5>
+                        <div 
+                            id="{{ item['class']+'_'+item['subClass']+'_'+item['item'] }}" 
+                            class="c3_charts">
+                              
+                            Bekleyin
+                        </div>
                     </div>
 
                     <span 

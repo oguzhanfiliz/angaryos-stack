@@ -1,7 +1,3 @@
-.big_icon.data::before {
-    content: "\f1d2";
-}
-
 gridster
 {
     background: transparent !important;
@@ -22,6 +18,19 @@ button.btn-sm
     margin: 0;
     font-size: 13px;
   }
+}
+
+.c3_charts
+{
+    height: calc(100% - 50px) !important;
+} 
+
+.big_icon.data::before {
+    content: "\f1d2";
+}
+
+.big_icon.traffic::before {
+    content: "\f1e2";
 }
 
 .dropdown-menu

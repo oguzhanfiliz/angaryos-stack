@@ -17,6 +17,7 @@ declare var $: any;
 export class ColumnArrayFormElementComponent
 {
     @Input() columnArrayJson: string = "";
+    @Input() temp: string = "";
     @Input() recordJson: string = "";
     @Input() messagesJson: string = "";
     @Input() tableName: string;
@@ -125,7 +126,6 @@ export class ColumnArrayFormElementComponent
     {
         var key = "formElementVisibility." + this.upFormId + "." + columnName;
         var temp = BaseHelper.readFromPipe(key);
-
         if(temp == null) return true;        
         return temp;
     }

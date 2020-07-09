@@ -47,7 +47,7 @@ $subscribers['table']['tables'][1] =
     'name_basic' => 'Tabloyla ilişkili kolon işlemleri için trigger',
     'subscriber_type_id' => $subscriber_types['after']->id,
     'php_code' => '<?php
-if($type != "create" && $type != "import") return;
+if($type != "create" && $type != "import" && $type != "clone") return;
 
 $helper = new App\Libraries\TableDBOperationsLibrary();
 $return = $helper->CreateRelationColumnsForTable($record);

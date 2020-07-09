@@ -82,7 +82,8 @@ export class LoginComponent
         .catch((errorMessage) =>  
         {
             this.loading = false;
-            this.messageHelper.toastMessage(errorMessage, "Doğrulama Hatası");
+            if(errorMessage == "***") return;
+            this.messageHelper.toastMessage("Doğrulama Hatası: "+errorMessage);
         });
     }
     

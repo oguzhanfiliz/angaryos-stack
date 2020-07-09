@@ -63,17 +63,19 @@ export class DashboardComponent implements OnInit
             draggable: 
             {
               enabled: true,
-              stop: () => { th.dashboardChanged(th) }
+              stop: (item) => { th.dashboardChanged(th, 'drag', item) }
             },
             resizable: 
             {
               enabled: true,
-              stop: () => { th.dashboardChanged(th) }
+              stop: (item) => { th.dashboardChanged(th, 'resize', item) }
             }
         };
         
         this.fillDashboardFromLocal();
         this.fillDashboardsData();
+        
+        //this.test();
         
         this.themeOperations();
     }
@@ -98,6 +100,19 @@ export class DashboardComponent implements OnInit
         else if(message == 'no.data') return 'no.data';
         else return 'continue';
     }
+    
+    resetDashboards()
+    {
+        this.messageHelper.swalConfirm("Emin misiniz?", "Tüm göstergeleriniz varsayılan yerlerine ve ayarlarına geri yüklenecek.")
+        .then((r) =>
+        {
+            if(r != true) return;
+            
+            BaseHelper.writeToLocal(this.getLocalKey("dashboards"), []);
+            BaseHelper.writeToLocal(this.getLocalKey("deletedDashboards"), []);
+            location.reload();
+        });
+    }
 
     removeItem($event: MouseEvent | TouchEvent, item): void 
     {
@@ -108,7 +123,7 @@ export class DashboardComponent implements OnInit
         if(!this.deletedDashboards.includes(item.dashboardId))
             this.deletedDashboards.push(item.dashboardId);
         
-        this.dashboardChanged(this);
+        this.dashboardChanged(this, 'remove', item);
     }
     
     addItem(deletedIndex, dashboardId)
@@ -119,12 +134,52 @@ export class DashboardComponent implements OnInit
         this.fillDashboardsItemData(temp[0], temp[1], temp[2]);
     }
     
-    dashboardChanged(th)
+    itemResized(item)
+    {
+        switch(item['class'])
+        {
+            case "GraphicXY":
+                this.GraphicXYResized(item);
+                break;
+            case "GraphicPie":
+                this.GraphicPieResized(item);
+                break;
+        }
+    }
+    
+    GraphicXYResized(item)
+    {
+        var elementId = "#"+item['class']+"_"+item['subClass']+"_"+item['item'];
+                
+        $(elementId).css('height', '100%');
+        $(elementId+' svg').css('height', '100%'); 
+        $(elementId).css('max-height', 'none');
+        $(elementId+' svg').css('max-height', 'none');
+
+        c3.generate(item['data']);
+    }
+    
+    GraphicPieResized(item)
+    {
+        //yukardaki tek fonksiton ile birleştirilebilir aynı kodlar çalışırsa
+        var elementId = "#"+item['class']+"_"+item['subClass']+"_"+item['item'];
+                
+        $(elementId).css('height', '100%');
+        $(elementId+' svg').css('height', '100%'); 
+        $(elementId).css('max-height', 'none');
+        $(elementId+' svg').css('max-height', 'none');
+
+        c3.generate(item['data']);
+    }
+    
+    dashboardChanged(th, type, item)
     {
         setTimeout(() =>
         {
             BaseHelper.writeToLocal(th.getLocalKey("dashboards"), th.dashboards);
             BaseHelper.writeToLocal(th.getLocalKey("deletedDashboards"), th.deletedDashboards);
+            
+            if(type == "resize") th.itemResized(item);
         }, 500);
     }
 
@@ -180,6 +235,12 @@ export class DashboardComponent implements OnInit
             case "DataEntegratorStatus":
                 await this.fillDashboardsItemDataDataEntegratorStatus(dashboardId, subClassName, itemName);
                 break;
+            case "GraphicXY":
+                await this.fillDashboardsItemDataGraphicXY(dashboardId, subClassName, itemName);
+                break;
+            case "GraphicPie":
+                await this.fillDashboardsItemDataGraphicPie(dashboardId, subClassName, itemName);
+                break;
                  
             default: 
                 console.log(className+" tipi bulunamadı!");
@@ -195,7 +256,7 @@ export class DashboardComponent implements OnInit
         };
         
         var className = "RecordCount";
-        await this.fillDashboardsItemDataStandartLoader(dashboardId, className, subClassName, itemName, 2, 1, func);
+        await this.fillDashboardsItemDataStandartLoader(dashboardId, className, subClassName, itemName, {}, func);
     }
     
     async fillDashboardsItemDataRefreshableNumber (dashboardId, subClassName, itemName)
@@ -221,10 +282,52 @@ export class DashboardComponent implements OnInit
         };
         
         var className = "DataEntegratorStatus";
-        await this.fillDashboardsItemDataStandartLoader(dashboardId, className, subClassName, itemName, 2, 1, func);
+        await this.fillDashboardsItemDataStandartLoader(dashboardId, className, subClassName, itemName, {}, func);
     }
     
-    async fillDashboardsItemDataStandartLoader(dashboardId, className, subClassName, itemName, cols = 2, rows = 1, func = null)
+    async fillDashboardsItemDataGraphicXY(dashboardId, subClassName, itemName)
+    {
+        var func = (th, dashboardId, subClassName, itemName, data) => 
+        {
+            data["bindto"] = "#GraphicXY"+"_"+subClassName+"_"+itemName;
+            setTimeout(() => c3.generate(data), 1000);
+            return data;
+        };
+                
+        var className = "GraphicXY";
+        var options =
+        {
+            cols: 6,
+            rows: 3,
+            minItemCols: 3,
+            minItemRows: 2, 
+            resizeEnabled: true,
+        };
+        await this.fillDashboardsItemDataStandartLoader(dashboardId, className, subClassName, itemName, options, func);
+    }
+    
+    async fillDashboardsItemDataGraphicPie(dashboardId, subClassName, itemName)
+    {
+        var func = (th, dashboardId, subClassName, itemName, data) => 
+        {
+            data["bindto"] = "#GraphicPie"+"_"+subClassName+"_"+itemName;
+            setTimeout(() => c3.generate(data), 1000);
+            return data;
+        };
+                
+        var className = "GraphicPie";
+        var options =
+        {
+            cols: 2,
+            rows: 2,
+            minItemCols: 2,
+            minItemRows: 2, 
+            resizeEnabled: true,
+        };
+        await this.fillDashboardsItemDataStandartLoader(dashboardId, className, subClassName, itemName, options, func);
+    }
+    
+    async fillDashboardsItemDataStandartLoader(dashboardId, className, subClassName, itemName, options = {}, func = null)
     {
         if(this.deletedDashboards.includes(dashboardId)) return;
         
@@ -238,10 +341,10 @@ export class DashboardComponent implements OnInit
             
             var temp = 
             {
-                cols: cols,
-                rows: rows,
-                //minItemCols: 2,
-                //minItemRows: 1, 
+                cols: 2,
+                rows: 1,
+                minItemCols: 2,
+                minItemRows: 1, 
                 resizeEnabled: false,
                 data: data,
                 class: className,
@@ -249,6 +352,11 @@ export class DashboardComponent implements OnInit
                 item: itemName,
                 dashboardId: dashboardId
             };
+            
+            var keys = Object.keys(temp);
+            for(var i = 0; i < keys.length; i++)
+                if(typeof options[keys[i]] != "undefined") 
+                    temp[keys[i]] = options[keys[i]];
 
             th.dashboardDatas[className+"."+subClassName+"."+itemName] = temp;
             
@@ -276,6 +384,8 @@ export class DashboardComponent implements OnInit
                 {
                     dashboardData["x"] = this.dashboards[i]["x"];
                     dashboardData["y"] = this.dashboards[i]["y"];
+                    dashboardData["cols"] = this.dashboards[i]["cols"];
+                    dashboardData["rows"] = this.dashboards[i]["rows"];
                     
                     this.dashboards[i] = dashboardData;
                     
@@ -287,7 +397,7 @@ export class DashboardComponent implements OnInit
             if(!control) this.dashboards.push(dashboardData);
         }
         
-        this.dashboardChanged(this);
+        this.dashboardChanged(this, 'dataReload');
     }
       
     themeOperations()

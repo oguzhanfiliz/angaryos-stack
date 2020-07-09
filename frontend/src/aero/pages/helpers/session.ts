@@ -181,6 +181,7 @@ export class SessionHelper
         error =>
         {
           this.generalHelper.stopLoading();
+          
           if(url.indexOf('initialize-db') > -1) reject(error.message);
 
           if(this.redirectInitializeIfDbNotInitialized(error)) 
@@ -195,7 +196,7 @@ export class SessionHelper
           }           
           else if(this.alertIfErrorHaveServerMessage(error)) 
           {
-            reject(error.message);
+            reject("***");
             return;
           }    
 

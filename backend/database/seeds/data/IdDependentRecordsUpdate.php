@@ -255,6 +255,14 @@ $update_data =
         'relation_source_column' => NULL,
         'relation_display_column' => NULL
     ],
+    
+    $user_id_relation['relation_sql'] =>
+    [
+        'relation_table_id' => $tables['users']->id,
+        'relation_source_column' => 'id',
+        'relation_display_column' => '"name_basic" || \' \' || "surname"',
+        'relation_sql' => NULL
+    ],
 ];
 
 foreach($column_table_relations as $relation)

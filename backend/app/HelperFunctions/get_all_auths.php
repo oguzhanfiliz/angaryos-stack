@@ -43,6 +43,8 @@ return Cache::rememberForever($key, function()
     $auths['map:kmz:upload:0'] = 'Upload KMZ';
 
     $auths['dashboards:RefreshableNumber:JobCount:0'] = 'Göstergeler Bekleyen İş Sayısı';
+    $auths['dashboards:GraphicXY:Test:0'] = 'X/Y Grafiği Test Gösterge';
+    $auths['dashboards:GraphicPie:Test:0'] = 'Pasta Grafiği Test Gösterge';
     
     
     

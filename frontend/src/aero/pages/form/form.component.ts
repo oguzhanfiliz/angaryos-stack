@@ -92,7 +92,6 @@ export class FormComponent
         this.aeroThemeHelper.pageRutine();
     }
     
-    
     fillDefaultVariables()
     {
         this.data = {};
@@ -187,6 +186,13 @@ export class FormComponent
         var columnNames = Object.keys(data);
         for(var i = 0; i < columnNames.length; i++)
             this.guiTriggerHelper.changeColumnVisibility(this.tableName, columnNames[i], this.getElementId(columnNames[i]), data);
+            
+        setTimeout(() => this.changedColumnVisibilityOnPipe(), 200);
+    }
+    
+    changedColumnVisibilityOnPipe()
+    {
+        this.temp = Math.random();
     }
     
     fillDataAdditionalVariables(data)
@@ -456,9 +462,11 @@ export class FormComponent
                     if(params.th.guiTriggerFunctionControl(forCurrentColumns[i], forCurrentColumns[i]))
                         params.th.guiTriggerHelper[forCurrentColumns[i]](tableName, columnName, elementId, data)
                         .then((data) => params.th.guiTriggered(columnName, data));
+                        
+            setTimeout(() => params.th.changedColumnVisibilityOnPipe(), 200);
         }
 
-        return BaseHelper.doInterval('formElementChanged', func, params, 1000);
+        return BaseHelper.doInterval('formElementChanged', func, params, 500);
     }
     
     guiTriggered(columnName, data = null)
