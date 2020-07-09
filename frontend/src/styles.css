@@ -41,6 +41,12 @@ input::placeholder, .select2-selection__placeholder, textarea::placeholder
     visibility: hidden;
 }
 
+section.content 
+{
+    background: #eaeaea !important;
+    box-shadow: 0 0 16px rgba(41,42,51,0.1), 0 6px 20px rgba(41,42,51,0.1) !important;
+}
+
 .selected-option
 {
     background-color: #9aeef1 !important;

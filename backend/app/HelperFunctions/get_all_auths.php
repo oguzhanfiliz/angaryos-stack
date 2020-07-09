@@ -1,7 +1,7 @@
 <?php
 $key = 'allAuths';
 
-//Cache::flush();
+Cache::flush();
 
 return Cache::rememberForever($key, function()
 {      
@@ -48,11 +48,11 @@ return Cache::rememberForever($key, function()
     
     /****        ****/
     
-    $dataFilters = \DB::table('data_filters')->where('state', TRUE)->get();
+    $dataFilters = \DB::table('data_filters')->get();
     foreach($dataFilters as $i => $dataFilter)
         $dataFilters[$i]->type = get_attr_from_cache('data_filter_types', 'id', $dataFilter->data_filter_type_id, 'name');
 
-    foreach(\DB::table('tables')->where('state', TRUE)->get() as $table)
+    foreach(\DB::table('tables')->get() as $table)
     {
         $source = 'dashboards:RecordCount:'.$table->name.':0';
         $display = 'Göstergeler Kayıt Sayısı '.$table->display_name;
@@ -135,44 +135,43 @@ return Cache::rememberForever($key, function()
         }
     }
     
-    foreach(\DB::table('missions')->where('state', TRUE)->get() as $mission)
+    foreach(\DB::table('missions')->get() as $mission)
     {
         $source = 'missions:'.$mission->id.':0:0';
         $display = 'Görevler ' . $mission->name. ' Tetikleme';
         $auths[$source] = $display;
     }
     
-    foreach(\DB::table('external_layers')->where('state', TRUE)->get() as $layer)
+    foreach(\DB::table('external_layers')->get() as $layer)
     {
         $source = 'external_layers:'.$layer->id.':0:0';
         $display = 'Ek Katman ' . $layer->name;
         $auths[$source] = $display;
     }
     
-    foreach(\DB::table('custom_layers')->where('state', TRUE)->get() as $layer)
+    foreach(\DB::table('custom_layers')->get() as $layer)
     {
         $source = 'custom_layers:'.$layer->id.':0:0';
         $display = 'Revize Katman ' . $layer->name;
         $auths[$source] = $display;
     }
     
-    foreach(\DB::table('table_groups')->where('state', TRUE)->get() as $group)
+    foreach(\DB::table('table_groups')->get() as $group)
     {
         $source = 'table_groups:0:0:'.$group->id;
         $display = 'Tablo Grubu ' . $group->name_basic;
         $auths[$source] = $display;
     }
     
-    foreach(\DB::table('auth_groups')->where('state', TRUE)->get() as $auth)
+    foreach(\DB::table('auth_groups')->get() as $auth)
         $auths[$auth->id] = $auth->name_basic;
-    
-    foreach(\DB::table('data_source_tbl_relations')->where('state', TRUE)->get() as $relation)
+   
+    foreach(\DB::table('data_source_tbl_relations')->get() as $relation)
     {
         $source = 'dashboards:DataEntegratorStatus:'.$relation->id.':0';
         $display = 'Göstergeler Veri Aktarıcı Durumu '.$relation->id;
         $auths[$source] = $display;
     }
 
-    
     return $auths;        
 });

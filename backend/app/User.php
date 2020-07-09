@@ -317,6 +317,8 @@ class User extends Authenticatable
             if(!isset($tree[$a[0]][$a[1]][$a[2]])) 
                 $tree[$a[0]][$a[1]][$a[2]] = [];
             
+            if(in_array($a[3], $tree[$a[0]][$a[1]][$a[2]])) continue;
+            
             array_push($tree[$a[0]][$a[1]][$a[2]], $a[3]);
         }
         
