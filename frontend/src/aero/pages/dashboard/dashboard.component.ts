@@ -131,9 +131,9 @@ export class DashboardComponent implements OnInit
     fillDashboardFromLocal()
     {
         var key = this.getLocalKey("dashboards");
-        this.dashboards = BaseHelper.readFromLocal(key);
+        //this.dashboards = BaseHelper.readFromLocal(key);
         if(this.dashboards == null) this.dashboards = [];
-        
+        console.log(this.dashboards);
         key = this.getLocalKey("deletedDashboards");
         this.deletedDashboards = BaseHelper.readFromLocal(key);
         if(this.deletedDashboards == null) this.deletedDashboards = [];
