@@ -437,7 +437,7 @@ class DataEntegratorLibrary
         $disk = env('FILESYSTEM_DRIVER', 'uploads');
         
         Storage::disk($disk)->put(
-                        'dataentegratorstatus/'.$relation->id.'.status', 
+                        'dataEntegratorStatus/'.$relation->id.'.status', 
                         $direction.'.'.$count.'.'.$step);
     }
 }

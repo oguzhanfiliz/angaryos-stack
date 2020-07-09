@@ -26,6 +26,7 @@
     "@angular/router": "~8.2.11",
     "@ng-bootstrap/ng-bootstrap": "^6.1.0",
     "@turf/turf": "^5.1.6",
+    "angular-gridster2": "^10.0.2",
     "bootstrap": "^4.4.1",
     "document-register-element": "^1.7.2",
     "dotenv": "^8.2.0",

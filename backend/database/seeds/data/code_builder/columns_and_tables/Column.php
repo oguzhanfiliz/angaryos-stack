@@ -37,6 +37,7 @@ $column_gui_type_override =
     
     
     'tokens' => $column_gui_types['jsonviewer:newpage']->id,
+    'state' => $column_gui_types['boolean:fastchange']->id,
 ];
 
 $columnDefaults =

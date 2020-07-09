@@ -1,6 +1,8 @@
 import { Injector, NgModule } from '@angular/core';
 import {NgbModule} from '@ng-bootstrap/ng-bootstrap';
 
+import { GridsterModule } from 'angular-gridster2';
+
 import { createCustomElement } from '@angular/elements';
 
 import { CommonModule } from '@angular/common';
@@ -125,7 +127,8 @@ import { BooleanFastChangeElementComponent } from './helpers/custom-elements/boo
     CommonModule,
     DragDropModule,
     FormsModule,
-    NgbModule
+    NgbModule,
+    GridsterModule 
   ],
   providers: [ ],
   bootstrap: [PagesComponent],

@@ -1,3 +1,64 @@
 .big_icon.data::before {
     content: "\f1d2";
 }
+
+gridster
+{
+    background: transparent !important;
+}
+
+button.btn-sm
+{
+  padding: 0;
+  margin: 1px;
+  width: 25px !important;
+  min-width: 25px !important;
+  height: 25px !important;
+  min-height: 25px !important;
+
+  span
+  {
+    padding: 0;
+    margin: 0;
+    font-size: 13px;
+  }
+}
+
+.dropdown-menu
+{
+  li
+  {
+    a
+    {
+      font-size: 12px !important;
+      padding: 2px 0 2px 5px !important;
+    }
+  }
+  
+  button
+  {
+    font-size: 12px !important;
+    padding: 5px !important;
+    color: #666 !important;
+    
+    a
+    {
+        font-size: 12px !important;
+        padding: 0px !important;
+        color: #666 !important;
+    }
+  }
+}
+
+.remove-dashboard-button
+{
+    position: absolute !important;
+    top: 5 !important;
+    right: 5 !important;
+    cursor: pointer !important;
+    
+    i
+    {
+        font-size: 14px !important;
+    }
+}

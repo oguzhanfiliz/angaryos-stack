@@ -1,5 +1,7 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 
+import { BaseHelper } from './../../../base';
+
 @Component(
 {
     selector: 'text-element',
@@ -9,7 +11,8 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
 export class TextElementComponent
 {
     @Input() defaultData: string;
-    @Input() value: string;
+    @Input() value: string = "";
+    @Input() type: string;
     @Input() name: string;
     @Input() class: string;
     @Input() placeholder: string;
@@ -18,6 +21,18 @@ export class TextElementComponent
     @Input() createForm: boolean = false;
 
     @Output() changed = new EventEmitter();
+    
+    ngAfterViewInit() 
+    {
+        console.log(123);
+        if(this.type == "json" || this.type == "jsonb")
+        {
+            this.value = BaseHelper.replaceAll(this.value, '\\"', '"');
+            
+            if(this.value.length > 0 && this.value.substr(0, 1) == '"')
+                this.value = this.value.substr(1, this.value.length-2);
+        }
+    }
 
     handleChange(event)
     {
