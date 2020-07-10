@@ -1,5 +1,5 @@
 import {Component} from '@angular/core';
-import {CompactType, DisplayGrid, Draggable, GridsterConfig, GridsterItem, GridType, PushDirections, Resizable} from 'angular-gridster2';
+import {CompactType, DisplayGrid, Draggable, GridsterConfig, GridsterItem, GridType, Resizable} from 'angular-gridster2';
 
 import Swal from 'sweetalert2';
 
@@ -10,12 +10,12 @@ import { GeneralHelper } from './../helpers/general';
 import { AeroThemeHelper } from './../helpers/aero.theme';
 
 declare var $: any;
+declare var c3: any;
 
 interface Safe extends GridsterConfig 
 {
   draggable: Draggable;
   resizable: Resizable;
-  pushDirections: PushDirections;
 }
 
 @Component(
@@ -24,7 +24,7 @@ interface Safe extends GridsterConfig
   styleUrls: ['./dashboard.component.scss'],
   templateUrl: './dashboard.component.html'
 })
-export class DashboardComponent implements OnInit 
+export class DashboardComponent 
 {
     public dashboardAuths = [];
     public dashboardDatas = [];
@@ -103,7 +103,7 @@ export class DashboardComponent implements OnInit
     
     resetDashboards()
     {
-        this.messageHelper.swalConfirm("Emin misiniz?", "Tüm göstergeleriniz varsayılan yerlerine ve ayarlarına geri yüklenecek.")
+        this.messageHelper.swalConfirm("Emin misiniz?", "Tüm göstergeleriniz varsayılan yerlerine ve ayarlarına geri yüklenecek.", 'warning')
         .then((r) =>
         {
             if(r != true) return;
@@ -172,7 +172,7 @@ export class DashboardComponent implements OnInit
         c3.generate(item['data']);
     }
     
-    dashboardChanged(th, type, item)
+    dashboardChanged(th, type, item = null)
     {
         setTimeout(() =>
         {
@@ -406,4 +406,3 @@ export class DashboardComponent implements OnInit
         this.aeroThemeHelper.addEventForFeature("standartElementEvents"); 
     }
 }
-

@@ -192,7 +192,7 @@ export class FormComponent
     
     changedColumnVisibilityOnPipe()
     {
-        this.temp = Math.random();
+        this['temp'] = Math.random();
     }
     
     fillDataAdditionalVariables(data)
