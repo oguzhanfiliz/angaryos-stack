@@ -15,6 +15,7 @@ export class TimeElementComponent
     @Input() defaultData: string;
     @Input() upFormId: string;
     @Input() value: string;
+    @Input() value2: string;
     @Input() name: string;
     @Input() class: string;
     @Input() placeholder: string;
@@ -23,6 +24,7 @@ export class TimeElementComponent
     @Input() createForm: boolean = false;
 
     val = "";
+    val2 = "";
 
     @Output() changed = new EventEmitter();
 
@@ -42,11 +44,26 @@ export class TimeElementComponent
     ngOnChanges()
     {
         this.val = this.value;
+        this.val2 = this.value2;
+    }
+
+    filterTypeChanged(e)
+    {
+        this.filterType = e.target.value;
     }
 
     addInputMask()
     {
         $('[name="'+this.name+'"]').inputmask('h:s:s', 
+        {
+            hourFormat: '24',
+            alias: 'time',//            alias: 'datetime',
+            placeholder: '__:__:__',
+            oncomplete: (event) => this.changed.emit(event),
+            oncleared: (event) => this.changed.emit(event)
+        });
+
+        $('[name="'+this.name+'_2"]').inputmask('h:s:s', 
         {
             hourFormat: '24',
             alias: 'time',//            alias: 'datetime',

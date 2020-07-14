@@ -17,6 +17,7 @@ export class FormElementComponent
     @Input() guiType: string;
     @Input() defaultData: string;
     @Input() value: string;
+    @Input() value2: string;
     @Input() valueJson: string;
     @Input() class: string;
     @Input() columnName: string;

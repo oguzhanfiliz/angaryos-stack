@@ -1,7 +1,7 @@
 <?php
 $key = 'allAuths';
 
-Cache::flush();
+//Cache::flush();
 
 return Cache::rememberForever($key, function()
 {      
@@ -161,7 +161,7 @@ return Cache::rememberForever($key, function()
     foreach(\DB::table('table_groups')->get() as $group)
     {
         $source = 'table_groups:0:0:'.$group->id;
-        $display = 'Tablo Grubu ' . $group->name_basic;
+        $display = 'Tablo Grubu ' . $group->name_basic . '(id: '.$group->id.')';
         $auths[$source] = $display;
     }
     

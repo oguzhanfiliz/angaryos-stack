@@ -15,6 +15,7 @@ export class DateElementComponent
     @Input() defaultData: string;
     @Input() upFormId: string;
     @Input() value: string;
+    @Input() value2: string;
     @Input() name: string;
     @Input() class: string;
     @Input() placeholder: string;
@@ -23,6 +24,7 @@ export class DateElementComponent
     @Input() createForm: boolean = false;
 
     val = "";
+    val2 = "";
 
     @Output() changed = new EventEmitter();
 
@@ -42,11 +44,26 @@ export class DateElementComponent
     ngOnChanges()
     {
         this.val = BaseHelper.dBDateStringToHumanDateString(this.value);
+        this.val2 = BaseHelper.dBDateStringToHumanDateString(this.value2);
+    }
+
+    filterTypeChanged(e)
+    {
+        this.filterType = e.target.value;
     }
 
     addInputMask()
     {
         $('[name="'+this.name+'"]').inputmask('d/m/y', 
+        {
+            hourFormat: '24',
+            alias: 'date',//            alias: 'datetime',
+            placeholder: '__/__/____',
+            oncomplete: (event) => this.changed.emit(event),
+            oncleared: (event) => this.changed.emit(event)
+        });
+
+        $('[name="'+this.name+'_2"]').inputmask('d/m/y', 
         {
             hourFormat: '24',
             alias: 'date',//            alias: 'datetime',

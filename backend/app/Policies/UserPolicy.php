@@ -166,6 +166,10 @@ class UserPolicy
     public function dashboardGetData($user, $auth)
     {
         $auth = explode(':', $auth);
-        return isset($user->auths[$auth[0]][$auth[1]][$auth[2]][$auth[3]]);
+        if(!isset($user->auths[$auth[0]][$auth[1]][$auth[2]])) return FALSE;
+
+        $arr = $user->auths[$auth[0]][$auth[1]][$auth[2]];
+        
+        return in_array($auth[3], $arr);
     }
 }

@@ -107,7 +107,7 @@ export abstract class DataHelper
 
     /****    Filter Description Functions    ****/
 
-    public static getFilterDescriptionByColumnGuiType(columnName, guiType, filterType, data, key)
+    public static getFilterDescriptionByColumnGuiType(columnName, guiType, filterType, data, key, filter = null)
     {
         guiType = guiType.split(':')[0];
         
@@ -122,9 +122,9 @@ export abstract class DataHelper
             case "numeric": return this.getFilterDescriptionForNumericType(filterType, data);
             case "money": return this.getFilterDescriptionForMoneyType(filterType, data);
             case "boolean": return this.getFilterDescriptionForBooleanType(filterType, guiType, data);
-            case "datetime": return this.getFilterDescriptionForDateTimeType(filterType, data);
-            case "date": return this.getFilterDescriptionForDateType(filterType, data);
-            case "time": return this.getFilterDescriptionForTimeType(filterType, data);
+            case "datetime": return this.getFilterDescriptionForDateTimeType(filterType, data, filter);
+            case "date": return this.getFilterDescriptionForDateType(filterType, data, filter);
+            case "time": return this.getFilterDescriptionForTimeType(filterType, data, filter);
             case "jsonb": return this.getFilterDescriptionForJsonbType(columnName, filterType, data, key);
             
             case "select":
@@ -213,7 +213,7 @@ export abstract class DataHelper
         }
     }
 
-    public static getFilterDescriptionForDateTimeType(filterType, data)
+    public static getFilterDescriptionForDateTimeType(filterType, data, filter)
     {
         data = BaseHelper.dBDateTimeStringToHumanDateTimeString(data);
         
@@ -222,11 +222,12 @@ export abstract class DataHelper
             case 1: return data;
             case 2: return data + " 'dan önce";
             case 3: return data + " 'dan sonra";
+            case 4: return data + " ve " + filter['filter2'] + " arasında";
             default: return "no datetime filter type for " + filterType;
         }
     }
 
-    public static getFilterDescriptionForDateType(filterType, data)
+    public static getFilterDescriptionForDateType(filterType, data, filter)
     {
         data = BaseHelper.dBDateStringToHumanDateString(data);
         
@@ -235,17 +236,19 @@ export abstract class DataHelper
             case 1: return data;
             case 2: return data + " 'dan önce";
             case 3: return data + " 'dan sonra";
+            case 4: return data + " ve " + filter['filter2'] + " arasında";
             default: return "no datetime filter type for " + filterType;
         }
     }
 
-    public static getFilterDescriptionForTimeType(filterType, data)
+    public static getFilterDescriptionForTimeType(filterType, data, filter)
     {
         switch(filterType)
         {
             case 1: return data;
             case 2: return data + " 'dan önce";
             case 3: return data + " 'dan sonra";
+            case 4: return data + " ve " + filter['filter2'] + " arasında";
             default: return "no datetime filter type for " + filterType;
         }
     }

@@ -356,7 +356,8 @@ export class DataTableElementComponent
                                                         guiType,
                                                         this.params.filters[columnName]['type'],
                                                         this.params.filters[columnName]['filter'],
-                                                        this.getLocalKey("data"));
+                                                        this.getLocalKey("data"),
+                                                        this.params.filters[columnName]);
         }
     }
     

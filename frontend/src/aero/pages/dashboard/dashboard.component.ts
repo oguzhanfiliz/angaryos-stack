@@ -211,10 +211,10 @@ export class DashboardComponent
                 var itemNames = Object.keys(subClassData);
                 for(var k = 0; k < itemNames.length; k++)
                 {
-                    var itemName = itemNames[k];
-                    var itemData = subClassData[itemName];
+                    var itemKey = itemNames[k];
+                    var itemData = subClassData[itemKey];
                     
-                    await this.fillDashboardsItemData(className, subClassName, itemName);
+                    await this.fillDashboardsItemData(className, subClassName, itemData);
                 }
             }
         }
@@ -308,6 +308,8 @@ export class DashboardComponent
     
     async fillDashboardsItemDataGraphicPie(dashboardId, subClassName, itemName)
     {
+        console.log(dashboardId, subClassName, itemName);
+
         var func = (th, dashboardId, subClassName, itemName, data) => 
         {
             data["bindto"] = "#GraphicPie"+"_"+subClassName+"_"+itemName;

@@ -69,6 +69,7 @@ foreach($tables as $table)
         {
             array_push($tableAuths, $temp.'lists:'.$column_array->id);
             array_push($tableAuths, $temp.'queries:'.$column_array->id);
+            array_push($tableAuths, $temp.'deleteds:'.$column_array->id);
         }
     }
     
@@ -86,8 +87,6 @@ foreach($tables as $table)
             
             if(!in_array($table->name, $createExcept))
                 array_push($tableAuths, $temp.'creates:'.$column_set->id);
-            
-            array_push($tableAuths, $temp.'deleteds:'.$column_set->id);
         }
     }
     

@@ -41,7 +41,21 @@ export class DetailFilterElementComponent
             var id = '#'+filter['columnName']+'_filter_detail';
             filter.type = parseInt($(id+'_filter_type').val());
             filter.filter = $(id).val();
-
+                        
+            switch(filter.guiType)
+            {
+                case 'datetime':
+                case 'date':
+                case 'time':
+                    filter.filter2 = DataHelper.changeDataForFilterByGuiType(
+                                                                filter.guiType, 
+                                                                $(id+"_2").val(), 
+                                                                filter['columnName']+'_filter_detail', 
+                                                                filter.columnName,
+                                                                this.getLocalKey("data"));
+                    break;
+            }
+            
             filter.filter = DataHelper.changeDataForFilterByGuiType(
                                                                     filter.guiType, 
                                                                     filter.filter, 
