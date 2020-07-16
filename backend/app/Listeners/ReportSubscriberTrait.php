@@ -183,7 +183,17 @@ trait ReportSubscriberTrait
     public function responseTableReportCustomXlsx($data)
     {
         $file = $data['reportFile'];
-        //dd(9933, $file);
+        
+        $report = Excel::import(new ExcelCustomTableCollectionLibrary($data), $file->destination_path.$file->file_name, 'uploads');
+        dd(Excel::download($report, 'test.xlsx'/*$data['storePath'], $data['storage']*/));
+        
+        dd($report);
+        dd($report->store());
+        dd(9933 );
+        
+        
+        
+        
 
         return Excel::download(Excel::import(new ExcelCustomTableCollectionLibrary($data), $file->destination_path.$file->file_name, 'uploads'), 'asd.xlsm');
     
