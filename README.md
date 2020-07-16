@@ -1,6 +1,6 @@
 # Angaryos
 
-Merhaba. Bu, yazılımcıları yazılımın angarya kısmından kurtarıp esas işe odaklanmalarını sağlacyaak olan tamamen açık kaynak bir yazılım geliştirme altyapısıdır. 
+Merhaba. Bu; yazılımcıları yazılımın angarya kısmından kurtarıp esas işe odaklanmalarını sağlacyaak olan tamamen açık kaynak bir yazılım geliştirme altyapısıdır. 
 
 ## Gereksinimler
     -Light Kurulum (startLight.sh): 1 core cpu, 1 GB ram, 15 GB hdd 
@@ -8,7 +8,7 @@ Merhaba. Bu, yazılımcıları yazılımın angarya kısmından kurtarıp esas i
 
 ## Kurulum
 
-Bu uygulama içerisinde bir çok servisi barındırır. Bu sebeple önerilen sanal bir işletim sistemi[1] üzerinde kurulum yapılmasıdır. 
+Bu uygulama, içerisinde bir çok servisi barındırır. Bu sebeple önerilen, sanal bir işletim sistemi[1] üzerinde kurulum yapılmasıdır. 
 
 Light bir kurulum istiyorsanız ./backend/.env içindeki "LOG_CHANNEL" ayarını "LOG_CHANNEL=daily" olarak güncelleyin. Uygulamayı başlatmak için "start.sh" yerine "startLight.sh" dosyasını kullanın.
 

@@ -70,6 +70,36 @@ class PoolTest extends TestCase
     }
 
     /** @test */
+    public function it_can_configure_another_binary()
+    {
+        $binary = __DIR__.'/another-php-binary';
+
+        if (! file_exists($binary)) {
+            symlink(PHP_BINARY, $binary);
+        }
+
+        $pool = Pool::create()->withBinary($binary);
+
+        $counter = 0;
+
+        foreach (range(1, 5) as $i) {
+            $pool->add(function () {
+                return 2;
+            })->then(function (int $output) use (&$counter) {
+                $counter += $output;
+            });
+        }
+
+        $pool->wait();
+
+        $this->assertEquals(10, $counter, (string) $pool->status());
+
+        if (file_exists($binary)) {
+            unlink($binary);
+        }
+    }
+
+    /** @test */
     public function it_can_handle_timeout()
     {
         $pool = Pool::create()
@@ -80,6 +110,27 @@ class PoolTest extends TestCase
         foreach (range(1, 5) as $i) {
             $pool->add(function () {
                 sleep(2);
+            })->timeout(function () use (&$counter) {
+                $counter += 1;
+            });
+        }
+
+        $pool->wait();
+
+        $this->assertEquals(5, $counter, (string) $pool->status());
+    }
+
+    /** @test */
+    public function it_can_handle_millisecond_timeouts()
+    {
+        $pool = Pool::create()
+            ->timeout(0.2);
+
+        $counter = 0;
+
+        foreach (range(1, 5) as $i) {
+            $pool->add(function () {
+                usleep(500000);
             })->timeout(function () use (&$counter) {
                 $counter += 1;
             });
@@ -287,5 +338,38 @@ class PoolTest extends TestCase
         });
 
         $this->assertTrue($isIntermediateCallbackCalled);
+    }
+
+    /** @test */
+    public function it_can_be_stopped_early()
+    {
+        $concurrency = 20;
+        $stoppingPoint = $concurrency / 5;
+
+        $pool = Pool::create()->concurrency($concurrency);
+
+        $maxProcesses = 10000;
+        $completedProcessesCount = 0;
+
+        for ($i = 0; $i < $maxProcesses; $i++) {
+            $pool->add(function () use ($i) {
+                return $i;
+            })->then(function ($output) use ($pool, &$completedProcessesCount, $stoppingPoint) {
+                $completedProcessesCount++;
+
+                if ($output === $stoppingPoint) {
+                    $pool->stop();
+                }
+            });
+        }
+
+        $pool->wait();
+
+        /**
+         * Because we are stopping the pool early (during the first set of processes created), we expect
+         * the number of completed processes to be less than 2 times the defined concurrency.
+         */
+        $this->assertGreaterThanOrEqual($stoppingPoint, $completedProcessesCount);
+        $this->assertLessThanOrEqual($concurrency * 2, $completedProcessesCount);
     }
 }

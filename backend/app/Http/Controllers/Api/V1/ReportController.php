@@ -22,6 +22,8 @@ class ReportController extends Controller
     
     public function __construct()
     {
+        //\Cache::flush();
+        
         global $pipe;
         $pipe['table'] = helper('get_table_name_from_url');
         
@@ -36,14 +38,32 @@ class ReportController extends Controller
     {   
         send_log('info', 'Request Default List Report');
         
-        $params = $this->getValidatedParamsForList();   
-        param_is_have($params, 'report_type');
+        $params = $this->getValidatedParamsForReport();   
+        
         if(Gate::denies('viewAny', $params)) $this->abort();
         
-        $data = Event::dispatch('standart.list.report.requested', [$model, $params])[0];
+        $data = Event::dispatch('report.requested', [$model, $params])[0];
         
-        send_log('info', 'Response Data For Default List Report', [$params->report_type, $data]);
+        $data['params'] = $params;
+        send_log('info', 'Response Data For Default List Report', [$data]);
         
-        return Event::dispatch('standart.list.report.data.responsed', [$params->report_type, $data])[0];
+        return Event::dispatch('report.data.responsed', [$data])[0];
+    }
+
+    private function getValidatedParamsForReport()
+    {
+        $params = $this->getValidatedParamsForList();   
+        param_is_have($params, 'report_format');
+        param_is_have($params, 'report_id');
+        param_is_have($params, 'record_id');
+
+        if($params->report_id == 0) return $params;
+        
+        $report = get_attr_from_cache('reports', 'id', $params->report_id, '*');
+        $reportTypeName = get_attr_from_cache('report_types', 'id', $report->report_type_id, 'name');
+        
+        if($reportTypeName == 'record' && $params->record_id == 0) custom_abort('record.is.not.null.for.record.report');
+
+        return $params;
     }
 }

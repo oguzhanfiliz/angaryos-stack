@@ -31,7 +31,6 @@ use PHPUnit\Util\Printer;
 use PHPUnit\Util\TestDox\CliTestDoxPrinter;
 use PHPUnit\Util\TextTestListRenderer;
 use PHPUnit\Util\XmlTestListRenderer;
-use ReflectionClass;
 use SebastianBergmann\FileIterator\Facade as FileIteratorFacade;
 
 use Throwable;
@@ -147,6 +146,11 @@ class Command
     ];
 
     /**
+     * @var @psalm-var list<string>
+     */
+    private $warnings = [];
+
+    /**
      * @var bool
      */
     private $versionStringPrinted = false;
@@ -197,7 +201,7 @@ class Command
         unset($this->arguments['test'], $this->arguments['testFile']);
 
         try {
-            $result = $runner->doRun($suite, $this->arguments, $exit);
+            $result = $runner->doRun($suite, $this->arguments, $this->warnings, $exit);
         } catch (Exception $e) {
             print $e->getMessage() . \PHP_EOL;
         }
@@ -780,6 +784,14 @@ class Command
             $this->arguments['testSuffixes'] = ['Test.php', '.phpt'];
         }
 
+        if (isset($this->options[1][0]) &&
+            \substr($this->options[1][0], -5, 5) !== '.phpt' &&
+            \substr($this->options[1][0], -4, 4) !== '.php' &&
+            \substr($this->options[1][0], -1, 1) !== '/' &&
+            !\is_dir($this->options[1][0])) {
+            $this->warnings[] = 'Invocation with class name is deprecated';
+        }
+
         if (!isset($this->arguments['test'])) {
             if (isset($this->options[1][0])) {
                 $this->arguments['test'] = $this->options[1][0];
@@ -956,7 +968,8 @@ class Command
 
         if (\class_exists($loaderClass, false)) {
             try {
-                $class = new ReflectionClass($loaderClass);
+                $class = new \ReflectionClass($loaderClass);
+                // @codeCoverageIgnoreStart
             } catch (\ReflectionException $e) {
                 throw new Exception(
                     $e->getMessage(),
@@ -964,6 +977,7 @@ class Command
                     $e
                 );
             }
+            // @codeCoverageIgnoreEnd
 
             if ($class->implementsInterface(TestSuiteLoader::class) && $class->isInstantiable()) {
                 $object = $class->newInstance();
@@ -1019,13 +1033,15 @@ class Command
         }
 
         try {
-            $class = new ReflectionClass($printerClass);
+            $class = new \ReflectionClass($printerClass);
+            // @codeCoverageIgnoreStart
         } catch (\ReflectionException $e) {
             throw new Exception(
                 $e->getMessage(),
                 (int) $e->getCode(),
                 $e
             );
+            // @codeCoverageIgnoreEnd
         }
 
         if (!$class->implementsInterface(TestListener::class)) {

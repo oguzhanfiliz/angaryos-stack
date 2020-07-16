@@ -37,6 +37,10 @@ class Pool implements ArrayAccess
 
     protected $status;
 
+    protected $stopped = false;
+
+    protected $binary = 'php';
+
     public function __construct()
     {
         if (static::isSupported()) {
@@ -69,7 +73,7 @@ class Pool implements ArrayAccess
         return $this;
     }
 
-    public function timeout(int $timeout): self
+    public function timeout(float $timeout): self
     {
         $this->timeout = $timeout;
 
@@ -86,6 +90,13 @@ class Pool implements ArrayAccess
     public function sleepTime(int $sleepTime): self
     {
         $this->sleepTime = $sleepTime;
+
+        return $this;
+    }
+
+    public function withBinary(string $binary): self
+    {
+        $this->binary = $binary;
 
         return $this;
     }
@@ -118,7 +129,11 @@ class Pool implements ArrayAccess
         }
 
         if (! $process instanceof Runnable) {
-            $process = ParentRuntime::createProcess($process, $outputLength);
+            $process = ParentRuntime::createProcess(
+                $process,
+                $outputLength,
+                $this->binary
+            );
         }
 
         $this->putInQueue($process);
@@ -162,6 +177,10 @@ class Pool implements ArrayAccess
 
     public function putInProgress(Runnable $process)
     {
+        if ($this->stopped) {
+            return;
+        }
+
         if ($process instanceof ParallelProcess) {
             $process->getProcess()->setTimeout($this->timeout);
         }
@@ -300,5 +319,10 @@ class Pool implements ArrayAccess
                 $this->markAsFailed($process);
             }
         });
+    }
+
+    public function stop()
+    {
+        $this->stopped = true;
     }
 }

@@ -66,6 +66,7 @@ class AuthController extends Controller
             'user' => $user->toSafeArray(),
             'menu' => $user->getMenuArray(),
             'map' => $user->getMapArray(),
+            'reports' => $user->getReportsArray(),
             'dashboards' => $user->getDashboardArray(),
             'auths' => $user->auths,
             'debug_user' => in_array($user->id, $debugUserIds)

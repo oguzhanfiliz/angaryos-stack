@@ -73,5 +73,9 @@ $table_name_display_name_map =
     
     'table_groups' => 'Tablo Grupları',
     
-    'missions' => 'Görevler'
+    'missions' => 'Görevler',
+    
+    'report_types' => 'Rapor Tipleri',
+    'reports' => 'Raporlar',
+    'downloaded_reports' => 'İndirilen Raporlar' 
 ];

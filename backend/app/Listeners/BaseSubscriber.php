@@ -62,8 +62,8 @@ class BaseSubscriber
         
         /****    Report Subscribers    ****/
         
-        $events->listen('standart.list.report.requested', 'App\Listeners\ReportSubscriber@standartListReportRequested');
-        $events->listen('standart.list.report.data.responsed', 'App\Listeners\ReportSubscriber@responseListReport');
+        $events->listen('report.requested', 'App\Listeners\ReportSubscriber@reportRequested');
+        $events->listen('report.data.responsed', 'App\Listeners\ReportSubscriber@responseReport');
         
         
         

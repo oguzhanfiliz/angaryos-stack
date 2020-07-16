@@ -160,7 +160,16 @@ $update_data =
         'relation_sql' => NULL,
         'relation_source_column' => NULL,
         'relation_display_column' => NULL
-    ],    
+    ], 
+    $column_array_id_relation['relation_sql'] =>
+    [
+        'relation_table_id' => $tables['column_arrays']->id,
+        'relation_source_column_id' => $columns['id']->id,
+        'relation_display_column_id' => $columns['name_basic']->id,
+        'relation_sql' => NULL,
+        'relation_source_column' => NULL,
+        'relation_display_column' => NULL
+    ], 
     /*$column_group_ids_relation['relation_sql'] =>
     [
         'relation_table_id' => $tables['column_groups']->id,
@@ -249,6 +258,24 @@ $update_data =
     $log_level_id_relation['relation_sql'] =>
     [
         'relation_table_id' => $tables['log_levels']->id,
+        'relation_source_column_id' => $columns['id']->id,
+        'relation_display_column_id' => $columns['name']->id,
+        'relation_sql' => NULL,
+        'relation_source_column' => NULL,
+        'relation_display_column' => NULL
+    ],
+    $report_type_id_relation['relation_sql'] =>
+    [
+        'relation_table_id' => $tables['report_types']->id,
+        'relation_source_column_id' => $columns['id']->id,
+        'relation_display_column_id' => $columns['display_name']->id,
+        'relation_sql' => NULL,
+        'relation_source_column' => NULL,
+        'relation_display_column' => NULL
+    ],
+    $report_id_relation['relation_sql'] =>
+    [
+        'relation_table_id' => $tables['reports']->id,
         'relation_source_column_id' => $columns['id']->id,
         'relation_display_column_id' => $columns['name']->id,
         'relation_sql' => NULL,

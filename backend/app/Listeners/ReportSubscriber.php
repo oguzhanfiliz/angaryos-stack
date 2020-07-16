@@ -6,23 +6,24 @@ class ReportSubscriber
 {
     use ReportSubscriberTrait;
     
-    public function standartListReportRequested($model, $params) 
+    public function reportRequested($model, $params) 
     {
-        return $this->getDataForStandartList($model, $params);
+        return $this->getDataForReport($model, $params);
     }
     
-    public function responseListReport($type, $data)
+    public function responseReport($data)
     {
-        switch($type)
+        $fnc = 'responseReport';
+
+        if($data['params']->record_id > 0) $fnc .= 'Record';
+        else $fnc .= 'Table';
+
+        if($data['params']->report_id > 0)
         {
-            case 'excel':
-                return $this->responseListReportExcel($data);
-            case 'csv':
-                return $this->responseListReportCsv($data);
-            case 'pdf':
-                return $this->responseListReportPdf($data);
-            default:
-                custom_abort('invalid.report.type.'.$type);
+            $report = get_attr_from_cache('reports', 'id', $data['params']->report_id, '*');
+            if(strlen($report->report_file) > 0) $data['reportFile'] = json_decode($report->report_file)[0]; 
         }
+        
+        return $this->{$fnc}($data);
     }
 }

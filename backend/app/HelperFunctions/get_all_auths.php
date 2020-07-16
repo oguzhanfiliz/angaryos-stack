@@ -174,6 +174,16 @@ return Cache::rememberForever($key, function()
         $display = 'Göstergeler Veri Aktarıcı Durumu '.$relation->id;
         $auths[$source] = $display;
     }
+    
+    foreach(\DB::table('reports')->get() as $report)
+    {
+        $tableId = get_attr_from_cache('column_arrays', 'id', $report->column_array_id, 'table_id');
+        $table = get_attr_from_cache('tables', 'id', $tableId, '*');
+        
+        $source = 'reports:'.$table->name.':'.$report->id.':0';
+        $display = 'Raporlar '.$table->display_name.' '.$report->name.' ('.$report->id.')';
+        $auths[$source] = $display;
+    }
 
     return $auths;        
 });

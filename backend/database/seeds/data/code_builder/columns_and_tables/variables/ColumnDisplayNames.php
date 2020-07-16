@@ -115,7 +115,14 @@ $column_name_display_name_map =
     
     'db_type_name' => 'Veri Tabanı Tipi',
     
-    'log_level_id' => 'Log Seviyesi'   
+    'log_level_id' => 'Log Seviyesi',
+    
+    'report_type_id' => 'Rapor Tipi',
+    'column_array_id' => 'Kolon Dizisi',
+    'report_file' => 'Dosya',
+    'download_user_id' => 'İndiren Kullanıcı',
+    'report_id' => 'Rapor',
+    'download_time' => 'İndirme Zamanı'
 ];
 
 

@@ -114,6 +114,18 @@ $table_groups =
         'icon' => 'zmdi-repeat',
         //'order' => $order++
     ],
+    [ 
+        'name_basic' => 'Rapor İşlemleri',
+        'table_ids' => 
+        [            
+            $tables['report_types']->id,
+            $tables['reports']->id,
+            $tables['downloaded_reports']->id
+        ],
+        'image' => json_decode('[{"disk": "uploads", "file_name": "reports.png", "destination_path": "uploads/2020/01/01/"}]'),
+        'icon' => 'zmdi-view-dashboard',
+        //'order' => $order++
+    ],
 ];
 
 $temp = $this->get_base_record();

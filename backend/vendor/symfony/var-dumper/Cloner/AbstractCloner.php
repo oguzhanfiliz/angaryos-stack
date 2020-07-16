@@ -46,6 +46,7 @@ abstract class AbstractCloner implements ClonerInterface
         'Doctrine\Common\Proxy\Proxy' => ['Symfony\Component\VarDumper\Caster\DoctrineCaster', 'castCommonProxy'],
         'Doctrine\ORM\Proxy\Proxy' => ['Symfony\Component\VarDumper\Caster\DoctrineCaster', 'castOrmProxy'],
         'Doctrine\ORM\PersistentCollection' => ['Symfony\Component\VarDumper\Caster\DoctrineCaster', 'castPersistentCollection'],
+        'Doctrine\Persistence\ObjectManager' => ['Symfony\Component\VarDumper\Caster\StubCaster', 'cutInternals'],
 
         'DOMException' => ['Symfony\Component\VarDumper\Caster\DOMCaster', 'castException'],
         'DOMStringList' => ['Symfony\Component\VarDumper\Caster\DOMCaster', 'castLength'],
@@ -113,7 +114,6 @@ abstract class AbstractCloner implements ClonerInterface
         'SplDoublyLinkedList' => ['Symfony\Component\VarDumper\Caster\SplCaster', 'castDoublyLinkedList'],
         'SplFileInfo' => ['Symfony\Component\VarDumper\Caster\SplCaster', 'castFileInfo'],
         'SplFileObject' => ['Symfony\Component\VarDumper\Caster\SplCaster', 'castFileObject'],
-        'SplFixedArray' => ['Symfony\Component\VarDumper\Caster\SplCaster', 'castFixedArray'],
         'SplHeap' => ['Symfony\Component\VarDumper\Caster\SplCaster', 'castHeap'],
         'SplObjectStorage' => ['Symfony\Component\VarDumper\Caster\SplCaster', 'castObjectStorage'],
         'SplPriorityQueue' => ['Symfony\Component\VarDumper\Caster\SplCaster', 'castHeap'],
@@ -290,8 +290,8 @@ abstract class AbstractCloner implements ClonerInterface
         $obj = $stub->value;
         $class = $stub->class;
 
-        if (isset($class[15]) && "\0" === $class[15] && 0 === strpos($class, "class@anonymous\x00")) {
-            $stub->class = get_parent_class($class).'@anonymous';
+        if (\PHP_VERSION_ID < 80000 ? "\0" === ($class[15] ?? null) : false !== strpos($class, "@anonymous\0")) {
+            $stub->class = get_debug_type($obj);
         }
         if (isset($this->classInfo[$class])) {
             list($i, $parents, $hasDebugInfo, $fileInfo) = $this->classInfo[$class];
@@ -320,7 +320,7 @@ abstract class AbstractCloner implements ClonerInterface
         }
 
         $stub->attr += $fileInfo;
-        $a = Caster::castObject($obj, $class, $hasDebugInfo);
+        $a = Caster::castObject($obj, $class, $hasDebugInfo, $stub->class);
 
         try {
             while ($i--) {

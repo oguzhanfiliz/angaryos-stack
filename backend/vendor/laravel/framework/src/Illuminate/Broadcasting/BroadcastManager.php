@@ -9,6 +9,7 @@ use Illuminate\Broadcasting\Broadcasters\PusherBroadcaster;
 use Illuminate\Broadcasting\Broadcasters\RedisBroadcaster;
 use Illuminate\Contracts\Broadcasting\Factory as FactoryContract;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcastNow;
+use Illuminate\Contracts\Bus\Dispatcher as BusDispatcherContract;
 use InvalidArgumentException;
 use Psr\Log\LoggerInterface;
 use Pusher\Pusher;
@@ -108,10 +109,8 @@ class BroadcastManager implements FactoryContract
      */
     public function queue($event)
     {
-        $connection = $event instanceof ShouldBroadcastNow ? 'sync' : null;
-
-        if (is_null($connection) && isset($event->connection)) {
-            $connection = $event->connection;
+        if ($event instanceof ShouldBroadcastNow) {
+            return $this->app->make(BusDispatcherContract::class)->dispatchNow(new BroadcastEvent(clone $event));
         }
 
         $queue = null;
@@ -124,7 +123,7 @@ class BroadcastManager implements FactoryContract
             $queue = $event->queue;
         }
 
-        $this->app->make('queue')->connection($connection)->pushOn(
+        $this->app->make('queue')->connection($event->connection ?? null)->pushOn(
             $queue, new BroadcastEvent(clone $event)
         );
     }
@@ -297,7 +296,7 @@ class BroadcastManager implements FactoryContract
     /**
      * Register a custom driver creator Closure.
      *
-     * @param  string    $driver
+     * @param  string  $driver
      * @param  \Closure  $callback
      * @return $this
      */
@@ -312,7 +311,7 @@ class BroadcastManager implements FactoryContract
      * Dynamically call the default driver instance.
      *
      * @param  string  $method
-     * @param  array   $parameters
+     * @param  array  $parameters
      * @return mixed
      */
     public function __call($method, $parameters)

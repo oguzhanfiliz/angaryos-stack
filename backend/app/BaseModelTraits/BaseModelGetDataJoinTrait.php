@@ -264,6 +264,7 @@ trait BaseModelGetDataJoinTrait
         
         $columnName = explode('.', $join->connection_column_with_alias);
         $columnName = last($columnName);
+        $columnName = trim($columnName, '"');
         $params->column = get_attr_from_cache('columns', 'name', $columnName, '*');
         
         $params->relation = get_attr_from_cache('columns', 'id', $join->join_column_id, '*');
@@ -277,11 +278,14 @@ trait BaseModelGetDataJoinTrait
     
     public function addJoinForColumnArrayForOneToOne($params)
     {
+        global $pipe;
+        $temp = ' '.$params->join->connection_column_with_alias;
+        $temp = str_replace(' "', $pipe['table'].'."', $temp);
+
         return $params->model->leftJoin(
                 $params->realtion_table_name, 
                 $params->realtion_column_name, 
                 '=', 
-                $params->join->connection_column_with_alias);
-    }
-    
+                DB::raw($temp));
+    }    
 }

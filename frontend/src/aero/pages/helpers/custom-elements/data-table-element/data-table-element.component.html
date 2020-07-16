@@ -115,12 +115,22 @@
                                 aria-labelledby="dropdownManual">
 
                                 <button
-                                    (click)="downloadStandartReport()"
+                                    (click)="downloadReport()"
                                     class="dropdown-item"
                                     ngbDropdownItem>
 
                                     Standart Rapor
-                                </button>                    
+                                </button>   
+                                
+                                <button
+                                    *ngFor="let report of reports['table']"
+                                    (click)="downloadReport(report)"
+                                    class="dropdown-item"
+                                    ngbDropdownItem>
+
+                                    {{ report['name'] }}
+                                </button>  
+                                
                             </div>
                         </div>
                     </td>

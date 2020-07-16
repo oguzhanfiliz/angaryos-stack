@@ -148,6 +148,36 @@ class User extends Authenticatable
         ];
     }
     
+    public function getReportsArray()
+    {
+        $return = [];
+        
+        if(isset($this->auths['reports']) && is_array($this->auths['reports']))
+            foreach($this->auths['reports'] as $tableName => $reports)
+            {
+                foreach($reports as $reportId => $temp)
+                {
+                    $report = get_attr_from_cache('reports', 'id', $reportId, '*');
+                    $reportTypeName = get_attr_from_cache('report_types', 'id', $report->report_type_id, 'name');
+                    
+                    $data = 
+                    [
+                        'table_name' => $tableName,
+                        'id' => $reportId,
+                        'name' => $report->name,                            
+                        'type' => $reportTypeName
+                    ];
+                    
+                    if(!isset($return[$tableName])) $return[$tableName] = [];
+                    if(!isset($return[$tableName][$reportTypeName])) $return[$tableName][$reportTypeName] = [];
+                    
+                    array_push($return[$tableName][$reportTypeName], $data);
+                }
+            }
+        
+        return $return;
+    }
+    
     private function getLayerInfo($tableName, $tableAuth)
     {
         $info['base_url'] = '';

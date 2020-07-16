@@ -115,7 +115,7 @@ class FileLibrary
         if($old == NULL) $old = [];
         else $old = json_decode($old, TRUE);
         
-        if($old == '') $old = []; 
+        if($old == '' || $old == NULL) $old = []; 
         
         $oldReturn = [ $column => json_encode($old) ];
 

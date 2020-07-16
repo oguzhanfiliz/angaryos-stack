@@ -4,26 +4,30 @@ namespace App\Listeners;
 
 use Maatwebsite\Excel\Facades\Excel;
 
-use App\Http\Requests\BaseRequest;
-
-use App\Libraries\ChangeDataLibrary;
-use App\Libraries\ColumnClassificationLibrary;
-use \App\Libraries\ExcelCollectionLibrary;
+use \App\Libraries\ExcelStandartTableCollectionLibrary;
+use \App\Libraries\ExcelCustomTableCollectionLibrary;
 
 use DB;
-use App\BaseModel;
 
 trait ReportSubscriberTrait 
 {
-    /****    List    ****/
+    /****        ****/
     
-    public function getDataForStandartList($model, $params) 
+    public function getDataForReport($model, $params)
     {
+        if($params->record_id == 0) return $this->getDataForTableReport($model, $params);
+        else return $this->getDataForRecordReport($model, $params);
+    }
+    
+    public function getDataForTableReport($model, $params) 
+    {
+        $params->column_array_id = $this->GetColumnArrayId($params);
+        
         global $pipe;
         
         $except = ['tables', 'columns'];
         
-        $params = $this->getModelForStandartList($model, $params);
+        $params = $this->getModelForTableReport($model, $params);
         
         if(in_array($model->getTable(), $except) && $pipe['SHOW_DELETED_TABLES_AND_COLUMNS'] != '1')
             $params->model->where($model->getTable().'.name', 'not ilike', 'deleted\_%');
@@ -32,12 +36,18 @@ trait ReportSubscriberTrait
         
         $records = $params->model->get();
         $records = $model->updateRecordsDataForResponse($records, $params->columns);
-        $records = $this->UpdateRecordsDataForReport($records, $params->columns);
+        $records = $this->UpdateRecordsDataForReport($records, $params);
         
         $tableInfo = $model->getTableInfo($params->table_name);
         
         $columns = $model->getFilteredColumns($params->columns);
-                
+        
+        if($params->report_id > 0) 
+        {
+            $report = get_attr_from_cache('reports', 'id', $params->report_id, '*');
+            eval(helper('clear_php_code', $report->php_code));
+        }
+        
         return 
         [
             'table_info' => $tableInfo,
@@ -47,8 +57,18 @@ trait ReportSubscriberTrait
         ];
     }
     
-    public function UpdateRecordsDataForReport($records, $columns)
+    public function GetColumnArrayId($params)
     {
+        if($params->report_id == 0) return $params->column_array_id;
+        
+        $report = get_attr_from_cache('reports', 'id', $params->report_id, '*');        
+        return $report->column_array_id;
+    }
+    
+    public function UpdateRecordsDataForReport($records, $params)
+    {
+        $columns = $params->columns;
+                
         $jsonColumns = [];
         
         foreach($columns as $column)
@@ -76,7 +96,7 @@ trait ReportSubscriberTrait
         return $return;
     }
     
-    public function getModelForStandartList($model, $params)
+    public function getModelForTableReport($model, $params)
     {
         $params->model = $model->getQuery();
         
@@ -97,22 +117,103 @@ trait ReportSubscriberTrait
     
     
     /****    Common Function    ****/
-    
-    public function responseListReportExcel($data)
+
+    public function responseReportTable($data)
     {
-        global $pipe;
-        return Excel::download(new ExcelCollectionLibrary($data), $pipe['table'].'.xlsx');
+        $data = $this->FillReportFileInfo($data);
+        
+        
+        $fnc = 'responseTableReport';
+        if(!isset($data['reportFile'])) $fnc .= 'Standart';
+        else $fnc .= 'Custom';
+        $fnc .= ucfirst($data['params']->report_format);
+
+        
+        $report = $this->{$fnc}($data);
+        $this->SaveDownloadedReport($data);
+        return $report;
     }
     
-    public function responseListReportCsv($data)
+    private function SaveDownloadedReport($data)
     {
-        global $pipe;
-        return Excel::download(new ExcelCollectionLibrary($data), $pipe['table'].'.csv', \Maatwebsite\Excel\Excel::CSV);
+        (new ExcelStandartTableCollectionLibrary($data))->store($data['storePath'], $data['storage']);
+        
+        $uId = @\Auth::user()->id;
+        
+        $file =
+        [
+            'disk' => env('FILESYSTEM_DRIVER', 'uploads'),
+            'file_name' => $uId.'_'.$data['tableDisplayName'].'.xlsx',
+            'destination_path' => UPLOAD_PATH.date("/Y/m/d/")
+        ];
+        
+        $now = \Carbon\Carbon::now();
+        
+        $data = 
+        [
+            'download_user_id' => $uId,
+            'report_id' => $data['params']->report_id,
+            'download_time' => $now,
+            'report_file' => json_encode([$file]),
+            'state' => TRUE,
+            'created_at' => $now,
+            'updated_at' => $now,
+            'user_id' => ROBOT_USER_ID,
+            'own_id' => ROBOT_USER_ID
+        ];
+        
+        DB::table('downloaded_reports')->insert($data);
     }
     
-    public function responseListReportPdf($data)
+    private function FillReportFileInfo($data)
     {
         global $pipe;
-        return Excel::download(new ExcelCollectionLibrary($data), $pipe['table'].'.pdf', \Maatwebsite\Excel\Excel::DOMPDF);
+        
+        $data['tableDisplayName'] = get_attr_from_cache('tables', 'name', $pipe['table'], 'display_name');
+        $data['tableDisplayName'] .= ' '. date("d-m-Y H:i:s");
+        
+        $uId = @\Auth::user()->id;
+        
+        $data['storePath'] = UPLOAD_PATH.date("/Y/m/d/").$uId.'_'.$data['tableDisplayName'].'.'.$data['params']->report_format;
+        $data['storage'] = env('FILESYSTEM_DRIVER', 'uploads');
+        
+        return $data;
+    }
+    
+    public function responseTableReportCustomXlsx($data)
+    {
+        $file = $data['reportFile'];
+        //dd(9933, $file);
+
+        return Excel::download(Excel::import(new ExcelCustomTableCollectionLibrary($data), $file->destination_path.$file->file_name, 'uploads'), 'asd.xlsm');
+    
+
+        $file = $data['reportFile'];
+        //dd($file->destination_path.$file->file_name);
+        Excel::load('./uploads/2020/07/15/GecKalmaRapor.xlsm', function($reader) 
+        {
+            dd(99);
+            // Getting all results
+            $results = $reader->get();
+        
+            // ->all() is a wrapper for ->get() and will work the same
+            $results = $reader->all();
+        
+        });
+    }
+    
+    public function responseTableReportStandartXlsx($data)
+    {
+        return Excel::download(new ExcelStandartTableCollectionLibrary($data), $data['tableDisplayName'].'.xlsx');
+    }
+    
+    public function responseTableReportStandartCsv($data)
+    {
+        return Excel::download(new ExcelStandartTableCollectionLibrary($data), $data['tableDisplayName'].'.csv', \Maatwebsite\Excel\Excel::CSV);
+    }
+    
+    public function responseTableReportStandartPdf($data)
+    {
+        return Excel::download(new ExcelStandartTableCollectionLibrary($data), $data['tableDisplayName'].'.pdf', \Maatwebsite\Excel\Excel::DOMPDF);
     }
 }

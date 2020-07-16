@@ -8,9 +8,12 @@ $column_gui_type_override =
     'sql_code' => $column_gui_types['codeeditor:sql']->id,
     'style_code' => $column_gui_types['codeeditor:html']->id,
     'column_array_ids' => $column_gui_types['multiselectdragdrop']->id,
+    'column_array_id' => $column_gui_types['select']->id,
+    'report_type_id' => $column_gui_types['select:static']->id,
     //'column_group_ids' => $column_gui_types['multiselectdragdrop']->id,
     'column_ids' => $column_gui_types['multiselectdragdrop']->id,
     'profile_picture' => $column_gui_types['files']->id,
+    'report_file' => $column_gui_types['files']->id,
     'image' => $column_gui_types['files']->id,
     'password' => $column_gui_types['password']->id,
         

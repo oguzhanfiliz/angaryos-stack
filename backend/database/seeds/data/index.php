@@ -26,6 +26,8 @@ $files =
     'DataEntegratorDatas',
     'CustomLayerDatas',
     
+    'ReportTypes',
+    
     'Temp'
 ];
 

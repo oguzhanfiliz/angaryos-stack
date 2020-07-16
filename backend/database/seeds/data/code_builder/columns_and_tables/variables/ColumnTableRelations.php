@@ -91,6 +91,13 @@ $column_array_ids_relation =
     'relation_display_column' => 'name_basic',
 ];
 
+$column_array_id_relation = 
+[
+    'relation_sql' => 'select id, name_basic from column_arrays',
+    'relation_source_column' => 'id',
+    'relation_display_column' => 'name_basic',
+];
+
 /*$column_group_ids_relation = 
 [
     'relation_sql' => 'select id, name_basic from column_groups',
@@ -156,7 +163,21 @@ $data_source_table_relation_ids_relation =
 
 $log_level_id_relation =
 [
-    'relation_sql' => 'select id, display_name from log_levels',
+    'relation_sql' => 'select id, name from log_levels',
+    'relation_source_column' => 'id',
+    'relation_display_column' => 'name',
+];
+
+$report_type_id_relation =
+[
+    'relation_sql' => 'select id, display_name from report_types',
+    'relation_source_column' => 'id',
+    'relation_display_column' => 'display_name',
+];
+
+$report_id_relation =
+[
+    'relation_sql' => 'select id, display_name from reports',
     'relation_source_column' => 'id',
     'relation_display_column' => 'name',
 ];
@@ -166,6 +187,7 @@ $column_table_relations =
 [
     //'auths' => '',
     //'srid' => $srid_relation,
+    'download_user_id' => $user_id_relation,
     'user_id' => $user_id_relation,
     'own_id' => $user_id_relation,
     'subscriber_type_id' => 'subscriber_types',
@@ -221,4 +243,10 @@ $column_table_relations =
     'data_source_table_relation_ids' => $data_source_table_relation_ids_relation,
     
     'log_level_id' => $log_level_id_relation,
+    
+    'report_type_id' => $report_type_id_relation,
+    
+    'column_array_id' => $column_array_id_relation,
+    
+    'report_id' => $report_id_relation,
 ];

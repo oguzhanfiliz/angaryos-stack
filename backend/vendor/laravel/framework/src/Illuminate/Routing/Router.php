@@ -15,6 +15,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Routing\Events\RouteMatched;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 use Illuminate\Support\Traits\Macroable;
@@ -130,18 +131,6 @@ class Router implements BindingRegistrar, RegistrarContract
         $this->events = $events;
         $this->routes = new RouteCollection;
         $this->container = $container ?: new Container;
-    }
-
-    /**
-     * Register a new HEAD route with the router.
-     *
-     * @param  string  $uri
-     * @param  \Closure|array|string|callable|null  $action
-     * @return \Illuminate\Routing\Route
-     */
-    public function head($uri, $action = null)
-    {
-        return $this->addRoute('HEAD', $uri, $action);
     }
 
     /**
@@ -395,7 +384,7 @@ class Router implements BindingRegistrar, RegistrarContract
      */
     protected function updateGroupStack(array $attributes)
     {
-        if (! empty($this->groupStack)) {
+        if ($this->hasGroupStack()) {
             $attributes = $this->mergeWithLastGroup($attributes);
         }
 
@@ -435,7 +424,7 @@ class Router implements BindingRegistrar, RegistrarContract
      */
     public function getLastGroupPrefix()
     {
-        if (! empty($this->groupStack)) {
+        if ($this->hasGroupStack()) {
             $last = end($this->groupStack);
 
             return $last['prefix'] ?? '';
@@ -520,7 +509,7 @@ class Router implements BindingRegistrar, RegistrarContract
         // Here we'll merge any group "uses" statement if necessary so that the action
         // has the proper clause for this property. Then we can simply set the name
         // of the controller on the action and return the action array for usage.
-        if (! empty($this->groupStack)) {
+        if ($this->hasGroupStack()) {
             $action['uses'] = $this->prependGroupNamespace($action['uses']);
         }
 
@@ -663,7 +652,7 @@ class Router implements BindingRegistrar, RegistrarContract
             return $route;
         });
 
-        $this->events->dispatch(new Events\RouteMatched($route, $request));
+        $this->events->dispatch(new RouteMatched($route, $request));
 
         return $this->prepareResponse($request,
             $this->runRouteWithinStack($route, $request)
@@ -757,7 +746,7 @@ class Router implements BindingRegistrar, RegistrarContract
                     is_array($response))) {
             $response = new JsonResponse($response);
         } elseif (! $response instanceof SymfonyResponse) {
-            $response = new Response($response);
+            $response = new Response($response, 200, ['Content-Type' => 'text/html']);
         }
 
         if ($response->getStatusCode() === Response::HTTP_NOT_MODIFIED) {

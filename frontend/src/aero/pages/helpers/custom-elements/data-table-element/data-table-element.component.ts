@@ -43,6 +43,7 @@ export class DataTableElementComponent
 
     data = null;
     params = null;
+    reports = null;
     iconVisibility = null;
     recordOperations = null;
     fullBaseUrl = "";
@@ -109,7 +110,16 @@ export class DataTableElementComponent
         
         this.params = this.getDefaultParams();
         
+        this.reports = {};
+        this.reports['table'] = [];
+        this.reports['record'] = [];
         
+        var reportsAuth = BaseHelper.loggedInUserInfo['reports'];
+        if(typeof reportsAuth[this.tableName] == "undefined") return;
+        
+        var keys = Object.keys(reportsAuth[this.tableName]);
+        for(var i = 0; i < keys.length; i++)
+            this.reports[keys[i]] = reportsAuth[this.tableName][keys[i]];
     }
     
     getDefaultParams()
@@ -147,7 +157,7 @@ export class DataTableElementComponent
         
         if(this.tableName.indexOf('tree:') == -1)
         {
-            var auth = BaseHelper.loggedInUserInfo.auths.tables[this.tableName];
+            var auth = BaseHelper.loggedInUserInfo.auths['tables'][this.tableName];
 
             var segments = this.baseUrl.split('/');
             var segment = segments[segments.length -1];
@@ -488,15 +498,27 @@ export class DataTableElementComponent
         };
     }
     
-    downloadStandartReport()
+    getReportFormat()
     {
-        var types = ['excel', 'pdf', 'csv'];
-        var format = prompt("Hangi formatta indirmek istersiniz? (excel, csv yada pdf)", "excel");
-        if(!types.includes(format)) format = 'excel';
+        var types = ['xlsx', 'pdf', 'csv'];
+        var format = prompt("Hangi formatta indirmek istersiniz? (xlsx, csv yada pdf)", "xlsx");
+        if(!types.includes(format)) format = 'xlsx';
+        
+        return format;
+    }
+    
+    downloadReport(report = null, recordId = null)
+    { 
+        var temp = BaseHelper.getCloneFromObject(this.params);
+        temp['report_format'] = this.getReportFormat();
+        
+        if(recordId != null) temp['record_id'] = recordId;
+        else temp['record_id'] = 0;
+        
+        if(report != null) temp['report_id'] = report['id'];
+        else temp['report_id'] = 0;
         
         var url = this.sessionHelper.getBackendUrlWithToken()+this.baseUrl;
-        var temp = BaseHelper.getCloneFromObject(this.params);
-        temp['report_type'] = format;
         url += "/report?params="+BaseHelper.objectToJsonStr(temp);
 
         window.open(url, "_blank");
