@@ -191,16 +191,19 @@ class User extends Authenticatable
         
         $info['filter'] = FALSE;
         $info['search'] = FALSE;
+        $info['layerAuth'] = FALSE;
         
         if(in_array(0, $tableAuth))
         {
             $info['filter'] = TRUE;
             $info['search'] = TRUE;
+            $info['layerAuth'] = TRUE;
         }
         else
         {
             if(in_array(3, $tableAuth)) $info['filter'] = TRUE;
             if(in_array(2, $tableAuth)) $info['search'] = TRUE;
+            if(in_array(1, $tableAuth)) $info['layerAuth'] = TRUE;
         }
         
         $info['layerTableType'] = 'default';
@@ -232,6 +235,7 @@ class User extends Authenticatable
         
         $info['filter'] = FALSE;
         $info['search'] = FALSE;
+        $info['layerAuth'] = TRUE;
         
         $info['srid'] = $layer->srid;
         
@@ -259,6 +263,7 @@ class User extends Authenticatable
         
         $info['filter'] = FALSE;
         $info['search'] = FALSE;
+        $info['layerAuth'] = TRUE;
         
         $info['tableName'] = get_attr_from_cache('tables', 'id', $layer->table_id, 'name');
         $info['layerTableType'] = 'custom';

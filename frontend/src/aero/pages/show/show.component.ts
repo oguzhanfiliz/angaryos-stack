@@ -37,7 +37,28 @@ export class ShowComponent
         this.fillDefaultVariables();
         
         var th = this;
-        setTimeout(() => route.params.subscribe(val => th.preLoad(val)), 100);
+        setTimeout(() => route.params.subscribe(val => th.preLoadInterval(val)), 100);
+    }
+
+    ngOnChanges()
+    {
+        this.preLoadInterval(); 
+    }
+
+    preLoadInterval(val = null)
+    {
+        var params =
+        {
+            val: val,
+            th: this
+        };
+
+        function func(params)
+        {
+            params.th.preLoad(params.val);
+        }
+
+        return BaseHelper.doInterval('formPreLoad', func, params, 200);
     }
     
     preLoad(val)

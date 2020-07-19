@@ -241,82 +241,72 @@
 
                                     {{ feature['selected'] }}
                                 </div>
-                                
-                
-                                
                             </div>
                         </div>
-
-
-        
-                        
                     </div>
                 </div>
-                
-
-
-
             </div>
         </div>
     </div>
 </div>
 
 <div 
-                    [hidden]="drawingInteraction"                                                   
-                    class="btn-group" 
-                    id="menu-button"
-                    ngbDropdown role="group"
-                    aria-label="Button group with nested dropdown">
+    [hidden]="drawingInteraction"                                                   
+    class="btn-group" 
+    id="menu-button"
+    ngbDropdown role="group"
+    aria-label="Button group with nested dropdown">
 
-                    <button
-                        class="btn btn-icon btn-sm float-right btn-primary pull-right" 
-                        id="drawButton"  
-                        ngbDropdownToggle> 
+    <button
+        class="btn btn-icon btn-sm float-right btn-primary pull-right" 
+        id="drawButton"  
+        ngbDropdownToggle> 
 
-                        <span style="font-size: 15px;" class="ti-menu" ></span>
-                    </button>
+        <span style="font-size: 15px;" class="ti-menu" ></span>
+    </button>
 
-                    <div ngbDropdownMenu>
-                        <a 
-                            href="{{ getHomePageUrl() }}"
-                            class="dropdown-item"
-                            ngbDropdownItem>
-                            
-                            Anasayfa
-                        </a>    
-                        <div class="dropdown-divider"></div>
-                        <a 
-                            (click)="search()"
-                            class="dropdown-item"
-                            ngbDropdownItem>
-                            
-                            Arama Yap
-                        </a>  
-                        <div class="dropdown-divider"></div>
-                        <a 
-                            (click)="layers()"
-                            class="dropdown-item"
-                            ngbDropdownItem>
-                            
-                            Katmanlar
-                        </a>    
-                        <a 
-                            (click)="setToolsBarVisible(true)" 
-                            class="dropdown-item"
-                            ngbDropdownItem>
-                            
-                            Araç Çubuğu
-                        </a>  
-                        <a 
-                            [hidden]="isVectorFeaturesTreeNull()"
-                            (click)="setFeaturesTreeVisible(true)" 
-                            class="dropdown-item"
-                            ngbDropdownItem>
-                            
-                            Nesne Ağacı
-                        </a> 
-                    </div>
-                </div>
+    <div ngbDropdownMenu>
+        <a 
+            href="{{ getHomePageUrl() }}"
+            class="dropdown-item"
+            ngbDropdownItem>
+            
+            Anasayfa
+        </a>    
+        <div class="dropdown-divider"></div>
+        <a 
+            (click)="search()"
+            class="dropdown-item"
+            ngbDropdownItem>
+            
+            Arama Yap
+        </a>  
+        <div class="dropdown-divider"></div>
+        <a 
+            (click)="layers()"
+            class="dropdown-item"
+            ngbDropdownItem>
+            
+            Katmanlar
+        </a>    
+        <a 
+            (click)="setToolsBarVisible(true)" 
+            class="dropdown-item"
+            ngbDropdownItem>
+            
+            Araç Çubuğu
+        </a>  
+        <a 
+            [hidden]="isVectorFeaturesTreeNull()"
+            (click)="setFeaturesTreeVisible(true)" 
+            class="dropdown-item"
+            ngbDropdownItem>
+            
+            Nesne Ağacı
+        </a> 
+    </div>
+</div>
+
 
 
 <div id="mouse-position-fullScreenMap" class="mouse-position"></div>
@@ -342,6 +332,7 @@
                                 [attr.source]="layer['display_name']"
                                 class="dragdrop-box" 
                                 *ngFor="let layer of getLayers()" 
+                                [hidden]="!layer['layerAuth']"
                                 cdkDrag>
                                 
                                 {{ layer['display_name'] }}
@@ -434,14 +425,22 @@
                             </td>
                             <td>{{ featureList[tableName]['display_name'] + " (" + tableName + ")" }}</td>
                             <td>{{ recId }}</td>
-                            <td>
-                                <span 
-                                    style="padding: 2px; margin: 2px;"
-                                    class="badge badge-danger" 
-                                    *ngFor="let columnName of getKeys(featureList[tableName]['records'][recId]['data'])">
+                            <td style="font-size: 10px">
+                                <span
+                                *ngFor="let columnName of getKeys(featureList[tableName]['records'][recId]['data'])"
+                                [hidden]="columnName.substr(0, 1) == '_' || getSummary(featureList[tableName]['records'][recId]['data'][columnName]) == null">
                                     
-                                    <b>{{ getColumnDisplayName(tableName, columnName) }}:</b> 
-                                    {{ getSummary(featureList[tableName]['records'][recId]['data'][columnName]) }} 
+                                    <span style="padding: 2px; margin: 2px 5px 2px 2px;"
+                                        class="badge badge-primary">
+
+                                        <b>
+                                            {{ getColumnDisplayName(tableName, columnName) }} :
+                                        </b>
+                                        &nbsp;
+                                        {{ getSummary(featureList[tableName]['records'][recId]['data'][columnName]) }} 
+                                    </span>
+                                    
+                                    
                                 </span>
                             </td>
                         </tr>

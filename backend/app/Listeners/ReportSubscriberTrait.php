@@ -184,11 +184,38 @@ trait ReportSubscriberTrait
     {
         $file = $data['reportFile'];
         
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        $spreadsheet = \PhpOffice\PhpSpreadsheet\IOFactory::load($file->destination_path.$file->file_name);
+        
+        //change it
+        $sheet = $spreadsheet->getActiveSheet();
+        //$sheet->setCellValue('A1', 'New Value');
+
+        //write it again to Filesystem with the same name (=replace)
+        
+        $writer = new \PhpOffice\PhpSpreadsheet\Writer\Xlsx($spreadsheet);
+        dd($writer->save('test.xlsx'));
+
+dd(99);
+
+
+        
         $report = Excel::import(new ExcelCustomTableCollectionLibrary($data), $file->destination_path.$file->file_name, 'uploads');
-        dd(Excel::download($report, 'test.xlsx'/*$data['storePath'], $data['storage']*/));
+        return $report;
+        return $report->download($report ,'asd.xlsx');
+        return Excel::download($report, 'test.xlsx'/*$data['storePath'], $data['storage']*/);
         
         dd($report);
-        dd($report->store());
+        dd($report->store($data['storePath'], $data['storage']));
         dd(9933 );
         
         

@@ -5,8 +5,9 @@ import Feature from 'ol/Feature';
 
 import { WKT, GeoJSON} from 'ol/format';
 
-import { Tile as TileLayer, Vector as VectorLayer } from 'ol/layer';
+import {Image as ImageLayer, Tile as TileLayer, Vector as VectorLayer } from 'ol/layer';
 import TileWMS from 'ol/source/TileWMS';
+import ImageWMS from 'ol/source/ImageWMS';
 
 import { OSM, Vector as VectorSource } from 'ol/source';
 import BingMaps from 'ol/source/BingMaps';
@@ -341,7 +342,7 @@ export abstract class MapHelper
 
   public static getLayerFromMapAuth(map, tableAuth)
   {
-    switch (tableAuth['type']) 
+    switch (tableAuth['type'].split(":")[0]) 
     {
       case 'wms':
         return this.getLayerFromMapAuthWms(map, tableAuth);
@@ -433,12 +434,51 @@ export abstract class MapHelper
     this.addEventListenersOnVectorSource(map, vectorSource, tableAuth);
     
     layer['name'] = tableAuth["workspace"]+'__'+tableAuth["layer_name"];
-    layer['display_name'] = tableAuth["display_name"];
+
+    var keys = Object.keys(tableAuth);
+    for(var i = 0; i < keys.length; i++) layer[keys[i]] = tableAuth[keys[i]];
 
     return layer;
   }
 
   public static getLayerFromMapAuthWms(map, tableAuth)
+  {
+    if(tableAuth['type'] == "wms") return this.getLayerFromMapAuthWmsTiled(map, tableAuth);
+    else if(tableAuth['type'] == "wms:singleTile") return this.getLayerFromMapAuthWmsSingleTile(map, tableAuth);
+    else console.log("Undefined WMS type");
+  }
+
+  public static getLayerFromMapAuthWmsSingleTile(map, tableAuth)
+  {
+    var url = tableAuth["base_url"];
+    if(url == "") url = BaseHelper["pipe"]["geoserverBaseUrl"];
+
+    var params = 
+    {
+      'LAYERS': tableAuth["workspace"]+':'+tableAuth["layer_name"],
+      'STYLES': tableAuth["style"]
+    };
+
+    var layer = new ImageLayer(
+    {
+      source: new ImageWMS(
+      {
+        url: url,
+        params: params,
+        ratio: 1,
+        serverType: 'geoserver'
+      })
+    });
+
+    layer['name'] = tableAuth["workspace"]+'__'+tableAuth["layer_name"];
+    
+    var keys = Object.keys(tableAuth);
+    for(var i = 0; i < keys.length; i++) layer[keys[i]] = tableAuth[keys[i]];
+console.log(layer);
+    return layer;
+  }
+
+  public static getLayerFromMapAuthWmsTiled(map, tableAuth)
   {
     var url = tableAuth["base_url"];
     if(url == "") url = BaseHelper["pipe"]["geoserverBaseUrl"];
@@ -462,7 +502,9 @@ export abstract class MapHelper
     });
 
     layer['name'] = tableAuth["workspace"]+'__'+tableAuth["layer_name"];
-    layer['display_name'] = tableAuth["display_name"];
+    
+    var keys = Object.keys(tableAuth);
+    for(var i = 0; i < keys.length; i++) layer[keys[i]] = tableAuth[keys[i]];
 
     return layer;
   }
@@ -524,7 +566,10 @@ export abstract class MapHelper
         if(layer == null) continue;
 
         layer['authData'] = auth;
-        layer.setVisible(this.getLayerVisibilityFromConfig(map, layer));
+
+        var vs = false;
+        if(auth['layerAuth']) vs = this.getLayerVisibilityFromConfig(map, layer);
+        layer.setVisible(vs);
 
         map.addLayer(layer);
       }

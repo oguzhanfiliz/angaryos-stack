@@ -83,7 +83,11 @@ class TableGeoServerOperationsLibrary
     {
         $oldStyleName = $params['record']->name;
         $newStyleName = $params['requests']['name'];
-        $SLD = $params['requests']['style_code'];
+
+        if(isset($params['requests']['style_code']))
+            $SLD = $params['requests']['style_code'];
+        else
+            $SLD = $params['record']->style_code;
         
         if($oldStyleName != $newStyleName)
             custom_abort('style.name.not.changable');

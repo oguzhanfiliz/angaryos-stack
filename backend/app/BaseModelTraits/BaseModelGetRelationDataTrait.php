@@ -44,9 +44,8 @@ trait BaseModelGetRelationDataTrait
         
         $model->addSelect(DB::raw($table->name.'.id as id'));
 
-
         $alias = $this->getFirstJoinTableAliasForSelectColumn($relationTable);
-        
+
         $source = $relationTable->relation_source_column;
         if(!strstr($source, '.')) $source = $table->name.'.'.$source; 
         
@@ -60,11 +59,13 @@ trait BaseModelGetRelationDataTrait
         $model->addSelect(DB::raw($display.' as display'));
 
         $model = $model->whereIn($source, $params->data_array);
-        
-        $temp->addFilters($model, $table->name);
-        
+   
+        //$temp->addFilters($model, $table->name);
+        //kullanıcıdan bağımsız olarak data isteniyor. filtre eklenmesi gereksiz
+
         $sorted = [];
         $recs = $model->get();
+        
         foreach($recs as $key => $value)
         {
             $recs[$key]->_source_column = $recs[$key]->source;
@@ -193,10 +194,5 @@ trait BaseModelGetRelationDataTrait
         if($params->column->column_db_type_id == $params->relation->column_db_type_id) $temp = @$temp[0];
         
         $params->record->{$params->column->name . '__relation_data'} = $temp; 
-    }
-    
-    private function fill_relation_for_with_join_table_ids($params)
-    {
-        dd("asdasdasd11");
     }
 }

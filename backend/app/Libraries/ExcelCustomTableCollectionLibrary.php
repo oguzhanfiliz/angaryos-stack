@@ -4,18 +4,25 @@ namespace App\Libraries;
 
 use Maatwebsite\Excel\Facades\Excel;
 
-use Maatwebsite\Excel\Concerns\WithEvents;
+use Illuminate\Contracts\Support\Responsable;
+
 use Maatwebsite\Excel\Concerns\Exportable;
+use Maatwebsite\Excel\Concerns\Importable;
+
+use Maatwebsite\Excel\Concerns\WithEvents;
 use Maatwebsite\Excel\Concerns\RegistersEventListeners;
-
-use Maatwebsite\Excel\Events\BeforeWriting;
-use Maatwebsite\Excel\Events\BeforeExport;
+use Maatwebsite\Excel\Events\BeforeImport;
+use Maatwebsite\Excel\Events\AfterImport;
 use Maatwebsite\Excel\Events\AfterSheet;
+use Maatwebsite\Excel\Events\BeforeSheet;
 
+use Maatwebsite\Excel\Concerns\ToModel;
 use Maatwebsite\Excel\Concerns\FromCollection;
-use Maatwebsite\Excel\Files\LocalTemporaryFile;
+use Maatwebsite\Excel\Concerns\ShouldAutoSize;
 
-class ExcelCustomTableCollectionLibrary implements FromCollection, WithEvents
+//use Maatwebsite\Excel\Files\LocalTemporaryFile;
+
+class ExcelCustomTableCollectionLibrary implements FromCollection /*ToModel*/, WithEvents, /*Responsable*/ ShouldAutoSize
 {
     use Exportable, RegistersEventListeners;
     
@@ -25,8 +32,62 @@ class ExcelCustomTableCollectionLibrary implements FromCollection, WithEvents
     {
         $this->data = $data; 
     }
+    
+    public static function beforeImport(BeforeImport $event)
+    {
+        //echo 'beforeImport<br>';
+    }
+	
+    public static function beforeSheet(BeforeSheet $event)
+    {
+        //echo 'beforeSheet<br>';
+    }
 
-    public function collection()
+    public static function afterSheet(AfterSheet $event)
+    {
+        
+        //dd($event->sheet->getDelegate()->getCellCollection());
+        //echo 'afterSheet<br>';
+    }
+    
+    public static function afterImport(AfterImport $event)
+    {
+        //echo 'afterImport<br>';
+    }
+    
+    /*public function collection()
+    {
+        dd('collection');
+    }*/
+    
+    /*public function model(array $row)
+    {
+        dd($row);
+        return new User([
+           'name'     => $row[0],
+           'email'    => $row[1], 
+           'password' => Hash::make($row[2]),
+        ]);
+    }*/
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+
+    /*public function collection()
     {
         dd(234, 'collection');
         if ($this->calledByEvent) { // flag
@@ -34,9 +95,20 @@ class ExcelCustomTableCollectionLibrary implements FromCollection, WithEvents
         }
 
         return collect([]);
-    }
+    }*/
     
-    public function registerEvents(): array
+    /*public function registerEvents(): array
+    {
+        return 
+        [
+            BeforeImport::class => [self::class, 'beforeImport'],
+            AfterImport::class => [self::class, 'afterImport'],
+            AfterSheet::class => [self::class, 'afterSheet'],
+            BeforeSheet::class => [self::class, 'beforeSheet'],
+        ];
+    }*/
+    
+    /*public function registerEvents(): array
     {
         $styleTitulos = [
             'font' => [
@@ -52,7 +124,8 @@ class ExcelCustomTableCollectionLibrary implements FromCollection, WithEvents
             },
             AfterSheet::class => function(AfterSheet $event) use ($styleTitulos)
             {
-                return;
+                echo '1<br>';
+                return;*/
                 
                 
                 
@@ -66,8 +139,8 @@ class ExcelCustomTableCollectionLibrary implements FromCollection, WithEvents
             array('test3', 'test4'),
             //....
         ), $event);*/
-                dd($event);
-                $event->sheet->getStyle("A1:G1")->applyFromArray($styleTitulos);
+                
+                /*$event->sheet->getStyle("A1:G1")->applyFromArray($styleTitulos);
                 $event->sheet->setCellValue('A'. ($event->sheet->getHighestRow()+1),"Total");
                 foreach ($this->filas as $index => $fila){
                     $fila++;
@@ -82,7 +155,7 @@ class ExcelCustomTableCollectionLibrary implements FromCollection, WithEvents
                 $event->sheet->setCellValue('G'. ($event->sheet->getHighestRow()), $this->total);
             }
         ];
-    }
+    }*/
 
     /*public function registerEvents(): array
     {
