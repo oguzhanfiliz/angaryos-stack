@@ -2,6 +2,8 @@
 
 $tokens = [];
 
+if($params == NULL) return $params;
+
 if($params->tokens != NULL)
     foreach($params->tokens as $i => $token)
     {

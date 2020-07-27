@@ -100,8 +100,9 @@ export class ColumnArrayElementComponent
     getConvertedDataForGuiByColumnName(columnName)
     {
         var guiType = this.columnArray['columns'][columnName]['gui_type_name'];
-        var data = DataHelper.convertDataForGui(this.record, columnName, guiType);
+        var data = DataHelper.convertDataForGui(this.record, columnName, guiType, true);
         
+        //console.log(data, this.sanitizer.bypassSecurityTrustHtml(data));
         return this.sanitizer.bypassSecurityTrustHtml(data);        
     }
     

@@ -474,7 +474,7 @@ export abstract class MapHelper
     
     var keys = Object.keys(tableAuth);
     for(var i = 0; i < keys.length; i++) layer[keys[i]] = tableAuth[keys[i]];
-console.log(layer);
+
     return layer;
   }
 

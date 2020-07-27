@@ -179,6 +179,31 @@
                             Bekleyin
                         </div>
                     </div>
+                    
+                    <div *ngIf="item['class'] == 'ComboBoxList'" class="combobox-list">
+                        <h5 style="padding:5 0 0 10">{{ item['data']['title'] }}</h5>
+                        <div id="{{ item['class']+'_'+item['subClass']+'_'+item['item'] }}">
+                            <table class="table table-hover theme-color c_table">
+                                <tbody>
+                                    <tr *ngFor="let item of item['data']['data']">
+                                        <td style="padding: 5;" class="w70"><img class="rounded-circle file-preview" src="{{ item['profile_pic_url'] }}" alt=""></td>
+                                        <td style="padding: 5;">{{ item['name_basic'] + ' ' + item['surname'] }}</td>
+                                        <td style="padding: 5;">{{ item['ortalama'] }} dk/gün</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <div style="width: 100%;padding: 0 5;">
+                                <select style="width: 100%;" class="select2" value="{{ item['data']['selectedValue'] }}">
+                                    <option 
+                                        *ngFor="let opt of item['data']['combobox']"
+                                        value="{{ opt['source'] }}">
+    
+                                        {{ opt['display'] }}
+                                    </option> 
+                                </select>                                 
+                            </div>                         
+                        </div>
+                    </div>
 
                     <span 
                         class="remove-dashboard-button"

@@ -19,6 +19,7 @@ export class RelationColumnElementComponent
     @Input() name: string = "";
     @Input() relationJson: string = "";
     @Input() recordJson: string = "";
+    @Input() tableName: string = "";
     
     typeBase = "";
     record = null;
@@ -84,12 +85,18 @@ export class RelationColumnElementComponent
     {
         if(this.relation == null) return "";
         
-        var temp = window.location.href;
-        temp = temp.replace(BaseHelper.baseUrl, "");
-        var segments = temp.split('/');
+        if(this.tableName.length == 0)
+        {
+            var temp = window.location.href;
+            temp = temp.replace(BaseHelper.baseUrl, "");
+            var segments = temp.split('/');
         
+            this.tableName = segments[1];
+        }
+
         var url = BaseHelper.backendUrl + BaseHelper.token;
-        url += "/tables/"+segments[1]+"/"+this.record['id']+"/getRelationDataInfo/"+this.name;        
+        url += "/tables/"+this.tableName+"/"+this.record['id']+"/getRelationDataInfo/"+this.name;
+
         
         return url;
     }

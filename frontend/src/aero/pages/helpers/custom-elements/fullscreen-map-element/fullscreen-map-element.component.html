@@ -332,7 +332,6 @@
                                 [attr.source]="layer['display_name']"
                                 class="dragdrop-box" 
                                 *ngFor="let layer of getLayers()" 
-                                [hidden]="!layer['layerAuth']"
                                 cdkDrag>
                                 
                                 {{ layer['display_name'] }}

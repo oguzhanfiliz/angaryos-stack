@@ -258,6 +258,31 @@ $lib->AddAuthsToAdminUser([\'dashboards:DataEntegratorStatus:\'.$record->id.\':0
 ?>'
 ];
 
+$subscribers['table']['missions'][0] =
+[
+    'name_basic' => 'Yöneticiye görev tetikleme yetkisi atama',
+    'subscriber_type_id' => $subscriber_types['after']->id,
+    'php_code' => '<?php
+
+if($type != \'create\') return;
+
+
+$adminAuth = new \App\BaseModel(\'auth_groups\');
+$adminAuth = $adminAuth->find(1);
+$adminAuth->fillVariables();
+
+$temp = $adminAuth->auths;
+$temp[count($temp)] = \'missions:\'.$record->id.\':0:0\';
+$adminAuth->auths = $temp;
+
+$adminAuth->save();
+
+\Cache::forget(\'tableName:users|id:1|authTree\');
+\Cache::forget(\'tableName:auth_groups|columnName:id|columnData:1|returnData:auths\');
+
+?>'
+];
+
 
 
 foreach($subscribers as $type => $set)

@@ -34,9 +34,16 @@ foreach($record->getAllColumnsFromDB() as $columnName => $array)
     if(!in_array($array['type'], $geometryColumnTypes)) continue;
     
     $temp = substr($record->{$columnName}, 0, 1);
-    if($temp != '1' && $temp != '0') continue;
-    
-    $tempData[$columnName] = $record->{$columnName};
+    if($temp != '1' && $temp != '0' && strlen($temp) > 0)
+    {
+        $srid = DB_PROJECTION;
+        if(strlen($array['srid']) > 0) $srid = $array['srid'];
+
+        $raw = 'ST_GeomFromText(\''.$record->{$columnName}.'\' , '.$srid.')';
+        $tempData[$columnName] = DB::raw($raw);
+    }
+    else $tempData[$columnName] = $record->{$columnName};
+
     $record->{$columnName} = NULL;
 }
 

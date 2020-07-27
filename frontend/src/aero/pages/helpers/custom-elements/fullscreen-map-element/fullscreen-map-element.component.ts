@@ -1154,8 +1154,13 @@ export class FullScreenMapElementComponent
 
     getLayers()
     {
+        var tempArray = [];
         var temp = MapHelper.getLayersFromMapWithoutBaseLayers(this.map);
-        this.layerList = temp.reverse();
+        for(var i = 0; i < temp.length; i++)
+            if(temp[i]["layerAuth"])
+                tempArray.push(temp[i]);
+
+        this.layerList = tempArray.reverse();
 
         return this.layerList;
     }

@@ -241,6 +241,9 @@ export class DashboardComponent
             case "GraphicPie":
                 await this.fillDashboardsItemDataGraphicPie(dashboardId, subClassName, itemName);
                 break;
+            case "ComboBoxList":
+                await this.fillDashboardsItemDataComboBoxList(dashboardId, subClassName, itemName);
+                break;
                  
             default: 
                 console.log(className+" tipi bulunamadı!");
@@ -327,6 +330,47 @@ export class DashboardComponent
             resizeEnabled: true,
         };
         await this.fillDashboardsItemDataStandartLoader(dashboardId, className, subClassName, itemName, options, func);
+    }
+    
+    async fillDashboardsItemDataComboBoxList(dashboardId, subClassName, itemName)
+    {
+        var className = "ComboBoxList";
+        var dataKey = "DashboardsItemData:"+className+":"+subClassName+":"+itemName;
+
+        var func = (th, dashboardId, subClassName, itemName, data) => 
+        {
+            data['selectedValue'] = BaseHelper.readFromLocal(dataKey);
+            if(data['selectedValue'] == null || data['selectedValue'].length == 0) data['selectedValue'] = 'tum';
+
+            setTimeout(() =>
+            {
+                $.getScript('assets/ext_modules/select2/select2.min.js', () => 
+                {
+                    $("#"+className+'_'+subClassName+'_'+itemName+' .select2').select2()
+                    .on('select2:select', (event) => 
+                    {
+                        BaseHelper.writeToLocal(dataKey, event.target.value);
+                        th.fillDashboardsItemDataComboBoxList(dashboardId, subClassName, itemName);
+                    });
+                });
+            }, 500);
+            
+            return data;
+        };
+        
+        var options =
+        {
+            cols: 2,
+            rows: 2,
+            minItemCols: 2,
+            minItemRows: 2, 
+            resizeEnabled: true,
+        };
+
+        var type = BaseHelper.readFromLocal(dataKey);
+        var url = this.sessionHelper.getBackendUrlWithToken()+"dashboards/getData/dashboards:"+className+":"+subClassName+":"+itemName+"?type="+type;
+        
+        await this.fillDashboardsItemDataStandartLoader(dashboardId, className, subClassName, itemName, options, func, url);
     }
     
     async fillDashboardsItemDataStandartLoader(dashboardId, className, subClassName, itemName, options = {}, func = null)

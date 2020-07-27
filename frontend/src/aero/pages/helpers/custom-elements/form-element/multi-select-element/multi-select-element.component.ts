@@ -206,6 +206,8 @@ export class MultiSelectElementComponent
                     .on('select2:select', (event) => th.selected(event))
                     .on('select2:unselect', (event) => th.unselected(event));
                     
+                    this.addStyle();
+                    
                     setTimeout(() => 
                     {
                         $(this.baseElementSelector+' [name="'+this.name+'"]').val(this.selectedVal);
@@ -289,6 +291,8 @@ export class MultiSelectElementComponent
         .on('select2:select', (event) => th.selected(event))
         .on('select2:unselect', (event) => th.unselected(event));
 
+        this.addStyle();
+
         var th = this;
         $(document).on('click', this.baseElementSelector+' [ng-reflect-name="'+this.name+'"] .select2-selection__choice', function(e) 
         {
@@ -339,6 +343,8 @@ export class MultiSelectElementComponent
 
     addStyle()
     {
+        if(this.class.indexOf('column-filter') == -1) return;
+        
         $('.select2-results__options').css('font-size', '12px');
 
         $(".select2").css('font-size', '12px');

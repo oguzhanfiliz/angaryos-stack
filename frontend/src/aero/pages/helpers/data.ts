@@ -283,7 +283,7 @@ export abstract class DataHelper
 
     /****    Gui Type Function    ****/
 
-    public static convertDataForGui(record, columnName, type)
+    public static convertDataForGui(record, columnName, type, show = false)
     {
         if(typeof type == "undefined") return "";
         if(type == null) return;
@@ -294,11 +294,14 @@ export abstract class DataHelper
         switch(type.split(':')[0])
         {
             case "codeeditor":
-                data = this.convertDataByGuiTypeText(type, data);
+                data = this.convertDataByGuiTypeText(type, data, show);
+                
+                if(show) return data;
+
                 return BaseHelper.htmlStripTags(data).replace("\n", '<br>');
                 break;
             case "text":
-                data = this.convertDataByGuiTypeText(type, data);
+                data = this.convertDataByGuiTypeText(type, data, show);
                 break;
             case "money":
                 data = this.convertDataByGuiTypeMoney(type, data);
@@ -409,9 +412,12 @@ export abstract class DataHelper
         return rt;
     }
 
-    public static convertDataByGuiTypeText(guiType, data)
+    public static convertDataByGuiTypeText(guiType, data, show)
     {
         if(data == null) return null;
+        
+        if(show) return "<pre>"+data+"</pre>";
+
         return data.substr(0, 100) + (data.length > 100 ? '...' : '');
     }
     

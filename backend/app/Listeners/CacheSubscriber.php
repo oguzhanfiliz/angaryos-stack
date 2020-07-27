@@ -148,6 +148,8 @@ class CacheSubscriber
     
     private function clearTableGroupCache($record)
     {
+        ClearCache::{$this->dispatchType}('allAuths');
+        
         $keys = $this->getCacheKeys();
         foreach($keys as $key)
             if(substr($key, -16, 16) == '|tableGroups')
