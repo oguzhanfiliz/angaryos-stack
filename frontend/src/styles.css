@@ -126,6 +126,12 @@ section.content
     margin: 5 0 0 10 !important;
 }
 
+.select2-selection--multiple
+{
+    display: inline-table !important;
+    width: 100% !important;
+}
+
 #close
 {
     position: absolute !important;

@@ -37,6 +37,7 @@ services:
             - ./services/traefic/data/traefik-access.log:/etc/traefik-access.log
             - ./services/traefic/self.crt:/etc/self.crt
             - ./services/traefic/self.key:/etc/self.key
+            - '/etc/localtime:/etc/localtime:ro'
         networks:
             - frontend-nw
             - backend-nw
@@ -62,6 +63,7 @@ services:
     #    image: karapazar/angular-serve-light:0.3
     #    volumes:
     #        - ./frontend/dist/light/:/usr/share/nginx/html 
+    #        - '/etc/localtime:/etc/localtime:ro'
     #    networks:
     #        - frontend-nw
     #    deploy:
@@ -78,6 +80,7 @@ services:
         image: karapazar/angular-serve:0.19
         volumes:
             - ./frontend:/usr/src/app 
+            - '/etc/localtime:/etc/localtime:ro'
         networks:
             - frontend-nw
         deploy:
@@ -101,6 +104,7 @@ services:
             - ./backend/php.ini:/usr/local/etc/php/conf.d/local.ini
             - ./services/geoserver/data:/var/geoserver
             - /var/run/docker.sock:/var/run/docker.sock 
+            - '/etc/localtime:/etc/localtime:ro'
         environment:
             SERVICE_NAME: app
             SERVICE_TAGS: dev
@@ -119,6 +123,7 @@ services:
             - ./backend/php.ini:/usr/local/etc/php/conf.d/local.ini
             - ./services/geoserver/data:/var/geoserver
             - /var/run/docker.sock:/var/run/docker.sock 
+            - '/etc/localtime:/etc/localtime:ro'
         environment:
             SERVICE_NAME: app
             SERVICE_TAGS: dev
@@ -137,6 +142,7 @@ services:
             - ./backend/php.ini:/usr/local/etc/php/conf.d/local.ini
             - ./services/geoserver/data:/var/geoserver
             - /var/run/docker.sock:/var/run/docker.sock 
+            - '/etc/localtime:/etc/localtime:ro'
         environment:
             SERVICE_NAME: app
             SERVICE_TAGS: dev
@@ -154,6 +160,7 @@ services:
         volumes:
             - ./backend:/var/www 
             - ./backend/nginx.conf:/etc/nginx/conf.d/app.conf
+            - '/etc/localtime:/etc/localtime:ro'
         deploy:
             mode: replicated
             replicas: 1
@@ -187,6 +194,8 @@ services:
             - ALLOW_IP_RANGE=0.0.0.0/0
         volumes:
             - ./services/postgresql/data:/var/lib/postgresql
+            - ./services/postgresql/.pgpass:/root/.pgpass
+            - '/etc/localtime:/etc/localtime:ro'
         ports:
             - "5432:5432"
         networks:
@@ -204,6 +213,8 @@ services:
         deploy:
             mode: replicated
             replicas: 1
+        volumes:
+            - '/etc/localtime:/etc/localtime:ro'
         networks:
             - mq-nw
         environment:
@@ -229,6 +240,7 @@ services:
         volumes:
             - ./services/logs/elasticsearch/data:/usr/share/elasticsearch/data
             - ./services/logs/elasticsearch/config/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
+            - '/etc/localtime:/etc/localtime:ro'
 
     logstash:
         hostname: 'logstash'
@@ -236,6 +248,7 @@ services:
         volumes:
             - ./services/logs/logstash/config/logstash.yml:/usr/share/logstash/config/logstash.yml
             - ./services/logs/logstash/pipeline/logstash.conf:/usr/share/logstash/pipeline/logstash.conf
+            - '/etc/localtime:/etc/localtime:ro'
         environment:
             LS_JAVA_OPTS: "-Xmx256m -Xms256m"
         networks:
@@ -254,6 +267,7 @@ services:
             - "9002:5601"
         volumes:
             - ./services/logs/kibana/config/kibana.yml:/usr/share/kibana/config/kibana.yml
+            - '/etc/localtime:/etc/localtime:ro'
         networks:
             - elk-nw
         deploy:
@@ -293,6 +307,7 @@ services:
             - ./services/geoserver/tomcat_settings/logs:/usr/local/tomcat/logs
             - ./services/geoserver/rasters:/root/Rasters
             - ./services/geoserver/font/Ubuntu-R.ttf:/usr/share/fonts/truetype/Ubuntu-R.ttf
+            - '/etc/localtime:/etc/localtime:ro'
     
     
 

@@ -163,7 +163,8 @@ export class ColumnArrayFormElementComponent
         
         setTimeout(() => 
         {
-            $('#'+this.inFormElementId+'inFormModal').modal('show');
+            $('#'+this.inFormElementId+'inFormModal').modal('show')
+            .on('hidden.bs.modal', () => this.setFormOverflow());
         }, 100);
     }
     
@@ -389,6 +390,10 @@ export class ColumnArrayFormElementComponent
     closeModal(id)
     {
         BaseHelper.closeModal(id);
+    }
+    
+    setFormOverflow()
+    {
         setTimeout(() => 
         {
             if(this.upFormId.length > 0)

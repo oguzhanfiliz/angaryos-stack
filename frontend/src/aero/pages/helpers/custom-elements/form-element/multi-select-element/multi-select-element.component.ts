@@ -28,37 +28,32 @@ export class MultiSelectElementComponent
     @Input() filterType: string;
     @Input() upColumnName: string;
     @Input() upFormId: string = "";
-    @Input() showClearDataButton;
+    @Input() showClearDataButton: boolean = false;
     @Input() createForm: boolean = false;
     
+    @Output() changed = new EventEmitter();
+    
     record = null;
+    selectObject = null
     
     baseElementSelector = "";
     val = [];
     selectedVal = [];
     deletedVal = [];
     addedVal = [];
-
-    @Output() changed = new EventEmitter();
-
+    
     constructor(
         private messageHelper: MessageHelper,
         private sessionHelper: SessionHelper
-    ) 
-    {
-        if(this.showClearDataButton == null)
-            this.showClearDataButton = false;
-    }
+    ) { }
 
     ngAfterViewInit()
     {         
-        if(this.upFormId.length > 0)
-            this.baseElementSelector = '[ng-reflect-id="'+this.upFormId+'"] ';
+        if(this.upFormId.length > 0) this.baseElementSelector = '[ng-reflect-id="'+this.upFormId+'"] ';
 
-        if(this.showClearDataButton == "false")
-            this.showClearDataButton = false;
-
-        this.elementOperationsInterval();
+        //this.elementOperationsInterval();
+        var e = $(this.baseElementSelector+' select[name="'+this.name+'"]');
+        e.html(e.html()+" ");
     }
     
     ngOnChanges()
@@ -109,7 +104,7 @@ export class MultiSelectElementComponent
         else
             this.val = this.value.split(","); 
             
-        //this.elementOperationsInterval();
+        this.elementOperationsInterval();
     }
     
     elementOperationsInterval()
@@ -140,11 +135,6 @@ export class MultiSelectElementComponent
                     break;
             }
         });        
-    }
-
-    handleChange(event)
-    {
-        this.changed.emit(event);
     }
     
     addSelect2Static()
@@ -242,7 +232,9 @@ export class MultiSelectElementComponent
         url += "/"+this.baseUrl + "/getSelectColumnData/" + this.columnName;
         
         var th = this;
-        $(this.baseElementSelector+' [name="'+this.name+'"]').select2(
+        
+        if(this.selectObject != null) this.selectObject.select2("destroy");
+        this.selectObject = $(this.baseElementSelector+' [name="'+this.name+'"]').select2(
         {
             ajax: 
             {
@@ -321,6 +313,7 @@ export class MultiSelectElementComponent
         }
         
         this.clearAndCacheDisplayNameOptions();
+        console.log(event.target.value);
         this.changed.emit(event);
     }
 
@@ -330,6 +323,7 @@ export class MultiSelectElementComponent
         if(!this.deletedVal.includes(id)) this.deletedVal.push(id);
         
         this.clearAndCacheDisplayNameOptions();
+        console.log(event.target.value);
         this.changed.emit(event);
     }
 
@@ -338,6 +332,7 @@ export class MultiSelectElementComponent
         var localKey = "user:"+BaseHelper.loggedInUserInfo.user.id+"."+this.baseUrl+"/form";
         $(this.baseElementSelector+' [name="'+this.name+'"] option[value="-9999"]').remove();
         var data = DataHelper.changeDataForFilterByGuiTypeSelectAndMultiSelect(this.columnName, this.name, localKey);
+        console.log(data);
         return data;
     }
 
@@ -358,7 +353,7 @@ export class MultiSelectElementComponent
         $('.select2-selection__choice').css('margin', '2px 2px 2px 0');
         $('.select2-selection--multiple').css('width', '100%');
         
-        setTimeout(() => $('.select2-selection--multiple').css('display', 'inline-table'), 600);
+        setTimeout(() => $('.select2-selection--multiple').css('display', 'inline-table'), 200);
     }
 
     getDisplayName(value)

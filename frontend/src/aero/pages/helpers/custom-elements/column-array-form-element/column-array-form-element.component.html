@@ -66,7 +66,7 @@
                         columnName="{{ columnName  }}"
                         class="form-control"
                         upFormId="{{ upFormId }}"
-                        showClearDataButton="true"
+                        [showClearDataButton]="true"
                         baseUrl="{{ 'tables/' + tableName }}" [createForm]="createForm"
                         upColumnName="{{ columnArray['columns'][columnName]['up_column_name'] }}"
                         srid="{{ columnArray['columns'][columnName]['srid'] }}"
