@@ -102,7 +102,9 @@ export class RelationColumnElementComponent
     }
     
     openRelationDataInfoPage(event, item = null)
-    {        
+    {     
+        if(event.ctrlKey == false && event.altKey == false) return;
+           
         var url = this.getRelationDataUrl();
         if(item != null) url += "?source="+item['source'];
         

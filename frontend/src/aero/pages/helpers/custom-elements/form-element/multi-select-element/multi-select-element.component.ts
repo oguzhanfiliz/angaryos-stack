@@ -186,7 +186,7 @@ export class MultiSelectElementComponent
                     element.select2(
                     {
                         allowClear: true,
-                        placeholder: $(this.baseElementSelector+' [name="'+this.name+'"] span').html(),
+                        placeholder: th.placeholder,
                         templateSelection: function (data, container) 
                         {
                             $(data.element).attr('item-source', data.id);
@@ -266,7 +266,7 @@ export class MultiSelectElementComponent
             allowClear: this.showClearDataButton,
             closeOnSelect: false,
             minimumInputLength: 3,
-            placeholder: $(this.baseElementSelector+' [name="'+this.name+'"] span').html(),
+            placeholder: th.placeholder,
             sorter: function(data) 
             {
                 return data.sort(function(a, b) 

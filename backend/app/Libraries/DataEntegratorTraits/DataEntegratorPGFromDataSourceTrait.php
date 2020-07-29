@@ -8,7 +8,7 @@ trait DataEntegratorPGFromDataSourceTrait
 {    
     private function EntegratePostgresqlFromDataSourceUpdateRecords($remoteConnection, $tableRelation, $table, $remoteTable, $columnRelations, $direction)
     {
-        $count = $remoteConnection->table($table->name)->count('id');
+        $count = $remoteConnection->table($remoteTable->name_basic)->count('id');
         $step = 0;
         
         $start = 0;
