@@ -373,11 +373,12 @@ export class DashboardComponent
         await this.fillDashboardsItemDataStandartLoader(dashboardId, className, subClassName, itemName, options, func, url);
     }
     
-    async fillDashboardsItemDataStandartLoader(dashboardId, className, subClassName, itemName, options = {}, func = null)
+    async fillDashboardsItemDataStandartLoader(dashboardId, className, subClassName, itemName, options = {}, func = null, url = null)
     {
         if(this.deletedDashboards.includes(dashboardId)) return;
         
-        var url = this.sessionHelper.getBackendUrlWithToken()+"dashboards/getData/dashboards:"+className+":"+subClassName+":"+itemName;
+        if(url == null) url = this.sessionHelper.getBackendUrlWithToken()+"dashboards/getData/dashboards:"+className+":"+subClassName+":"+itemName;
+        
         var th = this;
 
         await this.sessionHelper.doHttpRequest("GET", url) 
