@@ -2,12 +2,14 @@ import sys
 import os
 import logging
 import traceback
+import datetime
     
 
 
 try:
     
     #Log Vars
+    
     log_file = "update.log"
     
     logger = logging.getLogger(__name__)
@@ -24,6 +26,7 @@ try:
     
     
     #General Vars
+
     debug = True
     error_trace = True
     started = False
@@ -35,6 +38,7 @@ try:
 
 
     #Fonctions    
+
     def write_log(l, s):#l => 1: info, 2:warning, 3:error
         global debug
         
@@ -53,26 +57,23 @@ try:
 
         started = True  
 
-    def copy_to_temp(path):
-        write_log(1, "Copy to temp: " + path)
-
-        os.popen("mkdir -p ./temp/"+path).read()
-
-        if os.path.isfile("./"+path):
-            os.popen("rm -rf ./temp/"+path).read()
-            os.popen("cp ./"+path+" ./temp/"+path).read()
-        else:
-            os.popen("cp -rf ./"+path+" ./temp/"+path+"/../").read()
-
-    def clone_from_temp(path):
-        write_log(1, "Clone from temp: " + path)
-
-        if os.path.isfile("./"+path):
-            os.popen("cp ./temp/"+path+" ./"+path).read()
-        else:
-            os.popen("cp -rf ./temp/"+path+"/ ./"+path+"/../").read()
-
+    def copy(source, target):
+        write_log(1, "Copy " + source + " > " + target)
         
+        if source[-1] == "/":
+            source = source[0: -1]
+
+        if target[-1] == "/":
+            target = target[0: -1]
+
+        targetParent = os.path.dirname(target)
+
+        if os.path.isfile("./"+source):
+            os.popen("mkdir -p "+targetParent).read()
+        else:
+            os.popen("mkdir -p "+target).read()
+
+        os.system("rsync -a --info=progress2 "+source+" "+targetParent)
 
     def temp_file_operatisons():
         os.popen("rm -rf ./temp").read()
@@ -80,18 +81,45 @@ try:
 
         write_log(1, "Temp file operations OK")
 
+    def save_backup():
+        write_log(1, "Save backup files starting")
+
+        now = datetime.datetime.now()
+        dateTimeStr = str(now.year)+"_"+str(now.month)+"_"+str(now.day)+"_"+str(now.hour)+"_"+str(now.minute)
+        basePath = "./../AngaryosBackup"+dateTimeStr+"/"
+
+        files = [
+            "backend/.env", 
+            "backend/app/",
+            "backend/config/", 
+            "backend/routes/", 
+            "frontend/src/aero/", 
+            "services/geoserver/", 
+            "services/postgresql/data/"
+        ]
+
+        for f in files:
+            copy("./"+f, basePath+f)
+
+        write_log(1, "Save backup files OK")  
+
     def save_ignored_files():
         write_log(1, "Save ignored files starting")
 
         temp_file_operatisons()
         
-        copy_to_temp("frontend/src/environments/")    
-        copy_to_temp("services/postgresql/data/")   
+        files = [
+            "frontend/src/environments/", 
+            "services/postgresql/data/"
+        ]
+
+        for f in files:
+            copy("./"+f, "./temp/"+f)      
 
         f = open(".updateignore", "r")
         for item in f:
             if len(item.strip()) > 0:
-                copy_to_temp(item.strip())        
+                copy("./"+item.strip(), "./temp/"+item.strip())       
         f.close()
         
         write_log(1, "Save ignored files OK")
@@ -99,16 +127,21 @@ try:
     def clone_ignored_files():  
         write_log(1, "Clone ignored files starting")
 
-        clone_from_temp("frontend/src/environments/") 
-        clone_from_temp("services/postgresql/data/")  
+        files = [
+            "frontend/src/environments/", 
+            "services/postgresql/data/"
+        ]
+
+        for f in files:
+            copy("./temp/"+f, "./"+f) 
         
         f = open(".updateignore", "r")
         for item in f:
             if len(item.strip()) > 0:
-                clone_from_temp(item.strip())        
+                copy("./temp/"+item.strip(), "./"+item.strip())      
         f.close()
 
-        write_log(1, "Clone ignored files starting")
+        write_log(1, "Clone ignored files OK")
 
     def stop_stack():
         os.popen("docker stack rm angaryos 2> /dev/null").read()
@@ -131,8 +164,6 @@ try:
         os.popen("rm -rf ./Angaryos/").read()
         write_log(1, "Remove repo OK")
 
-        
-
     def remove_temp():
         os.popen("rm -rf ./temp").read()
 
@@ -150,6 +181,7 @@ try:
     def main():
         pre_load()
         stop_stack()  
+        save_backup()
         save_ignored_files()
         clone_repo()     
         clone_ignored_files()
