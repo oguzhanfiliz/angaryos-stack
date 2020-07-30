@@ -57,7 +57,7 @@ try:
 
         started = True  
 
-    def copy(source, target):
+    def copy(source, target, mv = False):
         write_log(1, "Copy " + source + " > " + target)
         
         if source[-1] == "/":
@@ -73,7 +73,11 @@ try:
         else:
             os.popen("mkdir -p "+target).read()
 
-        os.system("rsync -a --info=progress2 "+source+" "+targetParent)
+        cmd = "rsync -a --info=progress2"
+        if mv:
+            cmd = cmd + " --remove-source-files"
+            
+        os.system(cmd+" "+source+" "+targetParent)
 
     def temp_file_operatisons():
         os.popen("rm -rf ./temp").read()
@@ -133,12 +137,12 @@ try:
         ]
 
         for f in files:
-            copy("./temp/"+f, "./"+f) 
+            copy("./temp/"+f, "./"+f, True) 
         
         f = open(".updateignore", "r")
         for item in f:
             if len(item.strip()) > 0:
-                copy("./temp/"+item.strip(), "./"+item.strip())      
+                copy("./temp/"+item.strip(), "./"+item.strip(), True)      
         f.close()
 
         write_log(1, "Clone ignored files OK")
