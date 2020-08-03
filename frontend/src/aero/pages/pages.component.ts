@@ -19,6 +19,9 @@ declare var $: any;
 export class PagesComponent 
 {
   user = {};
+  appName = "";
+  profilePictureUrl = ""
+  userEditUrl = ""
   //searchIntervalId = -1;
 
   constructor(
@@ -31,6 +34,8 @@ export class PagesComponent
     this.fillVariablesFromLoggedInUserInfo();
     
     this.pageRutine();
+
+    this.appName = environment.appName.charAt(0).toUpperCase() + environment.appName.slice(1);
 
     $('body').keydown((event) => this.keyEvent(event));
     $('body').keyup((event) => this.keyEvent(event));
@@ -79,21 +84,21 @@ export class PagesComponent
     .then((data) =>
     {
       this.user = data['user'];
+      if(this.user['email'] == null || this.user['email'].length == 0) this.user['email'] = this.user['tc'];
+      
+      this.fillProfilePictureUrl();
+      this.fillUserEditUrl();
+      
       this.aeroThemeHelper.updateBaseMenu();
     })
   }
 
-  getAppName()
-  {
-    return environment.appName.charAt(0).toUpperCase() + environment.appName.slice(1);
-  }
-
-  getProfilePictureUrl()
+  fillProfilePictureUrl()
   {
     if(this.user['profile_picture'] == null) return BaseHelper.noImageUrl;
 
     var temp = BaseHelper.jsonStrToObject(this.user['profile_picture']);
-    return BaseHelper.getFileUrl(temp[0], '');
+    this.profilePictureUrl = BaseHelper.getFileUrl(temp[0], '');
   }
 
   searchInMenuInputChanged(event) 
@@ -228,8 +233,27 @@ export class PagesComponent
     return theme == ('theme-'+name)
   }
 
+  getUserEditUrl()
+  {
+    return BaseHelper.baseUrl+"table/users/"+BaseHelper.loggedInUserInfo.user.id+"/edit";
+  }
+
+  getAppName()
+  {
+    return environment.appName.charAt(0).toUpperCase() + environment.appName.slice(1);
+  }
+
+  getProfilePictureUrl()
+  {
+    if(this.user['profile_picture'] == null) return BaseHelper.noImageUrl;
+
+    var temp = BaseHelper.jsonStrToObject(this.user['profile_picture']);
+    return BaseHelper.getFileUrl(temp[0], '');
+  }
+
   isUserEditOwn()
   {
+    if(typeof BaseHelper.loggedInUserInfo == "undefined") return false;
     if(typeof BaseHelper.loggedInUserInfo['auths'] == "undefined") return false;
     if(typeof BaseHelper.loggedInUserInfo['auths']['tables'] == "undefined") return false;
     if(typeof BaseHelper.loggedInUserInfo['auths']['tables']['users'] == "undefined") return false;
@@ -238,8 +262,8 @@ export class PagesComponent
     return true;
   }
 
-  getUserEditUrl()
+  fillUserEditUrl()
   {
-    return BaseHelper.baseUrl+"table/users/"+BaseHelper.loggedInUserInfo.user.id+"/edit";
+    this.userEditUrl = BaseHelper.baseUrl+"table/users/"+BaseHelper.loggedInUserInfo.user.id+"/edit";
   }
 } 

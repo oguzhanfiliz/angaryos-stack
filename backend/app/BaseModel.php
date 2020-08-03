@@ -83,7 +83,11 @@ class BaseModel extends Model
         $str = strtolower($str);
         if(substr($str, 0, 5) == 'point') return TRUE;
         if(substr($str, 0, 10) == 'linestring') return TRUE;
-        if(substr($str, 0, 7) == 'polygon') return TRUE; 
+        if(substr($str, 0, 7) == 'polygon') return TRUE;
+        
+        if(substr($str, 0, 10) == 'multipoint') return TRUE;
+        if(substr($str, 0, 15) == 'multilinestring') return TRUE;
+        if(substr($str, 0, 12) == 'multipolygon') return TRUE; 
 
         return FALSE;
     }

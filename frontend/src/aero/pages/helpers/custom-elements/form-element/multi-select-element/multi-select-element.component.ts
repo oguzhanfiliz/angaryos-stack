@@ -57,7 +57,7 @@ export class MultiSelectElementComponent
     }
     
     ngOnChanges()
-    {         
+    {   
         if(typeof this.recordJson != "undefined" && this.recordJson != "")
             this.record = BaseHelper.jsonStrToObject(this.recordJson);
             
@@ -71,14 +71,22 @@ export class MultiSelectElementComponent
             
             if(this.createForm)
             {
-                if(this.defaultData == null || this.defaultData == "") return;
+                if(this.defaultData == null || this.defaultData == "") 
+                {
+                    this.elementOperationsInterval();
+                    return;
+                }
 
                 temp = BaseHelper.jsonStrToObject(this.defaultData);
             }
             else
                 temp = BaseHelper.jsonStrToObject(this.valueJson);
             
-            if(temp == null) return;
+            if(temp == null)
+            {
+                this.elementOperationsInterval();
+                return;
+            }
             
             for(var i = 0; i < temp.length; i++)
             {
@@ -313,7 +321,6 @@ export class MultiSelectElementComponent
         }
         
         this.clearAndCacheDisplayNameOptions();
-        console.log(event.target.value);
         this.changed.emit(event);
     }
 
@@ -323,7 +330,6 @@ export class MultiSelectElementComponent
         if(!this.deletedVal.includes(id)) this.deletedVal.push(id);
         
         this.clearAndCacheDisplayNameOptions();
-        console.log(event.target.value);
         this.changed.emit(event);
     }
 
@@ -332,7 +338,6 @@ export class MultiSelectElementComponent
         var localKey = "user:"+BaseHelper.loggedInUserInfo.user.id+"."+this.baseUrl+"/form";
         $(this.baseElementSelector+' [name="'+this.name+'"] option[value="-9999"]').remove();
         var data = DataHelper.changeDataForFilterByGuiTypeSelectAndMultiSelect(this.columnName, this.name, localKey);
-        console.log(data);
         return data;
     }
 
