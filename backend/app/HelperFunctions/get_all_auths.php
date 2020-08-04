@@ -45,6 +45,7 @@ return Cache::rememberForever($key, function()
     $auths['dashboards:RefreshableNumber:JobCount:0'] = 'Göstergeler Bekleyen İş Sayısı';
     $auths['dashboards:GraphicXY:Test:0'] = 'X/Y Grafiği Test Gösterge';
     $auths['dashboards:GraphicPie:Test:0'] = 'Pasta Grafiği Test Gösterge';
+    $auths['dashboards:ComboBoxList:Test:0'] = 'ComboBoxList Test Gösterge';
     
     
     

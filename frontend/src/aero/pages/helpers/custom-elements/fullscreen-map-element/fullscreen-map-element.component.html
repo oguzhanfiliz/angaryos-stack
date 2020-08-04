@@ -96,6 +96,11 @@
             <td width="5000px">
 
             </td>
+            <td *ngIf="netcadAuthControl() && !isMobileDevice()" width="5px">
+                <button (click)="addNetcadFeatures()" class="btn btn-sm btn-primary" type="button">
+                    Netcad 'den Yükle  
+                </button>
+            </td>
             <td *ngIf="kmzAuthControl() && !isMobileDevice()" width="5px">
                 <button (click)="selectKmzFile()" class="btn btn-sm btn-primary" type="button">
                     KMZ Yükle   

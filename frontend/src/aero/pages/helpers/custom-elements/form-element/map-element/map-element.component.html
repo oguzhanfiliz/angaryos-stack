@@ -31,10 +31,41 @@ value="{{ value }}">
                     </li>
                  </ul>--->
                 
+                <div                                                  
+                    class="btn-group" 
+                    id="map-menu"
+                    ngbDropdown role="group"
+                    aria-label="Button group with nested dropdown">
+
+                    <button
+                        class="btn btn-icon btn-sm float-right btn-primary pull-right" 
+                        id="drawButton"  
+                        ngbDropdownToggle> 
+
+                        <span style="font-size: 15px;" class="ti-menu" ></span>
+                    </button>
+
+                    <div ngbDropdownMenu> 
+                        <a 
+                            (click)="addNetcadFeatures()"
+                            class="dropdown-item"
+                            ngbDropdownItem>
+
+                            NetCAD 'den Al
+                        </a>    
+                        <a 
+                            (click)="addNetcadFeatures()"
+                            class="dropdown-item"
+                            ngbDropdownItem>
+
+                            Kmz Yükle
+                        </a>  
+                    </div>
+                </div>
+                
                 <button 
                     (click)="emitChangedEvent()" 
-                    href="javascript:void(0);" 
-                    class="btn btn-primary btn-sm"id="map-menu"> 
+                    class="btn btn-primary btn-sm" id="save-button"> 
                     
                     Kaydet
                 </button>

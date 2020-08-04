@@ -34,16 +34,28 @@ export class MessageHelper
         });
     }
     
-    public swalPrompt(title, confirmText = "Tamam", cancelText = "İptal")
+    public swalPrompt(title, confirmText = "Tamam", cancelText = "İptal", type = "text")
     {
         return Swal.fire(
         {
             title: title,
-            input: 'text',
+            input: type,
             inputAttributes: 
             {
               autocapitalize: 'off'
             },
+            showCancelButton: true,
+            confirmButtonText: confirmText,
+        });
+    }
+    
+    public swalComboBox(title, inputOptions, confirmText = "Tamam", cancelText = "İptal")
+    {
+        return Swal.fire(
+        {
+            title: title,
+            input: "select",
+            inputOptions: inputOptions,
             showCancelButton: true,
             confirmButtonText: confirmText,
         });

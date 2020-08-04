@@ -132,6 +132,12 @@ section.content
     width: 100% !important;
 }
 
+.comboboxlist-td
+{
+  font-size: 12px !important;
+  padding: 2 !important;
+}
+
 #close
 {
     position: absolute !important;

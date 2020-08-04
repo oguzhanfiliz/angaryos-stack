@@ -265,10 +265,35 @@ export class FullScreenMapElementComponent
     {
         $('#kmzFile').click();
     }
+    
+    addNetcadFeatures()
+    {
+        this.messageHelper.swalPrompt("Netcad nokta dizisi:", "Tamam", "İptal", "textarea")
+        .then((data) =>
+        {
+            if(typeof data["value"] == "undefined") return;
+            
+            this.messageHelper.swalComboBox("Nesne tipi", {point: "Nokta", linestring: "Çizgi", polygon: "Alan"})
+            .then((featureType) =>
+            {
+                var wkt = MapHelper.getWktFromNetcad(data['value'], featureType["value"]);                
+                var feature = MapHelper.getFeatureFromWkt(wkt, MapHelper.userProjection);
+                MapHelper.addFeatures(this.map, [feature]);
+                MapHelper.zoomToFeature(this.map, feature);
+                
+                this.addFeatureOnVectorFeaturesTree(feature);
+            });
+        });
+    }
 
     kmzAuthControl()
     {
         return this.sessionHelper.kmzAuthControl();
+    }
+    
+    netcadAuthControl()
+    {
+        return true;
     }
     
     isUpTableRecordSelected()

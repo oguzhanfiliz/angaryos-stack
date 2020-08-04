@@ -158,6 +158,7 @@ array_push($adminAuths, 'dashboards:RefreshableNumber:JobCount:0');
 
 array_push($adminAuths, 'dashboards:GraphicXY:Test:0');
 array_push($adminAuths, 'dashboards:GraphicPie:Test:0');
+array_push($adminAuths, 'dashboards:ComboBoxList:Test:0');
 
 
 

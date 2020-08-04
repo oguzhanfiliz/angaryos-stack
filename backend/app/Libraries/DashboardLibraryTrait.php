@@ -17,6 +17,38 @@ trait DashboardLibraryTrait
         ];
     }
     
+    private function ComboBoxListTestData()
+    {
+        $data = 
+        [
+            ['html' => '<td class="w70 comboboxlist-td"><img class="rounded-circle file-preview" src="https://192.168.10.185/assets/img/404.png" alt=""></td><td class="comboboxlist-td">Ana Yönetici</td><td class="comboboxlist-td">57 dk/gün</td>'],
+            ['html' => '<td class="w70 comboboxlist-td"><img class="rounded-circle file-preview" src="https://192.168.10.185/assets/img/404.png" alt=""></td><td class="comboboxlist-td">Serbest Kullanıcı</td><td class="comboboxlist-td">45 dk/gün</td>']
+        ];
+
+        $comboBoxData = 
+        [
+            [
+                'source' => '',
+                'display' => 'Seçiniz'
+            ],
+            [
+                'source' => 'secenek1',
+                'display' => '1. Seçenek'
+            ],
+            [
+                'source' => 'secenek2',
+                'display' => '2. Seçenek'
+            ]
+        ];
+
+        return 
+        [
+            'title' => 'En Aktif Üyeler',
+            'combobox' => $comboBoxData,
+            'data' => $data
+        ];
+    }
+    
     private function GraphicXYTestData()
     {
         return 

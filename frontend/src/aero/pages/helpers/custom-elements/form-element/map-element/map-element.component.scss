@@ -1,6 +1,20 @@
 #map-menu
 {
   position: absolute;
+  right: 60;
+  top: 10;
+  z-index: 999;
+  
+  a
+  {
+    font-size: 12px;
+    padding: 2px !important;
+  }
+}
+
+#save-button
+{
+  position: absolute;
   right: 10;
   top: 10;
   z-index: 999;

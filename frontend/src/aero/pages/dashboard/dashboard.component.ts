@@ -311,8 +311,6 @@ export class DashboardComponent
     
     async fillDashboardsItemDataGraphicPie(dashboardId, subClassName, itemName)
     {
-        console.log(dashboardId, subClassName, itemName);
-
         var func = (th, dashboardId, subClassName, itemName, data) => 
         {
             data["bindto"] = "#GraphicPie"+"_"+subClassName+"_"+itemName;

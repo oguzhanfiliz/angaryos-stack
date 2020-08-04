@@ -185,10 +185,7 @@
                         <div id="{{ item['class']+'_'+item['subClass']+'_'+item['item'] }}">
                             <table class="table table-hover theme-color c_table">
                                 <tbody>
-                                    <tr *ngFor="let item of item['data']['data']">
-                                        <td style="padding: 5;" class="w70"><img class="rounded-circle file-preview" src="{{ item['profile_pic_url'] }}" alt=""></td>
-                                        <td style="padding: 5;">{{ item['name_basic'] + ' ' + item['surname'] }}</td>
-                                        <td style="padding: 5;">{{ item['ortalama'] }} dk/gün</td>
+                                    <tr *ngFor="let item of item['data']['data']" [innerHTML]="item['html']">
                                     </tr>
                                 </tbody>
                             </table>

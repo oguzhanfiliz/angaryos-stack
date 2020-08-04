@@ -128,6 +128,29 @@ export class MapElementComponent
         MapHelper.deleteFeature(this.map, i);
         this.emitDataChangedEvent();
     }
+    
+    addNetcadFeatures()
+    {   
+        setTimeout(() => $(document).off('focusin.modal'), 500);
+             
+        this.messageHelper.swalPrompt("Netcad nokta dizisi:", "Tamam", "İptal", "textarea")
+        .then((data) =>
+        {
+            if(typeof data["value"] == "undefined") return;
+                
+            var wkt = MapHelper.getWktFromNetcad(data['value'], this.type.toLowerCase().replace('multi', ''));   
+
+            var feature = MapHelper.getFeatureFromWkt(wkt, MapHelper.userProjection);
+            MapHelper.addFeatures(this.map, [feature]);
+            MapHelper.zoomToFeature(this.map, feature);
+            
+            if(!this.multiple) 
+            {
+                MapHelper.showNoMultipleConfirm(this.map)
+                .then(() => this.emitDataChangedEvent());
+            }
+        });
+    }
 
 
 

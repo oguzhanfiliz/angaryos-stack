@@ -1072,9 +1072,9 @@ export abstract class MapHelper
       return sizes[Math.round(zoom)];
   }
 
-  public static showNoMultipleConfirm(map, e)
+  public static showNoMultipleConfirm(map, e = null)
   {
-      Swal.fire(
+      return Swal.fire(
       {
           title: 'Emin misiniz?',
           text: "Bu nesneyi ekleyebilmek için eski nesneler silinecek!",
@@ -1094,13 +1094,52 @@ export abstract class MapHelper
           {
               this.clearAllFeatures(map);
               this.getVectorSource(map).addFeature(lastFeature);
-              this.emitDataChangedEvent(map, e);
+              if(e != null) this.emitDataChangedEvent(map, e);
           }
           else
               MapHelper.getVectorSource(map).removeFeature(lastFeature);
       });
   }
 
+  public static getWktFromNetcad(data, featureType)
+  {
+    var wkt = "";   
+                
+    if(featureType == "polygon") wkt += "POLYGON((";
+    else if(featureType == "linestring")  wkt += "LINESTRING(";
+    else wkt += "POINT(";
+
+    var firstY, firstX;
+
+    data.split("\n").forEach(function(coord)
+    {
+        if(coord.substr(0,1) == "Y") return;
+        if(coord.length == 0) return;
+
+        var i = 0;
+        coord.split("\t").forEach(function(item)
+        {
+            if(++i >= 3) return;
+
+            while(item.indexOf(" ") > 0)
+                item = item.replace(" ","")
+
+            if(!firstY) firstY = item;
+            else if(!firstX) firstX = item;
+
+            wkt +=  item + " ";
+
+        });
+
+        wkt = wkt.substr(0, wkt.length-1) + ",";                        
+    });
+
+    if(featureType == "polygon") wkt += firstY + " " + firstX + "))";
+    else if(featureType == "linestring")  wkt = wkt.substr(0, wkt.length-2) + ")";
+    else wkt = wkt.substr(0, wkt.length-2) + ")";
+    
+    return wkt;
+  }
   /*public static getTreeFromFeature(id, feature)
   {
     switch(feature.getGeometry().getType())

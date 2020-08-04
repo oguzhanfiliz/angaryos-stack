@@ -44,7 +44,7 @@ class DashboardLibrary
     
     public function ComboBoxList($param1, $param2)
     {
-        return $this->{'getComboBoxList'.$param1.$param2.'Data'}();
+        if($param1 == 'Test' && $param2 == '0') return $this->ComboBoxListTestData();
     }
     
     public function DataEntegratorStatus($param1, $param2)
