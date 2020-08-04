@@ -303,7 +303,9 @@ foreach($subscribers as $type => $set)
 }
 
 $subscribers['column']['image'][0] = $subscribers['column']['profile_picture'][0];
+$subscribers['column']['report_file'][0] = $subscribers['column']['profile_picture'][0];
 
 $subscribers['table']['sub_linestring_types'][0] = $subscribers['table']['sub_point_types'][0];
 $subscribers['table']['sub_polygon_types'][0] = $subscribers['table']['sub_point_types'][0];
 $subscribers['table']['sub_tables'][0] = $subscribers['table']['sub_point_types'][0];
+

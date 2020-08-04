@@ -40,6 +40,8 @@ export class FormComponent
 
     data = null;
     
+    temp = null;
+    
     constructor(
         public route: ActivatedRoute,
         public sessionHelper: SessionHelper,

@@ -5,13 +5,20 @@ namespace App\Listeners;
 use Maatwebsite\Excel\Facades\Excel;
 
 use \App\Libraries\ExcelStandartTableCollectionLibrary;
-use \App\Libraries\ExcelCustomTableCollectionLibrary;
 
 use DB;
 
 trait ReportSubscriberTrait 
 {
     /****        ****/
+    
+    private $collectiveInfoNames = 
+    [
+        'sum' => 'Toplam',
+        'count' => 'Adet',
+        'min' => 'En az',
+        'max' => 'En çok'
+    ];
     
     public function getDataForReport($model, $params)
     {
@@ -42,6 +49,11 @@ trait ReportSubscriberTrait
         
         $columns = $model->getFilteredColumns($params->columns);
         
+        $type = 'standart';//mapped
+        $startRow = 1;
+        $startCol = 'A';
+        $activeSheet = 0;
+        
         if($params->report_id > 0) 
         {
             $report = get_attr_from_cache('reports', 'id', $params->report_id, '*');
@@ -53,7 +65,11 @@ trait ReportSubscriberTrait
             'table_info' => $tableInfo,
             'records' => $records,
             'collectiveInfos' => $collectiveInfos, 
-            'columns' => $columns
+            'columns' => $columns,
+            'type' => $type,
+            'startRow' => $startRow,
+            'startCol' => $startCol,
+            'activeSheet' => $activeSheet
         ];
     }
     
@@ -122,22 +138,23 @@ trait ReportSubscriberTrait
     {
         $data = $this->FillReportFileInfo($data);
         
-        
         $fnc = 'responseTableReport';
         if(!isset($data['reportFile'])) $fnc .= 'Standart';
         else $fnc .= 'Custom';
         $fnc .= ucfirst($data['params']->report_format);
 
+        $this->InsertDownloadedReportRecord($data);
         
-        $report = $this->{$fnc}($data);
-        $this->SaveDownloadedReport($data);
-        return $report;
+        return $this->{$fnc}($data);
     }
     
-    private function SaveDownloadedReport($data)
+    private function SaveStandartDownloadedReport($data)
     {
         (new ExcelStandartTableCollectionLibrary($data))->store($data['storePath'], $data['storage']);
-        
+    }
+    
+    private function InsertDownloadedReportRecord($data)
+    {
         $uId = @\Auth::user()->id;
         
         $file =
@@ -184,73 +201,80 @@ trait ReportSubscriberTrait
     {
         $file = $data['reportFile'];
         
+        $reader = \PhpOffice\PhpSpreadsheet\IOFactory::createReader("Xlsx");
+        $spreadsheet = $reader->load($file->destination_path.$file->file_name);
         
+        $this->InjectDataInCustomTableReport($data, $file, $spreadsheet);
         
+        $writer = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($spreadsheet, "Xlsx");
+        mkdir($data['storePath'].'/../', 0777, TRUE);
+        $writer->save($data['storePath']);
         
-        
-        
-        
-        
-        
-        
-        
-        $spreadsheet = \PhpOffice\PhpSpreadsheet\IOFactory::load($file->destination_path.$file->file_name);
-        
-        //change it
-        $sheet = $spreadsheet->getActiveSheet();
-        //$sheet->setCellValue('A1', 'New Value');
-
-        //write it again to Filesystem with the same name (=replace)
-        
-        $writer = new \PhpOffice\PhpSpreadsheet\Writer\Xlsx($spreadsheet);
-        dd($writer->save('test.xlsx'));
-
-dd(99);
-
-
-        
-        $report = Excel::import(new ExcelCustomTableCollectionLibrary($data), $file->destination_path.$file->file_name, 'uploads');
-        return $report;
-        return $report->download($report ,'asd.xlsx');
-        return Excel::download($report, 'test.xlsx'/*$data['storePath'], $data['storage']*/);
-        
-        dd($report);
-        dd($report->store($data['storePath'], $data['storage']));
-        dd(9933 );
-        
-        
-        
-        
-
-        return Excel::download(Excel::import(new ExcelCustomTableCollectionLibrary($data), $file->destination_path.$file->file_name, 'uploads'), 'asd.xlsm');
+        header('Content-Disposition: attachment; filename='.$data['tableDisplayName'].'.xlsx');
+        return file_get_contents($data['storePath']);
+    }
     
+    private function GetSortedColumnsForInjectDataInCustomTableReport($data)
+    {
+        if(!@$data['params']->columnNames) return;
+        
+        $columns = [];    
+        foreach($data['params']->columnNames as $columnName)
+            foreach($data['columns'] as $column)
+                if($columnName == $column->name)
+                    $columns[$column->name] = $column;
+                
+        foreach($data['columns'] as $column)
+            if(!in_array($column->name, $data['params']->columnNames))
+                $columns[$column->name] = $column;
 
-        $file = $data['reportFile'];
-        //dd($file->destination_path.$file->file_name);
-        Excel::load('./uploads/2020/07/15/GecKalmaRapor.xlsm', function($reader) 
+        return $columns;
+    }
+    
+    private function InjectDataInCustomTableReport($data, $file, $spreadsheet)
+    {
+        $this->{'InjectDataInCustomTableReport'.ucfirst($data['type'])}($data, $file, $spreadsheet);
+    }
+    
+    private function InjectDataInCustomTableReportStandart($data, $file, $spreadsheet)
+    {
+        $sheet = $spreadsheet->getSheet($data['activeSheet']);
+        
+        $c = $data['startCol'];
+        $columns = $this->GetSortedColumnsForInjectDataInCustomTableReport($data);
+        foreach($columns as $column)
         {
-            dd(99);
-            // Getting all results
-            $results = $reader->get();
-        
-            // ->all() is a wrapper for ->get() and will work the same
-            $results = $reader->all();
-        
-        });
+            $sheet->setCellValue($c.$data['startRow'], $column->display_name);
+            
+            $i = $data['startRow'] + 1;
+            foreach($data['records'] as $record)
+                $sheet->setCellValue($c.($i++), $record->{$column->name});
+            
+            if(isset($data['collectiveInfos'][$column->name]))
+            {
+                $info = $data['collectiveInfos'][$column->name];
+                $sheet->setCellValue($c.$i, $this->collectiveInfoNames[$info['type']].': '.$info['data']);
+            }
+             
+            $c++;
+        }
     }
     
     public function responseTableReportStandartXlsx($data)
     {
+        $this->SaveStandartDownloadedReport($data);
         return Excel::download(new ExcelStandartTableCollectionLibrary($data), $data['tableDisplayName'].'.xlsx');
     }
     
     public function responseTableReportStandartCsv($data)
     {
+        $this->SaveStandartDownloadedReport($data);
         return Excel::download(new ExcelStandartTableCollectionLibrary($data), $data['tableDisplayName'].'.csv', \Maatwebsite\Excel\Excel::CSV);
     }
     
     public function responseTableReportStandartPdf($data)
     {
+        $this->SaveStandartDownloadedReport($data);
         return Excel::download(new ExcelStandartTableCollectionLibrary($data), $data['tableDisplayName'].'.pdf', \Maatwebsite\Excel\Excel::DOMPDF);
     }
 }

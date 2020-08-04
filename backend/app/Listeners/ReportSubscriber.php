@@ -21,7 +21,8 @@ class ReportSubscriber
         if($data['params']->report_id > 0)
         {
             $report = get_attr_from_cache('reports', 'id', $data['params']->report_id, '*');
-            if(strlen($report->report_file) > 0) $data['reportFile'] = json_decode($report->report_file)[0]; 
+            if(strlen($report->report_file) > 0 && $report->report_file != '[]') 
+                $data['reportFile'] = json_decode($report->report_file)[0]; 
         }
         
         return $this->{$fnc}($data);

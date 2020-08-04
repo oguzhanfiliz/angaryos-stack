@@ -6,6 +6,7 @@ import 'sweetalert2/dist/sweetalert2.min.css';
 declare var $: any;
 
 export type Types = 'success' | 'error' | 'warning' | 'info' | 'question';
+export type inputTypes = 'text' | 'textarea' ;
 
 @Injectable()
 export class MessageHelper 
@@ -17,7 +18,7 @@ export class MessageHelper
     public toastMessage(message: string, type:string = "info", duration:number = 3000)
     {
         let temp: string = type;
-        let iconType: Types = temp as Types;
+        let iconType: Types = temp as Types; 
 
         const Toast = Swal.mixin(
         {
@@ -34,12 +35,15 @@ export class MessageHelper
         });
     }
     
-    public swalPrompt(title, confirmText = "Tamam", cancelText = "İptal", type = "text")
+    public swalPrompt(title, confirmText = "Tamam", cancelText = "İptal", inputType = "text")
     {
+        let temp: string = inputType;
+        let tempInputType: inputTypes = temp as inputTypes; 
+        
         return Swal.fire(
         {
             title: title,
-            input: type,
+            input: tempInputType,
             inputAttributes: 
             {
               autocapitalize: 'off'

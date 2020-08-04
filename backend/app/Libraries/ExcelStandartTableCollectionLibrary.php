@@ -42,6 +42,10 @@ class ExcelStandartTableCollectionLibrary implements FromCollection, WithHeading
             foreach($this->data['columns'] as $column)
                 if($columnName == $column->name)
                     $columns[$column->name] = $column;
+                
+        foreach($this->data['columns'] as $column)
+            if(!in_array($column->name, $this->data['params']->columnNames))
+                $columns[$column->name] = $column;
 
         $this->data['columns'] = $columns;
     }
