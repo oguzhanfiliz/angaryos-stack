@@ -43,6 +43,8 @@ export class DateTimeElementComponent
 
     ngOnChanges()
     {
+        if(this.createForm && this.defaultData.length > 0) this.value = this.defaultData;
+        
         this.val = BaseHelper.dBDateTimeStringToHumanDateTimeString(this.value);
         this.val2 = BaseHelper.dBDateTimeStringToHumanDateTimeString(this.value2);
     }

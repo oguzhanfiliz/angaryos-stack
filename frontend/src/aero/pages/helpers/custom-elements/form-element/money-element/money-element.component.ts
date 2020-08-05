@@ -32,6 +32,8 @@ export class MoneyElementComponent
 
     ngOnChanges()
     {
+        if(this.createForm && this.defaultData.length > 0) this.value = this.defaultData;
+        
         this.val = this.value;
         this.unit = this.type.split(':')[1].toUpperCase();
     }

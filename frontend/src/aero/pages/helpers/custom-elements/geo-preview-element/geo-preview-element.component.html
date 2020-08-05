@@ -6,6 +6,7 @@
             <a 
                 *ngIf="mapAuthControl() && !isElementNull()" 
                 href="{{ getBaseUrl() }}map#zoomTo={{ getZoomToJson() }}" 
+                target="_blank"
                 class=" waves-effect waves-block btn btn-sm btn-primary" 
                 style="margin-top: -3; padding: 3px !important;">
                 

@@ -82,7 +82,9 @@ class TableGeoServerOperationsLibrary
     public function StyleEventForUpdate($params)
     {
         $oldStyleName = $params['record']->name;
-        $newStyleName = $params['requests']['name'];
+        
+        $newStyleName = @$params['requests']['name'];
+        if(strlen($newStyleName) == 0) $newStyleName = $params['record']->name;
 
         if(isset($params['requests']['style_code']))
             $SLD = $params['requests']['style_code'];

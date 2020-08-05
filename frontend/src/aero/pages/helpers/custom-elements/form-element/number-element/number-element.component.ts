@@ -8,7 +8,7 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
 })
 export class NumberElementComponent
 {
-    @Input() defaultData: string;
+    @Input() defaultData: string = "";
     @Input() value: string;
     @Input() name: string;
     @Input() class: string;
@@ -18,6 +18,11 @@ export class NumberElementComponent
     @Input() createForm: boolean = false;
 
     @Output() changed = new EventEmitter();
+    
+    ngOnChanges()
+    {
+        if(this.createForm && this.defaultData.length > 0) this.value = this.defaultData;
+    }
 
     handleChange(event)
     {

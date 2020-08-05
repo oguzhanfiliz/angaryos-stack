@@ -43,6 +43,8 @@ export class TimeElementComponent
 
     ngOnChanges()
     {
+        if(this.createForm && this.defaultData.length > 0) this.value = this.defaultData;
+        
         this.val = this.value;
         this.val2 = this.value2;
     }

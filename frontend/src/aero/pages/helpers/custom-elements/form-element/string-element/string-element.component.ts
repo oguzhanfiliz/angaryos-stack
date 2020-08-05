@@ -18,6 +18,11 @@ export class StringElementComponent
     @Input() createForm: boolean = false;
 
     @Output() changed = new EventEmitter();
+    
+    ngOnChanges()
+    {
+        if(this.createForm && this.defaultData.length > 0) this.value = this.defaultData;
+    }
 
     handleChange(event)
     {
