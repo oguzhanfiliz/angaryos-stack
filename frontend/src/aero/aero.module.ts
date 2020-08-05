@@ -1,6 +1,6 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import {NgbModule} from '@ng-bootstrap/ng-bootstrap';
+import { NgbModule, NgbDropdownConfig } from '@ng-bootstrap/ng-bootstrap';
 
 import { PagesModule } from './pages/pages.module';
 
@@ -62,7 +62,8 @@ import { AeroThemeHelper } from './pages/helpers/aero.theme';
     MessageHelper,
     SessionHelper,
     GeneralHelper,
-    AeroThemeHelper
+    AeroThemeHelper,
+    NgbDropdownConfig
   ],
   bootstrap: 
   [

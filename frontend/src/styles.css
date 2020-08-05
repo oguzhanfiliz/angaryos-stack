@@ -135,7 +135,12 @@ section.content
 .comboboxlist-td
 {
   font-size: 12px !important;
-  padding: 2 !important;
+  padding: 2 !important;    
+}
+
+.comboboxlist-td i
+{
+    font-size: 13px;
 }
 
 #close

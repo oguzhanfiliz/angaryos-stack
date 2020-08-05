@@ -1,5 +1,5 @@
 import { Injector, NgModule } from '@angular/core';
-import {NgbModule} from '@ng-bootstrap/ng-bootstrap';
+import { NgbModule, NgbDropdownConfig } from '@ng-bootstrap/ng-bootstrap';
 
 import { GridsterModule } from 'angular-gridster2';
 
@@ -130,7 +130,7 @@ import { BooleanFastChangeElementComponent } from './helpers/custom-elements/boo
     NgbModule,
     GridsterModule 
   ],
-  providers: [ ],
+  providers: [ NgbDropdownConfig ],
   bootstrap: [PagesComponent],
   entryComponents: 
   [
