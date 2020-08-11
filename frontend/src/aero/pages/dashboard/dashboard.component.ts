@@ -338,7 +338,7 @@ export class DashboardComponent
         var func = (th, dashboardId, subClassName, itemName, data) => 
         {
             data['selectedValue'] = BaseHelper.readFromLocal(dataKey);
-            if(data['selectedValue'] == null || data['selectedValue'].length == 0) data['selectedValue'] = 'tum';
+            if(data['selectedValue'] == null) data['selectedValue'] = "";
 
             setTimeout(() =>
             {
@@ -366,6 +366,7 @@ export class DashboardComponent
         };
 
         var type = BaseHelper.readFromLocal(dataKey);
+        if(type == null) type = "";
         var url = this.sessionHelper.getBackendUrlWithToken()+"dashboards/getData/dashboards:"+className+":"+subClassName+":"+itemName+"?type="+type;
         
         await this.fillDashboardsItemDataStandartLoader(dashboardId, className, subClassName, itemName, options, func, url);

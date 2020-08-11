@@ -192,6 +192,8 @@ trait UserPolicyTrait
         
         $permissions = $this->getRecordPermissions($record);
         
+        if($permissions == NULL) return FALSE;
+        
         if(isset($permissions->{$permitName}) && !$permissions->{$permitName}) return FALSE;
         return TRUE;
     }

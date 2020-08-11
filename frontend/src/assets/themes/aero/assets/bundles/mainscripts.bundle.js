@@ -13,36 +13,39 @@ function skinChanger() {
 }
 
 function CustomScrollbar() {
-    $(".sidebar .menu .list").slimscroll({
-        height: "calc(100vh - 65px)",
-        color: "#eeeeee",
-        position: "right",
-        size: "1px",
-        alwaysVisible: !1,
-        borderRadius: "3px",
-        railBorderRadius: "0"
-    }), $(".navbar-right .dropdown-menu .body").slimscroll({
-        height: "330px",
-        color: "rgba(0,0,0,0.2)",
-        size: "3px",
-        alwaysVisible: !1,
-        borderRadius: "3px",
-        railBorderRadius: "0"
-    }), $(".chat-widget").slimscroll({
-        height: "310px",
-        color: "rgba(0,0,0,0.4)",
-        size: "2px",
-        alwaysVisible: !1,
-        borderRadius: "3px",
-        railBorderRadius: "2px"
-    }), $(".right-sidebar .slim_scroll").slimscroll({
-        height: "calc(100vh - 70px)",
-        color: "rgba(0,0,0,0.4)",
-        size: "2px",
-        alwaysVisible: !1,
-        borderRadius: "3px",
-        railBorderRadius: "0"
-    })
+    $.getScript('https://cdnjs.cloudflare.com/ajax/libs/jQuery-slimScroll/1.3.8/jquery.slimscroll.min.js', function()
+    {
+        $(".sidebar .menu .list").slimscroll({
+            height: "calc(100vh - 65px)",
+            color: "#eeeeee",
+            position: "right",
+            size: "1px",
+            alwaysVisible: !1,
+            borderRadius: "3px",
+            railBorderRadius: "0"
+        }), $(".navbar-right .dropdown-menu .body").slimscroll({
+            height: "330px",
+            color: "rgba(0,0,0,0.2)",
+            size: "3px",
+            alwaysVisible: !1,
+            borderRadius: "3px",
+            railBorderRadius: "0"
+        }), $(".chat-widget").slimscroll({
+            height: "310px",
+            color: "rgba(0,0,0,0.4)",
+            size: "2px",
+            alwaysVisible: !1,
+            borderRadius: "3px",
+            railBorderRadius: "2px"
+        }), $(".right-sidebar .slim_scroll").slimscroll({
+            height: "calc(100vh - 70px)",
+            color: "rgba(0,0,0,0.4)",
+            size: "2px",
+            alwaysVisible: !1,
+            borderRadius: "3px",
+            railBorderRadius: "0"
+        })
+    });
 }
 
 function CustomJs() {

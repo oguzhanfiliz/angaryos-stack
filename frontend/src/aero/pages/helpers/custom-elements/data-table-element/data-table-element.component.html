@@ -14,15 +14,15 @@
                             class="badge badge-danger" 
                             style="margin:2px;cursor: pointer;" >
                             
+                            <span style="font-size: 9px;font-weight: bold;" 
+                                (click)="clearColumnFilter(columnName)" 
+                                class="ti-close">
+                            </span>
+                            &nbsp;
                             <span 
                                 (click)="openDetailFilterModal(columnName)"
                                 [innerHTML]="params['filters'][columnName]['description']">
                                     
-                            </span>
-                            &nbsp;
-                            <span style="font-size: 9px;font-weight: bold;" 
-                                (click)="clearColumnFilter(columnName)" 
-                                class="ti-close">
                             </span>
                         </span>
                     </td>

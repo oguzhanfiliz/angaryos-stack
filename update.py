@@ -147,6 +147,9 @@ try:
 
         write_log(1, "Clone ignored files OK")
 
+    def dump_db():
+        os.popen("docker exec $(docker container ls | grep postgis | awk -F ' ' '{print $1}') /bin/bash -c 'pg_dump -Fc postgres -U postgres -h postgresql -f /var/lib/postgresql/`date +%Y-%m-%d_%H:%M`.dump'").read()
+
     def stop_stack():
         os.popen("docker stack rm angaryos 2> /dev/null").read()
 
@@ -184,6 +187,7 @@ try:
 
     def main():
         pre_load()
+        dump_db()
         stop_stack()  
         save_backup()
         save_ignored_files()

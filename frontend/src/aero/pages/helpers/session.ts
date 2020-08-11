@@ -61,7 +61,7 @@ export class SessionHelper
     {
       if(data == null) return url;
 
-      url += "?";
+      if(url.indexOf('?') == -1) url += "?";
 
       var keys = Object.keys(data);
       for(var i = 0; i < keys.length; i++)

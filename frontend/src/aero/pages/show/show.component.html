@@ -34,7 +34,7 @@
                         <!-- None -->
                         <div *ngIf="data['column_set']['column_set_type'] == 'none'">                           
                             <div *ngFor="let columnArray of data['column_set']['column_arrays']">
-                                <h4>
+                                <h4 *ngIf="columnArray['title'] != ''" style="margin-bottom: 0">
                                     {{ columnArray['title'] }}
                                 </h4>
                                 <column-array-element 

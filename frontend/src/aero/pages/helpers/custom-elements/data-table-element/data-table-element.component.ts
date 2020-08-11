@@ -30,6 +30,8 @@ export class DataTableElementComponent
     
     @Output() dataChanged = new EventEmitter();
 
+    objectId = 0;
+
     showEditButton = {};
     selectedFilter = null;
     selectedRecord = null;
@@ -57,9 +59,11 @@ export class DataTableElementComponent
         private sanitizer:DomSanitizer
     ) 
     {
+        this.objectId = Math.random();
+
         this.fillDefaultVariables();
         this.addEventForThemeIcons();
-        
+
         setTimeout(() => this.preLoadInterval(), 100);
     }
     
@@ -71,7 +75,7 @@ export class DataTableElementComponent
     preLoadInterval()
     {
         return BaseHelper.doInterval(
-                'dataTablePreLoad', 
+                'dataTablePreLoad'+this.objectId, 
                 (th) => th.preLoad(), 
                 this, 
                 200);

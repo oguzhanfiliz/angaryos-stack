@@ -170,30 +170,89 @@ trait TableTrait
             if($name == 'record_id') continue;
             
             param_value_is_correct($value, 'type', ['required', 'numeric']);
+
+            $this->columnIsAuthorized($name, 'query');
             
             if($value->type != 100 && $value->type !=101)
             {
                 param_is_have($value, 'filter');
-                $this->columnIsAuthorized($name, 'query');
                 
                 param_value_is_correct(
                     [$name => $value->filter],
                     $name,
                     ['required', '*auto*']);
             }
-            
-            $this->columnIsAuthorized($name, 'query');
         }
+    }
+
+    private function validateSortsForRelationTableData($params)
+    {
+        $cols = json_decode($params->column_array->column_ids);
+
+        param_is_have($params, 'sorts');
+        foreach($params->sorts as $name => $value)
+        {
+            $colId = get_attr_from_cache('columns', 'name', $name, 'id');
+            if(!in_array($colId, $cols)) $this->abort('no.auth.column.'.$name.'.for.relation.table.list');
+                                
+            if(!is_bool($value))
+                $this->abort('uncorrect.param.'.$name);
+        }
+    }
+
+    private function validateFiltersForRelationTableData($params)
+    {
+        $cols = json_decode($params->column_array->column_ids);
+
+        param_is_have($params, 'filters');
+        foreach($params->filters as $name => $value)
+        {
+            if($name == 'record_id') continue;
+            
+            param_value_is_correct($value, 'type', ['required', 'numeric']);
+
+            $colId = get_attr_from_cache('columns', 'name', $name, 'id');
+            if(!in_array($colId, $cols)) $this->abort('no.auth.column.'.$name.'.for.relation.table.query');
+            
+            if($value->type != 100 && $value->type !=101)
+            {
+                param_is_have($value, 'filter');
+
+                param_value_is_correct(
+                    [$name => $value->filter],
+                    $name,
+                    ['required', '*auto*']);
+            }
+        }
+    }
+
+    private function getValidatedParamsForListForRelationTableData($tree)
+    {
+        $params = read_from_response_data('get', 'params', TRUE);
+        
+        $tree = explode(':', $tree);
+
+        $params->column_array_id = $tree[1];
+        $params->column_array = get_attr_from_cache('column_arrays', 'id', $tree[1], '*');
+
+        param_is_have($params, 'column_array_id');
+        param_is_have($params, 'column_array_id_query');
+        param_is_have($params, 'limit');
+        param_is_have($params, 'page');
+        
+        $this->validateSortsForRelationTableData($params);
+        
+        $this->validateFiltersForRelationTableData($params);
+        
+        global $pipe;
+        $params->table_name = $pipe['table'];
+        
+        return $params;
     }
     
     private function getValidatedParamsForRelationTableData($tree)
     {
-        $params = $this->getValidatedParamsForList();
-        
-        $tree = explode(':', $tree);
-        
-        $params->column_array_id = $tree[1];
-        $params->column_array = get_attr_from_cache('column_arrays', 'id', $tree[1], '*');
+        $params = $this->getValidatedParamsForListForRelationTableData($tree);
         
         global $pipe;
         $pipe['relation_table_data_request'] = TRUE;

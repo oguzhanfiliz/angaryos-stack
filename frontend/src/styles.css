@@ -91,7 +91,7 @@ section.content
 
 .theme-light .open
 {
-    background-color: rgba(228,114,151,0.9) !important;
+    background-color: rgba(255,255,255,0.9) !important;
 }
 
 .theme-dark .column-filter, .theme-dark  table, .theme-dark  select, .theme-dark  input

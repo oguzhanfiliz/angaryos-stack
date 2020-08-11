@@ -2,6 +2,14 @@
 
 use App\BaseModel;
 
+$column_srids =
+[
+    'polygon' => 7932,
+    'linestring' => 7932,
+    'point' => 7932,
+    'location' => 7932,
+];
+
 $column_gui_type_override =
 [
     'php_code' => $column_gui_types['codeeditor:php']->id,
@@ -45,7 +53,8 @@ $column_gui_type_override =
 
 $columnDefaults =
 [
-    'state' => 'true'
+    'state' => 'true',
+    'srid' => 7932
 ];
 
 $columns[$column->name] = 
@@ -105,6 +114,10 @@ else if(strstr($column->name, '_id'))
     else
         $columns[$column->name]['column_gui_type_id'] = $column_gui_types['select']->id;
 }
+
+if(isset($column_srids[$column->name]))
+    $columns[$column->name]['srid'] = $column_srids[$column->name];
+
 
 $temp = $this->get_base_record();
 $temp = array_merge($columns[$column->name], $temp);
