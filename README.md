@@ -1,6 +1,6 @@
 # Angaryos
 
-Merhaba. Bu; yazılımcıları yazılımın angarya kısmından kurtarıp esas işe odaklanmalarını sağlacyaak olan tamamen açık kaynak bir yazılım geliştirme altyapısıdır. 
+Merhaba. Bu; yazılımcıları yazılımın angarya kısmından kurtarıp esas işe odaklanmalarını sağlayacak olan açık kaynak bir yazılım geliştirme altyapısıdır. 
 
 ## Gereksinimler
     -Light Kurulum (startLight.sh): 1 core cpu, 1 GB ram, 15 GB hdd 
