@@ -24,7 +24,7 @@ trait BaseModelGetDataColumnTrait
                     $data = $this->getColumnsByColumnArrayId($model, $columnArrayOrSetId);
                     break;
                 case 'column_sets': 
-                    $data =  $this->getColumnsByColumnSetId($model, $columnArrayOrSetId);
+                    $data =  $this->getColumnsByColumnSetId($model, $columnArrayOrSetId); 
                     break;
                 default: abort(helper('response_error', 'undefined.type:'.$tableName));  
             }
@@ -34,10 +34,34 @@ trait BaseModelGetDataColumnTrait
 
             return [$data, $joins];
         });
-
-        foreach( $joins as  $join) $this->addJoinForColumnArray($model, $join);
+        
+        foreach($joins as  $join) $this->addJoinForColumnArray($model, $join);
 
         return $data;
+    }
+
+    private function getColumnsByColumnSetId($model, $id, $form = FALSE)
+    {
+        global $pipe;
+
+        $columns = helper('get_null_object');
+
+        $set = get_attr_from_cache('column_sets', 'id', $id, '*');
+        if(strlen($set->column_array_ids) == 0) return $columns;
+
+        $arrays = json_decode($set->column_array_ids);
+        foreach($arrays as $arrayId)
+        {
+            if($arrayId == 0) 
+                $temp = $this->getAllColumnsFromTable();
+            else
+                $temp = $this->getAllColumnsFromColumnArray($model, $arrayId, $form);
+
+            foreach($temp as $columnName => $column)
+                $columns->{$columnName} = $column;
+        }
+        
+        return $columns;
     }
         
     private function getColumnsByColumnArrayId($model, $id, $form = FALSE)
@@ -45,7 +69,7 @@ trait BaseModelGetDataColumnTrait
         if($id == 0) 
             return $this->getAllColumnsFromTable();
         else
-            return $this->getAllColumnsFromColumnArray($model, $id);
+            return $this->getAllColumnsFromColumnArray($model, $id, $form);
     }
     
     private function getAllColumnsFromColumnArray($model, $id, $form = FALSE)
@@ -133,10 +157,25 @@ trait BaseModelGetDataColumnTrait
     
     public function getColumnSet($model, $columnSetId, $form = FALSE)
     {
-        if($columnSetId == 0) 
-            return $this->getColumnSetDefault();
-        else
-            return $this->getColumnSetByColumnSetId($model, $columnSetId, $form);
+        $cacheName = 'table:'.$this->getTable().'|type:column_sets|id:'.$columnSetId.'|columnSetObjectAndJoins';        
+        [$data, $joins]  = Cache::rememberForever($cacheName, function() use($model, $columnSetId, $form)
+        {
+            global $pipe;
+
+            if($columnSetId == 0) 
+                $data = $this->getColumnSetDefault();
+            else
+                $data = $this->getColumnSetByColumnSetId($model, $columnSetId, $form);
+
+            if(isset($pipe['joins'])) $joins = $pipe['joins'];
+            else $joins = [];
+
+            return [$data, $joins];
+        });
+        
+        foreach($joins as  $join) $this->addJoinForColumnArray($model, $join);
+
+        return $data;
     }
     
     private function getColumnSetDefault()
