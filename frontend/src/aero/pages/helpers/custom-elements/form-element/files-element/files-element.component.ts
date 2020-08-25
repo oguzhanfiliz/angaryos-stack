@@ -41,6 +41,13 @@ export class FilesElementComponent
 
         if(typeof this.val == "string") 
             this.val = BaseHelper.jsonStrToObject(this.val);
+
+        for(var i = 0; i < this.val.length; i++)
+        {
+            this.val[i]['smallUrl'] = BaseHelper.getFileUrl(this.val[i], 's_');
+            this.val[i]['bigUrl'] = BaseHelper.getFileUrl(this.val[i], 'b_');
+            this.val[i]['url'] = BaseHelper.getFileUrl(this.val[i], '');
+        }
     }
 
     handleChange(event)

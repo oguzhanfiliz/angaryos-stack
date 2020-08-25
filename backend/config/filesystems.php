@@ -50,7 +50,7 @@ return [
         
         'temps' => [
             'driver' => 'local',
-            'root' => '/var/www/public/temps',
+            'root' => '/var/www/public/temps/',
         ],
 
         

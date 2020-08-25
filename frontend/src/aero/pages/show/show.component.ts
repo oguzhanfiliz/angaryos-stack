@@ -113,9 +113,15 @@ export class ShowComponent
     {
         var auths = BaseHelper.loggedInUserInfo['auths'];
         
+        var id = 0;
+        if(typeof auths['tables'][this.tableName] != undefined) 
+            if(typeof auths['tables'][this.tableName]['shows'] != undefined) 
+                if(typeof auths['tables'][this.tableName]['shows'][0] != undefined) 
+                    id = auths['tables'][this.tableName]['shows'][0];
+            
         var params = 
         {
-            column_set_id: auths['tables'][this.tableName]['shows'][0],
+            column_set_id: id,
         };
 
         return params;

@@ -61,8 +61,8 @@ services:
     #######       FRONTEND       #######
     
     frontend: 
-        #image: karapazar/angular-serve:0.19
-        image: karapazar/angular-serve-light:0.4
+        image: karapazar/angular-serve:0.19
+        #image: karapazar/angular-serve-light:0.4
         volumes:
             #- ./frontend/dist/light/:/usr/share/nginx/html
             - ./frontend:/usr/src/app 

@@ -217,7 +217,16 @@ export abstract class BaseHelper
   {
     if(file == null) return this.noImageUrl;
 
-    return "https://"+environment.host+"/"+file['destination_path']+prefix+file['file_name'];
+    var temp = file['destination_path']+prefix+file['file_name'];
+    switch(file['disk'])
+    {
+      case 'fileServer': 
+      case 'uploads': 
+        temp = "uploads/"+temp;
+        break;
+    }
+    
+    return "https://"+environment.host+"/"+temp;
   }
 
   public static ucfirst(s)
