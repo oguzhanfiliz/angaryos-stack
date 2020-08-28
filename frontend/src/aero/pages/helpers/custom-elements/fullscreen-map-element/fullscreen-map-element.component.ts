@@ -1297,7 +1297,6 @@ export class FullScreenMapElementComponent
         this.sessionHelper.doHttpRequest("POST", url, params) 
         .then((data) => 
         {
-            $('#kmzFile').val("");
             this.generalHelper.stopLoading();
             
             if(data == null)
@@ -1311,7 +1310,8 @@ export class FullScreenMapElementComponent
 
                 this.setFeaturesTreeVisible(true);
             }
-                
+            
+            $('#kmzFile').val(""); 
         })
         .catch((e) => 
         { 

@@ -522,6 +522,7 @@ export class FormComponent
                 alert("inForm başarılı elemente bir eleman ekle: " + guiType);
         }
 
+        this.change({columnName: data['inFormColumnName']});
         this.formChanged.emit(data);
     }
 

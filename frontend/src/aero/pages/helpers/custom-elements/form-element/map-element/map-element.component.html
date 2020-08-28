@@ -3,10 +3,10 @@
 name="{{ name }}" id="{{ name }}"
 value="{{ value }}">
 
-<div (click)="openMapElement()"  
-    [class]="showFilterTypesSelect ? 'filter-element-big' : 'filter-element'">
+<div [class]="showFilterTypesSelect ? 'filter-element-big' : 'filter-element'">
+    <span (click)="clearValue()" style="right: 10; position: absolute;">x</span>
     
-    <a [ngStyle]="getStyle()">
+    <a (click)="openMapElement()" [ngStyle]="getStyle()">
         {{ getDescription() }}
     </a>
 </div>
@@ -54,7 +54,8 @@ value="{{ value }}">
                             NetCAD 'den Al
                         </a>    
                         <a 
-                            (click)="addNetcadFeatures()"
+                            *ngIf="kmzAuthControl() && !isMobileDevice()" 
+                            (click)="selectKmzFile()"
                             class="dropdown-item"
                             ngbDropdownItem>
 
@@ -93,4 +94,4 @@ value="{{ value }}">
         </option>
 </select>
 
-
+<input style="display: none;" name="kmzFile" id="kmzFile" type="file" accept=".kmz,.kml">

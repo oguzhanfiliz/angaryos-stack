@@ -3,6 +3,8 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { BaseHelper } from './../../../base';
 import { MapHelper } from './../../../map';
 import { MessageHelper } from './../../../message';
+import { SessionHelper } from './../../../session';
+import { GeneralHelper } from './../../../general';
 
 declare var $: any;
 
@@ -43,7 +45,11 @@ export class MapElementComponent
     @Output() changed = new EventEmitter();
     @Output() dataChanged = new EventEmitter();
 
-    constructor(private messageHelper: MessageHelper) { }
+    constructor(
+        private messageHelper: MessageHelper, 
+        private sessionHelper: SessionHelper,
+        private generalHelper: GeneralHelper
+    ) { }
 
     
 
@@ -53,6 +59,92 @@ export class MapElementComponent
     {
         if(this.upFormId.length > 0)
             this.baseElementSelector = '[ng-reflect-id="'+this.upFormId+'"] ';
+            
+        setTimeout(() =>
+        {
+            this.addKmzFileChangedEvent();
+            
+        }, 200);
+    }
+    
+    addKmzFileChangedEvent()
+    {
+        var th = this;
+        $('#kmzFile').change(() => th.kmzFileChanged());
+    }
+    
+    kmzFileChanged()
+    {
+        var exts = ['kml', 'kmz'];
+
+        var path = $('#kmzFile').val();
+        if(path == "") return;
+
+        var arr = path.split('.');
+        var ext = arr[arr.length-1];
+
+        if(exts.includes(ext))
+            this.uploadKmz();
+        else
+            this.messageHelper.sweetAlert("Geçersiz doya tipi!", "Hata", "warning");
+    }
+    
+    uploadKmz()
+    {
+        var url = this.sessionHelper.getBackendUrlWithToken()+"translateKmzOrKmlToJson";
+        
+        var params = new FormData();
+        params.append("file", $('#kmzFile')[0].files[0]);
+
+        this.generalHelper.startLoading();
+        
+        this.sessionHelper.doHttpRequest("POST", url, params) 
+        .then((data) => 
+        {
+            $('#kmzFile').val("");
+            this.generalHelper.stopLoading();
+            
+            if(data == null) this.messageHelper.sweetAlert("Beklenmedik cevap geldi!", "Hata", "warning");
+            else this.addFeaturesFromKmzOrKmlFile(data);
+                
+        })
+        .catch((e) => 
+        { 
+            $('#kmzFile').val("");
+            this.generalHelper.stopLoading();
+        });
+    }
+    
+    addFeaturesFromKmzOrKmlFile(data)
+    {
+        var features = [];
+        
+        var layers = Object.keys(data);
+        for(var i = 0; i < layers.length; i++)
+        {
+            var layerName = layers[i];
+            var layerData = data[layerName];
+            if(typeof layerData[this.type] == "undefined") continue;
+            
+            features = features.concat(layerData[this.type]);
+        }
+        
+        if(features.length == 0) this.messageHelper.toastMessage("Aranan tipte nesne bulunamadı!");
+        else if(this.multiple)
+        {
+            var temp = [];
+            for(var i = 0; i < features.length; i++)
+                temp.push(MapHelper.getFeatureFromWkt(features[i]['wkt'], "EPSG:4326"));
+            
+            MapHelper.addFeatures(this.map, temp);
+            MapHelper.zoomToFeatures(this.map, temp);
+        }
+        else if(features.length > 1) this.messageHelper.toastMessage("Bu kolona birden fazla nesne ekleyemezsiniz!");
+        else
+        {
+            MapHelper.clearAllFeatures(this.map);
+            MapHelper.addFeatureByWkt(this.map, features[0]['wkt'], "EPSG:4326");
+        }
     }
 
     openMapElement()
@@ -150,6 +242,26 @@ export class MapElementComponent
                 .then(() => this.emitDataChangedEvent());
             }
         });
+    }
+    
+    kmzAuthControl()
+    {
+        return this.sessionHelper.kmzAuthControl();
+    }
+    
+    isMobileDevice()
+    {
+        return BaseHelper.isMobileDevice;
+    }
+    
+    selectKmzFile()
+    {
+        $('#kmzFile').click();
+    }
+    
+    clearValue()
+    {
+        this.value = "";
     }
 
 

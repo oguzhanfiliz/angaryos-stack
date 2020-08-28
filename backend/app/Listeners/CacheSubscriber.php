@@ -103,10 +103,19 @@ class CacheSubscriber
         $filterTypeName = get_attr_from_cache('data_filter_types', 'id', $filter->data_filter_type_id, 'name');
         if($filterTypeName != 'list') return;
         
+        $token = \Request::segment(3);
+        if(strlen($token) == 0) return;
+        $token = ':'.$token.'.';
+
+        global $pipe;
+        $tableName = $pipe['table'];
+
         $keys = $this->getCacheKeys();
         foreach($keys as $key)
             if(strstr($key, 'userToken:'))
-                dd('clearFilterCache1');//userToken:1111111111111111d1.tableName:test.mapFilters
+                if(strstr($key, $token))
+                    if(strstr($key, '.tableName:'.$tableName.'.'))
+                        dd('clearFilterCache1', $key, $token);//userToken:1111111111111111d1.tableName:test.mapFilters
     }
     
     private function getCacheKeys()

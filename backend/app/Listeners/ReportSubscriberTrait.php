@@ -90,24 +90,38 @@ trait ReportSubscriberTrait
         foreach($columns as $column)
         {
             $dbTypeName = get_attr_from_cache('column_db_types', 'id', $column->column_db_type_id, 'name');
-        
-            if(strstr($dbTypeName, 'json')) array_push($jsonColumns, $column->name);
+            $guiTypeName = get_attr_from_cache('column_gui_types', 'id', $column->column_gui_type_id, 'name');
+             
+            if(strstr($dbTypeName, 'json')) $jsonColumns[$column->name] = [$dbTypeName, $guiTypeName];
         }
         
         foreach($records as $i => $record)
-            foreach($jsonColumns as $columnName)
-                $records[$i]->{$columnName} = $this->UpdateRecordColumnDataForReport($records[$i]->{$columnName});
+            foreach($jsonColumns as $columnName => $types)
+                $records[$i]->{$columnName} = $this->UpdateRecordColumnDataForReport($records[$i]->{$columnName}, $types);
     
         return $records;
     }
     
-    public function UpdateRecordColumnDataForReport($json)
+    public function UpdateRecordColumnDataForReport($json, $types)
     {
         if(strlen($json) == 0) return '';
+        if($json == '[]') return '';
         
         $return = '';
-        foreach(json_decode($json) as $item) $return .=  $item->display .', ';        
-        $return = substr($return, 0, -2);
+
+        $json = json_decode($json);
+        switch($types[1])
+        {
+            case 'json':
+            case 'jsonb':
+                foreach($json as $item) $return .=  $item->display .', ';
+                $return = substr($return, 0, -2);    
+                break;
+            case 'files':
+                foreach($json as $item) $return = helper('get_file_url', $item) . ', ';
+                $return = substr($return, 0, -2);    
+                break;
+        }
         
         return $return;
     }
