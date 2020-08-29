@@ -3,6 +3,7 @@
 namespace App\Listeners;
 
 use App\Jobs\ClearCache;
+use App\Jobs\ClearRecordCaches;
 
 use App\BaseModel;
 use Cache;
@@ -17,6 +18,14 @@ class CacheSubscriber
     {
         if($dispatchNow)
             $this->dispatchType = 'dispatchNow';
+    }
+
+    public function recordChangedSuccessAsync($tableName, $record, $type)
+    {
+        if(strstr(get_class($record), 'BaseModel')) $data = $record->toArray();
+        else $data = (array)$record; 
+
+        ClearRecordCaches::dispatch($tableName, $data, $type);
     }
     
     public function recordChangedSuccess($tableName, $record, $type)
@@ -125,30 +134,30 @@ class CacheSubscriber
         
         return $this->cacheKeys;
     }
-    
+
     public function storeSuccess($params, $record)
     {
-        return $this->recordChangedSuccess($params->table->name, $record, 'create');
+        return $this->recordChangedSuccessAsync($params->table->name, $record, 'create');
     }
     
     public function updateSuccess($params, $orj, $record)
     {
-        return $this->recordChangedSuccess($params->table->name, $record, 'update');
+        return $this->recordChangedSuccessAsync($params->table->name, $record, 'update');
     }
     
     public function deleteSuccess($record)
     {
-        return $this->recordChangedSuccess($record->getTable(), $record, 'delete');
+        return $this->recordChangedSuccessAsync($record->getTable(), $record, 'delete');
     }
     
     public function cloneSuccess($cloneRecord)
     {
-        return $this->recordChangedSuccess($cloneRecord->getTable(), $cloneRecord, 'clone');
+        return $this->recordChangedSuccessAsync($cloneRecord->getTable(), $cloneRecord, 'clone');
     }
     
     public function restoreSuccess($archiveRecord, $record)
     {
-        return $this->recordChangedSuccess($record->getTable(), $record, 'restore');
+        return $this->recordChangedSuccessAsync($record->getTable(), $record, 'restore');
     }
     
     
@@ -383,6 +392,7 @@ class CacheSubscriber
                 else
                 {
                     $customLayers = DB::table('custom_layers')->where('table_id', $tableId)->get();
+                    dd('clearTablesAndColumnCommonCache');
                     //foreach($customLayers as $customLayer)
                         //dd('clearTablesAndColumnCommonCache');
                 }
