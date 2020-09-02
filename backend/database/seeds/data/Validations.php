@@ -140,7 +140,7 @@ array_push($relationGuiTypeIds, get_attr_from_cache(\'column_gui_types\', \'name
 array_push($relationGuiTypeIds, get_attr_from_cache(\'column_gui_types\', \'name\', \'multiselect\', \'id\'));
 array_push($relationGuiTypeIds, get_attr_from_cache(\'column_gui_types\', \'name\', \'multiselectdragdrop\', \'id\'));
 
-$guiTypeId = \Request::input(\'column_gui_type_id\');
+$guiTypeId = read_from_response_data(\'column_gui_type_id\');
 if(!in_array($guiTypeId, $relationGuiTypeIds)) 
 {
     $return = TRUE;
@@ -172,7 +172,7 @@ foreach($value as $columnRelationId)
 
 if(!in_array(\'updated_at\', $columnNames)) return;
 
-$singleColumn = \Request::input(\'single_column\');
+$singleColumn = read_from_response_data(\'single_column\');
 if(strlen($singleColumn) > 0)
 {
     $recId = (int)\Request::segment(6);
@@ -182,7 +182,7 @@ if(strlen($singleColumn) > 0)
 }
 else
 {
-    $dataSourceId = (int)\Request::input(\'data_source_id\');
+    $dataSourceId = (int)read_from_response_data(\'data_source_id\');
     if($dataSourceId < 1) return;
 }
 
@@ -204,7 +204,7 @@ $return = TRUE;
 $validations['only_fromdatasource_for_excel_type']['php_code'] = '<?php
 $return = TRUE;
 
-$dataSourceId = (int)\Request::input(\'data_source_id\');
+$dataSourceId = (int)read_from_response_data(\'data_source_id\');
 if($dataSourceId < 1) return;
 
 $dataSourceTypeId = get_attr_from_cache(\'data_sources\', \'id\', $dataSourceId, \'data_source_type_id\');

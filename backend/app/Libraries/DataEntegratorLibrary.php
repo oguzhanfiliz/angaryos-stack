@@ -434,10 +434,9 @@ class DataEntegratorLibrary
     
     private static function WriteDataEntegratorLog($relation, $direction, $count = 0, $step = 0)
     {
-        $disk = env('FILESYSTEM_DRIVER', 'uploads');
+        $desc = $direction.'.'.$count.'.'.$step;
+        echo $desc."\n";
         
-        Storage::disk($disk)->put(
-                        'dataEntegratorStatus/'.$relation->id.'.status', 
-                        $direction.'.'.$count.'.'.$step);
+        Storage::disk('public')->put('dataEntegratorStatus/'.$relation->id.'.status',  $desc);
     }
 }

@@ -79,7 +79,7 @@ trait TableTrait
     
     private function getValidatedParamsForArchive()
     {
-        $params = read_from_response_data('get', 'params', TRUE);
+        $params = read_from_response_data('params', TRUE);
         
         param_is_have($params, 'column_array_id');
         param_is_have($params, 'column_array_id_query');
@@ -98,7 +98,7 @@ trait TableTrait
     
     private function getValidatedParamsForDeleted()
     {
-        $params = read_from_response_data('get', 'params', TRUE);
+        $params = read_from_response_data('params', TRUE);
         
         param_is_have($params, 'column_array_id');
         param_is_have($params, 'column_array_id_query');
@@ -120,9 +120,9 @@ trait TableTrait
         global $pipe;
         
         $params = helper('get_null_object');
-        $params->column_array_id = read_from_response_data('get', 'column_array_id');
+        $params->column_array_id = read_from_response_data('column_array_id');
         
-        $params->page = (int)read_from_response_data('get', 'page');
+        $params->page = (int)read_from_response_data('page');
         if($params->page < 1) $params->page = 1;
         
         param_is_have($params, 'column_array_id');
@@ -133,7 +133,7 @@ trait TableTrait
     
     private function getValidatedParamsForList()
     {
-        $params = read_from_response_data('get', 'params', TRUE);
+        $params = read_from_response_data('params', TRUE);
         
         param_is_have($params, 'column_array_id');
         param_is_have($params, 'column_array_id_query');
@@ -228,7 +228,7 @@ trait TableTrait
 
     private function getValidatedParamsForListForRelationTableData($tree)
     {
-        $params = read_from_response_data('get', 'params', TRUE);
+        $params = read_from_response_data('params', TRUE);
         
         $tree = explode(':', $tree);
 
@@ -264,7 +264,7 @@ trait TableTrait
     {
         global $pipe;
         
-        $params = read_from_response_data('get', 'params', TRUE);
+        $params = read_from_response_data('params', TRUE);
         
         param_is_have($params, 'column_set_id');
         
@@ -277,7 +277,7 @@ trait TableTrait
     {
         global $pipe;
         
-        $params = read_from_response_data('get', 'params', TRUE);
+        $params = read_from_response_data('params', TRUE);
         
         param_is_have($params, 'column_set_id');
         
@@ -344,11 +344,11 @@ trait TableTrait
         if(!in_array($column->id, $columnIds))
             return $this->abort('column.not.in.table');
         
-        $search = read_from_response_data('get', 'search');
+        $search = read_from_response_data('search');
         if(strlen($search) == 0) return $this->abort('search.is.null');
         if($search == '***') $search = '';
         
-        $page = (int)read_from_response_data('get', 'page');
+        $page = (int)read_from_response_data('page');
         if($page < 1) $page = 1;
         
         $return = helper('get_null_object');
@@ -363,14 +363,14 @@ trait TableTrait
         $columns = $table->getAllColumnsFromDB();
         if(!isset($columns[$column->name]) || !is_array($columns[$column->name])) return $this->abort('column.not.in.table');
         
-        $search = read_from_response_data('get', 'search');
+        $search = read_from_response_data('search');
         if(strlen($search) == 0) return $this->abort('search.is.null');
         if($search == '***') $search = '';
         
-        $page = (int)read_from_response_data('get', 'page');
+        $page = (int)read_from_response_data('page');
         if($page < 1) $page = 1;
         
-        $limit = (int)read_from_response_data('get', 'limit');
+        $limit = (int)read_from_response_data('limit');
         if($limit < 1) $limit = REC_COUNT_PER_PAGE;
         if($limit > 500) $limit = 500;
         
@@ -384,10 +384,10 @@ trait TableTrait
         
         $return->table = $table;
         
-        $return->upColumnName = read_from_response_data('get', 'upColumnName');
-        $return->upColumnData = read_from_response_data('get', 'upColumnData');
+        $return->upColumnName = read_from_response_data('upColumnName');
+        $return->upColumnData = read_from_response_data('upColumnData');
         
-        $return->currentFormData = read_from_response_data('get', 'currentFormData');        
+        $return->currentFormData = read_from_response_data('currentFormData');        
         if(strlen($return->currentFormData) > 0) 
         {
             $return->currentFormData = str_replace('&#34;', '"', $return->currentFormData);
@@ -395,7 +395,7 @@ trait TableTrait
             $return->currentFormData = json_decode($return->currentFormData);
         }
         
-        $editRecordId = read_from_response_data('get', 'editRecordId');
+        $editRecordId = read_from_response_data('editRecordId');
         if(strlen($editRecordId) > 0)
             $return->upColumnDataRecord = get_attr_from_cache($table->getTable(), 'id', $editRecordId, '*');
         

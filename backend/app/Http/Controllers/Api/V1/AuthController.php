@@ -24,8 +24,8 @@ class AuthController extends Controller
     {
         send_log('info', 'Request For Login');
         
-        $email = read_from_response_data('get', 'email');
-        $password = read_from_response_data('get', 'password');
+        $email = read_from_response_data('email');
+        $password = read_from_response_data('password');
         
         $session = new SessionLibrary();
         $token = $session->loginAndGetToken($email, $password);

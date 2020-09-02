@@ -48,7 +48,7 @@ if(in_array('*auto*', $validation))
                     if(\Request::segment(7) == 'update')
                     {
                         $old = get_attr_from_cache($pipe['table'], 'id', $this->segment(6), $column->name);
-                        $new = \Request::input($column->name);
+                        $new = read_from_response_data($column->name);
 
                         if($old == $new)
                             $v->validation_with_params = '';

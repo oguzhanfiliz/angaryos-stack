@@ -22,7 +22,7 @@ if($pipe[\'table\'] == \'column_arrays\' &&  (int)$columnArrayTypeId == 2)
 
 if(!isset($request[\'join_table_ids\']))
 {
-    $id = (int)\Request::input(\'editRecordId\');
+    $id = (int)read_from_response_data(\'editRecordId\');
     
     if($id == 0) $request[\'join_table_ids\'] = [];
     else

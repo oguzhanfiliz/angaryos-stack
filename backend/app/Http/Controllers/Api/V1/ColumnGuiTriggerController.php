@@ -29,7 +29,7 @@ class ColumnGuiTriggerController extends Controller
     
     private function getValidatedParams($column)
     {
-        $params = read_from_response_data('get', 'params', TRUE);
+        $params = read_from_response_data('params', TRUE);
         
         param_is_have($params, 'column_set_id');
         param_is_have($params, $column->name);

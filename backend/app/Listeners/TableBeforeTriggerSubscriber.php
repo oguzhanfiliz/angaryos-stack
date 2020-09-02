@@ -8,7 +8,7 @@ class TableBeforeTriggerSubscriber
 {
     private function triggerSubscriber($table, $column, $subscriber, $type, $record)
     {
-        if($column != NULL) $value = \Request::input($column->name);
+        if($column != NULL) $value = read_from_response_data($column->name);
         
         $requests = \Request::all();
         $user = \Auth::user();

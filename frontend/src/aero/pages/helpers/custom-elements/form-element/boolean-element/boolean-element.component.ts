@@ -23,6 +23,22 @@ export class BooleanElementComponent
     displayNameForFalse = "false";
 
     @Output() changed = new EventEmitter();
+    
+    constructor()
+    {
+        setTimeout(() => 
+        {
+            console.log(99);
+            this.displayNameForTrue = DataHelper.convertDataByGuiTypeBoolean(null, null, this.guiType, true);
+            this.displayNameForFalse = DataHelper.convertDataByGuiTypeBoolean(null, null, this.guiType, false); 
+        
+            if(this.value.length > 0) return;
+            if(this.createForm != true) return;
+            if(this.defaultData.length == 0) return;
+
+            this.setDefaultData();
+        }, 50);
+    }
 
     handleChange(event)
     {
@@ -33,21 +49,6 @@ export class BooleanElementComponent
     {
         if(data) return this.displayNameForTrue;
         else return this.displayNameForFalse;
-    }
-
-    constructor()
-    {
-        setTimeout(() => 
-        {
-            this.displayNameForTrue = DataHelper.convertDataByGuiTypeBoolean(null, null, this.guiType, true);
-            this.displayNameForFalse = DataHelper.convertDataByGuiTypeBoolean(null, null, this.guiType, false);
-
-            if(this.value.length > 0) return;
-            if(this.createForm != true) return;
-            if(this.defaultData.length == 0) return;
-
-            this.setDefaultData();
-        }, 50);
     }
 
     setDefaultData()

@@ -387,6 +387,8 @@ export abstract class DataHelper
             case 'boolean': 
             case 'boolean:fastchange':
                 return data ? 'Aktif' : 'Pasif';
+            case 'boolean:gender':
+                return data ? 'Erkek' : 'Kadın';
             default: return data.toString();
         }
     }

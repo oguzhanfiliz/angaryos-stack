@@ -6,7 +6,7 @@ $temp =
 [
     'token' => $token,
     'time' => strtotime(date('Y-m-d H:i:s')),
-    'clientInfo' => \Request::input('clientInfo')
+    'clientInfo' => read_from_response_data('clientInfo')
 ];
 
 if($tokens == NULL) $tokens = [];

@@ -276,10 +276,12 @@ export class DashboardComponent
             
             if(data['status'] != "continue") return data;
             
-            data['percent'] = data['detail']['percent'];
-            data['type'] = data['detail']['type'];
-            data['count'] = data['detail']['count'];
-            data['step'] = data['detail']['step'];
+            var temp = data['message'].split('.');
+
+            data['percent'] = parseInt(temp[1]) == 0 ? 0 : (100 * parseInt(temp[2]) / parseInt(temp[1]));
+            data['percent'] = Math.round(data['percent']);
+            data['count'] = temp[1];
+            data['step'] = temp[2];
             
             return data;
         };
@@ -329,17 +331,17 @@ export class DashboardComponent
         };
         await this.fillDashboardsItemDataStandartLoader(dashboardId, className, subClassName, itemName, options, func);
     }
-    
+
     async fillDashboardsItemDataComboBoxList(dashboardId, subClassName, itemName)
     {
         var className = "ComboBoxList";
         var dataKey = "DashboardsItemData:"+className+":"+subClassName+":"+itemName;
-
+        
         var func = (th, dashboardId, subClassName, itemName, data) => 
         {
             data['selectedValue'] = BaseHelper.readFromLocal(dataKey);
             if(data['selectedValue'] == null) data['selectedValue'] = "";
-
+            
             setTimeout(() =>
             {
                 $.getScript('assets/ext_modules/select2/select2.min.js', () => 
@@ -369,7 +371,10 @@ export class DashboardComponent
         if(type == null) type = "";
         var url = this.sessionHelper.getBackendUrlWithToken()+"dashboards/getData/dashboards:"+className+":"+subClassName+":"+itemName+"?type="+type;
         
-        await this.fillDashboardsItemDataStandartLoader(dashboardId, className, subClassName, itemName, options, func, url);
+        setTimeout(() => 
+        {
+            this.fillDashboardsItemDataStandartLoader(dashboardId, className, subClassName, itemName, options, func, url);
+        }, 500);
     }
     
     async fillDashboardsItemDataStandartLoader(dashboardId, className, subClassName, itemName, options = {}, func = null, url = null)
@@ -410,7 +415,11 @@ export class DashboardComponent
             
             await BaseHelper.sleep(1000);
         })
-        .catch((e) =>  th.messageHelper.toastMessage("Bazı göstergeler için data alınamadı!"));
+        .catch((e) =>  
+        {
+            console.log(e);
+            th.messageHelper.toastMessage("Bazı göstergeler için data alınamadı!");
+        });
     }
         
     fillDashboardWithActualData()

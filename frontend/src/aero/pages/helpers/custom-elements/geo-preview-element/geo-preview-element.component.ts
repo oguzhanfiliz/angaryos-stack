@@ -41,6 +41,10 @@ export class GeoPreviewElementComponent
             {
                 MapHelper.createPreviewMap('mapPreview').then((map) =>
                 {
+                    var layers = MapHelper.getBaseLayersFromMap(map);
+                    for(var i = 0; i < layers.length; i++)
+                        layers[i].setVisible(layers[i]['name'] == 'bing_aerialwithlabelsondemand');
+
                     resolve(map);
                 });
             });

@@ -13,7 +13,7 @@ trait BaseModelGetDataColumnTrait
     
     public function getColumns($model, $tableName, $columnArrayOrSetId)
     {
-        $cacheName = 'table:'.$this->getTable().'|type:'.$tableName.'|id:'.$columnArrayOrSetId;        
+        $cacheName = 'table:'.$this->getTable().'|type:'.$tableName.'|id:'.$columnArrayOrSetId.'|columnArrayOrSetAndJoins';  
         [$data, $joins]  = Cache::rememberForever($cacheName, function() use($model, $tableName, $columnArrayOrSetId)
         {
             global $pipe;
@@ -125,17 +125,27 @@ trait BaseModelGetDataColumnTrait
             $column = (Object)[];
             $temp = helper('get_column_data_for_joined_column', $c);
 
-            $displayName = get_attr_from_cache('columns', 'name', $temp[1], 'display_name');
-            if(strlen($displayName) == 0) $displayName = ucfirst($temp[1]);
+            $currentColumnModel = get_attr_from_cache('columns', 'name', $temp[1], '*');
+            if($currentColumnModel == NULL)
+            {
+                $currentColumnModel = helper('get_null_object');
+                $currentColumnModel->column_gui_type_id = get_attr_from_cache('column_gui_types', 'name', 'string', 'id');
+                $currentColumnModel->column_db_type_id = get_attr_from_cache('column_gui_types', 'name', 'string', 'id');
+                $currentColumnModel->display_name = ucfirst($temp[1]);
+            }
+            
+            if(strstr($currentColumnModel->column_gui_type_id, 'select')) 
+                $currentColumnModel->column_gui_type_id = 'string';
+                //https://192.168.10.185/api/v1/sd8ymkQNek2q7YCOd1/tables/test/getSelectColumnData/table_id?search=***
             
             $column->id = -1;
             $column->name = $temp[1];
-            $column->display_name = $displayName;
+            $column->display_name = $currentColumnModel->display_name;
             $column->column_table_relation_id = NULL;
-            $column->gui_type_name = 'string';
-            $column->column_gui_type_id = get_attr_from_cache('column_gui_types', 'name', 'string', 'id');
-            $column->db_type_name = 'string';
-            $column->column_db_type_id = get_attr_from_cache('column_db_types', 'name', 'string', 'id');
+            $column->gui_type_name = get_attr_from_cache('column_gui_types', 'id', $currentColumnModel->column_gui_type_id, 'name');
+            $column->column_gui_type_id = $currentColumnModel->column_gui_type_id;
+            $column->db_type_name = get_attr_from_cache('column_db_types', 'id', $currentColumnModel->column_db_type_id, 'name');
+            $column->column_db_type_id = $currentColumnModel->column_db_type_id;
             $column->table_alias = '';
             $column->table_name = '';
             $column->up_column_id = NULL;

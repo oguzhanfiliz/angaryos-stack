@@ -85,7 +85,7 @@ services:
     #######       BACKEND       #######
  
     laravel:
-        image: karapazar/laravel-php-fpm:0.52
+        image: karapazar/laravel-php-fpm:0.53
         volumes:
             - ./backend:/var/www 
             - ./backend/php.ini:/usr/local/etc/php/conf.d/local.ini

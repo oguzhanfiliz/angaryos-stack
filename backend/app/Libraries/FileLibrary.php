@@ -93,7 +93,7 @@ class FileLibrary
     
     private function singleColumnControl($params)
     {
-        $singleColumn = \Request::input('single_column');
+        $singleColumn = read_from_response_data('single_column');
         
         if($singleColumn != NULL && $singleColumn != $params['columnName'])
             return TRUE;
@@ -110,7 +110,7 @@ class FileLibrary
             
         $column = $params['columnName'];
 
-        $old = @\Request::input($column.'_old');
+        $old = read_from_response_data($column.'_old');
         
         if($old == NULL) $old = [];
         else $old = json_decode($old, TRUE);

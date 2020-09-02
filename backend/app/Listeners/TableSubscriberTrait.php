@@ -481,10 +481,10 @@ trait TableSubscriberTrait
     
     public function getDataForSelectElement($params, $record)
     {
-        $columnName = read_from_response_data('post', 'in_form_column_name');
+        $columnName = read_from_response_data('in_form_column_name');
         if(strlen($columnName) == 0) return;
         
-        $singleColumnName = read_from_response_data('post', 'single_column');
+        $singleColumnName = read_from_response_data('single_column');
         
         if(strlen($singleColumnName) > 0)
         {

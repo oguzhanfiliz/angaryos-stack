@@ -295,7 +295,7 @@ class CacheSubscriber
             $temp = DB::table($t)->where('table_id', $table->id)->get();
             foreach($temp as $rec)
             {
-                $key = 'table:'.$table->name.'|type:'.$t.'|id:'.$rec->id; 
+                $key = 'table:'.$table->name.'|type:'.$t.'|id:'.$rec->id.'|columnArrayOrSetAndJoins'; 
                 ClearCache::{$this->dispatchType}($key);
             }
         }
@@ -354,7 +354,7 @@ class CacheSubscriber
         $columnArrays = DB::table('column_arrays')->where('table_id', $tableId)->get();
         foreach($columnArrays as $columnArray) 
         {
-            ClearCache::{$this->dispatchType}($key.$columnArray->id);
+            ClearCache::{$this->dispatchType}($key.$columnArray->id.'|columnArrayOrSetAndJoins');
             $this->clearRecordCache('column_arrays', $columnArray);
         }
         ClearCache::{$this->dispatchType}($key.'0');

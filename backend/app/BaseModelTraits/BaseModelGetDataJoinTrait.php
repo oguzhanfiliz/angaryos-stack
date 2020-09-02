@@ -287,5 +287,27 @@ trait BaseModelGetDataJoinTrait
                 $params->realtion_column_name, 
                 '=', 
                 DB::raw($temp));
-    }    
+    } 
+
+    public function addJoinForColumnArrayForOneToMany($params)
+    {
+        global $pipe;
+        $temp = ' '.$params->join->connection_column_with_alias;
+        $temp = str_replace(' "', $pipe['table'].'."', $temp);
+
+        
+        $alias = explode(' as ', $params->realtion_table_name);
+        $alias = last($alias);
+        $lateralName = $alias.'_lateral';
+   
+
+        $lateral = 'lateral jsonb_array_elements('.$temp.') with ordinality as '.$lateralName;
+        $params->model->leftJoin(DB::raw($lateral), DB::raw('true'), '=', DB::raw('true'));
+
+
+        return $params->model->leftJoin($params->realtion_table_name, 
+                DB::raw('('.$lateralName.'.value->>0)::bigint'),
+                '=',
+                $alias.'.'.get_attr_from_cache('columns', 'id', $params->join->join_column_id, 'name'));
+    } 
 }

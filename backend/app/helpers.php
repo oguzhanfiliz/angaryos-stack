@@ -6,7 +6,7 @@ function helper($function_name, $params = NULL)
     return require 'HelperFunctions/'.$function_name.'.php';
 }
 
-function read_from_response_data($method, $key, $json = FALSE)
+function read_from_response_data($key, $json = FALSE)
 {
     $r = require 'HelperFunctions/'.__FUNCTION__.'.php';
     if($json)

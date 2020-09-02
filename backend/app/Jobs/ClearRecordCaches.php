@@ -30,6 +30,14 @@ class ClearRecordCaches implements ShouldQueue
     {
         $record = new BaseModel($this->tableName);
         $record = $record->find($this->data['id']);
+
+        if($record == NULL)
+        {
+            $record = new BaseModel($this->tableName);
+            $record = $record->first();
+            $record->id = $this->data['id'];
+        }
+        
         foreach($this->data as $columnName => $value);
             $record->{$columnName} = $value;
 

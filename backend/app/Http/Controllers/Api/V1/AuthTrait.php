@@ -16,7 +16,7 @@ trait AuthTrait
     
     private function getParamFromRequest($name, $json = FALSE)
     {
-        $param = read_from_response_data('get', $name, $json);
+        $param = read_from_response_data($name, $json);
         if($param === NULL) custom_abort ('no.parameter.'.$name);
         
         return $param;

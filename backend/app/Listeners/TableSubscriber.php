@@ -162,7 +162,7 @@ class TableSubscriber
     
     public function relationDataInfoRequested($record, $column)
     {
-        $source = \Request::input('source');
+        $source = read_from_response_data('source');
         $relationRecord = $record->getRelationData($column->name);
         
         $array = is_array($relationRecord);

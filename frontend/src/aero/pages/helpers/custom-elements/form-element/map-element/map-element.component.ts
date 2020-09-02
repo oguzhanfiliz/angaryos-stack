@@ -124,9 +124,9 @@ export class MapElementComponent
         {
             var layerName = layers[i];
             var layerData = data[layerName];
-            if(typeof layerData[this.type] == "undefined") continue;
+            if(typeof layerData[this.type.replace('multi', '')] == "undefined") continue;
             
-            features = features.concat(layerData[this.type]);
+            features = features.concat(layerData[this.type.replace('multi', '')]);
         }
         
         if(features.length == 0) this.messageHelper.toastMessage("Aranan tipte nesne bulunamadı!");
@@ -151,6 +151,7 @@ export class MapElementComponent
     {
         this.showModal()
         .then(() => this.createMapElement())
+        .then((map) => this.changeBaseMap(map))
         .then((map) => this.addDrawing(map))
         .then((map) => this.addFeaturesFromValue(map))
         .then((map) => this.emitDataChangedEvent())
@@ -174,6 +175,15 @@ export class MapElementComponent
             this.map = map;
             return map;
         });
+    }
+
+    changeBaseMap(map)
+    {
+        var layers = MapHelper.getBaseLayersFromMap(map);
+        for(var i = 0; i < layers.length; i++)
+            layers[i].setVisible(layers[i]['name'] == 'bing_aerialwithlabelsondemand');
+
+        return map;
     }
 
     addDrawing(map)
