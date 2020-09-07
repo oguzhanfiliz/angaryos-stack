@@ -351,19 +351,25 @@ class TableDBOperationsLibrary
             
             $this->RenameColumn($t->name, $params['record']->name, 'deleted_'.$params['record']->name);
             $this->RenameColumn($t->name.'_archive', $params['record']->name, 'deleted_'.$params['record']->name);
+
+            $this->DeleteColumnsInColumnArray($t->name, $params['record']->id);
         }
-        
-        $this->DeleteColumnsInColumnArray($params['record']->id);
     }
     
     
     
     /****    Column Common Functions    ****/
     
-    private function DeleteColumnsInColumnArray($columnId)
+    private function DeleteColumnsInColumnArray($tableName, $columnId)
     {
+        $tableId = get_attr_from_cache('tables', 'name', $tableName, 'id');
+        
         $model = new BaseModel('column_arrays');
-        $columnArrays = $model->where('column_ids', '@>', $columnId)->get();
+
+        $where = '(column_ids @> \''.$columnId.'\'::jsonb or column_ids @> \'"'.$columnId.'"\'::jsonb)';
+        
+        $columnArrays = $model->where('table_id', $tableId)->whereRaw($where)->get();
+        
         foreach($columnArrays as $columnArray)
         {
             $columnArray->fillVariables();
@@ -561,7 +567,7 @@ class TableDBOperationsLibrary
         $this->UpdateTable($params['requests']['name'].'_archive', $deletedColumnIds, $addedColumnIds);
         
         foreach($deletedColumnIds as $deletedColumnId)
-            $this->DeleteColumnsInColumnArray($deletedColumnId);
+            $this->DeleteColumnsInColumnArray($table->name, $deletedColumnId);
         
         $column_ids = $this->GetColumnIdsForColumnIdsInjection($columns);        
         return ['column_ids' => json_encode($column_ids)];
@@ -662,7 +668,7 @@ class TableDBOperationsLibrary
         $this->RestoreTable($newTable->name.'_archive', $deletedColumnIds, $addedColumnIds);
         
         foreach($deletedColumnIds as $deletedColumnId)
-            $this->DeleteColumnsInColumnArray($deletedColumnId);
+            dd('TableDBOperationsLib@RestoreTableOnDB');//$this->DeleteColumnsInColumnArray($table->name, $deletedColumnId);//old table name mi new table name mi incele?
         
         return TRUE;
     }
