@@ -102,10 +102,10 @@ class BaseSeeder extends Seeder
     
     public function fill_infos()
     {
-        $this->user = new BaseModel('users');
+        $this->user = helper('get_null_object');
         $this->user->id = 1;
         
-        $this->publicUser = new BaseModel('users');
+        $this->publicUser = helper('get_null_object');
         $this->publicUser->id = 2;
         
         $this->robotUser = new BaseModel('users');

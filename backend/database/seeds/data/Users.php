@@ -1,8 +1,7 @@
 <?php
 use App\BaseModel;
 
-unset($this->user->id);
-
+$this->user = new BaseModel('users');
 $this->user->tc = '11111111111';
 $this->user->name_basic = 'Ana';
 $this->user->surname = 'Yönetici';
@@ -191,7 +190,7 @@ $departments['Bilgi İşlem Müdürlüğü']->manager_id = $this->user->id;
 $departments['Bilgi İşlem Müdürlüğü']->save();
 
 
-unset($this->publicUser->id);
+$this->publicUser = new BaseModel('users');
 $this->publicUser->tc = '11111111112';
 $this->publicUser->name_basic = 'Serbets';
 $this->publicUser->surname = 'Kullanıcı';
@@ -207,7 +206,7 @@ $this->publicUser->fillVariables();
 $this->publicUser->save();
 
 
-unset($this->robotUser->id);
+$this->robotUser = new BaseModel('users');
 $this->robotUser->tc = '11111111113';
 $this->robotUser->name_basic = 'Robot';
 $this->robotUser->surname = 'Kullanıcı';
