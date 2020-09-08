@@ -53,8 +53,7 @@ class DashboardLibrary
         
         try
         {
-            $disk = env('FILESYSTEM_DRIVER', 'uploads');
-            $message = Storage::disk($disk)->get('dataEntegratorStatus/'.$param1.'.status');
+            $message = Storage::disk('public')->get('dataEntegratorStatus/'.$param1.'.status');
             
             global $pipe;
             $pipe['table'] = 'data_source_tbl_relations';

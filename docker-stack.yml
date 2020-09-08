@@ -64,8 +64,8 @@ services:
         image: karapazar/angular-serve:0.19
         #image: karapazar/angular-serve-light:0.4
         volumes:
-            #- ./frontend/dist/light/:/usr/share/nginx/html
             - ./frontend:/usr/src/app 
+            #- ./frontend/dist/light/:/usr/share/nginx/html
             - '/etc/localtime:/etc/localtime:ro'
         networks:
             - frontend-nw
@@ -74,8 +74,8 @@ services:
             replicas: 1
             labels:
                 traefik.frontend.rule: "PathPrefix:/"
-                #traefik.port: "80"
                 traefik.port: "4200"
+                #traefik.port: "80"
                 traefik.enable: "true"
                 traefik.backend: "frontend"
                 traefik.docker.network: "angaryos_frontend-nw"
@@ -104,7 +104,7 @@ services:
             - mq-nw
 
     laravelcron:
-        image: karapazar/laravel-cron:0.19
+        image: karapazar/laravel-cron:0.20
         volumes:
             - ./backend:/var/www 
             - ./backend/php.ini:/usr/local/etc/php/conf.d/local.ini
@@ -123,7 +123,7 @@ services:
             - mq-nw
             
     laraveljobs:
-        image: karapazar/laravel-jobs:0.10
+        image: karapazar/laravel-jobs:0.11
         volumes:
             - ./backend:/var/www 
             - ./backend/php.ini:/usr/local/etc/php/conf.d/local.ini

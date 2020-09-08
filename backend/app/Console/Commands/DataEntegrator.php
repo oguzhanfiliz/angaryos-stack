@@ -43,6 +43,10 @@ class DataEntegrator extends Command
                 $ex->getLine(),
                 ["exceptionObject" => json_encode($temp)],
             ]]);
+
+            \Storage::disk('public')->put('dataEntegratorStatus/'.$tableRelationId.'.status', 'err.'.$ex->getMessage());
+            
+            $this->info('Hata Olustu');
         }
         
         DB::commit();

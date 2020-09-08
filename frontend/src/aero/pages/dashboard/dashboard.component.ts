@@ -98,6 +98,7 @@ export class DashboardComponent
     {
         if(message == 'success.0.0') return 'success';
         else if(message == 'no.data') return 'no.data';
+        else if(message.substr(0, 4) == 'err.') return 'error';
         else return 'continue';
     }
     
@@ -459,5 +460,9 @@ export class DashboardComponent
     {
         this.aeroThemeHelper.addEventForFeature("layoutCommonEvents");
         this.aeroThemeHelper.addEventForFeature("standartElementEvents"); 
+
+        var h = window.innerHeight;
+        $('div.container-fluid').css('height', (h*0.85)+"px");
+        $('section.content').css('height', (h*0.95)+"px");
     }
 }

@@ -181,7 +181,8 @@ export class ColumnArrayFormElementComponent
         
         setTimeout(() => 
         {
-            $('#'+this.inFormElementId+'inFormModal').modal('show');
+            $('#'+this.inFormElementId+'inFormModal').modal('show')
+            .on('hidden.bs.modal', () => this.setFormOverflow());
         }, 100);
     }
     

@@ -30,7 +30,7 @@ export class DataTableElementComponent
     
     @Output() dataChanged = new EventEmitter();
 
-    objectId = 0;
+    objectId = null;
 
     showEditButton = {};
     selectedFilter = null;
@@ -72,6 +72,11 @@ export class DataTableElementComponent
         this.preLoadInterval();
     }
     
+    ngOnInit() 
+    {
+        this.themeOperations();
+    }
+
     preLoadInterval()
     {
         return BaseHelper.doInterval(
@@ -1297,5 +1302,10 @@ export class DataTableElementComponent
     {
         this.aeroThemeHelper.addEventForFeature("standartElementEvents");
         this.aeroThemeHelper.pageRutine();  
+
+        setTimeout(() => 
+        {
+            $('.filter-cell multi-select-element').parent().parent().css('padding', '5 0 0 5');
+        }, 500);
     }
 }

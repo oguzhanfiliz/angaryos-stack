@@ -339,6 +339,12 @@ class TableDBOperationsLibrary
     
     private function ColumnEventForDelete($params)
     {
+        dd('TableDBOperationLib@ColumnEventForDelete');
+        //bu kolonun adını deleted_ile değiştiriyor. ama farklı tablolarda bu kolon bulunmaya devam ediyor olabilir. 
+        //yeni kolon oluşturup (deleted_name adında. klonlama ile de olabilir) tablo içindeki column ids yi bu yeni id ile değiştir
+        //db de kolon adını da _deleted yap.
+        
+        
         $model = new BaseModel('tables');
         $tables = $model->where('column_ids', '@>', $params['record']->id)->get();
         foreach($tables as $t)

@@ -122,6 +122,16 @@
 
                                     </div>
                                     <div 
+                                        *ngIf="item['data']['status'] == 'error'" 
+                                        class="progress">
+
+                                        <div class="progress-bar l-pink" 
+                                             role="progressbar" aria-valuenow="100" 
+                                             aria-valuemin="0" aria-valuemax="100" 
+                                             style="width: 100%;"></div>
+
+                                    </div>
+                                    <div 
                                         *ngIf="item['data']['status'] == 'no.data'" 
                                         class="progress">
 
@@ -131,7 +141,6 @@
                                              style="width: 100%;"></div>
 
                                     </div>
-
                                     <div 
                                         *ngIf="item['data']['status'] == 'continue'" 
                                         class="progress">
@@ -144,10 +153,17 @@
                                              [style.width]="item['data']['percent']+'%'"></div>
 
                                     </div>
+                                    
+                                    <div style="height: 6px !important"></div>
 
                                     <small 
                                         *ngIf="item['data']['status'] == 'success'">
                                         Tamamlandı
+                                    </small>
+
+                                    <small 
+                                        *ngIf="item['data']['status'] == 'error'">
+                                        Hata oluştu
                                     </small>
 
                                     <small 

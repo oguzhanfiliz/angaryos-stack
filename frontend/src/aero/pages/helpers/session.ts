@@ -33,7 +33,11 @@ export class SessionHelper
       {
         this.doHttpRequest("GET", BaseHelper.backendUrl, null)
         .then((data) => BaseHelper.backendServiceControl = true)
-        .catch((errorMessage) => this.messageHelper.sweetAlert("Sunucu servisleri şuan çalışmıyor olabilir. Sorun yaşarsanız bir süre sonra tekrar deneyin.", "Sunucuya erişilemedi"));
+        .catch((errorMessage) => 
+        {
+            if(errorMessage != "***") return;
+            this.messageHelper.sweetAlert("Sunucu servisleri şuan çalışmıyor olabilir. Sorun yaşarsanız bir süre sonra tekrar deneyin.", "Sunucuya erişilemedi");
+        });
       }, 100);
     }
 

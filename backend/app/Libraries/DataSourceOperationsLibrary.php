@@ -32,25 +32,28 @@ class DataSourceOperationsLibrary
     
     private function TableEventForClone($params)
     {
-        $dbTypeName = get_attr_from_cache('data_source_types', 'id', $params['record']->data_source_type_id, 'name');
-        return $this->{'UpdateRemoteTablesAndColumnsFor'.ucfirst($dbTypeName)}($params['record']);
+        $this->TableEventStandartAction($params);
     }
     
     private function TableEventForUpdate($params)
     {
-        $dbTypeName = get_attr_from_cache('data_source_types', 'id', $params['record']->data_source_type_id, 'name');
-        return $this->{'UpdateRemoteTablesAndColumnsFor'.ucfirst($dbTypeName)}($params['record']);
+        $this->TableEventStandartAction($params);
     }
     
     private function TableEventForDelete($params)
     {
-        dd(__FUNCTION__);
+        dd('DataSourceOperationsLibrary@'.__FUNCTION__);
     }
-    
     
     private function TableEventForRestore($params)
     {
-        dd(__FUNCTION__);
+        $this->TableEventStandartAction($params);
+    }
+
+    private function TableEventStandartAction($params)
+    {
+        $dbTypeName = get_attr_from_cache('data_source_types', 'id', $params['record']->data_source_type_id, 'name');
+        return $this->{'UpdateRemoteTablesAndColumnsFor'.ucfirst($dbTypeName)}($params['record']);
     }
     
     

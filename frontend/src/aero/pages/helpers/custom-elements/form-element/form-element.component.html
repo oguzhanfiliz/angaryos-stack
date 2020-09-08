@@ -1,4 +1,5 @@
 <text-element *ngIf="type == 'text'" 
+style="background-color: white;display: block;"
 (changed)="handleChanged($event)"
 value="{{ value }}"
 defaultData="{{ defaultData }}"
@@ -11,6 +12,7 @@ filterType="{{ filterType }}"
 class="{{ class }}"></text-element>
 
 <text-element *ngIf="type == 'jsonb' || type == 'json'" 
+style="background-color: white;display: block;"
 (changed)="handleChanged($event)"
 value="{{ valueJson }}"
 type="{{ type }}"
@@ -23,6 +25,7 @@ filterType="{{ filterType }}"
 class="{{ class }}"></text-element>
 
 <jsonviewer-element *ngIf="type == 'jsonviewer'" 
+style="background-color: white;display: block;"
 (changed)="handleChanged($event)"
 value="{{ valueJson }}"
 defaultData="{{ defaultData }}"
@@ -32,6 +35,7 @@ placeholder="{{ placeholder }}"
 class="{{ class }}"></jsonviewer-element>
 
 <rich-text-element *ngIf="type == 'richtext'" 
+style="background-color: white;display: block;"
 value="{{ value }}"
 defaultData="{{ defaultData }}"
 name="{{ name }}"
@@ -41,6 +45,7 @@ upFormId="{{ upFormId }}"
 class="{{ class }}"></rich-text-element>
 
 <string-element *ngIf="type == 'string'" 
+style="background-color: white;display: block;"
 (changed)="handleChanged($event)"
 value="{{ value }}"
 defaultData="{{ defaultData }}"
@@ -52,6 +57,7 @@ filterType="{{ filterType }}"
 class="{{ class }}"></string-element>
 
 <phone-element *ngIf="type == 'phone'" 
+style="background-color: white;display: block;"
 (changed)="handleChanged($event)"
 value="{{ value }}"
 defaultData="{{ defaultData }}"
@@ -64,12 +70,14 @@ upFormId="{{ upFormId }}"
 class="{{ class }}"></phone-element>
 
 <password-element *ngIf="type == 'password'" 
+style="background-color: white;display: block;"
 name="{{ name }}"
 [createForm]="createForm"
 placeholder="{{ placeholder }}"
 class="{{ class }}"></password-element>
 
 <number-element *ngIf="type == 'numeric'" 
+style="background-color: white;display: block;"
 (changed)="handleChanged($event)"
 value="{{ value }}"
 defaultData="{{ defaultData }}"
@@ -81,6 +89,7 @@ filterType="{{ filterType }}"
 class="{{ class }}"></number-element>
 
 <date-time-element *ngIf="type == 'datetime'" 
+style="background-color: white;display: block;"
 (changed)="handleChanged($event)"
 value="{{ value }}"
 value2="{{ value2 }}"
@@ -94,6 +103,7 @@ upFormId="{{ upFormId }}"
 class="{{ class }}"></date-time-element>
 
 <time-element *ngIf="type == 'time'" 
+style="background-color: white;display: block;"
 (changed)="handleChanged($event)"
 value="{{ value }}"
 defaultData="{{ defaultData }}"
@@ -106,6 +116,7 @@ upFormId="{{ upFormId }}"
 class="{{ class }}"></time-element>
 
 <date-element *ngIf="type == 'date'" 
+style="background-color: white;display: block;"
 (changed)="handleChanged($event)"
 value="{{ value }}"
 defaultData="{{ defaultData }}"
@@ -118,6 +129,7 @@ upFormId="{{ upFormId }}"
 class="{{ class }}"></date-element>
 
 <boolean-element *ngIf="type.split(':')[0] == 'boolean'" 
+style="background-color: white;display: block;"
 (changed)="handleChanged($event)"
 value="{{ value }}"
 defaultData="{{ defaultData }}"
@@ -167,6 +179,7 @@ recordJson="{{ recordJson }}"
 class="{{ class }}"></multi-select-element>
 
 <multi-select-drag-drop-element *ngIf="type.split(':')[0] == 'multiselectdragdrop'" 
+style="background-color: white;display: block;"
 (changed)="handleChanged($event)"
 upColumnName="{{ upColumnName }}"
 upFormId="{{ upFormId }}"
@@ -185,6 +198,7 @@ filterType="{{ filterType }}"
 class="{{ class }}"></multi-select-drag-drop-element>
 
 <files-element *ngIf="type == 'files'" 
+style="background-color: white;display: block;"
 (changed)="handleChanged($event)"
 defaultData="{{ defaultData }}"
 value="{{ value }}"
@@ -200,6 +214,7 @@ class="{{ class }}"></files-element>
 
 
 <map-element *ngIf="isGeoType(type)" 
+style="background-color: white;display: block;"
 (changed)="handleChanged($event)"
 upFormId="{{ upFormId }}"
 srid="{{ srid }}"
@@ -215,6 +230,7 @@ showFilterTypesSelect="{{ showFilterTypesSelect }}"
 filterType="{{ filterType }}"></map-element>
 
 <code-editor-element *ngIf="type.split(':')[0] == 'codeeditor'" 
+style="background-color: white;display: block;"
 type="{{ type }}"
 value="{{ value }}"
 defaultData="{{ defaultData }}"
@@ -223,6 +239,7 @@ name="{{ name }}"
 class="{{ class }}"></code-editor-element>
 
 <money-element *ngIf="type.split(':')[0] == 'money'" 
+style="background-color: white;display: block;"
 (changed)="handleChanged($event)"
 type="{{ type }}"
 value="{{ value }}"

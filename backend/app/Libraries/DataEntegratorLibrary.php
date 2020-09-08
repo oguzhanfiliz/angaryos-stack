@@ -131,13 +131,8 @@ class DataEntegratorLibrary
         $temp->save(); 
         
         $cacheSubscriber = new CacheSubscriber(TRUE);
-        $cacheSubscriber->recordChangedSuccess('tables', $temp, 'update');
+        $cacheSubscriber->recordChangedSuccessAsync('tables', $temp, 'update');
     }
-    
-    
-    
-    
-    
     
     private function GetNewRemoteRecordDataFromCurrentRecord($columnRelations, $record)
     {
@@ -179,11 +174,7 @@ class DataEntegratorLibrary
         
         return $newRecord;
     }
-        
-    
-    
-    
-    
+      
     private function GetRelatedColumnName($columnRelations, $columnName)
     {
         $remoteColumnName = '';
@@ -212,9 +203,6 @@ class DataEntegratorLibrary
         return $currentRecord->updated_at >= $remoteRecord->{$remoteUpdatedAtColumnName};        
     }
     
-   
-    
-    
     private function GetRecordFromDBByRemoteRecordId($tableRelation, $table, $remoteRecord)
     {
         $tId = $tableRelation->id;
@@ -234,15 +222,6 @@ class DataEntegratorLibrary
         $currentRecords = $this->UpdateDataEntegratorColumnsData($currentRecords);        
         return $currentRecords[0];
     }
-    
-    
-    
-    
-    
-    
-    
-    
-    
     
     private function CreateRecordOnDB($tableRelation, $tableName, $data)
     {
@@ -302,19 +281,26 @@ class DataEntegratorLibrary
         $this->UpdateRecordStaticColumns($record, $data);
         
         $cacheSubscriber = new CacheSubscriber(TRUE);
-        $cacheSubscriber->recordChangedSuccess($tableName, $record, 'update');
+        $cacheSubscriber->recordChangedSuccessAsync($tableName, $record, 'update');
     }
     
     private function DeleteRecordOnDB($tableName, $record)
     {
-        copy_record_to_archive($record, $tableName); 
+        $record = get_model_from_cache($tableName, 'id', $record->id);
+        
+        global $pipe;
+        $pipe['table'] = $tableName;
+        
+        $data = Event::dispatch('record.delete.requested', $record)[0];
+        if(!$data) throw new \Exception('Kayıt silme yapılamadı! json:'.json_encode($record->toArray()));
 
-        DB::table($tableName)->where('id', $record->id)->delete();
-        
+        Event::dispatch('record.delete.success', $record);
+
         $record = $this->ReverseUpdateDataEntegratorColumnsData([$record])[0];
-        
+
+
         $cacheSubscriber = new CacheSubscriber(TRUE);
-        $cacheSubscriber->recordChangedSuccess($tableName, $record, 'delete');
+        $cacheSubscriber->recordChangedSuccessAsync($tableName, $record, 'update');
     }
     
     private function SaveOldDataToLocalFromDataSource($remoteRecord, $newRecord)
@@ -330,13 +316,6 @@ class DataEntegratorLibrary
 
                 json_encode(['old' => $remoteRecord, 'new' => $newRecord]));
     }
-    
-    
-    
-    
-    
-    
-    
     
     private function GetNewRecordDataFromRemoteRecord($columnRelations, $remoteRecord)
     {
@@ -435,8 +414,8 @@ class DataEntegratorLibrary
     private static function WriteDataEntegratorLog($relation, $direction, $count = 0, $step = 0)
     {
         $desc = $direction.'.'.$count.'.'.$step;
-        echo $desc."\n";
-        
+        echo $desc;        
         Storage::disk('public')->put('dataEntegratorStatus/'.$relation->id.'.status',  $desc);
+        echo ".\n";
     }
 }
