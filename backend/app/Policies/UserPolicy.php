@@ -50,7 +50,7 @@ class UserPolicy
             if(!$control) return FALSE;
         }
         
-        return $this->recordPermitted($record, __FUNCTION__);
+        return $this->recordPermitted($record, __FUNCTION__, $columnSetId);
     }
 
     public function delete($user, $record)

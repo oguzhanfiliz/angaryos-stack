@@ -145,7 +145,7 @@ export class MultiSelectElementComponent
         });        
     }
     
-    addSelect2Static()
+    /*addSelect2Static()
     {
         var url = this.sessionHelper.getBackendUrlWithToken()+this.baseUrl;
         url += "/getSelectColumnData/"+this.columnName+"?search=***&page=1&limit=500";
@@ -229,6 +229,74 @@ export class MultiSelectElementComponent
             $(e.target).addClass('selected-option');
 
             $(elementId+" select").select2('close');
+        });
+    }*/
+
+    addSelect2Static()
+    {
+        var url = this.sessionHelper.getBackendUrlWithToken()+this.baseUrl;
+        url += "/getSelectColumnData/"+this.columnName+"?search=***&page=1&limit=500";
+        
+        if(!this.createForm) url += '&editRecordId='+this.record['id'];
+                    
+        if(this.upColumnName.length > 0) 
+        {
+            url += '&upColumnName='+this.upColumnName;
+            url += '&upColumnData='+$('#'+this.upColumnName).val();
+            
+            var temp = BaseHelper.getAllFormsData(this.baseElementSelector);
+            url += '&currentFormData='+BaseHelper.objectToJsonStr(temp);
+        }
+        
+        var th = this;
+        
+        $.ajax(
+        {
+            url : url,
+            type : "GET",
+            data : {},
+            success : (data) =>
+            {
+                if(typeof data['results'] == 'undefined')
+                {
+                    this.messageHelper.sweetAlert("Klonlama yapıldı ama yeni kayıt bilgisi alınırken beklenmedik bir cevap geldi!", "Hata", "warning");
+                }
+                else
+                {
+                    var element = $(this.baseElementSelector+' [name="'+this.name+'"]');
+                    
+                    for(var i = 0; i < data['results'].length; i++)
+                    {
+                        var item = data['results'][i];
+                        
+                        if(this.val.includes(item['id'])) continue;
+                        
+                        var html = "<option value='"+item['id']+"'>"+item['text']+"</option>";
+                        element.append(html);
+                    }
+                    
+                    element.select2(
+                    {
+                        allowClear: true,
+                        placeholder: $(this.baseElementSelector+' [name="'+this.name+'"] span').html(),
+                    })
+                    .on('select2:select', (event) => 
+                    {
+                        if(event.target.value == '-9999')
+                        {
+                            $(th.baseElementSelector+' [name="'+th.name+'"]').val("");
+                            $(th.baseElementSelector+' #select2-'+th.name+'-container').html("");
+                            return;
+                        }
+                        this.changed.emit(event);
+                    })
+                    .on('select2:unselect', (event) => this.changed.emit(event));
+                }
+            },
+            error : (e) =>
+            {
+                this.messageHelper.toastMessage("Bir hata oluştu", "warning");
+            }
         });
     }
 

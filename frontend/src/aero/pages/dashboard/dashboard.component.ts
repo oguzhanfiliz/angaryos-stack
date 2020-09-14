@@ -460,9 +460,7 @@ export class DashboardComponent
     {
         this.aeroThemeHelper.addEventForFeature("layoutCommonEvents");
         this.aeroThemeHelper.addEventForFeature("standartElementEvents"); 
-
-        var h = window.innerHeight;
-        $('div.container-fluid').css('height', (h*0.85)+"px");
-        $('section.content').css('height', (h*0.95)+"px");
+        
+        this.aeroThemeHelper.pageRutine(); 
     }
 }

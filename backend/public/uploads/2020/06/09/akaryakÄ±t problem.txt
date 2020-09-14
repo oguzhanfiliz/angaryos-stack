@@ -1,0 +1,11 @@
+Sorgu:		50 20 FA
+Cevap:		50 30 02 08 00 02 29 63 00 02 29 63 03 04 00 10 00 11 5F F3 03 FA	//Dolum 229.63 lt
+
+Sorgu:		50 20 FA
+Cevap:		50 31 01 01 05 03 04 00 10 00 11 F9 5D 03 FA	//Tabanca açıldı
+
+Sorgu:		50 33 11 61 F1 A3 FA
+Cevap:		50 C3 FA
+
+Sorgu:		50 20 FA
+Cevap:		50 32 01 01 02 03 04 00 10 00 11 7F 92 03 FA	//Motor başladı

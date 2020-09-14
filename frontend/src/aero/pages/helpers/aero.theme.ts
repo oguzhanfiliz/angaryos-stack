@@ -28,6 +28,12 @@ export class AeroThemeHelper
             $.getScript('assets/themes/aero/assets/bundles/libscripts.bundle.js');
             
         }, 100);
+        
+        var h = window.innerHeight;
+        $('div.container-fluid').css('height', (h*0.85)+"px");
+        $('section.content').css('height', (h*0.95)+"px");
+        $('section.content').css('overflow', 'hidden');
+        $('section.content').css('overflow', 'auto');
     }
 
     public loadPageScripts()

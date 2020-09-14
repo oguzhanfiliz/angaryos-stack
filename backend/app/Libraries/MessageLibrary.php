@@ -11,32 +11,60 @@ class MessageLibrary
     
     private static function getRabbitMQObject($queue)
     {
-        if(self::$rabbitMQObject != NULL) return self::$rabbitMQObject;
+        try 
+        {
+            if(self::$rabbitMQObject != NULL) return self::$rabbitMQObject;
         
-        $connection = new \PhpAmqpLib\Connection\AMQPStreamConnection(
-                                                                    env('RABBITMQ_HOST', 'rabbitmq'), 
-                                                                    env('RABBITMQ_PORT', 5672),
-                                                                    env('RABBITMQ_USER', 'guest'),
-                                                                    env('RABBITMQ_PASSWORD', 'guest'));
-        
-        $channel = $connection->channel();
-        $channel->queue_declare($queue, false, false, false, false);
-        
-        self::$rabbitMQObject = helper('get_null_object');
-        self::$rabbitMQObject->connection = $connection;
-        self::$rabbitMQObject->channel = $channel;
-        
-        return self::$rabbitMQObject;
+            $connection = new \PhpAmqpLib\Connection\AMQPStreamConnection(
+                                                                        env('RABBITMQ_HOST', 'rabbitmq'), 
+                                                                        env('RABBITMQ_PORT', 5672),
+                                                                        env('RABBITMQ_USER', 'guest'),
+                                                                        env('RABBITMQ_PASSWORD', 'guest'));
+            
+            $channel = $connection->channel();
+            $channel->queue_declare($queue, false, false, false, false);
+            
+            self::$rabbitMQObject = helper('get_null_object');
+            self::$rabbitMQObject->connection = $connection;
+            self::$rabbitMQObject->channel = $channel;
+            
+            return self::$rabbitMQObject;
+        } 
+        catch (\Exception $ex) 
+        {
+            $json = json_encode(
+            [
+                'mesaage' => $ex->getMessage(),
+                'ex' => (array)$ex                
+            ]);
+            
+            //if(!strstr($json['message'], 'Unsupported image type.'))
+                \Log::alert('Rabitt nesne oluşturulurken hata oluştu... (json:'.$json.')');
+        }
     }
     
     public static function sendToRabbitMQ($queue, $message)
     {
-        if(is_array($message) || is_object($message)) $message = json_encode($message);
+        try 
+        {
+            if(is_array($message) || is_object($message)) $message = json_encode($message);
         
-        $connectionObject = self::getRabbitMQObject($queue);
-        $msg = new \PhpAmqpLib\Message\AMQPMessage($message);
-        
-        $connectionObject->channel->basic_publish($msg, '', $queue);
+            $connectionObject = self::getRabbitMQObject($queue);
+            $msg = new \PhpAmqpLib\Message\AMQPMessage($message);
+            
+            $connectionObject->channel->basic_publish($msg, '', $queue);
+        } 
+        catch (\Exception $ex) 
+        {
+            $json = json_encode(
+            [
+                'mesaage' => $ex->getMessage(),
+                'ex' => (array)$ex                
+            ]);
+            
+            //if(!strstr($json['message'], 'Unsupported image type.'))
+                \Log::alert('Rabitt mesaj gönderilirken hata oluştu. (json:'.$json.')');
+        }
     }
     
     public static function curl($url, $method = 'GET', $data = NULL, $header = NULL)

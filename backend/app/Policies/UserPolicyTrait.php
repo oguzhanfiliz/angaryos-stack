@@ -168,7 +168,7 @@ trait UserPolicyTrait
         return TRUE;
     }
     
-    public function recordPermitted($record, $type)
+    public function recordPermitted($record, $type, $columnSetId = 0)
     {
         switch ($type) 
         {
@@ -190,7 +190,7 @@ trait UserPolicyTrait
             default: dd('invalid type: ' . $type);
         }
         
-        $permissions = $this->getRecordPermissions($record);
+        $permissions = $this->getRecordPermissions($record, $type, $columnSetId);
         
         if($permissions == NULL) return FALSE;
         
@@ -198,7 +198,7 @@ trait UserPolicyTrait
         return TRUE;
     }
     
-    private function getRecordPermissions($record)
+    private function getRecordPermissions($record, $type, $columnSetId)
     {
         if(get_class($record) == 'stdClass')
         {
@@ -208,8 +208,15 @@ trait UserPolicyTrait
         }
         
         $model = $record->getQuery();
-        $record->addFilters($model, $record->getTable());
-        $model->where($record->getTable().'.id', $record->id);
+        $model = $model->selectRaw($record->getTable().'.*');
+
+        $columnSet = $record->getColumnSet($model, $columnSetId, TRUE);
+        $columns = $record->getColumnsFromColumnSet($columnSet);
+
+        $record->addJoinsWithColumns($model, $columns);
+        
+        $record->addFilters($model, $record->getTable(), $type);        
+        $model->where($record->getTable().'.id', $record->id); 
         
         return $model->first();
     }

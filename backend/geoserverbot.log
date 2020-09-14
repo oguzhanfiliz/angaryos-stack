@@ -1,0 +1,36 @@
+2020-07-28 10:42:00,972 - INFO - Started
+2020-07-28 10:42:00,973 - INFO - Args OK
+2020-07-28 10:42:08,717 - INFO - Browser created
+2020-07-28 10:42:08,717 - INFO - Vars filled
+2020-07-28 10:42:10,133 - INFO - Go url: http://geoserver:8080/geoserver/web/
+2020-07-28 10:42:10,133 - INFO - Went home page
+2020-07-28 10:42:12,890 - INFO - Go url: http://geoserver:8080/geoserver/web/wicket/bookmarkable/org.geoserver.web.data.workspace.WorkspacePage
+2020-07-28 10:42:12,890 - INFO - Went workspaces page
+2020-07-28 10:42:15,612 - INFO - Browser closed
+2020-08-06 10:57:36,064 - INFO - Started
+2020-08-06 10:57:36,077 - INFO - Args OK
+2020-08-06 10:57:44,417 - INFO - Browser created
+2020-08-06 10:57:44,417 - INFO - Vars filled
+2020-08-06 10:57:46,006 - INFO - Go url: http://geoserver:8080/geoserver/web/
+2020-08-06 10:57:46,007 - INFO - Went home page
+2020-08-06 10:57:49,003 - INFO - Go url: http://geoserver:8080/geoserver/web/wicket/bookmarkable/org.geoserver.web.data.workspace.WorkspacePage
+2020-08-06 10:57:49,003 - INFO - Went workspaces page
+2020-08-06 10:57:52,502 - INFO - Browser closed
+2020-08-25 13:57:05,295 - INFO - Started
+2020-08-25 13:57:05,308 - INFO - Args OK
+2020-08-25 13:57:13,265 - INFO - Browser created
+2020-08-25 13:57:13,265 - INFO - Vars filled
+2020-08-25 13:57:14,829 - INFO - Go url: http://geoserver:8080/geoserver/web/
+2020-08-25 13:57:14,829 - INFO - Went home page
+2020-08-25 13:57:17,996 - INFO - Go url: http://geoserver:8080/geoserver/web/wicket/bookmarkable/org.geoserver.web.data.workspace.WorkspacePage
+2020-08-25 13:57:17,996 - INFO - Went workspaces page
+2020-08-25 13:57:21,558 - INFO - Browser closed
+2020-09-08 14:23:32,108 - INFO - Started
+2020-09-08 14:23:32,115 - INFO - Args OK
+2020-09-08 14:23:41,234 - INFO - Browser created
+2020-09-08 14:23:41,235 - INFO - Vars filled
+2020-09-08 14:23:42,043 - INFO - Go url: http://geoserver:8080/geoserver/web/
+2020-09-08 14:23:42,044 - INFO - Went home page
+2020-09-08 14:23:44,960 - INFO - Go url: http://geoserver:8080/geoserver/web/wicket/bookmarkable/org.geoserver.web.data.workspace.WorkspacePage
+2020-09-08 14:23:44,961 - INFO - Went workspaces page
+2020-09-08 14:23:48,162 - INFO - Browser closed

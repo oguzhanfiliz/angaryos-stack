@@ -95,7 +95,11 @@ export class PagesComponent
 
   fillProfilePictureUrl()
   {
-    if(this.user['profile_picture'] == null) return BaseHelper.noImageUrl;
+    if(this.user['profile_picture'] == null) 
+    {
+      this.profilePictureUrl = BaseHelper.noImageUrl;
+      return;
+    }
 
     var temp = BaseHelper.jsonStrToObject(this.user['profile_picture']);
     this.profilePictureUrl = BaseHelper.getFileUrl(temp[0], '');

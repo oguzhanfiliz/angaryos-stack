@@ -3,7 +3,7 @@
 if($params == NULL) return NULL;
 if($params == '') return '';
 
-if(is_string($params))
+if(is_string($params) || is_numeric($params))
     return filter_var($params, FILTER_SANITIZE_STRING);
 
 foreach($params as $key => $value)
