@@ -303,11 +303,13 @@ trait BaseModelGetDataColumnTrait
         $columns = Cache::rememberForever($cacheName, function()
         {   
             $tableName = $this->getTable();
+            $archiveTable = (bool)strstr($tableName, '_archive');
             $tableName = str_replace('_archive', '', $tableName);
             
             $json = get_attr_from_cache('tables', 'name', $tableName, 'column_ids');
             
             $columnsSort = json_decode($json);
+            if($archiveTable) array_push($columnsSort, get_attr_from_cache ('columns', 'name', 'record_id', 'id'));
             
             $model = new BaseModel($this->getTable());
             $allColumnsFromDB = $model->getAllColumnsFromDB();
