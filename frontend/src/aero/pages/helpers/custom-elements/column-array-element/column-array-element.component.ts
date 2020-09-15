@@ -122,7 +122,7 @@ export class ColumnArrayElementComponent
         var temp = file["big"].split('.');
         var ext = temp[temp.length-1];
 
-        return imgExts.includes(ext);
+        return imgExts.includes(ext.toLowerCase());
     }
     
     getFileIconUrl(fileUrl)
@@ -132,7 +132,7 @@ export class ColumnArrayElementComponent
 
         var iconBaseUrl = "assets/img/";
         
-        switch(ext)
+        switch(ext.toLowerCase())
         {
             default: return iconBaseUrl+"download_file.png";
         }

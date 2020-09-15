@@ -84,7 +84,7 @@ export class FilesElementComponent
         var temp = file.split('.');
         var ext = temp[temp.length-1];
 
-        return imgExts.includes(ext);
+        return imgExts.includes(ext.toLowerCase());
     }
 
     getFileIconUrl(fileUrl)
@@ -94,7 +94,7 @@ export class FilesElementComponent
 
         var iconBaseUrl = "assets/img/";
         
-        switch(ext)
+        switch(ext.toLowerCase())
         {
             default: return iconBaseUrl+"download_file.png";
         }
