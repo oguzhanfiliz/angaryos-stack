@@ -80,7 +80,7 @@ export class FilesElementComponent
         if(file == null) return false;
         if(file == "") return false;
 
-        var imgExts = ["jpg", "png", "gif"]
+        var imgExts = ["jpg", "jpeg", "png", "gif"]
         var temp = file.split('.');
         var ext = temp[temp.length-1];
 

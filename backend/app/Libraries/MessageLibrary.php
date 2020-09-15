@@ -38,8 +38,8 @@ class MessageLibrary
                 'ex' => (array)$ex                
             ]);
             
-            //if(!strstr($json['message'], 'Unsupported image type.'))
-                \Log::alert('Rabitt nesne oluşturulurken hata oluştu... (json:'.$json.')');
+            //if(!strstr($ex->getMessage(), 'Unsupported image type.'))
+                \Log::alert('Rabbit nesne oluşturulurken hata oluştu... (json:'.$json.')');
         }
     }
     
@@ -62,8 +62,8 @@ class MessageLibrary
                 'ex' => (array)$ex                
             ]);
             
-            //if(!strstr($json['message'], 'Unsupported image type.'))
-                \Log::alert('Rabitt mesaj gönderilirken hata oluştu. (json:'.$json.')');
+            if(!strstr($ex->getMessage(), 'Channel connection is closed.'))
+                \Log::alert('Rabbit mesaj gönderilirken hata oluştu. (json:'.$json.')');
         }
     }
     
