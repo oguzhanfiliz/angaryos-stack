@@ -36,7 +36,7 @@ class AuthsRepository
             $temp->_source_column = $item;
             
             if(!is_numeric($item))
-                $temp->_display_column = $allAuths[$item];
+                $temp->_display_column = isset($allAuths[$item]) ? $allAuths[$item] : 'Silinmiş ('.$item.')';
             else
             {
                 $ag = \DB::table('auth_groups')->find($item);
@@ -123,9 +123,10 @@ class AuthsRepository
         {
             $model = DB::table('auth_groups');
             if(is_numeric($list[$i]))
-                $model->whereRaw('auths @> \''.$list[$i].'\'::jsonb');
+                $model->whereRaw('(auths @> \''.$list[$i].'\'::jsonb or auths @> \'"'.$list[$i].'"\'::jsonb)');
             else
                 $model->where('auths', 'like', '%"'.$list[$i].'"%');
+               
             $temp = $model->get();
 
             if(count($temp) > 0)
@@ -140,7 +141,7 @@ class AuthsRepository
             $i++;
         }
 
-        return $return;
+        return array_merge($serach, $return);
     }
     
     public function ClearCache($tableName, $record, $type)

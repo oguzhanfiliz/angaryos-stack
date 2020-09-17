@@ -163,14 +163,14 @@
     </div>
 </div>
 
-<div class="container-fluid">
+<div id="target-container-fluid" class="container-fluid">
     <div class="row clearfix">
         <div class="col-lg-12">
             <div class="card">
                 <div class="row clearfix">
                     <div class="col-lg-12">
-                        <div class="card">
-                            <div class="body" style="padding: 0;overflow: auto;">
+                        <div class="card" style="display:grid;">
+                            <div class="body" style="padding: 0;">
                                 
                                 <table 
                                     class="table table-bordered table-striped table-hover" 
@@ -465,7 +465,7 @@
                                     </tbody>
                                 </table>
                                 
-                                <table *ngIf="data['records'].length > 0" class="light-table">
+                                <table *ngIf="true || data['records'].length > 0" class="light-table">
                                     <tr>
                                         <td>
                                             <table style="padding: 0; margin: 0;">

@@ -353,7 +353,15 @@ trait BaseModelGetDataWhereTrait
                 if(!is_numeric($filter))
                     $query->orWhere($params->column_name_with_alias, 'like', '%"'.$filter.'"%');
                 else
-                    $query->orWhereRaw($params->column_name_with_alias. ' @> \''.$filter.'\'::jsonb');
+                {
+                    $where = '(';
+                        $where .= $params->column_name_with_alias. ' @> \''.$filter.'\'::jsonb';
+                        $where .= ' or ';
+                        $where .= $params->column_name_with_alias. ' @> \'"'.$filter.'"\'::jsonb';
+                    $where .= ')';
+
+                    $query->orWhereRaw($where);
+                }
             }
             
             foreach($temp as $t)

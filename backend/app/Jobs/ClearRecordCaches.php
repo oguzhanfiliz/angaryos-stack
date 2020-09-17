@@ -17,7 +17,7 @@ class ClearRecordCaches implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    private $tableName, $data, $type;
+    public $tableName, $data, $type;
     
     public function __construct($tableName, $data, $type)
     {
@@ -28,20 +28,31 @@ class ClearRecordCaches implements ShouldQueue
 
     public function handle()
     {
-        $record = new BaseModel($this->tableName);
-        $record = $record->find($this->data['id']);
-
-        if($record == NULL)
+        try 
         {
             $record = new BaseModel($this->tableName);
-            $record = $record->first();
-            $record->id = $this->data['id'];
-        }
-        
-        foreach($this->data as $columnName => $value);
-            $record->{$columnName} = $value;
+            $record = $record->find($this->data['id']);
 
-        $listener = new CacheSubscriber();
-        $listener->recordChangedSuccess($this->tableName, $record, $this->type);
+            if($record == NULL)
+            {
+                $record = new BaseModel($this->tableName.'_archive');
+                $record = $record->where('record_id', $this->data['id'])->orderBy('id', 'desc')->first();
+                $record->id = $this->data['id'];
+                $record->setTable($this->tableName);
+                unset($record->record_id);
+            }
+            
+            foreach($this->data as $columnName => $value);
+                $record->{$columnName} = $value;
+
+            $listener = new CacheSubscriber();
+            $listener->recordChangedSuccess($this->tableName, $record, $this->type);
+        } 
+        catch (\Exception $ex) { $this->error($ex); }
+    }
+
+    public function error($exception)
+    {
+        \Log::alert('ClearRecordCaches:'.$exception->getMessage().':'.json_encode((array)$this, debug_backtrace()));
     }
 }
