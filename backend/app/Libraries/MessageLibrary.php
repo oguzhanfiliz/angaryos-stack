@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Libraries;
+use phpseclib\Net\SSH2;
 
 use Illuminate\Support\Facades\Mail;
 use Log;
@@ -8,6 +9,39 @@ use Log;
 class MessageLibrary 
 {
     private static $rabbitMQObject = NULL;
+    private static $sshConnectionObjects = [];
+
+    private static function getSshConnectionObject($host, $user, $password, $port = 22)
+    {
+        $key = $host.'|'.$port.'|'.$user.'|'.$password;
+        if(isset(self::$sshConnectionObjects[$key])) return self::$sshConnectionObjects[$key];
+
+        $connection = new SSH2($host, $port);
+        $control = $connection->login($user, $password);
+        
+        if(!$control) return FALSE;
+
+        self::$sshConnectionObjects[$key] = $connection;
+        return $connection;
+    }
+
+    public static function sendCommandWithSsh($config, $command)
+    {
+        if(strlen($config['port']) == 0) $config['port'] = 22;
+
+        $connection = self::getSshConnectionObject($config['host'], $config['user_name'], $config['password'], $config['port']);
+
+        if(!$connection) throw new \Exception('ssh.server.connection.error');
+
+        $temp = $connection->exec($command);
+        $temp = explode("\n", $temp);
+
+        if(strlen(last($temp)) == 0) unset($temp[count($temp)-1]);
+
+        if(count($temp) == 0) return '';
+        else if(count($temp) == 1) return $temp[0]; 
+        else return $temp;
+    }
     
     private static function getRabbitMQObject($queue)
     {
@@ -38,8 +72,8 @@ class MessageLibrary
                 'ex' => (array)$ex                
             ]);
             
-            //if(!strstr($ex->getMessage(), 'Unsupported image type.'))
-                \Log::alert('Rabbit nesne oluşturulurken hata oluştu... (json:'.$json.')');
+            //if(!strstr($json['message'], 'Unsupported image type.'))
+                \Log::alert('Rabitt nesne oluşturulurken hata oluştu... (json:'.$json.')');
         }
     }
     
@@ -62,8 +96,8 @@ class MessageLibrary
                 'ex' => (array)$ex                
             ]);
             
-            if(!strstr($ex->getMessage(), 'Channel connection is closed.'))
-                \Log::alert('Rabbit mesaj gönderilirken hata oluştu. (json:'.$json.')');
+            if(!strstr($ex->getMessage(), 'Channel connection is closed'))
+                \Log::alert('Rabitt mesaj gönderilirken hata oluştu. (json:'.$json.')');
         }
     }
     
