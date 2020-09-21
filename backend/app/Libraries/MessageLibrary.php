@@ -28,6 +28,7 @@ class MessageLibrary
         return $connection;
     }
 
+    private static function runSshCommandAsSudo($connection, $command, $config, $timeOut)
     {
         $connection->setTimeout(1);
         if(!$config['no_wait_for_sudo']) $connection->read('/.*@.*[$|#]/', /*NET_SSH2_READ_REGEX*/2);
