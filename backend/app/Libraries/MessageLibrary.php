@@ -11,8 +11,10 @@ class MessageLibrary
     private static $rabbitMQObject = NULL;
     private static $sshConnectionObjects = [];
 
-    private static function getSshConnectionObject($host, $user, $password, $port = 22)
+    public static function getSshConnectionObject($host, $user, $password, $port = NULL)
     {
+        if(strlen($port) == 0) $port = 22;
+        
         $key = $host.'|'.$port.'|'.$user.'|'.$password;
         if(isset(self::$sshConnectionObjects[$key])) return self::$sshConnectionObjects[$key];
 
@@ -22,25 +24,82 @@ class MessageLibrary
         if(!$control) return FALSE;
 
         self::$sshConnectionObjects[$key] = $connection;
+
         return $connection;
     }
 
-    public static function sendCommandWithSsh($config, $command)
+    {
+        $connection->setTimeout(1);
+        if(!$config['no_wait_for_sudo']) $connection->read('/.*@.*[$|#]/', /*NET_SSH2_READ_REGEX*/2);
+        else  $connection->read();
+
+        $connection->setTimeout($timeOut);
+
+        $connection->write($command."\n");
+
+        if(!$config['no_wait_for_sudo'])
+        {
+            $output = $connection->read('/.*@.*[$|#]|.*[pP]assword.*/', /*NET_SSH2_READ_REGEX*/2);
+            
+            if (preg_match('/.*[pP]assword.*/', $output)) 
+            {
+                $connection->write($config['password']."\n");
+                $output = $connection->read('/.*@.*[$|#]/', /*NET_SSH2_READ_REGEX*/2);
+            }
+            else if(strstr($output, $config['user_name'].'@')) 
+            {
+                $output = str_replace([ " \r ", " \r", "\r ", "\r"], '', $output);
+                $output = str_replace($command, '', $output);
+            }
+            else throw new \Exception('command.not.run.as.sudo:'.json_encode($output));
+        }
+        else 
+        {
+            $output = $connection->read('/.*@.*[$|#]/', /*NET_SSH2_READ_REGEX*/2);
+            $output = str_replace([ " \r ", " \r", "\r ", "\r"], '', $output);
+            $output = str_replace($command, '', $output);
+        }
+        
+        return $output;
+    }
+
+    private static function clearSshOutput($output, $config)
+    {
+        $output = str_replace([ " \r ", " \r", "\r ", "\r"], '', $output);
+        $output = trim($output, ' ');
+        $arr = [];
+        foreach(explode("\n", $output) as $line)
+        {
+            $line = trim($line, "\r");
+            if(strlen($line) == 0) continue;
+            if(strstr($line, $config['user_name'].'@')) continue;
+            array_push($arr, $line);
+        }
+
+        $output = $arr;
+
+        if(strlen(last($output)) == 0) unset($output[count($output)-1]);
+
+        if(count($output) == 0) return '';
+        else if(count($output) == 1) return $output[0]; 
+        else return $output;
+    }
+
+    public static function sendCommandWithSsh($config, $command, $clearAndParseOutput = TRUE, $timeOut = 5)
     {
         if(strlen($config['port']) == 0) $config['port'] = 22;
 
         $connection = self::getSshConnectionObject($config['host'], $config['user_name'], $config['password'], $config['port']);
-
         if(!$connection) throw new \Exception('ssh.server.connection.error');
+        
+        if(substr(strtolower(trim($command)), 0, 5) == 'sudo ')
+            $output = self::runSshCommandAsSudo($connection, $command, $config, $timeOut);
+        else 
+            $output = $connection->exec($command);
 
-        $temp = $connection->exec($command);
-        $temp = explode("\n", $temp);
+        if($clearAndParseOutput) $output = self::clearSshOutput($output, $config);
 
-        if(strlen(last($temp)) == 0) unset($temp[count($temp)-1]);
-
-        if(count($temp) == 0) return '';
-        else if(count($temp) == 1) return $temp[0]; 
-        else return $temp;
+        return $output;
     }
     
     private static function getRabbitMQObject($queue)
