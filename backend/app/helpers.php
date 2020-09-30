@@ -78,4 +78,13 @@ function dd_live(...$data)
 
     $ids = json_decode(DEBUG_USER_IDS);
     if(in_array($userId, $ids)) dd($data);
+}
+
+function custom_abort_ext($message)
+{
+    $userId = @\Auth::user()->id;
+    if(strlen($userId) == 0) custom_abort($message);
+    
+    $ids = json_decode(DEBUG_USER_IDS);
+    if(!in_array($userId, $ids)) custom_abort($message);
 } 

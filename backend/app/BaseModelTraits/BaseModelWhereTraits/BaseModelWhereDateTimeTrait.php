@@ -11,6 +11,7 @@ trait BaseModelWhereDateTimeTrait
     
     public function addWhereForDateTimeBetweenFilter($params)
     {
+        if(!isset($params->filter->filter2)) return;
         $params->model->whereBetween($params->column_name_with_alias, [$params->filter->filter, $params->filter->filter2]);
     }
     

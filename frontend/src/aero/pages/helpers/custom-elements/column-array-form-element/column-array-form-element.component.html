@@ -79,9 +79,8 @@
             </tr><tr>
                 <td colspan="10">
                     <span
-                        *ngFor="let message of messages[columnName]"
-                        class="badge badge-{{ message['type'] }}">
-                        {{ message['message'] }}
+                        *ngFor="let message of messages[columnName]" style="text-align: left"
+                        class="badge badge-{{ message['type'] }}" [innerHTML]="message['message']">
                     </span>
                 </td>
             </tr>

@@ -364,6 +364,9 @@ export class FormComponent
         var column_set_id = BaseHelper.loggedInUserInfo.auths.tables[this.tableName][formType][0];
         if(type == "GET") data['column_set_id'] = column_set_id;
         else data.append('column_set_id', column_set_id);
+
+        if(type == 'GET') data['id'] = this.recordId;
+        else data.append('id', this.recordId);
         
         return data;
     }

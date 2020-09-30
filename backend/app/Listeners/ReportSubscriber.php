@@ -4,7 +4,8 @@ namespace App\Listeners;
 
 class ReportSubscriber 
 {
-    use ReportSubscriberTrait;
+    use ReportSubscriberRequestTrait;
+    use ReportSubscriberResponseTrait;
     
     public function reportRequested($model, $params) 
     {

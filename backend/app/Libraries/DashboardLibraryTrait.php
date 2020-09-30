@@ -8,6 +8,8 @@ use DB;
 
 trait DashboardLibraryTrait
 {
+    public $colors = ['#868e96', '#ffaaff', '#cbac1c', '#89668e', '#aaffff', '#c1ccba', '#868012', '#ffcca1', '#cbb991', '#85628e', '#a1452f', '#c1256a', '#8abca2', '#f12341', '#c52ac1', '#8acbae', '#afacff', '#cffffa', '#f1aaa1', '#c5acc1', '#8ac32e', '#afa33f', '#cfacfa'];
+    
     public function RefreshableNumberJobCount($param2)
     {
         return 

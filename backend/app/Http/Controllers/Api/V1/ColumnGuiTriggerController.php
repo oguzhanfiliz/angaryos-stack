@@ -14,13 +14,11 @@ class ColumnGuiTriggerController extends Controller
     {
         send_log('info', 'Request Column Gui Trigger', [$triggerName, $table, $column]);
         
-        if($table->getTable() != 'settings') custom_abort('invalid_params');
-        
         $params = $this->getValidatedParams($column); 
         
-        //$trigger = get_attr_from_cache('column_gui_triggers', 'name', $triggerName, '*');
+        $trigger = get_attr_from_cache('column_gui_triggers', 'name', $triggerName, '*');
         
-        $data = $this->{$triggerName}($table, $column, $params);
+        $data = $this->{$triggerName}($table, $column, $trigger, $params);
         
         send_log('info', 'Response Column Gui Trigger', $data);
         
