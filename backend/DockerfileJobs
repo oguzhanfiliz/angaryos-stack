@@ -1,16 +1,16 @@
 FROM php:7.2-fpm
 
-COPY composer.json composer.lock /var/www/
-
-WORKDIR /var/www
-
 RUN apt-get update
 RUN apt-get install -y --no-install-recommends \ 
     libpq-dev  libmemcached-dev  zlib1g-dev  curl  git  nano  libxml2-dev libldap2-dev \
     python3 python3-pip libfreetype6-dev libjpeg62-turbo-dev libpng-dev \
     gconf-service libasound2 libatk1.0-0 libcairo2 libcups2 libfontconfig1 \
     libgdk-pixbuf2.0-0 libgtk-3-0 libnspr4 libpango-1.0-0 libxss1 fonts-liberation libappindicator1 \
-    libnss3 lsb-release xdg-utils wget docker.io 
+    libnss3 lsb-release xdg-utils wget docker.io sudo gnupg unixodbc-dev libgssapi-krb5-2
+
+COPY composer.json composer.lock /var/www/
+
+WORKDIR /var/www
 
 COPY google-chrome-80_amd64.deb /var/www/google-chrome-80_amd64.deb
 RUN dpkg -i google-chrome-80_amd64.deb; apt-get -fy install
@@ -29,6 +29,18 @@ RUN curl -L -o /tmp/memcached.tar.gz "https://github.com/php-memcached-dev/php-m
 RUN docker-php-ext-configure ldap --with-libdir=lib/x86_64-linux-gnu/
 RUN docker-php-ext-install pgsql pdo pdo_pgsql pdo_mysql sockets opcache zip xml ldap
 
+RUN wget https://packages.microsoft.com/keys/microsoft.asc 
+RUN apt-key add microsoft.asc 
+RUN curl https://packages.microsoft.com/config/debian/10/prod.list > /etc/apt/sources.list.d/mssql-release.list
+
+RUN apt-get update
+
+RUN ACCEPT_EULA=Y apt-get install -y msodbcsql17
+RUN ACCEPT_EULA=Y apt-get install -y mssql-tools
+
+RUN pecl install sqlsrv
+RUN pecl install pdo_sqlsrv
+
 RUN pip3 install selenium beautifulsoup4 lxml
 
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
@@ -42,7 +54,6 @@ RUN chown www:www /var/www
 
 RUN chmod +x /var/www/chromedriver
 
-RUN apt-get -y install sudo
 RUN adduser www sudo
 
 

@@ -53,7 +53,7 @@
                         <a *ngIf="iconVisibility['create']"
                             id="create-button"
                             class="btn btn-sm float-right btn-primary btn-icon pull-right" 
-                            data-toggle="tooltip" title="Yeni Ekle" 
+                            data-toggle2="tooltip" title="Yeni Ekle" 
                             href="{{ getTablePageBaseUrl()+'create' }}">
 
                             <span class="ti-plus"></span>
@@ -74,7 +74,7 @@
                                 data-toggle="dropdown" role="button" aria-haspopup="true" 
                                 aria-expanded="false"> 
 
-                                <span class="ti-search" data-toggle="tooltip" title="Detaylı Arama"></span> 
+                                <span class="ti-search" data-toggle2="tooltip" title="Detaylı Arama"></span> 
                             </button>
 
                             <div 
@@ -107,7 +107,7 @@
                                 data-toggle="dropdown" role="button" aria-haspopup="true" 
                                 aria-expanded="false"> 
 
-                                <span data-toggle="tooltip" title="Raporlar" class="ti-arrow-down"></span> 
+                                <span data-toggle2="tooltip" title="Raporlar" class="ti-arrow-down"></span> 
                             </button>
 
                             <div
@@ -138,7 +138,7 @@
                         <a *ngIf="iconVisibility['deleted']"
                             id="delete-button" 
                             class="btn btn-sm float-right btn-primary btn-icon pull-right" 
-                            data-toggle="tooltip" title="Silinmiş Kayıtlar" 
+                            data-toggle2="tooltip" title="Silinmiş Kayıtlar" 
                             href="{{ fullBaseUrl+'deleted' }}"><span class="ti-trash"></span>
                         </a>
                     </td>
@@ -196,7 +196,7 @@
                                                         data-toggle="dropdown" role="button" aria-haspopup="true" 
                                                         aria-expanded="false"> 
 
-                                                        <span data-toggle="tooltip" title="Kolon Gizle/Aç" class="ti-menu-alt"></span> 
+                                                        <span data-toggle2="tooltip" title="Kolon Gizle/Aç" class="ti-menu-alt"></span> 
                                                     </button>
 
                                                     <div
@@ -315,7 +315,21 @@
                                                                 <span style="margin-right: 5px;" [class]="'ti-' + operation.icon"></span>
                                                                 {{ operation.display_name }}
                                                             </a>
-                                                        </button>                    
+                                                        </button>
+
+                                                        <button
+                                                            *ngFor="let report of reports['record']"
+                                                            (click)="downloadReport(report, record['id'])"
+                                                            class="dropdown-item"
+                                                            ngbDropdownItem>
+
+                                                            <a class="dropdown-item" >                                                        
+                                                                <span style="margin-right: 5px;" class="ti-angle-double-down"></span>
+                                                                {{ report['name'] }}
+                                                            </a>
+                                                        </button>
+                                                        
+                                                        
                                                     </div>
                                                 </div>
                                     
@@ -327,7 +341,7 @@
                                                 </button>
                                     
                                                 <button *ngIf="record['iconVisibility']['userImitation']"
-                                                    data-toggle="tooltip" title="Kullanıcıyı taklit et"
+                                                    data-toggle2="tooltip" title="Kullanıcıyı taklit et"
                                                     class="btn btn-sm float-right btn-primary btn-icon pull-right" 
                                                     (click)="userImitation(record)"> 
                                                     
@@ -335,7 +349,7 @@
                                                 </button>
                                                 
                                                 <button *ngIf="record['iconVisibility']['missionTrigger']"
-                                                    data-toggle="tooltip" title="Görevi tetikle"
+                                                    data-toggle2="tooltip" title="Görevi tetikle"
                                                     class="btn btn-sm float-right btn-primary btn-icon pull-right" 
                                                     (click)="missionTriggerConfirm(record)"> 
                                                     
@@ -343,7 +357,7 @@
                                                 </button>
                                     
                                                 <button *ngIf="iconVisibility['selectAsUpTable'] "
-                                                    data-toggle="tooltip" title="Data aktarma kaydı olarak belirle"
+                                                    data-toggle2="tooltip" title="Data aktarma kaydı olarak belirle"
                                                     class="btn btn-sm float-right btn-primary btn-icon pull-right" 
                                                     (click)="selectAsUpTableRecord(record)">
                                                     
@@ -351,7 +365,7 @@
                                                 </button>
                                     
                                                 <button *ngIf="iconVisibility['authWizard']"
-                                                    data-toggle="tooltip" title="Yetki oluşturma yardımcısı"
+                                                    data-toggle2="tooltip" title="Yetki oluşturma yardımcısı"
                                                     class="btn btn-sm float-right btn-primary btn-icon pull-right" 
                                                     (click)="authWizard(record)"> 
                                                     
@@ -359,7 +373,7 @@
                                                 </button>
                                     
                                                 <button *ngIf="iconVisibility['dataEntegrator']"
-                                                    data-toggle="tooltip" title="Veri Aktarma Yardımcısı"
+                                                    data-toggle2="tooltip" title="Veri Aktarma Yardımcısı"
                                                     class="btn btn-sm float-right btn-primary btn-icon pull-right" 
                                                     (click)="dataEntegrator(record)"> 
                                                     

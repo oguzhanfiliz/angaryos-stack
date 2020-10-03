@@ -11,6 +11,55 @@ trait ReportSubscriberRequestTrait
         if($params->record_id == 0) return $this->getDataForTableReport($model, $params);
         else return $this->getDataForRecordReport($model, $params);
     }
+
+    public function getDataForRecordReport($model, $params) 
+    {
+        $params->column_array_id = $this->GetColumnArrayId($params);
+        
+        global $pipe;
+        
+        $except = ['tables', 'columns'];
+        
+        $params = $this->getModelForTableReport($model, $params);
+        $params->model->where($model->getTable().'.id', $params->record_id);
+
+        if(in_array($model->getTable(), $except) && $pipe['SHOW_DELETED_TABLES_AND_COLUMNS'] != '1')
+            $params->model->where($model->getTable().'.name', 'not ilike', 'deleted\_%');
+
+        $records = $params->model->get();
+        $records = $model->updateRecordsDataForResponse($records, $params->columns);
+        $records = $this->UpdateRecordsDataForReport($records, $params);
+        $record = $records[0];
+
+        $tableInfo = $model->getTableInfo($params->table_name);
+        
+        $columns = $model->getFilteredColumns($params->columns);
+        
+        $type = 'standart';//grid, mapped
+        $startRow = 1;
+        $startCol = 'A';
+        $activeSheet = 0;
+        
+        if($params->report_id > 0) 
+        {
+            $report = get_attr_from_cache('reports', 'id', $params->report_id, '*');
+            eval(helper('clear_php_code', $report->php_code));
+        }
+        
+        return 
+        [
+            'table_info' => $tableInfo,
+            'record' => $record,
+            'records' => $records,
+            'collectiveInfos' => @$collectiveInfos, 
+            'columns' => $columns,
+            'type' => $type,
+            'startRow' => $startRow,
+            'startCol' => $startCol,
+            'activeSheet' => $activeSheet,
+            'gridData' => @$gridData
+        ];
+    }
     
     public function getDataForTableReport($model, $params) 
     {
@@ -35,7 +84,7 @@ trait ReportSubscriberRequestTrait
         
         $columns = $model->getFilteredColumns($params->columns);
         
-        $type = 'standart';//mapped
+        $type = 'standart';//grid, mapped
         $startRow = 1;
         $startCol = 'A';
         $activeSheet = 0;

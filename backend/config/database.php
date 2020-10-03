@@ -91,6 +91,17 @@ return [
             'prefix' => '',
             'prefix_indexes' => true,
         ],
+        
+        'simsek' => [
+            'driver'   => 'sqlsrv',
+            'host'     => '192.168.10.102',
+            'database' => 'isci_43_'.(date("m") == 1 ? date("Y")-1 : date("Y")).'TSRN',
+            'port' => '1433',
+            'username' => 'sa',// 'WIN-6PAE8R6PMMB\Administrator',
+            'password' => 'Dfrty4hf6/43smsk+ats',//'simsek43_',
+            'charset'  => 'utf8',
+            'prefix'   => '',
+        ],
 
     ],
 

@@ -22,7 +22,84 @@ trait ReportSubscriberResponseTrait
 
 
 
-    /****    Common Function    ****/
+    /****    Record Common Function    ****/
+
+    public function responseReportRecord($data)
+    {
+        $data = $this->FillReportFileInfo($data);
+        
+        $fnc = 'responseRecordReport';
+
+        if(!isset($data['reportFile'])) $fnc .= 'StandartFile';
+        else $fnc .= 'CustomFile';
+
+        $fnc .= ucfirst($data['type']).'Data';
+        $fnc .= ucfirst($data['params']->report_format);
+
+        $this->InsertDownloadedReportRecord($data);
+        
+        return $this->{$fnc}($data);
+    }
+
+    private function responseRecordReportCustomFileGridDataXls($data)
+    {
+        return $this->responseRecordReportCustomFileStandartDataXlsx($data, 'Xls');
+    }
+
+    public function responseRecordReportCustomFileStandartDataXlsx($data, $customType = 'Xlsx')
+    {
+        $disk = env('FILESYSTEM_DRIVER', 'uploads');
+        $file = $data['reportFile'];
+        $tempPath = '/var/www/public/temps/';
+        $tempFile = $file->destination_path.$file->file_name;
+
+        if(!Storage::disk('temps')->put($tempFile, Storage::disk($disk)->get($file->destination_path.$file->file_name))) 
+            custom_abort('file.write.error:'.$file->destination_path.$file->file_name.'->'.$tempFile);
+        
+        $tempFile = $tempPath.$tempFile;
+
+        $reader = \PhpOffice\PhpSpreadsheet\IOFactory::createReader($customType);
+        $spreadsheet = $reader->load($tempFile);
+        
+        $this->InjectDataInCustomRecordReport($data, $file, $spreadsheet);
+        
+        @mkdir($tempPath.$data['storePath'].'/../', 0777, TRUE);
+            
+        $writer = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($spreadsheet, $customType);
+        $writer->save($tempPath.$data['storePath']);
+
+        if(!Storage::disk($disk)->put($data['storePath'], Storage::disk('temps')->get($data['storePath'])))
+            custom_abort('file.ftp.write.error:'.$data['storePath'].'->'.$data['storePath']);
+
+        $conn_id = ftp_connect(env('FILE_HOST', 'ftp.url'));
+        $login_result = ftp_login($conn_id, env('FILE_USER', 'user'), env('FILE_PASSWORD', 'password'));
+
+        $fullPath = '';
+        foreach(explode('/', $data['storePath']) as $path)
+        {
+            $fullPath .= $path;
+            ftp_chmod($conn_id, 0777, env('FILE_ROOT', '/').$fullPath);
+            $fullPath .= '/';
+        }
+            
+        header("Location: ".env('APP_URL').'uploads/'.$data['storePath']);
+    }
+
+    private function InjectDataInCustomRecordReport($data, $file, $spreadsheet)
+    {
+        $functionName = 'InjectDataInCustomRecordReport';
+        $functionName .= ucfirst($data['type']);
+        
+        $this->{$functionName}($data, $file, $spreadsheet);
+    }
+
+    private function InjectDataInCustomRecordReportGrid($data, $file, $spreadsheet)
+    {
+        $this->InjectDataInCustomTableReportGrid($data, $file, $spreadsheet);
+    }
+
+
+    /****    Table Common Functions   ****/
 
     public function responseReportTable($data)
     {
