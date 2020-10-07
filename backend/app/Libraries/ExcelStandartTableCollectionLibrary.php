@@ -35,6 +35,8 @@ class ExcelStandartTableCollectionLibrary implements FromCollection, WithHeading
     
     private function sortColumns()
     {
+        if($this->data['overrideColumnSort']) return;
+        
         if(!@$this->data['params']->columnNames) return;
         
         $columns = [];    

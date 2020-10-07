@@ -338,17 +338,30 @@
                                 class="dragdrop-box" 
                                 *ngFor="let layer of getLayers()" 
                                 cdkDrag>
-                                
-                                {{ layer['display_name'] }}
+                                <table width="100%">
+                                    <tr>
+                                        <td>{{ layer['display_name'] }}</td>
+                                        <td width="20">
+                                            <span 
+                                                style="cursor:pointer"
+                                                (click)="showLegend(layer)"
+                                                class="badge badge-sm badge-warning">
 
-                                <span 
-                                    style="cursor:pointer"
-                                    (click)="changeLayerVisibility(layer)"
-                                    [class]="'badge badge-sm badge-' + (layer.getVisible() ? 'warning' : 'default' )">
+                                                <i style="font-size: 10px;" class="zmdi zmdi-label-heart"></i>
+                                            </span>
+                                        </td>
+                                        <td width="20">
+                                            <span 
+                                                style="cursor:pointer"
+                                                (click)="changeLayerVisibility(layer)"
+                                                [class]="'badge badge-sm badge-' + (layer.getVisible() ? 'warning' : 'default' )">
 
-                                    <i style="font-size: 11px;" *ngIf="layer.getVisible()" class="zmdi"></i>
-                                    <i style="font-size: 11px;" *ngIf="!layer.getVisible()" class="zmdi"></i>
-                                </span>
+                                                <i style="font-size: 11px;" *ngIf="layer.getVisible()" class="zmdi"></i>
+                                                <i style="font-size: 11px;" *ngIf="!layer.getVisible()" class="zmdi"></i>
+                                            </span>
+                                        </td>
+                                    </tr>
+                                </table>
                             </div>
                         </div>
                     </div>
@@ -493,4 +506,15 @@
             </div>
         </div>
     </div>
+</div>
+    
+<div [hidden]="!showLegendPanel" class="legendPanel">
+    <img src="{{ legendUrl }}">
+    
+    <span 
+        (click)="closeLegendPanel()"
+        class="badge badge-sm badge-primary closeLegentPanelButton">
+
+        <i style="font-size: 11px;" class="zmdi"></i>
+    </span>
 </div>

@@ -936,7 +936,7 @@ export abstract class MapHelper
     source.removeFeature(feature);
   }
 
-  public static selectFeature(map, index, onlyOneFeature = true)
+  public static selectFeature(map, indexOrFeature, onlyOneFeature = true)
   {
     var source = this.getVectorSource(map);
     var features = source.getFeatures();
@@ -948,10 +948,14 @@ export abstract class MapHelper
         var style = this.getDefaultStyle(type);
         features[i].setStyle(style);
       }
+      
+    var feature = indexOrFeature;
+    if($.isNumeric(indexOrFeature))
+        feature = features[indexOrFeature];
     
-    var type = features[index].getGeometry().getType();
+    var type = feature.getGeometry().getType();
     var style = this.getSelectedStyle(type);
-    features[index].setStyle(style);
+    feature.setStyle(style);
   }
 
   public static getAllFeaturesAsGeoJsonObject(map)
@@ -959,6 +963,15 @@ export abstract class MapHelper
     var writer = new GeoJSON();
     var source = this.getVectorSource(map);
     var json = writer.writeFeatures(source.getFeatures());
+
+    return BaseHelper.jsonStrToObject(json);
+  }
+  
+  public static getFeatureGeoJsonObject(feature)
+  {
+    var writer = new GeoJSON();
+    
+    var json = writer.writeFeatures([feature]);
 
     return BaseHelper.jsonStrToObject(json);
   }
@@ -1029,6 +1042,41 @@ export abstract class MapHelper
     if(map.getView().getZoom() > 18)
       map.getView().setZoom(18);
       
+  }
+  
+  public static addFeatureByWktAsSingleIfMulti(map, wkt, projection = null)
+  {
+    if(wkt.toLowerCase().indexOf("multi") > -1) 
+    {
+        var type = wkt.toLowerCase().split("(")[0].replace('multi', '');
+        var temp = wkt.toLowerCase().replace('multi'+type, '').split("(");
+                
+        for(var i = 0; i < temp.length; i++)
+        {
+            temp[i] = temp[i].replaceAll("),", "");
+            temp[i] = temp[i].replaceAll(")", "");
+            temp[i] = temp[i].trim();
+            if(temp[i].length == 0) continue;
+            
+            switch(type)
+            {
+                case 'point':
+                case 'linestring':
+                    temp[i] = type+"("+temp[i]+")";
+                    break;
+                case 'polygon':
+                    temp[i] = type+"(("+temp[i]+"))";
+                    break;
+            }
+            
+            temp[i] = temp[i].toUpperCase();
+            this.addFeatureByWkt(map, temp[i], projection);
+        }
+        
+        this.zoomToFeatures(map, this.getAllFeatures(map));
+    }
+    else this.addFeatureByWkt(map, wkt, projection);
+    
   }
 
   public static addFeatureByWkt(map, wkt, projection = null)

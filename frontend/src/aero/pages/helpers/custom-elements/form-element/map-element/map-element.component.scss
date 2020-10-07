@@ -96,3 +96,31 @@
     }
   }
 }
+
+.featuresPanel
+{
+    position: absolute;
+    width: calc(100% - 10px);
+    z-index: 2000;
+    bottom: 40;
+    color: #847d7d;
+    padding: 5px;
+    background-color: #ccc;
+    overflow: auto;
+    height: 200px;
+    
+    td
+    {
+        color: #847d7d;
+    }
+}
+
+li
+{
+    span.badge
+    {
+        font-size: 12px !important;
+        padding: 3;
+        margin: 3;
+    }
+}

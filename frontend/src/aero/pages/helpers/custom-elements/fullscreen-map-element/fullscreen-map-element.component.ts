@@ -55,6 +55,9 @@ export class FullScreenMapElementComponent
     featureList = {};
     lastSelectedFeatureData = {};
     
+    legendUrl = '';
+    showLegendPanel = false;
+    
     loading = false;
     
     typesMatch = 
@@ -1221,6 +1224,27 @@ export class FullScreenMapElementComponent
     changeLayerVisibility(layer)
     {
         MapHelper.changeLayerVisibility(this.map, layer);
+    }
+    
+    showLegend(layer)
+    {
+        if(layer["legend_url"] != null && layer["legend_url"].length > 0) this.legendUrl = layer["legend_url"];
+        else 
+        {
+            this.messageHelper.sweetAlert("Bu katmanın lejantı yok!", "Lejant bulunamadı", "warning");
+            return;
+        }
+        
+        this.legendUrl = this.legendUrl.replace("***width***", "100");
+        this.legendUrl = this.legendUrl.replace("***height***", "200");
+        this.legendUrl = this.legendUrl.replace("***token***", this.token);
+        
+        this.showLegendPanel = true;
+    }
+    
+    closeLegendPanel()
+    {
+        this.showLegendPanel = false;
     }
 
     zoomOut()

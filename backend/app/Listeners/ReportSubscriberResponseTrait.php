@@ -321,19 +321,6 @@ trait ReportSubscriberResponseTrait
     {
         $sheet->getStyle($cellKey)->getFont()->getColor()->setARGB($color);
     }
-
-    /*private function setCellStyles($sheet, $cellKey, $styles)
-    {
-        foreach($styles as $key => $style)
-        $sheet->getStyle($field.($ii+1))->getFont()->getColor()->setARGB($t);
-                        
-        $bgColor = '00000000';
-        if(strlen($record[$k]) == 0) $bgColor = '00BF0A0A';
-        
-        $sheet->getStyle($field.($ii+1))->getFill()
-        ->setFillType(PHPExcel_Style_Fill::FILL_SOLID)
-        ->getStartColor()->setARGB($bgColor);
-    }*/
     
     public function responseTableReportStandartFileStandartDataXlsx($data)
     {

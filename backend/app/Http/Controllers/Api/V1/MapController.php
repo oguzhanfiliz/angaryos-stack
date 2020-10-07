@@ -17,11 +17,11 @@ class MapController extends Controller
     {
         send_log('info', 'Request Map Tile Or WFS Data');
 
-        $request = $this->Control($user);
-        $request = $this->AddFilterInRequest($user, $request);
+        $requests = $this->Control($user);
+        $requests = $this->AddFilterInRequest($user, $requests);
         
-        $url = $this->GetUrl($request);      
-        return $this->ProxyToUrl($request, $url);        
+        $url = $this->GetUrl($requests);      
+        return $this->ProxyToUrl($requests, $url);        
     }
 
     public function TranslateKmzOrKmlToJson($user)

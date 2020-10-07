@@ -122,7 +122,8 @@ $column_name_display_name_map =
     'report_file' => 'Dosya',
     'download_user_id' => 'İndiren Kullanıcı',
     'report_id' => 'Rapor',
-    'download_time' => 'İndirme Zamanı'
+    'download_time' => 'İndirme Zamanı',
+    'legend_url' => 'Lejant Url'
 ];
 
 

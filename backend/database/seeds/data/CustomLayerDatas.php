@@ -1,7 +1,7 @@
 <?php
 use App\BaseModel;
 
-$custom_layer_types = ['wms', 'wfs'];
+$custom_layer_types = ['wms', 'wfs', 'wms:singleTile'];
 
 foreach($custom_layer_types as $name)
 {

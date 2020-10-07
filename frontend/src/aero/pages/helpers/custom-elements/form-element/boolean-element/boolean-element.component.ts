@@ -28,7 +28,6 @@ export class BooleanElementComponent
     {
         setTimeout(() => 
         {
-            console.log(99);
             this.displayNameForTrue = DataHelper.convertDataByGuiTypeBoolean(null, null, this.guiType, true);
             this.displayNameForFalse = DataHelper.convertDataByGuiTypeBoolean(null, null, this.guiType, false); 
         

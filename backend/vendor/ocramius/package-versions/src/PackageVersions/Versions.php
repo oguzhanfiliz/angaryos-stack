@@ -58,7 +58,7 @@ final class Versions
   'php-amqplib/php-amqplib' => 'v2.12.0@dfcccd36bf12b4c7cc3ec74d571e00e0f767232e',
   'phpoffice/phpspreadsheet' => '1.14.0@73fe58fdc9f3977619bec6b26e867eb2ac059dcd',
   'phpoption/phpoption' => '1.7.4@b2ada2ad5d8a32b89088b8adc31ecd2e3a13baf3',
-  'phpseclib/phpseclib' => '2.0.28@d1ca58cf33cb21046d702ae3a7b14fdacd9f3260',
+  'phpseclib/phpseclib' => '2.0.29@497856a8d997f640b4a516062f84228a772a48a8',
   'psr/container' => '1.0.0@b7ce3b176482dbbc1245ebf52b181af44c2cf55f',
   'psr/http-client' => '1.0.1@2dfb5f6c5eff0e91e20e913f8c5452ed95b86621',
   'psr/http-message' => '1.0.1@f6561bf28d520154e4b0ec72be95418abe6d9363',

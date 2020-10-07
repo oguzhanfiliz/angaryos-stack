@@ -15,22 +15,6 @@ value="{{ value }}">
     <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
         <div class="modal-content">
             <div class="modal-body" style="padding: 5px !important;">
-                <!---<button href="javascript:void(0);" class="btn btn-primary btn-icon btn-sm"
-                    id="map-menu" 
-                    data-toggle="dropdown" role="button" aria-haspopup="true" 
-                    aria-expanded="false"> 
-                    
-                    <span class="ti-menu-alt"></span> 
-                </button>
-                <ul class="dropdown-menu">
-                    <li (click)="emitChangedEvent()" role="menuitem">
-                        <a class="dropdown-item">Kaydet</a>
-                    </li>
-                    <li role="menuitem">
-                        <a class="dropdown-item">İptal</a>
-                    </li>
-                 </ul>--->
-                
                 <div                                                  
                     class="btn-group" 
                     id="map-menu"
@@ -46,6 +30,13 @@ value="{{ value }}">
                     </button>
 
                     <div ngbDropdownMenu> 
+                        <a 
+                            (click)="changeFeaturesPanelVisible(true)"
+                            class="dropdown-item"
+                            ngbDropdownItem>
+
+                            Nesne Detaylar
+                        </a>    
                         <a 
                             (click)="addNetcadFeatures()"
                             class="dropdown-item"
@@ -75,6 +66,37 @@ value="{{ value }}">
                 <div class="row" style="margin: 0px !important">
                     <div style="width: 100%; min-height:200px"  id="{{ name }}MapElement"></div>
                     <div style="min-height: 25px;" class="mouse-position" id="mouse-position-{{ name }}MapElement"></div>
+                    <div id="{{ name }}-featuresPanel" class="featuresPanel" [hidden]="!featuresPanelVisible">
+                        <table width="100%">
+                            <tr>
+                                <td width="30%">
+                                    <ul>
+                                        <li 
+                                            style="cursor: pointer;"
+                                            *ngFor="let feature of features" >
+
+                                            <span class="badge badge-info">
+                                                <span (click)="selectFeature(feature)">
+                                                    {{ feature["typeName"] }} (id: {{ feature["ol_uid"] }})
+                                                </span>
+                                                <span (click)="deleteFeature(feature)">
+                                                    x
+                                                </span>
+                                            </span>
+                                            
+                                        </li>
+                                    </ul>                                    
+                                </td>
+                                <td valign="top">
+                                    {{ selectedFeatureGeoJson }}
+                                </td>
+                            </tr>
+                        </table>
+                        <span
+                            (click)="changeFeaturesPanelVisible(false)"
+                            style="position: absolute; right: 5px; top: 5px;cursor: pointer"
+                            class="badge badge-danger">x</span>
+                    </div>
                 </div>
             </div>
         </div>

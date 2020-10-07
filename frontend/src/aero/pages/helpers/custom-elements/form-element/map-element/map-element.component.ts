@@ -28,7 +28,12 @@ export class MapElementComponent
     @Input() srid: string = "";
     @Input() upFormId: string = "";
     @Input() createForm: boolean = false;
+    
 
+    featuresPanelVisible = false;
+    features = [];
+    selectedFeature = null;
+    selectedFeatureGeoJson = null;
     map = null;
     geoJsonObject = null;
     baseElementSelector = "";
@@ -215,19 +220,22 @@ export class MapElementComponent
 
         var wkts = BaseHelper.jsonStrToObject(this.value);
         for(var i = 0; i < wkts.length; i++)
-            MapHelper.addFeatureByWkt(map, wkts[i], srid);
+            MapHelper.addFeatureByWktAsSingleIfMulti(map, wkts[i], srid);
 
         return map;
     }
 
-    selectFeature(i)
+    selectFeature(feature)
     {
-        MapHelper.selectFeature(this.map, i)
+        this.selectedFeature = feature;
+        this.selectedFeatureGeoJson = BaseHelper.objectToJsonStr(MapHelper.getFeatureGeoJsonObject(feature));
+        
+        MapHelper.selectFeature(this.map, feature, true)
     }
 
-    deleteFeature(i)
+    deleteFeature(feature)
     {
-        MapHelper.deleteFeature(this.map, i);
+        MapHelper.deleteFeature(this.map, feature);
         this.emitDataChangedEvent();
     }
     
@@ -298,6 +306,28 @@ export class MapElementComponent
     {
         return MapHelper.transformCoorditanes(coords);
     }
+    
+    getFeatures()
+    {
+        var tempFeatures = [];
+        
+        var temp = MapHelper.getAllFeatures(this.map);
+        for(var i = 0; i < temp.length; i++)
+        {
+            var feature = temp[i];
+            feature['typeName'] = feature.getGeometry().getType();
+            tempFeatures[feature['ol_uid']] = feature;
+        }
+        
+        var fs = [];
+        for(var i = 0; i < tempFeatures.length; i++)
+            if(typeof tempFeatures[i] != "undefined")
+                fs.push(tempFeatures[i]);
+        
+        return fs;
+    }
+    
+    
 
 
 
@@ -307,6 +337,9 @@ export class MapElementComponent
     {
         this.geoJsonObject = MapHelper.getAllFeaturesAsGeoJsonObject(this.map).features;
         this.dataChanged.emit(this.geoJsonObject);
+        
+        this.features = this.getFeatures();
+        console.log(this.features);
     }
 
     emitChangedEvent()
@@ -325,10 +358,17 @@ export class MapElementComponent
         $(this.baseElementSelector+' #'+this.name)[0].dispatchEvent(changeEvent);
         
         $(this.baseElementSelector+' #'+this.name+'ElementModal').modal('hide');
+        
+        
     }
 
     handleChange(event)
     {
         this.changed.emit(event);
-    }   
+    }  
+    
+    changeFeaturesPanelVisible(visible)
+    {
+        this.featuresPanelVisible = visible;
+    } 
 }

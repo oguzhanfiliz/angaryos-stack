@@ -23,6 +23,8 @@ class CreateTablesTable extends Migration
             $table->jsonb('subscriber_ids')->nullable();
             $table->text('description')->nullable();
             
+            $table->text('legend_url')->nullable();
+            
             $table->boolean('state')->nullable();
             $table->integer('own_id');
             $table->integer('user_id');

@@ -8,9 +8,13 @@ use Storage;
 
 trait MapTrait
 {
-    private function GetTableNameAndCacheNameFromRequestWMS($request)
+    private function GetTableNameAndCacheNameFromRequestWMS($requests)
     {
-        $tableName = explode(':', $request['LAYERS'])[1];
+        if(isset($requests['LAYERS'])) $key = 'LAYERS';
+        else if(isset($requests['LAYER'])) $key = 'LAYER';
+        else custom_abort('layer(s).param.not.found');
+
+        $tableName = explode(':', $requests[$key])[1];
         
         if(substr($tableName, 0, 2) == 'v_')
             $tableName = substr($tableName, 2);
@@ -18,28 +22,28 @@ trait MapTrait
         return ['tableName' => $tableName, 'cacheName' => $tableName];
     }
     
-    private function GetTableNameAndCacheNameFromRequestWFS($request)
+    private function GetTableNameAndCacheNameFromRequestWFS($requests)
     {
-        $seoName = explode(':', $request['TYPENAME'])[1];
+        $seoName = explode(':', $requests['TYPENAME'])[1];
         $table =$this->getTableFromCustomLayerSeoName($seoName);
         
         return ['tableName' => $table->name, 'cacheName' => $seoName];
     }
     
-    private function GetTableNameAndCacheNameFromRequest($request)
+    private function GetTableNameAndCacheNameFromRequest($requests)
     {
-        $type = strtolower($request['SERVICE']);
+        $type = strtolower($requests['SERVICE']);
         switch($type)
         {
-            case 'wms': return $this->GetTableNameAndCacheNameFromRequestWMS($request);
-            case 'wfs': return $this->GetTableNameAndCacheNameFromRequestWFS($request);
+            case 'wms': return $this->GetTableNameAndCacheNameFromRequestWMS($requests);
+            case 'wfs': return $this->GetTableNameAndCacheNameFromRequestWFS($requests);
             default: dd('buraya hiç düşmemeli!');
         }
     }
     
-    private function AddFilterInRequest($user, $request) 
+    private function AddFilterInRequest($user, $requests) 
     {
-        $names = $this->GetTableNameAndCacheNameFromRequest($request);   
+        $names = $this->GetTableNameAndCacheNameFromRequest($requests);   
         $token = \Request::segment(3);
         
         if(!isset($user->auths['filters'][$names['tableName']]['list'])) 
@@ -49,7 +53,7 @@ trait MapTrait
                 return 'OK';
             });
             
-            return $request;
+            return $requests;
         }
         
         $filter = '';
@@ -69,12 +73,12 @@ trait MapTrait
             return $filter;
         });
         
-        if(isset($request['CQL_FILTER']))
-            $request['CQL_FILTER'] .= '%20and%20'.$filter;
+        if(isset($requests['CQL_FILTER']))
+            $requests['CQL_FILTER'] .= '%20and%20'.$filter;
         else
-            $request['CQL_FILTER'] = $filter;
+            $requests['CQL_FILTER'] = $filter;
         
-        return $request;
+        return $requests;
     }
 
     private function UserMapAuthControl($user)
@@ -91,16 +95,16 @@ trait MapTrait
             custom_abort("no.map.kmz.upload.auth");
     }
     
-    private function GetDataAuthControl($user, $request)
+    private function GetDataAuthControl($user, $requests)
     {
         $this->UserMapAuthControl($user);
 
-        $type = strtolower($request['SERVICE']);
+        $type = strtolower($requests['SERVICE']);
         
         switch($type)
         {
-            case 'wms': return $this->AuthControlWms($user, $request);
-            case 'wfs': return $this->AuthControlWfs($user, $request);
+            case 'wms': return $this->AuthControlWms($user, $requests);
+            case 'wfs': return $this->AuthControlWfs($user, $requests);
             default: custom_abort ('undefined.service.type.'.$type);
         }
     }
@@ -123,13 +127,13 @@ trait MapTrait
         return $table;
     }
     
-    private function AuthControlWfs($user, $request) 
+    private function AuthControlWfs($user, $requests) 
     {
-        if(!isset($request['TYPENAME'])) custom_abort ('undefined.TYPENAME.data');
+        if(!isset($requests['TYPENAME'])) custom_abort ('undefined.TYPENAME.data');
         
-        $temp = explode(':', $request['TYPENAME']);
+        $temp = explode(':', $requests['TYPENAME']);
         if(count($temp) != 2) 
-            custom_abort ('undefined.LAYERS.data: ' . $request['LAYERS']);
+            custom_abort ('undefined.LAYERS.data: ' . $requests['LAYERS']);
         
         $table = $this->getTableFromCustomLayerSeoName($temp[1]);
         
@@ -141,17 +145,21 @@ trait MapTrait
             custom_abort ('no.auth.for.layer: ' . $layerName);
     }
     
-    private function AuthControlWms($user, $request) 
+    private function AuthControlWms($user, $requests) 
     {
-        if(!isset($request['LAYERS'])) custom_abort ('undefined.LAYERS.data');
-        
-        $temp = explode(':', $request['LAYERS']);
+        if(isset($requests['LAYERS'])) $key = 'LAYERS';
+        else if(isset($requests['LAYER'])) $key = 'LAYER';
+        else custom_abort('layer(s).param.not.found');
+
+        $temp = explode(':', $requests[$key]);
+
         if(count($temp) != 2) 
-            custom_abort ('undefined.LAYERS.data: ' . $request['LAYERS']);
+            custom_abort ('undefined.LAYERS.data: ' . $requests[$key]);
         
         if(substr($temp[1], 0, 2) == 'v_')
         {
             $layerName = substr($temp[1], 2);
+            
             if(!isset($user->auths['tables'][$layerName]['maps']))
                 custom_abort ('no.auth.for.layer: ' . $layerName);
 
@@ -183,25 +191,25 @@ trait MapTrait
     {
         $temp = \Request::all();
         
-        $request = [];
+        $requests = [];
         foreach($temp as $key => $value)
-            $request[strtoupper($key)] = $value;
+            $requests[strtoupper($key)] = $value;
         
-        return $request;
+        return $requests;
     }
     
     private function Control($user) 
     {
-        $request = $this->GetAllRequest();
-        $this->GetDataAuthControl($user, $request);
-        $this->ServiceTypeControl($request);
+        $requests = $this->GetAllRequest();
+        $this->GetDataAuthControl($user, $requests);
+        $this->ServiceTypeControl($requests);
         
-        return $request;
+        return $requests;
     }
     
-    private function ServiceTypeControl($request) 
+    private function ServiceTypeControl($requests) 
     {
-        $type = strtolower(strtoupper(@$request['SERVICE']));
+        $type = strtolower(strtoupper(@$requests['SERVICE']));
         switch ($type) 
         {
             case 'wms': break;
@@ -210,12 +218,12 @@ trait MapTrait
         }
     }
     
-    private function GetUrl($request)
+    private function GetUrl($requests)
     {
         $url = 'http://geoserver:8080/geoserver/'.env('GEOSERVER_WORKSPACE', 'angaryos').'/';
-        $url .= strtolower($request['SERVICE']).'?';
+        $url .= strtolower($requests['SERVICE']).'?';
                 
-        foreach($request as $key => $value) 
+        foreach($requests as $key => $value) 
         {
             if($key != 'CQL_FILTER')
                 $value = urlencode($value);
@@ -240,9 +248,9 @@ trait MapTrait
         return file_get_contents($url);
     }
     
-    private function ProxyToUrl($request, $url)
+    private function ProxyToUrl($requests, $url)
     {
-        $type = strtolower($request['SERVICE']);
+        $type = strtolower($requests['SERVICE']);
         switch($type)
         {
             case 'wms': return $this->GetImage($url);

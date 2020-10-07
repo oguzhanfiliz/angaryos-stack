@@ -182,6 +182,14 @@ class User extends Authenticatable
     {
         $info['base_url'] = '';
         $info['display_name'] = get_attr_from_cache('tables', 'name', $tableName, 'display_name');
+        
+        $info['legend_url'] = get_attr_from_cache('tables', 'name', $tableName, 'legend_url');
+        if(strlen($info['legend_url']) == 0)
+        {
+            $info['legend_url'] = env('APP_URL').'api/v1/***token***/getMapData?SERVICE=wms&REQUEST=GetLegendGraphic&VERSION=1.0.0&FORMAT=image/png&';
+            $info['legend_url'] .= 'WIDTH=***width***&HEIGHT=***height***&LAYER='.env('GEOSERVER_WORKSPACE').'%3Av_'.$tableName;
+        }
+        
         $info['workspace'] = env('GEOSERVER_WORKSPACE', 'angaryos');
         $info['layer_name'] = 'v_'.$tableName;
         $info['tableName'] = $tableName;
@@ -239,6 +247,8 @@ class User extends Authenticatable
         
         $info['srid'] = $layer->srid;
         
+        $info['legend_url'] = $layer->legend_url;
+        
         $info['layerTableType'] = 'external';
         
         return $info;
@@ -264,6 +274,14 @@ class User extends Authenticatable
         $info['filter'] = FALSE;
         $info['search'] = FALSE;
         $info['layerAuth'] = TRUE;
+        
+        $info['legend_url'] = $layer->legend_url;
+        if(strlen($info['legend_url']) == 0)
+        {
+            $info['legend_url'] = env('APP_URL').'api/v1/***token***/getMapData?SERVICE=wms&REQUEST=GetLegendGraphic&VERSION=1.0.0&FORMAT=image/png&';
+            $info['legend_url'] .= 'WIDTH=***width***&HEIGHT=***height***&LAYER='.env('GEOSERVER_WORKSPACE').'%3A'.$info['layer_name'];
+            $info['legend_url'] .= '&STYLE='.$info['style'];
+        }
         
         $info['tableName'] = get_attr_from_cache('tables', 'id', $layer->table_id, 'name');
         $info['layerTableType'] = 'custom';

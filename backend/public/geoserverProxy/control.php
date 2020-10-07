@@ -19,10 +19,14 @@ foreach(explode('&', $temp[1]) as $req)
 
 $tableName = '';
 
-$type = strtolower($requests['SERVICE']);
+$type = strtolower(@$requests['SERVICE']);
 if($type == 'wms')
 {
-    $temp = explode('%3A', $requests['LAYERS']);
+    if(isset($requests['LAYERS'])) $key = 'LAYERS';
+    else if(isset($requests['LAYER'])) $key = 'LAYER';
+    else bb('layer(s).param.not.found');
+
+    $temp = explode('%3A', $requests[$key]);
     $tableName = $temp[1];
     
     if(substr($tableName, 0, 2) == 'v_')

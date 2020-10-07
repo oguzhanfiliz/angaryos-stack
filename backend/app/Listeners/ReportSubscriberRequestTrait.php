@@ -39,6 +39,7 @@ trait ReportSubscriberRequestTrait
         $startRow = 1;
         $startCol = 'A';
         $activeSheet = 0;
+        $overrideColumnSort = FALSE;
         
         if($params->report_id > 0) 
         {
@@ -56,6 +57,7 @@ trait ReportSubscriberRequestTrait
             'type' => $type,
             'startRow' => $startRow,
             'startCol' => $startCol,
+            'overrideColumnSort' => $overrideColumnSort,
             'activeSheet' => $activeSheet,
             'gridData' => @$gridData
         ];
@@ -88,6 +90,7 @@ trait ReportSubscriberRequestTrait
         $startRow = 1;
         $startCol = 'A';
         $activeSheet = 0;
+        $overrideColumnSort = FALSE;
         
         if($params->report_id > 0) 
         {
@@ -105,6 +108,7 @@ trait ReportSubscriberRequestTrait
             'startRow' => $startRow,
             'startCol' => $startCol,
             'activeSheet' => $activeSheet,
+            'overrideColumnSort' => $overrideColumnSort,
             'gridData' => @$gridData
         ];
     }

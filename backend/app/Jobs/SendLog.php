@@ -33,6 +33,8 @@ class SendLog implements ShouldQueue
                 return $this->level;
             case 'danger':
                 return 'alert';
+            default: 
+                return $this->level;
         }
     }
 
