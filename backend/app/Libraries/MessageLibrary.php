@@ -203,7 +203,7 @@ class MessageLibrary
         send_log('info', 'Send sms request', [$tel, $message]);
         
         $url = str_replace('$TEL', $tel, SMS_URL);
-        $url = str_replace('$MESSAGE', $message, $url);
+        $url = str_replace('$MESSAGE', urlencode($message), $url);
         
         $data = self::curl($url);
         
@@ -212,18 +212,6 @@ class MessageLibrary
         return $data['error'] != FALSE;
     }
     
-    /**
-    *
-    * Send e-mail
-    *
-    * @param string $subject Mail subject
-    * @param string $mail Mail content. It be html if you want
-    * @param array $emailsWithNames Ex: [['email' => 'emailone.to', 'name' => 'Name One'], ['email' => 'emailtwo.to', 'name' => 'Name Two']]
-    * @param array $attachments Ex: ['/var/www/public/uploads/2020/01/01/auths.png']
-     * 
-    * @return boolean
-    *
-    */
     public static function sendMail($subject, $mail, $emailsWithNames, $attachments = [])
     {
         Mail::send("email.base", ["html" => $mail], function ($message) use($subject, $emailsWithNames, $attachments)
