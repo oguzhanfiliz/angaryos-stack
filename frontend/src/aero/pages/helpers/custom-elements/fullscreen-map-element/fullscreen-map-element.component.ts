@@ -132,7 +132,6 @@ export class FullScreenMapElementComponent
         {
             if(typeof result['value'] == "undefined") return;
             
-            console.log(result['value']);
             th.searchWithString(result['value']);
         });
     }
@@ -407,7 +406,8 @@ export class FullScreenMapElementComponent
         var tableName = layer['authData']['tableName'];
         var strColumns = ['string', 'text'];
         
-        await this.fillTableColumns(tableName);
+        var control = await this.fillTableColumns(tableName);
+        if(!control) return new Promise((resolve) => resolve(null));
         
         var temp = [];
         
@@ -429,7 +429,7 @@ export class FullScreenMapElementComponent
             .then(async (data) =>
             {
                 if(data == null) return;
-                
+
                 for(var i = 0; i < data['records'].length; i++)
                 {
                     var rec = data['records'][i];
@@ -478,7 +478,7 @@ export class FullScreenMapElementComponent
             
             var features = [];
             var layers = MapHelper.getLayersFromMapWithoutBaseLayers(this.map);
-            for(var i = 0; i < layers.length; i++)
+            for(var i = 0; i < layers.length; i++) 
             {
                 if(!layers[i].getVisible())
                 {
@@ -487,10 +487,10 @@ export class FullScreenMapElementComponent
                 }
 
                 var temp = this.getSearchedFeatureInfoFromLayer(layers[i], search);
-                if(temp == null) continue;
-
                 await temp.then((data: any[]) =>
                 {
+                    if(data == null) return;
+
                     for(var i = 0; i < data.length; i++)
                     {
                         var rec = data[i];
@@ -530,17 +530,19 @@ export class FullScreenMapElementComponent
             var layers = MapHelper.getLayersFromMapWithoutBaseLayers(this.map);
             for(var i = 0; i < layers.length; i++)
             {
+                if(layers[i].display_name != "İçme Suyu Alanlar") continue;
+                 
+                 if(!layers[i]['search']) continue;
+
                 if(!layers[i].getVisible())
-                {
-                    if(layers[i]['layerAuth']) continue;
-                    if(!layers[i]['search']) continue;
-                }
-
+                    if(layers[i]['layerAuth']) 
+                        continue;
+                
                 var temp = this.getClickedFeatureInfoFromLayer(layers[i], event, buffer);
-                if(temp == null) continue;
-
                 await temp.then((data: any[]) =>
                 {
+                    if(data == null) return;
+
                     for(var i = 0; i < data.length; i++)
                     {
                         var rec = data[i];
@@ -702,7 +704,7 @@ export class FullScreenMapElementComponent
         return params;
     }
     
-    getClickedFeatureInfoFromExternalLayer(layer, event, buffer)
+    async getClickedFeatureInfoFromExternalLayer(layer, event, buffer)
     {
         var srid = layer['authData']['srid'];
         if(srid == null || srid.length == 0) srid = MapHelper.dbProjection;
@@ -716,7 +718,7 @@ export class FullScreenMapElementComponent
         else if(layer['authData']['type'] == "wfs") 
             params = this.getParamsForClickedFeatureInfoFromExternalLayerWFS(layer, srid, buffer);
         else
-            return null;
+            return new Promise((resolve) => resolve(null));
         
         return new Promise((resolve) =>
         {
@@ -755,11 +757,12 @@ export class FullScreenMapElementComponent
     
     getClickedFeatureInfoFromCustomLayer(layer, event, buffer)
     {
+        var temp = new Promise((resolve) => resolve(null));
+
         var auth = BaseHelper.loggedInUserInfo.auths.tables;
-        if(typeof auth[layer.tableName] != "undefined")
-            if(typeof auth[layer.tableName]["maps"] != "undefined")
-                if(auth[layer.tableName]["maps"].includes("2"))//Search
-                    return null;
+        if(typeof auth[layer.tableName] == "undefined") return temp;
+        if(typeof auth[layer.tableName]["maps"] == "undefined") return temp;
+        if(!auth[layer.tableName]["maps"].includes("2")) return temp;//Search
         
         return this.getClickedFeatureInfoFromDefaultLayer(layer, event, buffer);
     }
@@ -767,6 +770,12 @@ export class FullScreenMapElementComponent
     getListDataFromTable(tableName, filters = {}, limit = 0)
     {
         var auth = BaseHelper.loggedInUserInfo.auths.tables[tableName];
+        if(typeof auth['lists'] == "undefined")
+        {
+            this.messageHelper.toastMessage('"'+tableName+'" katmanının liste yetkisi yok!');
+            return new Promise((resolve) => resolve(null));
+        }
+
         var columnArrayId = auth['lists'][0];
         
         var columnArrayIdQuery = null;
@@ -799,13 +808,17 @@ export class FullScreenMapElementComponent
     
     async fillTableColumns(tableName)
     {
-        if(typeof this.tableGeoColumns[tableName] != "undefined") return;
+        if(typeof this.tableGeoColumns[tableName] != "undefined") return true;
         
         var geoColumns = ['point', 'linestring', 'polygon', 'multipoint', 'multilinestring', 'multipolygon'];
         
+        var temp = false;
+
         await this.getListDataFromTable(tableName)
         .then((data) =>
         {
+            if(data == null) return;
+
             this.tableColumns[tableName] = data['columns'];
             
             var columnNames = Object.keys(data['columns']);
@@ -822,15 +835,20 @@ export class FullScreenMapElementComponent
                     this.tableGeoColumns[tableName].push(column);
                 }
             }
+
+            temp = true;
         });
+
+        return temp;
     }
     
     async getClickedFeatureInfoFromDefaultLayer(layer, event, buffer)
     {
         var tableName = layer['authData']['tableName'];
         
-        await this.fillTableColumns(tableName);
-        
+        var control = await this.fillTableColumns(tableName);
+        if(!control) return new Promise((resolve) => resolve(null));
+
         var wkt = MapHelper.getWktFromFeature(buffer);
         
         var temp = [];
@@ -851,6 +869,8 @@ export class FullScreenMapElementComponent
             await this.getListDataFromTable(tableName, filter, 3)
             .then(async (data) =>
             {
+                if(data == null) return;
+                
                 for(var i = 0; i < data['records'].length; i++)
                 {
                     var rec = data['records'][i];
@@ -1750,7 +1770,7 @@ export class FullScreenMapElementComponent
     
     async inFormSavedSuccess(data)
     {
-        $('#'+this.inFormElementId+'inFormModal').modal('hide');
+        BaseHelper.closeModal(this.inFormElementId+'inFormModal');
         
         var dataTransferSelects = this.getDataTransferSelects(data);
         

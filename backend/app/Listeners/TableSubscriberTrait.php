@@ -123,7 +123,14 @@ trait TableSubscriberTrait
         $model->addFilters($params->model, $params->table_name/*, 'list'*/);//select içinde edit ve delete filtreleri de olması için gerekli
         
         $params->model->addSelect($params->table_name.'.id');
-        $params->model->groupBy($params->table_name.'.id');
+        
+        $standartColumns = ['id', 'own_id', 'user_id', 'created_at', 'updated_at', 'state'];
+        foreach($standartColumns as $columnName)
+            $params->model->groupBy($params->table_name.'.'.$columnName);
+
+        foreach($params->columns as $column)
+            if(!isset($column->select_raw))
+                $params->model->groupBy($params->table_name.'.'.$column->name);
         
         return $params;
     }

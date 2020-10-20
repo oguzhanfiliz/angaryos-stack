@@ -257,7 +257,8 @@ export class FormComponent
         else url += this.recordId + "/update";
 
         var params = this.getParamsForSave();
-
+        if(typeof params == "undefined") return;
+        
         this.sessionHelper.doHttpRequest(BaseHelper.formSendMethod, url, params) 
         .then((data) => this.saveSuccess(data));
     }
@@ -367,8 +368,8 @@ export class FormComponent
 
         if(type == 'GET') data['id'] = this.recordId;
         else data.append('id', this.recordId);
-        
-        return data;
+
+        return data; 
     }
     
     getElementId(columnName)

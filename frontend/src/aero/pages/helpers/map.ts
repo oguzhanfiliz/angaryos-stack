@@ -1117,7 +1117,7 @@ export abstract class MapHelper
       if(zoom >= 19) return sizes[19];
       if(zoom <= 8) return sizes[8];
       
-      return sizes[Math.round(zoom)];
+      return sizes[Math.round(zoom)] * 8;
   }
 
   public static showNoMultipleConfirm(map, e = null)

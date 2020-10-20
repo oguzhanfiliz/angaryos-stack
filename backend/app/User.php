@@ -242,7 +242,7 @@ class User extends Authenticatable
         if(strlen($info['period']) == 0) $info['period'] = 0;
         
         $info['filter'] = FALSE;
-        $info['search'] = FALSE;
+        $info['search'] = TRUE;
         $info['layerAuth'] = TRUE;
         
         $info['srid'] = $layer->srid;
@@ -274,7 +274,7 @@ class User extends Authenticatable
         $info['filter'] = FALSE;
         $info['search'] = FALSE;
         $info['layerAuth'] = TRUE;
-        
+
         $info['legend_url'] = $layer->legend_url;
         if(strlen($info['legend_url']) == 0)
         {
