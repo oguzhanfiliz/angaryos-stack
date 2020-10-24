@@ -16,6 +16,8 @@ declare var $: any;
 export class LinkPageComponent
 {
   firstPage = true;
+  filterString = "";
+  tableGroups = [];
    
   constructor(
     private generalHelper: GeneralHelper,
@@ -26,6 +28,7 @@ export class LinkPageComponent
     this.sessionHelper.getLoggedInUserInfo();
     
     this.aeroThemeHelper.pageRutine();
+    this.tableGroups = this.getTablesGroups();
   }
 
   private keyEvent(event)
@@ -40,29 +43,16 @@ export class LinkPageComponent
   {  
     if(BaseHelper.readFromPipe('loadPageScriptsLightLoaded')) this.firstPage = false;
     
-    this.setDropdownOpenEffect();
     this.aeroThemeHelper.loadPageScripts();
+    this.openTableGroupList(999);
   }
 
-  setDropdownOpenEffect()
+  menuFilterChanged()
   {
-    var th = this;
-      
-    $('.dropdown').on('show.bs.dropdown', function(e)
-    { 
-      if(th.firstPage)
-        $(this).find('.dropdown-menu').first().stop(true, true).slideUp(300);
-      else
-        $(this).find('.dropdown-menu').first().stop(true, true).slideDown(300);
-    });
+    this.tableGroups = this.getTablesGroups();
 
-    $('.dropdown').on('hide.bs.dropdown', function(e)
-    {
-      if(th.firstPage)
-        $(this).find('.dropdown-menu').first().stop(true, true).slideDown(300);
-      else
-        $(this).find('.dropdown-menu').first().stop(true, true).slideUp(300);
-    });
+    if(this.filterString.length == 0)
+      setTimeout(() => this.openTableGroupList(999), 100);
   }
 
   getTablesGroups()
@@ -72,34 +62,68 @@ export class LinkPageComponent
     var temp = BaseHelper.loggedInUserInfo['menu']['tableGroups'];
     for(var i = 0; i < temp.length; i++)
       if(temp[i]['table_ids'].length > 0)
-        rt.push(temp[i]);
+      {
+        if(this.filterString.length == 0)
+          rt.push(temp[i]);
+        else
+        {
+          var item = BaseHelper.getCloneFromObject(temp[i]);
+          item['table_ids'] = [];
+ 
+          var tableIds = temp[i]['table_ids'];
+          for(var j = 0; j < tableIds.length; j++)
+          {
+            var table = this.getTable(item['id'], tableIds[j])
+            if(table == null) continue;
+
+            if(
+              table['name'].toLocaleLowerCase().indexOf(this.filterString) > -1
+              ||
+              table['display_name'].toLocaleLowerCase().indexOf(this.filterString) > -1
+            )
+              item['table_ids'].push(tableIds[j]);
+          
+          }
+
+          if(item['table_ids'].length > 0) rt.push(item);
+        }
+      } 
         
     return rt;
   }
 
-  getTableName(tableGroupId, tableId)
+  getTable(tableGroupId, tableId)
   {
     var tables = BaseHelper.loggedInUserInfo['menu']['tables'][tableGroupId];
-
+    if(typeof tables == "undefined") return null;
+    
     for(var i = 0; i < tables.length; i++)
       if(tables[i]['id'] == tableId)
-        return tables[i]['display_name'];
+        return tables[i];
+  }
+
+  getTableName(tableGroupId, tableId)
+  {
+    var table = this.getTable(tableGroupId, tableId);
+    if(table == null) return "";
+
+    return table['display_name'];
   }
 
   getTableUrl(tableGroupId, tableId)
   {
     var tables = BaseHelper.loggedInUserInfo['menu']['tables'][tableGroupId];
+    if(typeof tables == "undefined") return "";
 
     for(var i = 0; i < tables.length; i++)
       if(tables[i]['id'] == tableId)
         return BaseHelper.baseUrl+"table/"+tables[i]['name'];
   }
 
-  openDropDown(i)
+  openTableGroupList(i)
   {
-    setTimeout(() => {
-      $('.dropdown [data-toggle="dropdown"]:eq('+i+')').click();
-    }, 100);
+    $('.table-group-list').css('display', 'none');
+    $('#table-group-list-'+i).css('display', 'block');
   }
 
   getTableGroupImageUrl(tableGroup)
@@ -107,7 +131,7 @@ export class LinkPageComponent
     var url = BaseHelper.backendBaseUrl;
 
     if(tableGroup.image)
-      url += tableGroup.image;
+      url += 'uploads/'+tableGroup.image;
     else 
       url += 'uploads/2020/01/01/nomenuimage.png';
       

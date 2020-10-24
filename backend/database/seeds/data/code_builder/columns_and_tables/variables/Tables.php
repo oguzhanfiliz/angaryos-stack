@@ -69,7 +69,7 @@ $table_name_display_name_map =
     
     'log_levels' => 'Log Seviyeleri',
     
-    'data_entegrator_logs' => 'Veri Aktarıcı Logları',
+    //'data_entegrator_logs' => 'Veri Aktarıcı Logları',
     
     'table_groups' => 'Tablo Grupları',
     

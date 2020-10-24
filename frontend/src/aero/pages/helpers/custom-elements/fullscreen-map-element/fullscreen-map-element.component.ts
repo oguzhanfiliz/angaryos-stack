@@ -95,6 +95,8 @@ export class FullScreenMapElementComponent
         this.loggedInUserInfo = BaseHelper.jsonStrToObject(this.loggedInUserInfoJson);
         if(this.loggedInUserInfo == "") return;
 
+        this.addKeyShortcuts();
+
         this.createMapElement()
         .then((map) => this.addLayers(map))
         .then((map) => this.addEvents(map))
@@ -329,6 +331,36 @@ export class FullScreenMapElementComponent
 
     /****    Map Operations    ****/
 
+    addKeyShortcuts()
+    {
+        var th = this;
+
+        $(document).on('keydown', function(e)
+        {
+            if(!e.altKey) return;
+
+            switch (e.key) 
+            {
+                case "a":
+                case "A":
+                    th.search();
+                    break;
+                case "k":
+                case "K":
+                    th.layers();
+                    break;
+                case "c":
+                case "C":
+                    th.setToolsBarVisible(true);
+                    break;
+                case "n":
+                case "N":
+                    th.setFeaturesTreeVisible(true);
+                    break;
+            }
+        });
+    }
+
     createMapElement()
     {
         return new Promise((resolve) =>
@@ -529,14 +561,38 @@ export class FullScreenMapElementComponent
             var features = [];
             var layers = MapHelper.getLayersFromMapWithoutBaseLayers(this.map);
             for(var i = 0; i < layers.length; i++)
-            {
-                if(layers[i].display_name != "İçme Suyu Alanlar") continue;
-                 
-                 if(!layers[i]['search']) continue;
+            {                 
+                if(!layers[i]['search']) continue;
+    
+                if(!layers[i].getVisible()) if(layers[i]['layerAuth']) continue;
 
-                if(!layers[i].getVisible())
-                    if(layers[i]['layerAuth']) 
-                        continue;
+                if(layers[i].authData.layerTableType == "default")
+                {
+                    var control = false;
+                    for(var j = 0; j < layers.length; j++)
+                    {
+                        if(layers[j].authData.layerTableType == "custom")
+                        {
+                            if(layers[i].tableName == layers[j].tableName)
+                                if(!layers[j].getVisible())
+                                {
+                                    control = true;
+                                    break;
+                                }
+                        }
+                        else if(layers[j].authData.layerTableType == "external")
+                        {
+                            if(layers[j].relationTables.includes(layers[i].tableName))
+                                if(!layers[j].getVisible())
+                                {
+                                    control = true;
+                                    break;
+                                }
+                        }
+                    }
+
+                    if(control) continue;
+                }    
                 
                 var temp = this.getClickedFeatureInfoFromLayer(layers[i], event, buffer);
                 await temp.then((data: any[]) =>
@@ -772,7 +828,7 @@ export class FullScreenMapElementComponent
         var auth = BaseHelper.loggedInUserInfo.auths.tables[tableName];
         if(typeof auth['lists'] == "undefined")
         {
-            this.messageHelper.toastMessage('"'+tableName+'" katmanının liste yetkisi yok!');
+            alert('"'+tableName+'" katmanının liste yetkisi yok!');
             return new Promise((resolve) => resolve(null));
         }
 
@@ -790,6 +846,7 @@ export class FullScreenMapElementComponent
             "column_array_id_query": columnArrayIdQuery,
             "sorts": {},
             "filters": filters,
+            "sender": "fullscreenMapElement"
         };
         
         var url = this.sessionHelper.getBackendUrlWithToken()+"tables/"+tableName;
@@ -954,7 +1011,7 @@ export class FullScreenMapElementComponent
         {
             th.ctrlPressed = e.ctrlKey;
             th.altPressed = e.altKey;
-        } );
+        });
 
         map.on('pointerdown', function(e) 
         {        

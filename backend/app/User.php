@@ -124,7 +124,7 @@ class User extends Authenticatable
             'id' => 0,
             'name_basic' => 'Diğer Tablolar',
             'table_ids' => [],
-            'image' => 'uploads/2020/01/01/other.png',
+            'image' => '2020/01/01/other.png',
             'icon' => 'zmdi-aspect-ratio',
         ];
 
@@ -250,6 +250,14 @@ class User extends Authenticatable
         $info['legend_url'] = $layer->legend_url;
         
         $info['layerTableType'] = 'external';
+
+        $info['relationTables'] = [];
+        if(strlen($layer->table_ids) > 0)
+        {
+            foreach(json_decode($layer->table_ids) as $tableId)
+                if(strlen($tableId) > 0)
+                    array_push($info['relationTables'], get_attr_from_cache('tables', 'id', $tableId, 'name'));
+        }
         
         return $info;
     }

@@ -140,7 +140,7 @@ export class DataTableElementComponent
             column_array_id_query: 0,
             sorts: {},
             filters: {},
-            editMode: true,
+            editMode: false,
             columnNames: []
         };
     }
@@ -1076,7 +1076,6 @@ export class DataTableElementComponent
             for(var i = 0; i < this.selectedRecordList.length; i++)
             {
                 this.deleteRecord(this.selectedRecordList[i]);
-                await BaseHelper.sleep(1000);
             }
             this.selectedRecordList = [];
             this.selectedRecord = null;

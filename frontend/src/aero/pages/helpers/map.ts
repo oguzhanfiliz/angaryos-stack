@@ -852,11 +852,20 @@ export abstract class MapHelper
         case 'Point': 
           geom = new Point(geoServerGeometry['coordinates']);
           break;
+        case 'MultiPoint': 
+          geom = new MultiPoint(geoServerGeometry['coordinates']);
+          break;
         case 'Linestring': 
           geom = new LineString(geoServerGeometry['coordinates']);
           break;
+        case 'MultiLineString': 
+          geom = new MultiLineString(geoServerGeometry['coordinates']);
+          break;
         case 'Polygon': 
           geom = new Polygon(geoServerGeometry['coordinates']);
+          break;
+        case 'MultiPolygon': 
+          geom = new MultiPolygon(geoServerGeometry['coordinates']);
           break;
         default:
             console.log('getFeatureFromGeoserverJsonResponseGeometry: ' + geoServerGeometry['type']);

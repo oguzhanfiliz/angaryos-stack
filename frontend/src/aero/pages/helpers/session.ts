@@ -12,6 +12,7 @@ import 'sweetalert2/dist/sweetalert2.min.css'
 export class SessionHelper 
 {     
     disableDoHttpRequestErrorControl = false; 
+    doHttpRequestLastTime = 0;
     
     constructor(
       private httpClient: HttpClient,
@@ -33,11 +34,7 @@ export class SessionHelper
       {
         this.doHttpRequest("GET", BaseHelper.backendUrl, null)
         .then((data) => BaseHelper.backendServiceControl = true)
-        .catch((errorMessage) => 
-        {
-            if(errorMessage != "***") return;
-            this.messageHelper.sweetAlert("Sunucu servisleri şuan çalışmıyor olabilir. Sorun yaşarsanız bir süre sonra tekrar deneyin.", "Sunucuya erişilemedi");
-        });
+        .catch((errorMessage) => this.messageHelper.sweetAlert("Sunucu servisleri şuan çalışmıyor olabilir. Sorun yaşarsanız bir süre sonra tekrar deneyin.", "Sunucuya erişilemedi"));
       }, 100);
     }
 
@@ -169,8 +166,16 @@ export class SessionHelper
       return false;
     }
 
-    public doHttpRequest(type: string, url: string, data: object = {})
+    public async doHttpRequest(type: string, url: string, data: object = {})
     {
+      do 
+      {
+        await BaseHelper.sleep(50); 
+        var now = (new Date()).getTime();
+      } while ((now - this.doHttpRequestLastTime) < 900);
+
+      this.doHttpRequestLastTime = now;
+
       this.generalHelper.startLoading();
       
       return new Promise((resolve, reject) =>

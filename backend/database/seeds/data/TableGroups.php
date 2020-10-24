@@ -14,7 +14,7 @@ $table_groups =
             $tables['table_groups']->id,
             $tables['log_levels']->id,
         ],
-        'image' => json_decode('[{"disk": "uploads", "file_name": "settings.png", "destination_path": "uploads/2020/01/01/"}]'),
+        'image' => json_decode('[{"disk": "uploads", "file_name": "settings.png", "destination_path": "2020/01/01/"}]'),
         'icon' => 'zmdi-settings',
         //'order' => $order++
     ],
@@ -25,7 +25,7 @@ $table_groups =
             $tables['users']->id,
             $tables['departments']->id
         ],
-        'image' => json_decode('[{"disk": "uploads", "file_name": "hr.png", "destination_path": "uploads/2020/01/01/"}]'),
+        'image' => json_decode('[{"disk": "uploads", "file_name": "hr.png", "destination_path": "2020/01/01/"}]'),
         'icon' => 'zmdi-accounts',
         //'order' => $order++
     ],
@@ -48,7 +48,7 @@ $table_groups =
             $tables['up_columns']->id,
             $tables['tables']->id
         ],
-        'image' => json_decode('[{"disk": "uploads", "file_name": "tables.png", "destination_path": "uploads/2020/01/01/"}]'),
+        'image' => json_decode('[{"disk": "uploads", "file_name": "tables.png", "destination_path": "2020/01/01/"}]'),
         'icon' => 'zmdi zmdi-grid',
         //'order' => $order++
     ],
@@ -64,7 +64,7 @@ $table_groups =
             $tables['column_sets']->id,
             $tables['auth_groups']->id
         ],
-        'image' => json_decode('[{"disk": "uploads", "file_name": "auths.png", "destination_path": "uploads/2020/01/01/"}]'),
+        'image' => json_decode('[{"disk": "uploads", "file_name": "auths.png", "destination_path": "2020/01/01/"}]'),
         'icon' => 'zmdi zmdi-lock',
         //'order' => $order++
     ],
@@ -80,7 +80,7 @@ $table_groups =
             $tables['sub_linestrings']->id,
             $tables['sub_polygons']->id
         ],
-        'image' => json_decode('[{"disk": "uploads", "file_name": "subfeatures.png", "destination_path": "uploads/2020/01/01/"}]'),
+        'image' => json_decode('[{"disk": "uploads", "file_name": "subfeatures.png", "destination_path": "2020/01/01/"}]'),
         'icon' => 'zmdi-pin-drop',
         //'order' => $order++
     ],
@@ -93,7 +93,7 @@ $table_groups =
             $tables['custom_layers']->id,
             $tables['external_layers']->id
         ],
-        'image' => json_decode('[{"disk": "uploads", "file_name": "map.png", "destination_path": "uploads/2020/01/01/"}]'),
+        'image' => json_decode('[{"disk": "uploads", "file_name": "map.png", "destination_path": "2020/01/01/"}]'),
         'icon' => 'zmdi-map',
         //'order' => $order++
     ],
@@ -108,9 +108,9 @@ $table_groups =
             $tables['data_source_remote_columns']->id,
             $tables['data_source_col_relations']->id,
             $tables['data_source_tbl_relations']->id,
-            $tables['data_entegrator_logs']->id
+            //$tables['data_entegrator_logs']->id
         ],
-        'image' => json_decode('[{"disk": "uploads", "file_name": "dataentegrator.png", "destination_path": "uploads/2020/01/01/"}]'),
+        'image' => json_decode('[{"disk": "uploads", "file_name": "dataentegrator.png", "destination_path": "2020/01/01/"}]'),
         'icon' => 'zmdi-repeat',
         //'order' => $order++
     ],
@@ -122,7 +122,7 @@ $table_groups =
             $tables['reports']->id,
             $tables['downloaded_reports']->id
         ],
-        'image' => json_decode('[{"disk": "uploads", "file_name": "reports.png", "destination_path": "uploads/2020/01/01/"}]'),
+        'image' => json_decode('[{"disk": "uploads", "file_name": "reports.png", "destination_path": "2020/01/01/"}]'),
         'icon' => 'zmdi-view-dashboard',
         //'order' => $order++
     ],
