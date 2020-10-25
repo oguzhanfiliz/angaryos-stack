@@ -76,6 +76,7 @@ class CacheSubscriber
             case 'data_source_tbl_relations':
             case 'data_filter_types':
             case 'missions':
+            case 'custom_layers':
                 ClearCache::{$this->dispatchType}('allAuths');
                 break;
         }
@@ -292,11 +293,26 @@ class CacheSubscriber
         $ts = ['column_sets', 'column_arrays'];        
         foreach($ts as $t)
         {
+            $key = 'table:'.$table->name.'|type:'.$t.'|id:0'; 
+            ClearCache::{$this->dispatchType}($key);
+            
+            $key = 'table:'.$table->name.'|type:column_sets|id:0|columnSetObjectAndJoins'; 
+            ClearCache::{$this->dispatchType}($key);
+            
+            $key = 'tableName:'.$table->name.'|allColumsFromDbWithTableAliasAndGuiType'; 
+            ClearCache::{$this->dispatchType}($key);
+                
             $temp = DB::table($t)->where('table_id', $table->id)->get();
             foreach($temp as $rec)
             {
-                $key = 'table:'.$table->name.'|type:'.$t.'|id:'.$rec->id.'|columnArrayOrSetAndJoins'; 
+                $key = 'table:'.$table->name.'|type:'.$t.'|id:'.$rec->id; 
                 ClearCache::{$this->dispatchType}($key);
+                
+                if($t == 'column_sets')
+                {
+                    $key = 'table:'.$table->name.'|type:column_sets|id:'.$rec->id.'|columnSetObjectAndJoins'; 
+                    ClearCache::{$this->dispatchType}($key);
+                }
             }
         }
     }
@@ -354,7 +370,7 @@ class CacheSubscriber
         $columnArrays = DB::table('column_arrays')->where('table_id', $tableId)->get();
         foreach($columnArrays as $columnArray) 
         {
-            ClearCache::{$this->dispatchType}($key.$columnArray->id.'|columnArrayOrSetAndJoins');
+            ClearCache::{$this->dispatchType}($key.$columnArray->id);
             $this->clearRecordCache('column_arrays', $columnArray);
         }
         ClearCache::{$this->dispatchType}($key.'0');

@@ -29,6 +29,9 @@ export class FullScreenMapElementComponent
     @Input() loggedInUserInfoJson: string = "";
     
     @Output() changed = new EventEmitter();
+
+    layers = [];
+    layerFilterString = ""
     
     inFormColumnName = "";
     inFormTableName = "";
@@ -101,7 +104,9 @@ export class FullScreenMapElementComponent
         .then((map) => this.addLayers(map))
         .then((map) => this.addEvents(map))
         .then((map) => this.controlZoomTo(map))
-        .then((map) => $('.ol-zoom').css('display', 'none'))
+        .then((map) => $('.ol-zoom').css('display', 'none'));
+
+        setTimeout(() => this.layers = this.getLayers(), 100);
     }
 
     handleChange(event)
@@ -125,7 +130,7 @@ export class FullScreenMapElementComponent
         $(id).modal('hide');
     }
     
-    search()
+    showSearchPanel()
     {
         var th = this;
         
@@ -234,7 +239,7 @@ export class FullScreenMapElementComponent
             this.messageHelper.sweetAlert("Geçersiz doya tipi!", "Hata", "warning");
     }
 
-    layers()
+    showLayersPanel()
     {
         $('#layersModal').modal('show');
     }
@@ -343,11 +348,11 @@ export class FullScreenMapElementComponent
             {
                 case "a":
                 case "A":
-                    th.search();
+                    th.showSearchPanel();
                     break;
                 case "k":
                 case "K":
-                    th.layers();
+                    th.showLayersPanel();
                     break;
                 case "c":
                 case "C":
@@ -1257,14 +1262,24 @@ export class FullScreenMapElementComponent
         return MapHelper.getBaseLayersFromMap(this.map);
     }
 
+    layerFilterChanged()
+    {
+        this.layers = this.getLayers();
+    }
+
     getLayers()
     {
         var tempArray = [];
         var temp = MapHelper.getLayersFromMapWithoutBaseLayers(this.map);
         for(var i = 0; i < temp.length; i++)
             if(temp[i]["layerAuth"])
-                tempArray.push(temp[i]);
-
+            {
+                if(this.layerFilterString.length == 0) 
+                    tempArray.push(temp[i]);
+                else if(temp[i].display_name.toLocaleLowerCase().indexOf(this.layerFilterString.toLocaleLowerCase()) > -1)
+                    tempArray.push(temp[i]);
+            }
+ 
         this.layerList = tempArray.reverse();
 
         return this.layerList;
@@ -1902,6 +1917,11 @@ export class FullScreenMapElementComponent
     
     convertDataForDataTransform(record, feature, columnName, convertType)
     {
-        return record[columnName];
+        switch(convertType)
+        {
+            case 'length': return feature.getGeometry().getLength();
+            case 'area': return feature.getGeometry().getArea();
+            default: return record[columnName];
+        }
     }
 }

@@ -9,9 +9,9 @@ $user_id_relation =
 
 $table_id_relation =
 [
-    'relation_sql' => 'select id, display_name from tables',
+    'relation_sql' => 'select * from tables',
     'relation_source_column' => 'id',
-    'relation_display_column' => 'display_name',
+    'relation_display_column' => '"display_name" || \' (\' || "name" || \')\'',
 ];
 
 $column_id_relation =

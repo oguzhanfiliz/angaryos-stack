@@ -280,7 +280,7 @@
         </a>    
         <div class="dropdown-divider"></div>
         <a 
-            (click)="search()"
+            (click)="showSearchPanel()"
             class="dropdown-item"
             ngbDropdownItem>
             
@@ -288,7 +288,7 @@
         </a>  
         <div class="dropdown-divider"></div>
         <a 
-            (click)="layers()"
+            (click)="showLayersPanel()"
             class="dropdown-item"
             ngbDropdownItem>
             
@@ -324,19 +324,29 @@
             <div class="modal-body" style="padding: 5px !important;">
                 <h5 style="padding: 5; margin: 0; text-align: center;">Katmanlar</h5>
                 <hr style="margin-top: 0;">
+
+                <input 
+                    class="form-control" 
+                    type="text" 
+                    name="filter" 
+                    id="filter" 
+                    (change)="layerFilterChanged()"
+                    [(ngModel)]="layerFilterString"
+                    style="background-color: white; max-width: 350px;margin: auto;margin-bottom: 15px"
+                    placeholder="Arama">
                 
                 <div cdkDropListGroup>
                     <div class="dragdrop-container">
                         <div
                             cdkDropList 
-                            cdkDropListData="getLayers()"
+                            cdkDropListData="layers"
                             class="dragdrop-list"
                             (cdkDropListDropped)="layerChanged($event)">
                 
                             <div 
                                 [attr.source]="layer['display_name']"
                                 class="dragdrop-box" 
-                                *ngFor="let layer of getLayers()" 
+                                *ngFor="let layer of layers" 
                                 cdkDrag>
                                 <table width="100%">
                                     <tr>
@@ -511,10 +521,10 @@
 <div [hidden]="!showLegendPanel" class="legendPanel">
     <img src="{{ legendUrl }}">
     
-    <span 
+    <!--<span 
         (click)="closeLegendPanel()"
         class="badge badge-sm badge-primary closeLegentPanelButton">
 
         <i style="font-size: 11px;" class="zmdi"></i>
-    </span>
+    </span>-->
 </div>

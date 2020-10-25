@@ -68,6 +68,21 @@ trait BaseModelGetDataSortTrait
         $columnWithAlias = $params->column->name . '___' . $tableName.$params->relation->id.'.'.$displayName;
         $params->model->orderBy(DB::raw("string_agg($columnWithAlias, ' ')"), $params->direction);
     }
+
+    public function addSortForTableIdAndColumnNames($params)
+    {
+        $tableName = get_attr_from_cache('tables', 'id', $params->relation->relation_table_id, 'name');
+        $displayName = $params->relation->relation_display_column;
+        
+        $alias = $params->column->name . '___' . $tableName.$params->relation->id;
+        
+        if(strstr($displayName, '"'))
+            $columnWithAlias = str_replace(' "', ' '.$alias.'."', ' '.$displayName);
+        else
+            $columnWithAlias = $alias.'.'.$displayName;
+        
+        $params->model->orderBy(DB::raw("string_agg($columnWithAlias, ' ')"), $params->direction);
+    }
     
     public function addSortForJoinTableIds($params)
     {

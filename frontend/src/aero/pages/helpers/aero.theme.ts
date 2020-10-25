@@ -29,11 +29,14 @@ export class AeroThemeHelper
             
         }, 100);
 
-        var h = window.innerHeight;
-        $('div#target-container-fluid').css('height', (h*0.85)+"px");
-        $('section.content:eq(0)').css('height', (h*0.95)+"px");
-        $('section.content:eq(0)').css('overflow', 'hidden');
-        $('section.content:eq(0)').css('overflow', 'auto');
+        if($('section.content').length > 1)
+        {
+          var h = window.innerHeight;
+          $('div#target-container-fluid').css('height', (h*0.85)+"px");
+          $('section.content:eq(0)').css('height', (h*0.95)+"px");
+          $('section.content:eq(0)').css('overflow', 'hidden');
+          $('section.content:eq(0)').css('overflow', 'auto');
+        }
     }
 
     public loadPageScripts()
