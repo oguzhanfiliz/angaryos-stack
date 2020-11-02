@@ -69,7 +69,7 @@ function copy_record_to_archive($record, $tableName = NULL)
     return require 'HelperFunctions/'.__FUNCTION__.'.php';
 }
 
-function dd_live(...$data)
+function dd_live($dump, ...$data)
 {
     $userId = @\Auth::user()->id;
     if(strlen($userId) == 0) return;
@@ -77,7 +77,15 @@ function dd_live(...$data)
     if(count($data) == 1) $data = $data[0];
 
     $ids = json_decode(DEBUG_USER_IDS);
-    if(in_array($userId, $ids)) dd($data);
+    if(in_array($userId, $ids)) 
+    { 
+        if($dump)
+        {
+            var_dump($data);
+            exit(0);
+        }
+        else dd($data);
+    }
 }
 
 function custom_abort_ext($message)

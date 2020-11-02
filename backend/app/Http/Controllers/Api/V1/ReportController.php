@@ -27,7 +27,9 @@ class ReportController extends Controller
         global $pipe;
         $pipe['table'] = helper('get_table_name_from_url');
         
-        $this->fillAuthFunctions();        
+        $this->fillAuthFunctions();   
+        
+        ini_set("memory_limit","-1");
     }
     
     
