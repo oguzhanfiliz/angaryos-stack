@@ -1,5 +1,7 @@
 <?php
 
+Route::options('/{any}', '\App\Http\Controllers\GeneralController@serviceOk');
+
 Route::any('/', '\App\Http\Controllers\GeneralController@serviceOk');
 Route::get('/initializeDb', '\App\Http\Controllers\GeneralController@initializeDb');
 
@@ -44,9 +46,17 @@ Route::group(['prefix' => '{token}'], function ()
     Route::get('tables/{table_name}', 'TableController@index');
     Route::get('tables/{table_name}/deleted', 'TableController@deleted');
     Route::get('tables/{table_name}/create', 'TableController@create');
-    Route::any('tables/{table_name}/store', 'TableController@store');    
+    
+    Route::options('tables/{table_name}/store', '\App\Http\Controllers\GeneralController@serviceOk');
+    Route::post('tables/{table_name}/store', 'TableController@store');    
+    Route::get('tables/{table_name}/store', 'TableController@store');    
+    
     Route::get('tables/{table_name}/{id}/edit', 'TableController@edit');
-    Route::any('tables/{table_name}/{id}/update', 'TableController@update');
+    
+    Route::options('tables/{table_name}/{id}/update', '\App\Http\Controllers\GeneralController@serviceOk');
+    Route::post('tables/{table_name}/{id}/update', 'TableController@update');
+    Route::get('tables/{table_name}/{id}/update', 'TableController@update');
+    
     Route::get('tables/{table_name}/{id}/delete', 'TableController@destroy');
     Route::get('tables/{table_name}/{id}/clone', 'TableController@cloneRecord');
     Route::get('tables/{table_name}/{id}/export', 'TableController@export');

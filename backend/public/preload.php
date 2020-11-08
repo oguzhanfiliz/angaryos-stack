@@ -1,5 +1,11 @@
 <?php
 
+
+
+header("Access-Control-Allow-Origin: *");
+
+
+
 /****    Global Functions    ****/
 
 function getMemcachedKeys($host = 'memcached', $port = 11211)
