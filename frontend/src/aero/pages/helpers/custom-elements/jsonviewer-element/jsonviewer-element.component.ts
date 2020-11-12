@@ -80,7 +80,11 @@ export class JsonViewerElementComponent
                 html += '<br><div id="onizleme"></div>';
                 html += '<script>';
                     html += 'var wrapper = document.getElementById("onizleme"); ';
-                    html += 'var data = JSON.parse("'+BaseHelper.replaceAll(this.value, '"', '\\"')+'"); ';
+
+                    var temp = BaseHelper.replaceAll(this.value, '"', '\\"')
+                    temp = BaseHelper.replaceAll(temp, '\\\\"', '\\\\\\"')
+                    
+                    html += 'var data = JSON.parse("'+temp+'"); ';
                     html += 'var tree = jsonTree.create(data, wrapper); ';
                 html += '</script>';
             html += '</body>';

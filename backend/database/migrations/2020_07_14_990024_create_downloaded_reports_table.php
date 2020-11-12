@@ -20,6 +20,7 @@ class CreateDownloadedReportsTable extends Migration
             $table->integer('report_id')->nullable();
             $table->dateTime('download_time')->nullable();
             $table->jsonb('report_file')->nullable();
+            $table->jsonb('detail')->nullable();
             $table->text('description')->nullable();
             
             $table->boolean('state')->nullable();

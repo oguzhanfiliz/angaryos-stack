@@ -126,22 +126,24 @@ trait ReportSubscriberResponseTrait
     private function InsertDownloadedReportRecord($data)
     {
         $uId = @\Auth::user()->id;
+        $temp = explode('/', $data["storePath"]);
         
         $file =
         [
             'disk' => env('FILESYSTEM_DRIVER', 'uploads'),
-            'file_name' => $uId.'_'.$data['tableDisplayName'].'.xlsx',
-            'destination_path' => date("Y/m/d/")
+            'file_name' => last($temp),
+            'destination_path' => str_replace(last($temp), "", $data["storePath"])
         ];
         
         $now = \Carbon\Carbon::now();
         
-        $data = 
+        $report = 
         [
             'download_user_id' => $uId,
             'report_id' => $data['params']->report_id,
             'download_time' => $now,
             'report_file' => json_encode([$file]),
+            'detail' => json_encode($data),
             'state' => TRUE,
             'created_at' => $now,
             'updated_at' => $now,
@@ -149,7 +151,7 @@ trait ReportSubscriberResponseTrait
             'own_id' => ROBOT_USER_ID
         ];
         
-        DB::table('downloaded_reports')->insert($data);
+        DB::table('downloaded_reports')->insert($report);
     }
     
     private function FillReportFileInfo($data)
