@@ -1,0 +1,49 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-title>
+      Kullanıcı
+    </ion-title>
+  </ion-toolbar>
+</ion-header>
+
+
+<ion-content [fullscreen]="true">
+  <ion-header collapse="condense">
+    <ion-toolbar>
+      <ion-title [hidden]="loggedInUserInfo != null" size="medium">
+        Kullancı İşlemleri
+      </ion-title>
+      <ion-title [hidden]="loggedInUserInfo == null" size="medium">
+        Kişisel
+      </ion-title>
+    </ion-toolbar>
+  </ion-header>
+
+  <ion-grid [hidden]="loggedInUserInfo != null" style="margin-top: 120px">
+    <ion-row>
+      <ion-col align-self-center>
+        <ion-button (click)="register()" expand="block" color="primary">Yeni Üye Ol</ion-button>
+
+        <span class="divider line one-line">yada</span>
+
+        <span class="already">Zaten üye misin?</span>
+
+        <ion-button (click)="login()" expand="block" color="danger">Giriş Yap</ion-button>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+
+  <ion-grid [hidden]="loggedInUserInfo == null || !kisitliKullanici" style="margin-top: 120px">
+    <ion-row style="text-align: justify; padding: 15px;">
+      Bu kısım yapım aşamasındadır. Tamamdığı zaman bu kısımdan size ait duyuruları ve bildirimleri görebilceksiniz.
+    </ion-row>
+  </ion-grid>
+
+  <ion-grid [hidden]="loggedInUserInfo == null || kisitliKullanici" style="margin-top: 120px">
+    <ion-row style="text-align: justify; padding: 15px;">
+      Bu kısım yapım aşamasındadır. Tamamdığı zaman bu kısımdan size ait duyuruları ve bildirimleri görebilceksiniz...
+    </ion-row>
+  </ion-grid>
+
+
+</ion-content>

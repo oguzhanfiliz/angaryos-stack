@@ -23,6 +23,7 @@ $column_gui_type_override =
     'profile_picture' => $column_gui_types['files']->id,
     'report_file' => $column_gui_types['files']->id,
     'image' => $column_gui_types['files']->id,
+    'images' => $column_gui_types['files']->id,
     'password' => $column_gui_types['password']->id,
         
     'auths' => $column_gui_types['multiselectdragdrop']->id,

@@ -1,0 +1,7 @@
+{
+  "name": "KBS Mobil",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular"
+}

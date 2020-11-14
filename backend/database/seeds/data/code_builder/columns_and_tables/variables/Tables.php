@@ -77,5 +77,7 @@ $table_name_display_name_map =
     
     'report_types' => 'Rapor Tipleri',
     'reports' => 'Raporlar',
-    'downloaded_reports' => 'İndirilen Raporlar' 
+    'downloaded_reports' => 'İndirilen Raporlar',
+    'register_requests' => 'Üyelik İstekleri',
+    'public_contents' => 'Serbest İçerikler'
 ];

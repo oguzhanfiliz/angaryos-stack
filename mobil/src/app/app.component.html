@@ -1,0 +1,39 @@
+<ion-menu side="end" menuId="mainMenu" content-id="main-content">
+  <ion-header>
+    <ion-toolbar translucent>
+      <ion-title>Menu</ion-title>
+    </ion-toolbar>
+  </ion-header>
+  <ion-content>
+    <ion-list>
+      <ion-item (click)="closeApp()"> 
+        <ion-icon name="close-circle-outline" slot="start"></ion-icon>
+        <ion-label>Uygulamayı Kapat</ion-label>
+      </ion-item>
+
+      <ion-item (click)="logout()" [hidden]="loggedInUserInfo == null"> 
+        <ion-icon name="log-out-outline" slot="start"></ion-icon>
+        <ion-label>Kullanıcı Çıkışı</ion-label>
+      </ion-item>      
+    </ion-list>
+  </ion-content>
+</ion-menu>
+
+<ion-fab vertical="top" horizontal="end" edge slot="fixed" (click)="openMainMenu()">
+  <ion-fab-button color="danger">
+    <ion-icon name="aperture-outline"></ion-icon>
+  </ion-fab-button>
+  <!---<ion-fab-list side="bottom">
+    <ion-fab-button color="danger" (click)="openMainMenu()">
+      <ion-icon name="code-working-outline"></ion-icon>
+    </ion-fab-button>
+  </ion-fab-list>--->
+</ion-fab>
+
+
+<ion-router-outlet id="main-content"></ion-router-outlet>
+
+
+<ion-app>
+  <ion-router-outlet></ion-router-outlet>
+</ion-app>

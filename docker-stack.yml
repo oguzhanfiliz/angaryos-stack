@@ -166,9 +166,26 @@ services:
         image: memcached
         networks:
             - backend-nw
+            
+            
+            
+    #######       MOBIL       #######
 
-
-
+    mobil: 
+        image: karapazar/ionic-serve:0.1
+        volumes:
+            - ./mobil:/usr/src/app 
+            - '/etc/localtime:/etc/localtime:ro'
+        networks:
+            - mobil-nw
+        ports:
+            - "9004:8100"
+        deploy:
+            mode: replicated
+            replicas: 1
+    
+    
+    
     #######       DB       #######
 
     postgresql:
@@ -301,6 +318,7 @@ services:
 networks:
     frontend-nw:
     backend-nw:
+    mobil-nw:
     db-nw:
     elk-nw:
     mq-nw:

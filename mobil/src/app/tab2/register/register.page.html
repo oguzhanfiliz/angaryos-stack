@@ -1,0 +1,63 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-title>
+      Yeni Üye Ol
+    </ion-title>
+    <ion-buttons slot="start">
+      <ion-button (click)="closeModal()">Kapat</ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <ion-header collapse="condense">
+    <ion-toolbar>
+      <ion-title size="medium">
+        Yeni Üye Ol
+      </ion-title>
+    </ion-toolbar>
+  </ion-header>
+
+  <ion-grid [hidden]="loggednInUserInfo != null" style="margin-top: 60px">
+    <ion-item lines="full">
+      <ion-label position="floating">TC Numaranız</ion-label>
+      <ion-input [(ngModel)]="user.tc" type="text" required></ion-input>
+    </ion-item>
+
+    <ion-item lines="full">
+      <ion-label position="floating">Adınız</ion-label>
+      <ion-input [(ngModel)]="user.name_basic" type="text" required></ion-input>
+    </ion-item>
+
+    <ion-item lines="full">
+      <ion-label position="floating">Soyadınız</ion-label>
+      <ion-input [(ngModel)]="user.surname" type="text" required></ion-input>
+    </ion-item>
+
+    <ion-item lines="full">
+      <ion-label position="floating">Email</ion-label>
+      <ion-input [(ngModel)]="user.email" type="text" required></ion-input>
+    </ion-item>
+
+    <ion-item lines="full">
+      <ion-label position="floating">Şifre</ion-label>
+      <ion-input [(ngModel)]="user.email" type="password" required></ion-input>
+    </ion-item>
+    <br>
+    <ion-row>
+      <ion-col>
+        <ion-button 
+          [class.button-disabled]="loading"
+          type="submit" color="primary" 
+          expand="block" (click)="save()">
+          
+          Gönder
+        </ion-button>
+      </ion-col>
+    </ion-row>
+
+  </ion-grid>
+  <br><br><br><br><br>
+  <div id="debug" style="height:50px" (click)="toggleDebugging()"></div>
+
+</ion-content>

@@ -123,7 +123,11 @@ $column_name_display_name_map =
     'download_user_id' => 'İndiren Kullanıcı',
     'report_id' => 'Rapor',
     'download_time' => 'İndirme Zamanı',
-    'legend_url' => 'Lejant Url'
+    'legend_url' => 'Lejant Url',
+    'detail' => 'Detay',
+    'summary' => 'Özet',
+    'content' => 'İçerik',
+    'images' => 'Resimler'
 ];
 
 

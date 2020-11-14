@@ -61,5 +61,6 @@ $columns_validations =
     'profile_picture' => [ $column_validations['nullable']->id,$column_validations['files_type:image']->id, $column_validations['files_count:1']->id ],
     'report_file' => [ $column_validations['nullable']->id, $column_validations['files_count:1']->id ],
     'image' => [ $column_validations['files_type:image']->id, $column_validations['files_count:1']->id ],
+    'image2' => [ $column_validations['files_type:image']->id ],
     'layer_base_url ' => [$column_validations['required']->id, $column_validations['url']->id ]
 ];
