@@ -14,7 +14,7 @@ require 'preload.php';
 $temp = require 'geoserverProxy/index.php';
 if($temp != NULL) return $temp;
 
-$temp = require 'eSing/index.php';
+$temp = require 'eSign/index.php';
 if($temp != NULL) return $temp;
 
 /*

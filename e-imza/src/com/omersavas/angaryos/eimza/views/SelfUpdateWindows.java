@@ -35,6 +35,7 @@ import com.omersavas.angaryos.eimza.models.Session;
 public class SelfUpdateWindows extends javax.swing.JDialog {
     
     private String updateUrl = "https://192.168.10.185/uploads/2020/01/01/eSign/";
+    private String updateUrlPath = "files/updateUrl.ang";
     public boolean updated = false;
     
     private boolean versionControl()
@@ -162,6 +163,9 @@ public class SelfUpdateWindows extends javax.swing.JDialog {
     {
         super(parent, modal);
         initComponents();
+        
+        File f = new File(updateUrlPath);
+        if(f.exists()) this.updateUrl = (new String(Files.readAllBytes(Paths.get(this.updateUrlPath))));
     }
 
     /**

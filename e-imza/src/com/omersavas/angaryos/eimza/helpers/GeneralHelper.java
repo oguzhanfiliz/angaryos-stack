@@ -170,11 +170,9 @@ public class GeneralHelper {
         return (ArrayList<LinkedTreeMap>)gson.fromJson(j, Object.class);
     }
     
-    public static Session getSession()
+    public static Session getSession() throws IOException
     {
-        if(session == null)
-            session = new Session();
-        
+        if(session == null) session = new Session();        
         return session;
     }
     

@@ -81,13 +81,15 @@ import tr.gov.tubitak.uekae.esya.api.smartcard.pkcs11.SmartOp;
  */
 public class Session {
 
-    public String url, apiBaseUrl;
-    public String tokenPath = "files/token.ang",  mailPath = "files/mail.ang";
+    public String url = "https://192.168.10.185/", apiBaseUrl;
+    public String tokenPath = "files/token.ang",  mailPath = "files/mail.ang",  urlPath = "files/url.ang";
     public String token = "";
     public LinkedTreeMap loggedInUserInfo = null;
 
-    public Session() {
-        this.url = "https://192.168.10.185/";
+    public Session() throws IOException {
+        File f = new File(urlPath);
+        if(f.exists()) this.url = (new String(Files.readAllBytes(Paths.get(this.urlPath))));
+        
         this.apiBaseUrl = this.url + "api/v1/";
     }
     
@@ -332,7 +334,7 @@ public class Session {
         List<NameValuePair> data = new ArrayList<NameValuePair>(2);
         data.add(new BasicNameValuePair("email", email));
         data.add(new BasicNameValuePair("password", password));
-        data.add(new BasicNameValuePair("clientInfo", "{}"));
+        data.add(new BasicNameValuePair("clientInfo", "{type: 'pc', app: 'e-imza.jar'}"));
             
         LinkedTreeMap r = httpPost(u, data);
         if(r == null) return false;

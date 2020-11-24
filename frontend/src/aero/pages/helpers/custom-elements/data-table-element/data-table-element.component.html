@@ -388,6 +388,15 @@
                                                     *ngIf="record['_e_sings'][0] == false">
                                                     !
                                                 </span>
+                                                
+                                                <span
+                                                    style="margin-top: 7px !important; cursor: pointer"
+                                                    data-toggle="tooltip" 
+                                                    title="e-imza tamamlandı" 
+                                                    class="badge badge-success" 
+                                                    *ngIf="record['_e_sings'][0] == true">
+                                                    *
+                                                </span>
                                                     
                                             </td>
                                             <td 
@@ -470,6 +479,16 @@
                                                                 title="Bu kolon e-imza bekliyor" 
                                                                 class="badge badge-warning" >
                                                                 !
+                                                            </span>
+                                                        </td><td 
+                                                            style="vertical-align: top; width: 10px !important"
+                                                            *ngIf="record['_e_sings'][columnName] == true"> 
+                                                            <span
+                                                                data-toggle="tooltip" 
+                                                                style="cursor: pointer"
+                                                                title="e-imza tamamlandı" 
+                                                                class="badge badge-success" >
+                                                                *
                                                             </span>
                                                         </td>
                                                     </tr>                                                    
