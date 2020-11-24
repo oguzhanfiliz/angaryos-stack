@@ -53,6 +53,7 @@ class ClearRecordCaches implements ShouldQueue
 
     public function error($exception)
     {
-        \Log::alert('ClearRecordCaches:'.$exception->getMessage().':'.json_encode((array)$this, debug_backtrace()));
+        dd('ClearRecordCaches:'.$exception->getMessage().':'.json_encode([(array)$this, debug_backtrace()]));
+        \Log::alert('ClearRecordCaches:'.$exception->getMessage().':'.json_encode([(array)$this, debug_backtrace()]));
     }
 }

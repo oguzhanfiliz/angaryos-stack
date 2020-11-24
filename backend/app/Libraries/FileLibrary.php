@@ -99,11 +99,11 @@ class FileLibrary
             {
                 $conn_id = ftp_connect(env('FILE_HOST', 'ftp.url'));
                 $login_result = ftp_login($conn_id, env('FILE_USER', 'user'), env('FILE_PASSWORD', 'password'));
-
+                
                 ftp_chmod($conn_id, 0777, env('FILE_ROOT', '/').$destinationYear);
                 ftp_chmod($conn_id, 0777, env('FILE_ROOT', '/').$destinationYear.'/'.$destinationMonth);
                 ftp_chmod($conn_id, 0777, env('FILE_ROOT', '/').$destinationYear.'/'.$destinationMonth.'/'.$destinationDay);
-                ftp_chmod($conn_id, 0777, env('FILE_ROOT', '/').$destinationYear.'/'.$destinationMonth.'/'.$destinationDay.'/'.$fileName);
+                @ftp_chmod($conn_id, 0777, env('FILE_ROOT', '/').$destinationYear.'/'.$destinationMonth.'/'.$destinationDay.'/'.$fileName);
 
                 if(strstr($file->getClientMimeType(), 'image') || strstr($file->getClientMimeType(), 'octet-stream'))
                 {

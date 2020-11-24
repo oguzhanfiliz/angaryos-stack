@@ -21,9 +21,11 @@ class CreateTablesTable extends Migration
             $table->string('name')->nullable();
             $table->jsonb('column_ids')->nullable();
             $table->jsonb('subscriber_ids')->nullable();
-            $table->text('description')->nullable();
             
             $table->text('legend_url')->nullable();
+            $table->text('e_sign_pattern_t')->nullable();
+            
+            $table->text('description')->nullable();
             
             $table->boolean('state')->nullable();
             $table->integer('own_id');

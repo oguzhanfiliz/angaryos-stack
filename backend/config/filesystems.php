@@ -45,12 +45,26 @@ return [
         
         'uploads' => [
             'driver' => 'local',
-            'root' => '/var/www/public/',
+            'root' => '/var/www/public/angaryos/uploads/',
         ],
-        
+
         'temps' => [
             'driver' => 'local',
             'root' => '/var/www/public/temps/',
+        ],
+
+        'fileServer' => [
+            'driver'   => 'ftp',
+            'host'     => env('FILE_HOST', 'ftp.url'),
+            'username' => env('FILE_USER', 'user'),
+            'password' => env('FILE_PASSWORD', 'password'),
+
+            // Optional FTP Settings...
+            // 'port'     => 21,
+            'root'     => env('FILE_ROOT', '/path/to/update'), 
+            // 'passive'  => true,
+            // 'ssl'      => true,
+            // 'timeout'  => 30,
         ],
 
         

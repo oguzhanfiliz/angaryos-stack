@@ -1,0 +1,260 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package com.omersavas.kubismsasaustu.models;
+
+import com.omersavas.kubismsasaustu.helpers.Genel;
+import com.omersavas.kubismsasaustu.helpers.Guvenlik;
+import com.omersavas.kubismsasaustu.helpers.Hata;
+import com.omersavas.kubismsasaustu.helpers.ImzalamaSmartCardManager;
+import com.omersavas.kubismsasaustu.helpers.ImzalamaTestConstants;
+import com.omersavas.kubismsasaustu.helpers.Sifreleme;
+import java.io.BufferedInputStream;
+import java.io.BufferedReader;
+import java.io.DataOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.security.InvalidKeyException;
+import javax.crypto.BadPaddingException;
+import javax.crypto.IllegalBlockSizeException;
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.HttpVersion;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.mime.HttpMultipartMode;
+import org.apache.http.entity.mime.MultipartEntity;
+import org.apache.http.entity.mime.content.ContentBody;
+import org.apache.http.entity.mime.content.FileBody;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.params.CoreProtocolPNames;
+import org.apache.http.util.EntityUtils;
+
+/**
+ *
+ * @author omers
+ */
+public class Oturum {
+
+    private String url, appUrl, loginUrl;
+    private String tokenPath = "files/token.koi";
+    public String token = "", yetki = "";
+
+    public Oturum() {
+        this.url = "https://cbs.kutahyaozid.gov.tr/";
+        this.appUrl = this.url + "tr/app/";
+    }
+    
+    private boolean tokenDoldur(String t) throws InvalidKeyException, IllegalBlockSizeException, BadPaddingException, FileNotFoundException, UnsupportedEncodingException
+    {
+        try {
+             Sifreleme s = Genel.sifrelemeGetir();
+        
+            File f = new File(tokenPath);
+            if(f.exists()) f.delete();
+            else f.createNewFile();
+
+            PrintWriter writer = new PrintWriter(tokenPath, "UTF-8");
+            writer.print(s.sifrele(t));
+            writer.close();
+
+            token = t;
+            
+            loginUrl = appUrl + "tokenD/" + t + "/";
+            
+            yetki = yetkiGetir();
+            
+            return true;
+        } catch (Exception e) {
+            Hata.Gonder(e);
+            return false;
+        }
+       
+    }
+    
+    public boolean hatirlananKullaniciKontrol() throws InvalidKeyException, IllegalBlockSizeException, BadPaddingException{
+        try {
+            Sifreleme s = Genel.sifrelemeGetir();
+        
+            File f = new File(tokenPath);
+            if(f.exists())
+            {
+                String t = s.sifreCoz(new String(Files.readAllBytes(Paths.get(tokenPath))));
+                
+                if(t.length() == 0) 
+                    f.delete();
+                else{
+                    String r = httpGet(url+"tr/app/tokenD/"+t+"/test");
+                    if(r.equals("OK")) {
+                        token = t;
+                        return true;
+                    }
+                    else
+                        f.delete();
+                }
+            } 
+        } catch (Exception e) {
+            Hata.Gonder(e);
+        }
+        
+        return false;
+    }
+
+    private String tirnakTemizle(String s)
+    {
+        return s.replaceAll("'", "").replaceAll("\"", "");
+    }
+    
+    public String httpGet(String u) throws MalformedURLException, IOException
+    {
+        try {
+            StringBuilder result = new StringBuilder();
+            URL url = new URL(u.replaceAll(" ", "%20"));
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            conn.setRequestMethod("GET");
+            BufferedReader rd = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+            String line;
+            while ((line = rd.readLine()) != null) {
+               result.append(line);
+            }
+            rd.close();
+
+            return result.toString();
+        } catch (Exception e) {
+            Hata.Gonder(e);
+            return "";
+        }
+    }
+    
+    private String yetkiGetir()
+    {
+        try {
+            return httpGet(loginUrl + "yetkilerim");
+        } catch (Exception e) {
+            Hata.Gonder(e);
+        }
+        
+        return "";
+    }
+    
+    public boolean mailIleGirisYap(String mail, String sifre) throws IOException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException {
+        if(Guvenlik.girisDeneme++ == 5){
+            Genel.Mesaj("Yeteri kadar deneme yaptınız! İzin verilmiyor...");
+            return false;
+        }
+        
+        String u = url + "tr/app/loginDesktop?";
+
+        u += "mail=" + tirnakTemizle(mail);
+        u += "&sifre=" + tirnakTemizle(sifre);
+        u += "&dtype=4";
+        
+        String r = httpGet(u);
+        
+        if(r.substring(0, 2).equals("OK")){
+            if(tokenDoldur(r.substring(2)))
+                return true;
+            else{
+                Genel.Mesaj("Giriş yapıldı ama token oluşturulamadı! Yöneticiye başvurun.");
+                return false;
+            }
+        }
+        else
+        {
+            Genel.Mesaj("Mail/Şifre yanlış!");
+            return false;
+        }
+    }
+
+    public void Cikis() {
+        File f = new File(tokenPath);
+        if(f.exists()) f.delete();
+        System.exit(0); 
+    }
+
+    public boolean imzaYukle(String name) {
+        return false;
+    }
+
+    public boolean imzaIleGiris(String name) throws MalformedURLException, IOException, InterruptedException {
+
+        try {
+            String f = ImzalamaTestConstants.getDirectory() + "/" + name + ".p7s";
+            File ff = new File(f);
+
+
+            String u = appUrl + "loginESign?";
+            u += "display_name=E-imzalı giriş - " + ImzalamaSmartCardManager.nameSurname + " - " + name;
+            u += "&tc="+ ImzalamaSmartCardManager.tcNo;
+            u += "&serial="+ ImzalamaSmartCardManager.serial;
+            u += "&os_type=4";
+            
+
+            // new HttpClient
+            HttpClient httpClient = new DefaultHttpClient();
+
+            // post header
+            HttpPost httpPost = new HttpPost(u.replace(" ", "%20"));
+
+            //Create File
+            File file = new File(f);
+            FileBody fileBody = new FileBody(file);
+
+                    //Set up HTTP post
+            MultipartEntity reqEntity = new MultipartEntity(HttpMultipartMode.BROWSER_COMPATIBLE);
+            reqEntity.addPart("files[]", fileBody);
+
+            httpPost.setEntity(reqEntity);
+
+            // execute HTTP post request
+            HttpResponse response = httpClient.execute(httpPost);
+            HttpEntity resEntity = response.getEntity();
+
+            if (resEntity != null) {
+
+                String responseStr = EntityUtils.toString(resEntity).trim();
+
+                if(responseStr.substring(0, 2).equals("OK"))
+                {
+                    String[] temp = responseStr.substring(2).split("koikoi");
+                    if(temp[0].equals(ImzalamaSmartCardManager.serial.toString()))
+                    {
+                        tokenDoldur(temp[1]);
+                        return true;
+                    }
+                    else
+                    {
+                        Hata.mesaj = false;
+                        Hata.Gonder("Kullanıcı saldırı yapmış olabilir serial tutmadı! r = " 
+                                + responseStr + ", s= "
+                                + ImzalamaSmartCardManager.serial+ ", n=" 
+                                + ImzalamaSmartCardManager.nameSurname + ", tc= "
+                                + ImzalamaSmartCardManager.tcNo);
+                        Hata.mesaj = true;
+                        
+                        Genel.Mesaj("Giriş yapıldı ama seri numarası eşleşmedi!");
+                        return false;
+                    }
+                }
+            }
+        } catch (Exception e) {
+            Hata.Gonder(e);
+        }
+        
+        return false;
+    }
+}

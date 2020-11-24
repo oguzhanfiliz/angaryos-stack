@@ -99,7 +99,7 @@ foreach($tables as $table)
     
     
     
-    $temp = 'filters:'.$table->name.':';
+    /*$temp = 'filters:'.$table->name.':';
     
     if(isset($data_filters[$table->name]))
     {
@@ -108,7 +108,7 @@ foreach($tables as $table)
             $type = $filter->getRelationData('data_filter_type_id')->name;
             array_push($tableAuths, $temp.$type.':'.$filter->id);
         }
-    }
+    }*/
     
     if($table->name == 'users')
         array_push($tableAuths, 'tables:'.$table->name.':maps:0');
@@ -188,6 +188,23 @@ $this->user->save();
 
 $departments['Bilgi İşlem Müdürlüğü']->manager_id = $this->user->id;
 $departments['Bilgi İşlem Müdürlüğü']->save();
+
+
+$eSignAuth = $this->get_base_record();
+$eSignAuth['name_basic'] = 'e-imza Tablosu Genel Personel Yetkisi';
+$eSignAuth['auths'] = 
+[
+    'tables:e_signs:lists:0',
+    'tables:e_signs:queries:0', 
+    'tables:e_signs:edits:'.$column_sets['e_signs'][0]->id,
+    'filters:e_signs:update:'.last($data_filters['e_signs'])->id,
+    'filters:e_signs:list:'.$data_filters['common'][0]->id,
+];
+
+$eSignAuth = new BaseModel('auth_groups', $eSignAuth);
+$eSignAuth->fillVariables();
+$eSignAuth->save();
+
 
 
 $this->publicUser = new BaseModel('users');

@@ -99,18 +99,21 @@ trait BaseModelGetDataTrait
         $cacheName = 'tableName:'.$name.'|tableInfo'; 
         $tableInfo = Cache::rememberForever($cacheName, function() use($name)
         {      
+            $table = get_attr_from_cache('tables', 'name', $name, '*');
+            
             $tableInfo = helper('get_null_object');
             $tableInfo->name = $name;
-            $tableInfo->display_name = get_attr_from_cache('tables', 'name', $name, 'display_name');
+            $tableInfo->display_name = $table->display_name;
             $tableInfo->up_table = false;
             
-            $tableId = get_attr_from_cache('tables', 'name', $name, 'id');
-            
             $control = DB::table('sub_tables')
-                            ->whereRaw('table_ids @> \''.$tableId.'\'::jsonb or table_ids @> \'"'.$tableId.'"\'::jsonb')
+                            ->whereRaw('table_ids @> \''.$table->id.'\'::jsonb or table_ids @> \'"'.$table->id.'"\'::jsonb')
                             ->first();
             
             if($control) $tableInfo->up_table = TRUE;
+            
+            $tableInfo->e_sign = FALSE;
+            if(strlen($table->e_sign_pattern_t) > 0) $tableInfo->e_sign = TRUE;
 
             return $tableInfo;
         });
@@ -150,6 +153,45 @@ trait BaseModelGetDataTrait
             case 'rich_text': return $this->updateRecordsDataForResponseGuiTypeRichText($data);
             default: return $data;
         }
+    }
+    
+    public function updateRecordsESignDataForResponse($records, $tableInfo, $columns)
+    {
+        $ids = [];
+        foreach($records as $record) array_push($ids, $record->id);
+        
+        $temp = DB::table('e_signs')
+                        ->where('table_id', get_attr_from_cache('tables', 'name', $tableInfo->name, 'id'))
+                        ->whereIn('source_record_id', $ids)->get();
+        
+        $eSings = [];
+        foreach($temp as $sign)
+        {
+            $control = strlen($sign->sign_at) > 0;
+            
+            if(!isset($eSings[$sign->source_record_id])) $eSings[$sign->source_record_id] = [];
+            
+            if($sign->column_id == NULL) 
+                $eSings[$sign->source_record_id][0] = $control;
+            else 
+                $eSings[$sign->source_record_id][$sign->column_id] = $control;
+        }
+        
+        foreach($records as $i => $record)
+        {
+            $records[$i]->_e_sings = [];
+            
+            if($tableInfo->e_sign) $records[$i]->_e_sings['0'] = (bool)@$eSings[$record->id][0];
+            else $records[$i]->_e_sings['0'] = NULL;
+            
+            foreach($columns as $column)
+                if(strlen(@$column->e_sign_pattern_c) > 0)
+                    $records[$i]->_e_sings[$column->name] = (bool)@$eSings[$record->id][$column->id];
+                else 
+                    $records[$i]->_e_sings[$column->name] = NULL; 
+        }
+        
+        return $records;
     }
     
     public function updateRecordsDataForResponse($records, $columns)

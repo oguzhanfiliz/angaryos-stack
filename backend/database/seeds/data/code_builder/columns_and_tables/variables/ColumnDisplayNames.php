@@ -127,7 +127,12 @@ $column_name_display_name_map =
     'detail' => 'Detay',
     'summary' => 'Özet',
     'content' => 'İçerik',
-    'images' => 'Resimler'
+    'images' => 'Resimler',
+    'e_sign_pattern_t' => 'e-imza Deseni',
+    'e_sign_pattern_c' => 'e-imza Deseni',
+    'sign_at' => 'İmzalama Zamanı',
+    'signed_text' => 'İmzalanan Metin',
+    'sign_file' => 'İmza Dosyası',
 ];
 
 

@@ -35,15 +35,6 @@ $column_arrays['departments'] =
     ],
 ];
 
-/*$column_groups['departments'] =
-[
-    [
-        'name_basic' => '',
-        'column_array_ids' => [0, 1],
-        'color_class_id' => 'primary'
-    ]
-];*/
-
 $column_sets['departments'] =
 [
     [
@@ -82,7 +73,7 @@ $column_arrays['columns'] =
             'id', 'display_name', 'name', 'column_db_type_id', 'column_gui_type_id',
             'srid', 'up_column_id',
             'column_table_relation_id', 'subscriber_ids', 'column_validation_ids', 
-            'column_gui_trigger_ids', 'column_collective_info_id', 'default', 'description',
+            'column_gui_trigger_ids', 'column_collective_info_id', 'default', 'e_sign_pattern_c', 'description',
             'state', 'own_id', 'created_at', 'user_id', 'updated_at'],
         'join_table_ids' => [],
         'join_columns' => '',
@@ -97,15 +88,6 @@ $column_arrays['columns'] =
     ],
 ];
 
-/*$column_groups['columns'] =
-[
-    [
-        'name_basic' => '-Bilgi kartı için grup',
-        'column_array_ids' => [0, 1],
-        'color_class_id' => 'primary'
-    ]
-];*/
-
 $column_sets['columns'] =
 [
     [
@@ -113,5 +95,28 @@ $column_sets['columns'] =
         'table_id' => 'columns',
         'column_set_type_id' => 'none',
         'column_array_ids' => [0, 1]
+    ]
+];
+
+$column_arrays['e_signs'] =
+[
+    [
+        'name_basic' => '**e-imza Genel Personel Yetkisi Guncelleme',
+        'column_array_type_id' => $column_array_types['direct_data']->id,
+        'table_id' => 'e_signs',
+        'column_ids' => 
+        [ 'sign_at', 'sign_file', 'state'],
+        'join_table_ids' => [],
+        'join_columns' => '',
+    ]
+];
+
+$column_sets['e_signs'] =
+[
+    [
+        'name_basic' => '**e-imza Genel Personel Yetkisi Guncelleme',
+        'table_id' => 'e_signs',
+        'column_set_type_id' => 'none',
+        'column_array_ids' => [0]
     ]
 ];

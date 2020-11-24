@@ -14,6 +14,9 @@ require 'preload.php';
 $temp = require 'geoserverProxy/index.php';
 if($temp != NULL) return $temp;
 
+$temp = require 'eSing/index.php';
+if($temp != NULL) return $temp;
+
 /*
 |--------------------------------------------------------------------------
 | Register The Auto Loader

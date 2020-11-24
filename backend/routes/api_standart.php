@@ -16,6 +16,9 @@ Route::group(['prefix' => '{token}'], function ()
     Route::any('test', '\App\Http\Controllers\GeneralController@test');
     
     
+    Route::any('eSignControl', 'eSignController@control');
+    
+    
     Route::get('logs', '\App\Http\Controllers\GeneralController@logs');
     
     Route::any('/', '\App\Http\Controllers\GeneralController@serviceOk');

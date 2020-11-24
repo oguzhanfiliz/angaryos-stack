@@ -1,7 +1,8 @@
 <?php
 
-function bb($o)
+function bb(...$o)
 {
+    if(count($o) == 1) $o = $o[0];    
     echo json_encode($o);
     exit(0);
 }

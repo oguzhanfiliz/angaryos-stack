@@ -23,8 +23,8 @@ trait DashboardLibraryTrait
     {
         $data = 
         [
-            ['html' => '<td class="w70 comboboxlist-td"><img class="rounded-circle file-preview" src="https://192.168.10.185/assets/img/404.png" alt=""></td><td class="comboboxlist-td">Ana Yönetici</td><td class="comboboxlist-td">57 dk/gün</td>'],
-            ['html' => '<td class="w70 comboboxlist-td"><img class="rounded-circle file-preview" src="https://192.168.10.185/assets/img/404.png" alt=""></td><td class="comboboxlist-td">Serbest Kullanıcı</td><td class="comboboxlist-td">45 dk/gün</td>']
+            ['html' => '<td class="w70 comboboxlist-td"><img class="rounded-circle file-preview" src="/assets/img/404.png" alt=""></td><td class="comboboxlist-td">Ana Yönetici</td><td class="comboboxlist-td">57 dk/gün</td>'],
+            ['html' => '<td class="w70 comboboxlist-td"><img class="rounded-circle file-preview" src="/assets/img/404.png" alt=""></td><td class="comboboxlist-td">Serbest Kullanıcı</td><td class="comboboxlist-td">45 dk/gün</td>']
         ];
 
         $comboBoxData = 

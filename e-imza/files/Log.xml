@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?><Logs>
+<Hata>
+<Level>Error</Level>
+<Json>{"Hata":{"detailMessage":"https://192.168.10.185/uploads/2020/01/01/eSign/img/logo.png","stackTrace":[],"suppressedExceptions":[]}},"Stack":[{"declaringClass":"java.lang.Thread","methodName":"getStackTrace","fileName":"Thread.java","lineNumber":1559},{"declaringClass":"com.omersavas.angaryos.eimza.helpers.Log","methodName":"send","fileName":"Log.java","lineNumber":38},{"declaringClass":"com.omersavas.angaryos.eimza.views.SelfUpdateWindows","methodName":"lambda$UpdateAsync$0","fileName":"SelfUpdateWindows.java","lineNumber":152},{"declaringClass":"java.lang.Thread","methodName":"run","fileName":"Thread.java","lineNumber":748}]</Json>
+<Tarih>2020/11/24 17:20:01</Tarih>
+</Hata>
+</Logs>

@@ -153,7 +153,6 @@ services:
             replicas: 1
             labels:
                 traefik.api.frontend.rule: "PathPrefix:/api"
-                traefik.uploads.frontend.rule: "PathPrefix:/uploads"
                 traefik.logs.frontend.rule: "PathPrefix:/logs"
                 traefik.port: "80"
                 traefik.enable: "true"
@@ -180,6 +179,53 @@ services:
             - mobil-nw
         ports:
             - "9004:8100"
+        deploy:
+            mode: replicated
+            replicas: 1
+            
+            
+            
+    #######       FILES       #######
+    
+    fileServer: 
+        image: nginx
+        volumes:
+            - ./backend/public/angaryos:/usr/share/nginx/html:ro
+            - '/etc/localtime:/etc/localtime:ro'
+        networks:
+            - frontend-nw
+        deploy:
+            mode: replicated
+            replicas: 1
+            labels:
+                traefik.frontend.rule: "PathPrefix:/uploads"
+                traefik.port: "80"
+                traefik.enable: "true"
+                traefik.backend: "fileServer"
+                traefik.docker.network: "angaryos_backend-nw"
+    
+    ftpServer:
+        image: fauria/vsftpd
+        environment:
+            - FTP_USER=angaryos
+            - FTP_PASS=1234Aa.
+            - FILE_OPEN_MODE=0777
+            - PASV_ADDR_RESOLVE=YES
+            - PASV_ADDRESS=ftpServer
+            - PASV_ADDRESS_ENABLE=YES
+            #- PASV_ENABLE=YES
+            - PASV_MIN_PORT=64000
+            - PASV_MAX_PORT=64005
+            #- port_enable=YES
+            
+        volumes:
+            - ./backend/public:/home/vsftpd
+            - '/etc/localtime:/etc/localtime:ro'
+        ports:
+            - "9005:21"
+            - "64000-64005:64000-64005"
+        networks:
+            - backend-nw
         deploy:
             mode: replicated
             replicas: 1

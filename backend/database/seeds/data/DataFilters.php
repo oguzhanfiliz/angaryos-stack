@@ -1,8 +1,7 @@
 <?php
-return;
 use App\BaseModel;
 
-$defaultCounts = 
+/*$defaultCounts = 
 [
     //'settings' => 3,
     'validations' => 10,
@@ -48,68 +47,51 @@ foreach($defaultCounts as $tableName => $count)
             'data_filter_type_id' => $data_filter_types['restore']->id,
             'sql_code' => 'TABLE.id > '.$count
         ]
-    ];
+    ];*/
 
-if(!isset($data_filters['data_filters'])) $data_filters['data_filters'] = [];
-
-/*$temp =
+$data_filters['common'] = 
 [
     [
-        'name_basic' => 'Varsayılan filtreler görülemesin',
+        'name_basic' => 'Kullanıcı sadece kendi kayıtlarını listeyebilsin filtresi',
         'data_filter_type_id' => $data_filter_types['list']->id,
-        'sql_code' => 'TABLE.id > 5'
-    ],
-];
-$data_filters['data_filters'] = array_merge($temp, $data_filters['data_filters']);*/
-
-$i = 0;
-$data_filters['bos'] =
-[
-    [
-        'name_basic' => 'Dışa aktarma engelleme',
-        'data_filter_type_id' => $data_filter_types['export']->id,
-        'sql_code' => 'FALSE'
-    ],
-];
-
-/*$data_filters['departments'] = 
-[
-    [
-        'name' => 'Sadece ikiye bölünemeyen idler gelsin',
-        'data_filter_type_id' => $data_filter_types['list']->id,
-        'sql_code' => 'TABLE.id % 2 != 0'
+        'sql_code' => '$record->own_id = $user->id'
     ],
     [
-        'name' => 'Sadece 1 id li kayıt düzenlenebilsin',
-        'data_filter_type_id' => $data_filter_types['update']->id,
-        'sql_code' => 'TABLE.id = 1'
-    ],
-    [
-        'name' => 'Sadece adında "bilgi" geçen kayıt düzenlenebilsin',
-        'data_filter_type_id' => $data_filter_types['update']->id,
-        'sql_code' => 'TABLE.name ilike \'%bilgi%\''
-    ],
-    [
-        'name' => 'Sadece 2 id li kayıt silinebilsin',
+        'name_basic' => 'Kullanıcı sadece kendi kayıtlarını silebilsin filtresi',
         'data_filter_type_id' => $data_filter_types['delete']->id,
-        'sql_code' => 'TABLE.id = 2'
+        'sql_code' => '$record->own_id = $user->id'
     ],
     [
-        'name' => 'Sadece idsi 2 den büyük kayıt geri yüklenebilsin',
+        'name_basic' => 'Kullanıcı sadece kendi kayıtlarını düzenleyebilsin filtresi',
+        'data_filter_type_id' => $data_filter_types['update']->id,
+        'sql_code' => '$record->own_id = $user->id'
+    ],
+    [
+        'name_basic' => 'Kullanıcı sadece kendi kayıtlarını geri yükleyebilsin filtresi',
         'data_filter_type_id' => $data_filter_types['restore']->id,
-        'sql_code' => 'TABLE.id > 2'
+        'sql_code' => '$record->own_id = $user->id'
     ],
     [
-        'name' => '"mudur" kolonunda "adm" geçen kayıtların detayına bakılabilsin',
+        'name_basic' => 'Kullanıcı sadece kendi kayıtlarını gösterebilsin filtresi',
         'data_filter_type_id' => $data_filter_types['show']->id,
-        'sql_code' => 'string_agg(concat(mudur.name_basic, \'-\', mudur.surname), \',\') ilike \'%adm%\''
+        'sql_code' => '$record->own_id = $user->id'
     ],
     [
-        'name' => 'Sadece 1 id li kayıt dışa aktarılabilsin',
+        'name_basic' => 'Kullanıcı sadece kendi kayıtlarını dışa aktarabilsin filtresi',
         'data_filter_type_id' => $data_filter_types['export']->id,
-        'sql_code' => 'TABLE.id = 1'
+        'sql_code' => '$record->own_id = $user->id'
     ]
-];*/
+];
+
+$filter =
+[
+    'name_basic' => 'Onaylanmış e-imzalar düzenlenemesin güncelleme filtresi',
+    'data_filter_type_id' => $data_filter_types['update']->id,
+    'sql_code' => '(("sign_at"::text = \'\') IS NOT FALSE)' 
+];
+
+if(!isset($data_filters['e_signs'])) $data_filters['e_signs'] = [];
+array_push($data_filters['e_signs'], $filter);
 
 foreach($data_filters as $tableName => $filters)
     foreach($filters as $kk => $filter)

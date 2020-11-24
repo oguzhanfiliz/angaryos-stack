@@ -73,6 +73,10 @@ class CacheSubscriber
                 $this->clearColumnSetOrArrayCache($record);
                 break;
             
+            case 'e_signs':
+                $this->clearUserEsignCaches($record);
+                break;
+            
             case 'data_source_tbl_relations':
             case 'data_filter_types':
             case 'missions':
@@ -82,6 +86,14 @@ class CacheSubscriber
         }
         
         return TRUE;
+    }
+    
+    private function clearUserEsignCaches($record)
+    {
+        $json = DB::table('users')->find($record->own_id)->tokens;
+        $tokens = json_decode($json);
+        
+        foreach($tokens as $token) Cache::forget('userToken:'.$token->token.'.eSingCount');        
     }
 
     private function clearColumnSetOrArrayCache($setOrArray)
@@ -319,6 +331,8 @@ class CacheSubscriber
     
     private function clearRecordCache($tableName, $data)
     {
+        $eSign = FALSE;
+        
         foreach($data as $columnName => $value)
         {
             if(is_array($value)) $value = json_encode($value);
@@ -337,7 +351,18 @@ class CacheSubscriber
                 $cacheKey = 'tableName:'.$tableName.'|columnName:'.$columnName.'|columnData:'.$value.'|returnData:'.$returnColumnName;
                 ClearCache::{$this->dispatchType}($cacheKey);
             }
+            
+            $temp = get_attr_from_cache('columns', 'name', $columnName, 'e_sign_pattern_c');
+            if(strlen($temp) > 0) $eSign = TRUE;
         }
+        
+        if(!$eSign)
+        {
+            $temp = get_attr_from_cache('tables', 'name', $tableName, 'e_sign_pattern_t');
+            if(strlen($temp) > 0) $eSign = TRUE;
+        }
+        
+        if($eSign) $this->clearUserEsignCaches((object)$data);
     }
     
     private function clearColumnCache($record)

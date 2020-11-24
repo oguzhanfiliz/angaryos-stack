@@ -1,0 +1,84 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package com.omersavas.kubismsasaustu.helpers;
+
+import com.google.gson.Gson;
+import com.omersavas.kubismsasaustu.models.Oturum;
+import com.omersavas.kubismsasaustu.views.AnaPencere;
+import java.awt.Component;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
+import javax.crypto.BadPaddingException;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
+import javax.swing.JOptionPane;
+import tr.gov.tubitak.uekae.esya.api.common.ESYAException;
+import tr.gov.tubitak.uekae.esya.api.smartcard.pkcs11.SmartCardException;
+
+/**
+ *
+ * @author omers
+ */
+public class Genel {
+    private static AnaPencere pencere;
+    private static Sifreleme sifreleme;
+    private static Oturum oturum;
+    private static Component aktifPencere;
+    private static Gson gson;
+    private static Imzalama imzalama;
+    
+    public static String jsonaDonustur(Object e)
+    {
+        if(gson == null)
+            gson = new Gson();
+        
+        return gson.toJson(e);
+    }
+    
+    public static Oturum oturumGetir()
+    {
+        if(oturum == null)
+            oturum = new Oturum();
+        
+        return oturum;
+    }
+    
+    public static Imzalama imzalamaGetir() throws SmartCardException, ESYAException
+    {
+        if(imzalama == null)
+            imzalama = new Imzalama();
+        
+        return imzalama;
+    }
+    
+    public static AnaPencere anaPencereGetir() throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException
+    {
+        if(pencere == null)
+            pencere = new AnaPencere();
+        
+        return pencere;
+    }
+    
+    public static void sifrelemeNesnesiOlustur(String pin) throws NoSuchAlgorithmException, NoSuchPaddingException
+    {
+        sifreleme = new Sifreleme(pin);
+    }
+    
+    public static Sifreleme sifrelemeGetir()
+    {
+        return sifreleme;
+    }
+    
+    public static void aktifPencereTanimla(Component ap)
+    {
+        aktifPencere = ap;
+    }
+    
+    public static void Mesaj(String m)
+    {
+        JOptionPane.showMessageDialog(aktifPencere, m);
+    }
+}

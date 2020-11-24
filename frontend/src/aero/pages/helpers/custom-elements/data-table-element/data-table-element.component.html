@@ -379,7 +379,16 @@
                                                     
                                                     <span class="ti-server"></span>
                                                 </button>
-                                                
+                                                <br>
+                                                <span
+                                                    style="margin-top: 7px !important; cursor: pointer"
+                                                    data-toggle="tooltip" 
+                                                    title="Bu kayıt e-imza bekliyor" 
+                                                    class="badge badge-warning" 
+                                                    *ngIf="record['_e_sings'][0] == false">
+                                                    !
+                                                </span>
+                                                    
                                             </td>
                                             <td 
                                                 *ngFor="let columnName of params['columnNames']" 
@@ -447,11 +456,21 @@
                                                                 [newPage]="true">                                                                    
                                                             </jsonviewer-element> 
                                                             
-                                                         </td><td align="right">
+                                                        </td><td align="right">
                                                             <span style="cursor: pointer;visibility: hidden;"
                                                                     *ngIf="this.params['editMode']" 
                                                                     (click)="editRecodData(record, columnName)"
                                                                     class="ti-pencil-alt2 edit-button"></span>
+                                                        </td><td 
+                                                            style="vertical-align: top; width: 10px !important"
+                                                            *ngIf="record['_e_sings'][columnName] == false"> 
+                                                            <span
+                                                                data-toggle="tooltip" 
+                                                                style="cursor: pointer"
+                                                                title="Bu kolon e-imza bekliyor" 
+                                                                class="badge badge-warning" >
+                                                                !
+                                                            </span>
                                                         </td>
                                                     </tr>                                                    
                                                 </table>

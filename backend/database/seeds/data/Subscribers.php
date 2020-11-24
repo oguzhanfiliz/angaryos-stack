@@ -283,6 +283,26 @@ $adminAuth->save();
 ?>'
 ];
 
+$subscribers['temp']['temp'][0] =
+[
+    'name_basic' => 'e-imza işlemleri için trigger',
+    'subscriber_type_id' => $subscriber_types['after']->id,
+    'php_code' => '<?php
+$params = 
+[
+    "type" => $type,
+    "table" => $table,
+    "column" => $column,
+    "subscriber" => $subscriber,
+    "requests" => $requests,
+    "user" => $user,
+    "record" => $record            
+];
+$helper = new App\Libraries\ESignLibrary();
+$return = $helper->Event($params);
+?>'
+];
+
 
 
 foreach($subscribers as $type => $set)
@@ -302,8 +322,11 @@ foreach($subscribers as $type => $set)
     }
 }
 
+unset($subscribers['temp']['temp'][0]);
+
 $subscribers['column']['image'][0] = $subscribers['column']['profile_picture'][0];
 $subscribers['column']['report_file'][0] = $subscribers['column']['profile_picture'][0];
+$subscribers['column']['sign_file'][0] = $subscribers['column']['profile_picture'][0];
 
 $subscribers['table']['sub_linestring_types'][0] = $subscribers['table']['sub_point_types'][0];
 $subscribers['table']['sub_polygon_types'][0] = $subscribers['table']['sub_point_types'][0];

@@ -36,9 +36,11 @@ trait TableSubscriberTrait
         $params->model->offset($params->limit * ($params->page - 1));
         $records = $params->model->get();
         
+        $tableInfo = $model->getTableInfo($params->table_name);
+        
         $records = $model->updateRecordsDataForResponse($records, $params->columns);
         
-        $tableInfo = $model->getTableInfo($params->table_name);
+        $records = $model->updateRecordsESignDataForResponse($records, $tableInfo, $params->columns);
         
         $columns = $model->getFilteredColumns($params->columns);
         
