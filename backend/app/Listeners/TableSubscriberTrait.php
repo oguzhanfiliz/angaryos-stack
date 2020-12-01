@@ -745,13 +745,42 @@ trait TableSubscriberTrait
     public function getDataForSelectElementSingleForRelationSql($params)
     {
         $source = $params->record->{$params->column->name};
-        if(strlen($source) == 0) return['source' => '', 'display' => ''];
+        if($source == NULL) return['source' => '', 'display' => ''];
 
-        $sql = $params->relation->relation_sql;
-        $sql = 'select * from ('.$sql.') as data where '.$params->relation->relation_source_column.' = ' .$source;
+        if(is_string($source))
+        {
+            if(strlen($source) == 0) return['source' => '', 'display' => ''];
+
+            $sql = $params->relation->relation_sql;
+            $sql = 'select * from ('.$sql.') as data where '.$params->relation->relation_source_column.' = ' .$source;
+        }
+        else if(is_array($source))
+        {
+            if(count($source) == 0) return['source' => '', 'display' => ''];
+
+            $sql = $params->relation->relation_sql;
+            $sql = 'select * from ('.$sql.') as data ';
+            
+            $temp = '';
+            foreach($source as $s)
+            {
+                if(strlen(trim($s)) == 0) continue;
+                
+                $temp .= $s . ', ';
+            }
+
+            //Bundan tam emin değilim adam tümünü getirmek istiyor olabilir mi?
+            //Yada tümünü istemek için tüm id leri gönderiyor da olabilir.
+            if($temp == '') return['source' => '', 'display' => ''];
+
+            $temp = substr($temp, 0, -2);
+
+            $sql .= 'where '.$params->relation->relation_source_column.' in ( '.$temp.')';
+        }
+        else dd('beklenmedik tip');
         
         $record = DB::select($sql)[0];
-        
+
         return
         [
             'source' => $record->{$params->relation->relation_source_column},

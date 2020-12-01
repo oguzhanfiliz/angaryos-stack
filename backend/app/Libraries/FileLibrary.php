@@ -64,6 +64,9 @@ class FileLibrary
     
     public function fileUploaded($input)
     {
+        $disabledExts = [];
+        $disabledMimeTypes = [];
+        
         foreach($_FILES[$input]['error'] as $error)
             if($error != 0)
                 dd('error var');
@@ -75,6 +78,13 @@ class FileLibrary
         $files = \Request::file($input);
         foreach($files as $i => $file) 
         {
+            //BaseRequest içinde bir kontrol daha var. Bu ikinci önlem
+            $ext = last(explode('.', $file->getClientOriginalName()));
+            if(in_array($ext, $disabledExts)) custom_abort('file.type.denied');
+            
+            $mimeType = $file->getClientMimeType();
+            foreach($disabledMimeTypes as $t) if(strstr($mimeType, $t)) custom_abort('file.type.denied');
+                                   
             $destinationYear = date("Y");
             $destinationMonth = date("m");
             $destinationDay = date("d");
@@ -105,7 +115,7 @@ class FileLibrary
                 ftp_chmod($conn_id, 0777, env('FILE_ROOT', '/').$destinationYear.'/'.$destinationMonth.'/'.$destinationDay);
                 @ftp_chmod($conn_id, 0777, env('FILE_ROOT', '/').$destinationYear.'/'.$destinationMonth.'/'.$destinationDay.'/'.$fileName);
 
-                if(strstr($file->getClientMimeType(), 'image') || strstr($file->getClientMimeType(), 'octet-stream'))
+                if($this->isImage($file))
                 {
                     $this->imageOperations($temp[$i]['move'], $tempPath.$destinationPath); 
                     
@@ -123,6 +133,16 @@ class FileLibrary
         }
         
         return $temp;
+    }
+    
+    private function isImage($file)
+    {
+        if(strstr($file->getClientMimeType(), 'image')) return TRUE;
+        
+        $exts = ['jpeg', 'jpg', 'png', 'gif'];
+        if(in_array(strtolower($file->getClientOriginalExtension()), $exts)) return TRUE;
+
+        return FALSE;
     }
 
     private function base64Validation($base64Images)

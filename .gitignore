@@ -1,3 +1,6 @@
 /backend/nbproject/private/
 /.updateignore
 /buildAndPush.sh
+/eSign/nbproject/private/
+/e-sign/nbproject/private/
+/e-sign/dist/

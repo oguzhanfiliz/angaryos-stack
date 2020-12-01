@@ -6,7 +6,7 @@ use DB;
 
 class ESignLibrary
 {
-    private function CreateSignedText($params)
+    private function GetSignedTextAndOverrideMethod($params)
     {
         $record = $params['record'];
         $user = $params['user'];
@@ -18,12 +18,13 @@ class ESignLibrary
         else $pattern = DB::table('columns')->find($column->id)->e_sign_pattern_c;
         
         $signedText = '***';
+        $overrideMethod = 'ifNotSigned';
         
         eval(helper('clear_php_code', $pattern));
         
         if($signedText == '***') custom_abort('not.build.e.sing.text');
         
-        return $signedText;
+        return [$overrideMethod, $signedText];
     }
     
     public function Event($params)
@@ -34,7 +35,6 @@ class ESignLibrary
         [
             'table_id' => $params['table']->id,
             'source_record_id' => $params['record']->id,
-            'table_id' => $params['table']->id,
             'state' => TRUE,
             'created_at' => $n,
             'updated_at' => $n,
@@ -42,9 +42,25 @@ class ESignLibrary
             'own_id' => $params['user']->id,
         ];
         
-        if($params['column']) $data['column_id'] = $params['column']->id;
-        $data['signed_text'] = $this->CreateSignedText($params);
+        [$overrideMethod, $signedText] = $this->GetSignedTextAndOverrideMethod($params);
         
+        dd('$overrideMethod control');
+        
+        $override = DB::table('e_signs')
+                        ->where('table_id', $params['table']->id)
+                        ->where('source_record_id', $params['record']->id);                        
+        
+        if($params['column'])
+        {
+            $data['column_id'] = $params['column']->id;
+            $override = $override->where('column_id', $params['column']->id);
+        }
+        
+        if($overrideMethod == 'ifNotSigned') $override = $override->whereRaw('(signed_at::text = \'\') IS NOT FALSE');
+        
+        if($overrideMethod != 'none')  $override->delete();        
+                
+        $data['signed_text'] = $signedText;
         DB::table('e_signs')->insert($data);
     }
 }

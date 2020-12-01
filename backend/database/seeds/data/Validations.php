@@ -5,7 +5,7 @@ use App\BaseModel;
 $validations = [];
 
 $validations['numeric_min']['display_name'] = 'En az (nümerik)';
-$validations['files_type']['display_name'] = 'Yalnızca resim';
+$validations['files_type']['display_name'] = 'Dosya türü kısıtlama';
 $validations['files_count']['display_name'] = 'Dosya sayısı';
 $validations['no_self']['display_name'] = 'Yetki grubuna kendini ekleyemesin';
 $validations['name_not_start_deleted']['display_name'] = 'İsim "deleted_" ile başlayamasın';
@@ -33,7 +33,9 @@ if(is_array($value))
         if(is_array($parameters))
             foreach($parameters as $param)
             {
-                if(strstr($file->getMimeType(), $param))
+                $ext = last(explode('.', $file->getClientOriginalName()));
+                
+                if(strstr($file->getMimeType(), $param) || $ext == $param)
                 {
                     $control = TRUE;
                     break;
@@ -271,6 +273,7 @@ $column_validations['email'] = NULL;
 $column_validations['numeric_min:1'] = NULL;
 $column_validations['min:5'] = NULL;
 $column_validations['files_type:image'] = NULL;
+$column_validations['files_type:p7s'] = NULL;
 $column_validations['files_count:1'] = NULL;
 $column_validations['no_self'] = NULL;
 $column_validations['active_url'] = NULL;

@@ -20,6 +20,18 @@ class UserPolicy
             
         if(!in_array($params->column_array_id, $user->auths['tables'][$pipe['table']]['lists']))
             return FALSE;
+
+        if($params->column_array_id != $params->column_array_id_query)
+        {
+            if(!in_array($params->column_array_id_query, $user->auths['tables'][$pipe['table']]['queries']))
+                return FALSE;
+        }
+
+        if(!$this->isColumnsInColumnArray($params->column_array_id, $params->sorts)) return FALSE;
+
+        if(!$this->isColumnsInColumnArray($params->column_array_id_query, $params->filters))
+            if(!$this->isColumnsInColumnArray($params->column_array_id, $params->filters)) 
+                return FALSE;
         
         return TRUE;
     }

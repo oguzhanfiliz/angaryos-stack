@@ -35,8 +35,12 @@ trait BaseModelGetDataTrait
         
         $params->model->limit($params->limit);
         $params->model->offset($params->limit * ($params->page - 1));
+        
         $records = $params->model->get();
+        
         $records = $this->updateRecordsDataForResponse($records, $params->columns);
+        
+        $records = $this->updateRecordsESignDataForResponse($records, $tableInfo, $params->columns);
         
         return 
         [
@@ -75,7 +79,7 @@ trait BaseModelGetDataTrait
         $params->record->addSelects($params->model, $params->columns);
         $params->record->addFilters($params->model, $params->table_name);
         
-        $relationFilter = $this->getFilterForRelationData($params);
+        $relationFilter = $this->getFilterForRelationData($params); 
         $params->record->addWhere($params->model, $params->target_column, $relationFilter);
         
         unset($params->joins[0]);
@@ -162,7 +166,9 @@ trait BaseModelGetDataTrait
         
         $temp = DB::table('e_signs')
                         ->where('table_id', get_attr_from_cache('tables', 'name', $tableInfo->name, 'id'))
-                        ->whereIn('source_record_id', $ids)->get();
+                        ->whereIn('source_record_id', $ids)
+                        ->orderBy('id')
+                        ->get();
         
         $eSings = [];
         foreach($temp as $sign)

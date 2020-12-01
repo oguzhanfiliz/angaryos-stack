@@ -169,7 +169,7 @@
             <div class="card">
                 <div class="row clearfix">
                     <div class="col-lg-12">
-                        <div class="card" style="display:grid;">
+                        <div class="card" style="display:grid;overflow:auto">
                             <div class="body" style="padding: 0;">
                                 
                                 <table 
@@ -385,8 +385,8 @@
                                                     data-toggle="tooltip" 
                                                     title="Bu kayıt e-imza bekliyor" 
                                                     class="badge badge-warning" 
-                                                    *ngIf="record['_e_sings'][0] == false">
-                                                    !
+                                                    *ngIf="!archiveTable && record['_e_sings'][0] == false">
+                                                    -
                                                 </span>
                                                 
                                                 <span
@@ -394,7 +394,7 @@
                                                     data-toggle="tooltip" 
                                                     title="e-imza tamamlandı" 
                                                     class="badge badge-success" 
-                                                    *ngIf="record['_e_sings'][0] == true">
+                                                    *ngIf="!archiveTable &&  record['_e_sings'][0] == true">
                                                     *
                                                 </span>
                                                     
@@ -472,17 +472,17 @@
                                                                     class="ti-pencil-alt2 edit-button"></span>
                                                         </td><td 
                                                             style="vertical-align: top; width: 10px !important"
-                                                            *ngIf="record['_e_sings'][columnName] == false"> 
+                                                            *ngIf="!archiveTable && record['_e_sings'][columnName] == false"> 
                                                             <span
                                                                 data-toggle="tooltip" 
                                                                 style="cursor: pointer"
                                                                 title="Bu kolon e-imza bekliyor" 
                                                                 class="badge badge-warning" >
-                                                                !
+                                                                -
                                                             </span>
                                                         </td><td 
                                                             style="vertical-align: top; width: 10px !important"
-                                                            *ngIf="record['_e_sings'][columnName] == true"> 
+                                                            *ngIf="!archiveTable && record['_e_sings'][columnName] == true"> 
                                                             <span
                                                                 data-toggle="tooltip" 
                                                                 style="cursor: pointer"
@@ -585,7 +585,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="detailFilterModalTitle">
-                    {{ data['columns'][selectedFilter['columnName']]['display_name'] }}
+                    {{ data['allColumns'][selectedFilter['columnName']]['display_name'] }}
                 </h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
@@ -593,7 +593,7 @@
             </div>
             
             <detail-filter-element 
-                displayName="{{ data['columns'][selectedFilter['columnName']]['display_name'] }}"                                                                
+                displayName="{{ data['allColumns'][selectedFilter['columnName']]['display_name'] }}"                                                                
                 filterJson="{{ selectedFilter['json'] }}"
                 (changed)="detailFilterChanged($event)"
                 baseUrl="{{ baseUrl }}" >

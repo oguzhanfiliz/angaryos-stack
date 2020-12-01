@@ -58,7 +58,7 @@ $join_tables['columns'] =
         
         'connection_column_with_alias' => 'columns.id',
         //'join_connection_type' => '@>',
-        'join_column_id' => 59//'column_ids' Tablo yada kolon eklenme sırası değişirse güncellenmesi gerekir
+        'join_column_id' => 60//'column_ids' Tablo yada kolon eklenme sırası değişirse güncellenmesi gerekir
     ],
 ];
 

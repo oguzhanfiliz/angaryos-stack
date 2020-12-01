@@ -135,17 +135,21 @@ trait BaseModelSelectColumnDataTrait
         $table = $relationTable->getRelationData('relation_table_id');
         $sourceColumn = $relationTable->getRelationData('relation_source_column_id');
         $displayColumn = $relationTable->getRelationData('relation_display_column_id');
+
+        $temp = new BaseModel($table->name);
+        $model = $temp->getQuery();
         
-        $offset = ($params->page - 1) * $params->record_per_page;
-        $model = DB::table($table->name)
-                ->select($displayColumn->name)
-                ->addSelect($sourceColumn->name);
+
+        $model->addSelect($displayColumn->name);
+        $model->addSelect($sourceColumn->name);
         
         $model->where(function ($query) use($params, $displayColumn, $sourceColumn)
         {
             $query->where($displayColumn->name, 'ilike', '%'.$params->search.'%')
                 ->orWhere($sourceColumn->name, 'ilike', '%'.$params->search.'%');
-        });
+        });        
+        
+        $temp->addFilters($model, $table->name, 'selectColumnData');
         
         $sourceSpace = $this->getSourceSpaceFromUpColumn($params);
         if($sourceSpace != FALSE)
@@ -155,6 +159,8 @@ trait BaseModelSelectColumnDataTrait
             $model->where($table->name.'.name', 'not like', 'deleted\_%');
         
         $params->count = $model->count();
+
+        $offset = ($params->page - 1) * $params->record_per_page;
         $params->records = $model->limit($params->record_per_page)->offset($offset)->get();
         
         $params->relation_source_column_name = $sourceColumn->name;

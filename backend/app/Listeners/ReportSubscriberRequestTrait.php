@@ -136,7 +136,7 @@ trait ReportSubscriberRequestTrait
             
             foreach($records as $i => $record)
             {
-                if($column->dbTypeName == 'date')
+                if($column->dbTypeName == 'date' && strlen(trim($record->{$column->name})) > 0)
                 {
                     $temp = explode('-', $record->{$column->name});
                     $records[$i]->{$column->name} = $temp[2].'.'.$temp[1].'.'.$temp[0];
@@ -144,18 +144,24 @@ trait ReportSubscriberRequestTrait
                 else if($column->guiTypeName == 'richtext')
                 {
                     $records[$i]->{$column->name} = strip_tags($record->{$column->name});
+                    $records[$i]->{$column->name} = str_replace('&nbsp;', ' ', $records[$i]->{$column->name});
+                }
+                else if(strstr($column->guiTypeName, 'money:'))
+                {
+                    $records[$i]->{$column->name} = number_format(sprintf('%0.2f', preg_replace("/[^0-9.]/", "", $records[$i]->{$column->name})),2);
+                    $records[$i]->{$column->name} .= ' ' . strtoupper(explode(':', $column->guiTypeName)[1]);
                 }
             }
         }
         
         foreach($records as $i => $record)
             foreach($jsonColumns as $columnName => $types)
-                $records[$i]->{$columnName} = $this->UpdateRecordColumnDataForReport($records[$i]->{$columnName}, $types);
+                $records[$i]->{$columnName} = $this->UpdateRecordJsonColumnDataForReport($records[$i]->{$columnName}, $types);
     
         return $records;
     }
     
-    public function UpdateRecordColumnDataForReport($json, $types)
+    public function UpdateRecordJsonColumnDataForReport($json, $types)
     {
         if(strlen($json) == 0) return '';
         if($json == '[]') return '';
@@ -201,7 +207,13 @@ trait ReportSubscriberRequestTrait
             $params->model->addSelect($params->table_name.'.'.$columnName.' as '.$columnName.'_orj');
         }
 
-        $params->model->groupBy($params->table_name.'.id');
+        $standartColumns = ['id', 'own_id', 'user_id', 'created_at', 'updated_at', 'state'];
+        foreach($standartColumns as $columnName)
+            $params->model->groupBy($params->table_name.'.'.$columnName);
+
+        foreach($params->columns as $column)
+            if(!isset($column->select_raw))
+                $params->model->groupBy($params->table_name.'.'.$column->name);
         
         return $params;
     }

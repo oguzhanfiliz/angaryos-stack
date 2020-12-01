@@ -24,7 +24,8 @@ return Cache::rememberForever($key, function()
         'delete' => 'Silme', 
         'restore' => 'Geri Yükleme', 
         'show' => 'Bilgi Kartı', 
-        'export' => 'Dışa Aktarma'
+        'export' => 'Dışa Aktarma',
+        'selectColumnData' => 'Seçim Kolonu Datası'
     ];
     
     $auths = [];

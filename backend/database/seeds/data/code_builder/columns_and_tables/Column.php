@@ -20,6 +20,7 @@ $column_gui_type_override =
     'report_type_id' => $column_gui_types['select:static']->id,
     //'column_group_ids' => $column_gui_types['multiselectdragdrop']->id,
     'column_ids' => $column_gui_types['multiselectdragdrop']->id,
+    'subscriber_ids' => $column_gui_types['multiselectdragdrop']->id,
     'profile_picture' => $column_gui_types['files']->id,
     'sign_file' => $column_gui_types['files']->id,
     'signed_text' => $column_gui_types['richtext']->id,

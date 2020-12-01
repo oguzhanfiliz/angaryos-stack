@@ -133,7 +133,7 @@ class BaseRequest extends FormRequest
         {
             if(!isset($rules[$fileColumnName])) $rules[$fileColumnName] = ''; 
             $rules[$fileColumnName] .= '|array';
-            $rules[$fileColumnName.'.*'] = 'mimes:png,xml,gif,jpeg,jpg,txt,pdf,doc,docx,ncz,kmz,bin,dat,xls,xlsx,xlsm,rar,dwg,mpga|';
+            $rules[$fileColumnName.'.*'] = 'mimes:png,xml,gif,jpeg,jpg,txt,pdf,doc,docx,ncz,kmz,bin,dat,xls,xlsx,xlsm,rar,dwg,mpga,p7s|';
             
             if(!isset($this->customAttributes[$fileColumnName])) $this->customAttributes[$fileColumnName] = 'Dosyalar';
             $this->customAttributes[$fileColumnName.'.0'] = $this->customAttributes[$fileColumnName];

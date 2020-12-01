@@ -123,6 +123,6 @@ class TableAfterTriggerSubscriber
             array_push($columns, $column);
         }
         
-        return $this->controlSubscribers($record, $table, $columns, 'restore');
+        return $this->controlSubscribers($archiveRecord, $table, $columns, 'restore');
     }
 }

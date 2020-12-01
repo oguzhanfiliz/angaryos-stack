@@ -10,6 +10,8 @@ class MessageLibrary
 {
     private static $rabbitMQObject = NULL;
     private static $sshConnectionObjects = [];
+    
+    public static $lastSshResponse = NULL;
 
     public static function getSshConnectionObject($host, $user, $password, $port = NULL)
     {
@@ -97,6 +99,8 @@ class MessageLibrary
             $output = self::runSshCommandAsSudo($connection, $command, $config, $timeOut);
         else 
             $output = $connection->exec($command);
+        
+        self::$lastSshResponse = $output;
 
         if($clearAndParseOutput) $output = self::clearSshOutput($output, $config);
 

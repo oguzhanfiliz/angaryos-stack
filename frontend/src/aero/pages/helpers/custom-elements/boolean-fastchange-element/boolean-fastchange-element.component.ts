@@ -61,14 +61,34 @@ export class BooleanFastChangeElementComponent
             this.generalHelper.stopLoading();
             
             if(typeof data['message'] == "undefined")
+            {
                 this.messageHelper.sweetAlert("Beklenmedik cevap geldi!", "Hata", "warning");
+                this.rollback();
+            }
             else if(data['message'] == 'error')
+            {
                 this.messageHelper.sweetAlert("Beklenmedik cevap geldi!", "Hata", "warning");
+                this.rollback();
+            }
             else if(data['message'] == 'success')
                 this.changed.emit(event);
             else
+            {
                 this.messageHelper.sweetAlert("Beklenmedik cevap geldi!", "Hata", "warning");
+                this.rollback();
+            }
         })
-        .catch((e) => { this.generalHelper.stopLoading(); });
+        .catch((e) => 
+        { 
+            this.generalHelper.stopLoading(); 
+            this.rollback();
+        });
+    }
+
+    rollback()
+    {
+        var temp = !$('#'+this.name+'-'+this.record['id']).prop("checked");
+        $('#'+this.name+'-'+this.record['id']).prop("checked", temp);
+        this.value = temp.toString();
     }
 }

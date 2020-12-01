@@ -1,5 +1,7 @@
 import { LoginComponent } from './pages/login/login.component';
 import { LinkPageComponent } from './pages/link-page/link-page.component';
+import { PrivacyPoliticaComponent } from './pages/privacy-politica/privacy-politica.component'; 
+import { LPPDComponent } from './pages/lppd/lppd.component'; 
 import { PagesModule } from './pages/pages.module';
 
 import { MapComponent } from './pages/map/map.component';
@@ -16,6 +18,14 @@ export const routeRules =
     {
         path: 'login',
         component: LoginComponent
+    },
+    {
+        path: 'privacy-politica',
+        component: PrivacyPoliticaComponent
+    },
+    {
+        path: 'lppd',
+        component: LPPDComponent
     },
     {
         path: 'map',

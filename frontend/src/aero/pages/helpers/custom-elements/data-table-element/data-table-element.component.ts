@@ -103,6 +103,8 @@ export class DataTableElementComponent
         this.data['table_info'] = {};
         this.data['table_info']['display_name'] = ""; 
         this.data['table_info']['up_table'] = ""; 
+        this.data['allColumns'] = {};        
+        this.data['query_columns'] = {};        
         this.data['columns'] = {};        
         this.data['records'] = [];        
         this.data['loaded'] = false;
@@ -176,7 +178,7 @@ export class DataTableElementComponent
             if(typeof auth[listAuthType] != "undefined" && typeof auth[listAuthType][0] != "undefined")
                 listId = auth[listAuthType][0]
 
-            var queryId = 0;
+            var queryId = listId;
             if(typeof auth['queries'] != "undefined" && typeof auth['queries'][0] != "undefined")
                 queryId = auth['queries'][0]
                 
@@ -245,7 +247,18 @@ export class DataTableElementComponent
         
         data['filterDatas'] = {}
         data['collectiveInfosHtml'] = {};
+
+
+
+        data['allColumns'] = {};
+        for(var i = 0; i < data['columnNames'].length; i++)
+            data['allColumns'][data['columnNames'][i]] = data['columns'][data['columnNames'][i]];
+
+        for(var i = 0; i < data['queryColumnNames'].length; i++) 
+            data['allColumns'][data['queryColumnNames'][i]] = data['query_columns'][data['queryColumnNames'][i]];
         
+
+
         for(var i = 0; i < data['columnNames'].length; i++)
         {
             var columnName = data['columnNames'][i];
@@ -358,12 +371,12 @@ export class DataTableElementComponent
     
     getFilterDescription(columnName) 
     {
-        if(typeof this.data['columns'] == "undefined") return "";
-        if(typeof this.data['columns'][columnName] == "undefined") return "";
+        if(typeof this.data['allColumns'] == "undefined") return "";
+        if(typeof this.data['allColumns'][columnName] == "undefined") return "";
         
-        var displayName = this.data['columns'][columnName]['display_name'];
+        var displayName = this.data['allColumns'][columnName]['display_name'];
         
-        var guiType = this.data['columns'][columnName]['gui_type_name'];
+        var guiType = this.data['allColumns'][columnName]['gui_type_name'];
         guiType = this.getColumnGuiTypeForQuery(guiType);
 
         switch (this.params.filters[columnName]['type']) 
@@ -502,7 +515,7 @@ export class DataTableElementComponent
     {
         return {
             type: 1,
-            guiType: this.data['columns'][columnName]['gui_type_name'],
+            guiType: this.data['allColumns'][columnName]['gui_type_name'],
             filter: ""
         };
     }
@@ -960,7 +973,7 @@ export class DataTableElementComponent
             case 'edit': this.edit(record); break;
             case 'archive': this.archive(record); break;
             case 'export': this.export(record); break;
-            default: console.log(policyType + ": " + record.id);
+            default: console.log("doOperation ("+policyType + ": " + record.id+")");
         }
     }
 

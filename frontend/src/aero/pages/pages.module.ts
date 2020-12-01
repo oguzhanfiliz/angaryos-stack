@@ -20,6 +20,8 @@ import { PagesComponent } from './pages.component';
 
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { RedirectComponent } from './redirect/redirect.component';
+import { PrivacyPoliticaComponent } from './privacy-politica/privacy-politica.component';
+import { LPPDComponent } from './lppd/lppd.component';
 import { NotFoundComponent } from './not-found/not-found.component';
 import { ListComponent } from './list/list.component';
 import { SearchComponent } from './search/search.component';
@@ -84,6 +86,8 @@ import { BooleanFastChangeElementComponent } from './helpers/custom-elements/boo
     AuthWizardComponent,
     DataEntegratorComponent,
 
+    LPPDComponent,
+    PrivacyPoliticaComponent,
     NotFoundComponent,
 
     FormElementComponent,

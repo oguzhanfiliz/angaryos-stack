@@ -200,9 +200,10 @@ trait UserPolicyTrait
     
     private function getRecordPermissions($record, $type, $columnSetId)
     {
+        global $pipe;
+            
         if(get_class($record) == 'stdClass')
         {
-            global $pipe;
             $model = new BaseModel($pipe['table']);
             $record = $model->find($record->id);
         }
@@ -218,6 +219,53 @@ trait UserPolicyTrait
         $record->addFilters($model, $record->getTable(), $type);        
         $model->where($record->getTable().'.id', $record->id); 
         
+        $model->groupBy($pipe['table'].'.id');
+        
         return $model->first();
+    }
+
+    private function getColumnNamesFromColumnArray($columnArrayId)
+    {
+        global $pipe;
+
+        $ext = [];
+        if($columnArrayId == 0)
+            $json = get_attr_from_cache('tables', 'name', $pipe['table'], 'column_ids');
+        else
+        {
+            $temp = get_attr_from_cache('column_arrays', 'id', $columnArrayId, '*');
+
+            $json = $temp->column_ids;
+
+            if(strlen($temp->join_columns) > 0)
+            {
+                foreach(helper('divide_select', $temp->join_columns) as $select)
+                {
+                    $select = explode(' as ', $select);
+                    array_push($ext, trim(last($select)));
+                }
+            }
+        }
+
+        $columnNames = [];
+        foreach(json_decode($json) as $cId)
+            array_push($columnNames, get_attr_from_cache('columns', 'id', $cId, 'name'));
+
+        if(count($ext) > 0) $columnNames = array_merge($columnNames, $ext);
+        
+        return $columnNames;
+    }
+
+    private function isColumnsInColumnArray($columnArrayId, $columns)
+    {
+        if(count((array)$columns) == 0) return TRUE;
+        
+        $columnNames = $this->getColumnNamesFromColumnArray($columnArrayId);
+
+        foreach($columns as $columnName => $column)
+            if(!in_array($columnName, $columnNames)) 
+                return FALSE;
+
+        return TRUE;
     }
 }

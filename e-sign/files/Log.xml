@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?><Logs>
+<Hata>
+<Level>Error</Level>
+<Json>{"Hata":{"detailMessage":"tr.gov.tubitak.bilgem.uekae.akis.akisCIF.akisExceptions.AkisException: 6982 GUVENLIK_KOSULU_SAGLANAMADI","cause":{"mAkisErrorCode":27010,"detailMessage":"6982 GUVENLIK_KOSULU_SAGLANAMADI","stackTrace":[],"suppressedExceptions":[]},"stackTrace":[],"suppressedExceptions":[]}},"Stack":[{"declaringClass":"java.lang.Thread","methodName":"getStackTrace","fileName":"Thread.java","lineNumber":1559},{"declaringClass":"com.omersavas.angaryos.eimza.helpers.Log","methodName":"send","fileName":"Log.java","lineNumber":38},{"declaringClass":"com.omersavas.angaryos.eimza.models.Session","methodName":"controlRememberUser","fileName":"Session.java","lineNumber":186},{"declaringClass":"com.omersavas.angaryos.eimza.views.LoginWindow","methodName":"lambda$formWindowOpened$0","fileName":"LoginWindow.java","lineNumber":197},{"declaringClass":"java.lang.Thread","methodName":"run","fileName":"Thread.java","lineNumber":748}]</Json>
+<Tarih>2020/11/25 10:04:30</Tarih>
+</Hata>
+<Hata>
+<Level>Error</Level>
+<Json>{"Hata":{"stackTrace":[],"suppressedExceptions":[]}},"Stack":[{"declaringClass":"java.lang.Thread","methodName":"getStackTrace","fileName":"Thread.java","lineNumber":1559},{"declaringClass":"com.omersavas.angaryos.eimza.helpers.Log","methodName":"send","fileName":"Log.java","lineNumber":38},{"declaringClass":"com.omersavas.angaryos.eimza.helpers.GeneralHelper","methodName":"lambda$runAsync$0","fileName":"GeneralHelper.java","lineNumber":128},{"declaringClass":"java.lang.Thread","methodName":"run","fileName":"Thread.java","lineNumber":748}]</Json>
+<Tarih>2020/11/25 10:27:57</Tarih>
+</Hata>
+<Hata>
+<Level>Error</Level>
+<Json>{"Hata":{"stackTrace":[],"suppressedExceptions":[]}},"Stack":[{"declaringClass":"java.lang.Thread","methodName":"getStackTrace","fileName":"Thread.java","lineNumber":1559},{"declaringClass":"com.omersavas.angaryos.eimza.helpers.Log","methodName":"send","fileName":"Log.java","lineNumber":38},{"declaringClass":"com.omersavas.angaryos.eimza.helpers.GeneralHelper","methodName":"lambda$runAsync$0","fileName":"GeneralHelper.java","lineNumber":128},{"declaringClass":"java.lang.Thread","methodName":"run","fileName":"Thread.java","lineNumber":748}]</Json>
+<Tarih>2020/11/25 10:28:15</Tarih>
+</Hata>
+</Logs>

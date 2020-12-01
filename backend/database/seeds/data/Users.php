@@ -194,10 +194,12 @@ $eSignAuth = $this->get_base_record();
 $eSignAuth['name_basic'] = 'e-imza Tablosu Genel Personel Yetkisi';
 $eSignAuth['auths'] = 
 [
+    'tables:e_signs:option:0',
     'tables:e_signs:lists:0',
     'tables:e_signs:queries:0', 
     'tables:e_signs:edits:'.$column_sets['e_signs'][0]->id,
     'filters:e_signs:update:'.last($data_filters['e_signs'])->id,
+    'filters:e_signs:update:'.$data_filters['common'][2]->id,
     'filters:e_signs:list:'.$data_filters['common'][0]->id,
 ];
 

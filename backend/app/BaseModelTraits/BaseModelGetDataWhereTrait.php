@@ -18,8 +18,21 @@ trait BaseModelGetDataWhereTrait
     
     public function addWheres($model, $columns, $filters)
     {
+        global $pipe;
+
         foreach($filters as $name => $filter)
-            $this->addWhere($model, $columns->{$name}, $filter);
+        {
+            if(!isset($columns->{$name}))
+            {
+                $temp = get_attr_from_cache('columns', 'name', $name, '*');
+                $temp->gui_type_name = get_attr_from_cache('column_gui_types', 'id', $temp->column_gui_type_id, 'name');
+                $temp->db_type_name = get_attr_from_cache('column_db_types', 'id', $temp->column_db_type_id, 'name');
+                $temp->table_alias = $pipe['table'];
+            } 
+            else $temp = $columns->{$name};
+
+            $this->addWhere($model, $temp, $filter);
+        }
     }
     
     public function addWhere($model, $column, $filter)

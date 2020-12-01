@@ -82,6 +82,7 @@ trait BaseModelGetDataFilterTrait
         
         $sql = implode(' and ', $filterSqls);
         $sql = "($sql) as _" . $alias;
+        $sql = str_replace(' "', ' '.$tableName.'."', $sql);
         
         $model->addSelect(DB::raw($sql));
     }
@@ -108,7 +109,8 @@ trait BaseModelGetDataFilterTrait
         foreach($user->toArray() as $key => $value)
             if(!is_array($value))
                 $sql = str_replace('$user->'.$key, $value, $sql); 
-
+        $sql = str_replace(' "', ' '.$tableName.'."', ' '.$sql);
+        
         return $sql;
     }
 }
