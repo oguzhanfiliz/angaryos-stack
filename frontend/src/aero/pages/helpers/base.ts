@@ -224,6 +224,7 @@ export abstract class BaseHelper
       case 'uploads': 
         temp = "uploads/"+temp;
         break;
+      default: console.log("undefined.backend.disk");
     }
     
     return "https://"+environment.host+"/"+temp;

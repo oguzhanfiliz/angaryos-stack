@@ -428,4 +428,48 @@ export class ColumnArrayFormElementComponent
             }
         }, 100);
     }
+    
+    copyOrPasteColumnData($event, columnName)
+    {
+        if(event['ctrlKey']) this.copyColumnData(columnName);
+        else if(event['altKey']) this.pasteColumnData(columnName);
+    }
+    
+    copyColumnData(columnName)
+    {
+        if(this.record == null) return;
+        if(typeof this.record[columnName] == "undefined") return;
+        if(this.record[columnName] == null) return;
+        
+        var data = 
+        {
+            columnGuiType: this.columnArray['columns'][columnName]['gui_type_name'],
+            columnData: this.record[columnName]
+        };
+        
+        BaseHelper.writeToLocal('copyedColumnData', data);
+        
+        this.messageHelper.toastMessage("Kopyalandı!");
+    }
+    
+    pasteColumnData(columnName)
+    {
+        var guiType = this.columnArray['columns'][columnName]['gui_type_name'];
+        
+        var data = BaseHelper.readFromLocal('copyedColumnData');        
+        if(data == null) return;
+        
+        if(data['columnGuiType'] != guiType)
+        {
+            this.messageHelper.toastMessage("Kolon tipi uyumsuz!");
+            return;
+        }
+        
+        this.record[columnName] = data['columnData'];
+        
+        this.recordJson = BaseHelper.objectToJsonStr(this.record);
+        this.recordValueJson[columnName] = BaseHelper.objectToJsonStr(this.record[columnName]);
+        
+        this.messageHelper.toastMessage("Yapıştırıldı!");
+    }
 }

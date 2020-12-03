@@ -391,10 +391,7 @@ export class FormComponent
             var val = $(this.getElementId(columnName+"_old")).val(); 
             if(typeof val == "undefined") return;
             data.append(columnName+"_old", val);
-        }
-        
-        if(type == "POST" && guiType == 'files')
-        {            
+                   
             var files = $(this.getElementId(columnName))[0].files;
             for(var l = 0; l < files.length; l++)
                 data.append(columnName+"[]", files[l]);

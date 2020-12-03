@@ -16,8 +16,8 @@
                         (click)="showInfo(columnArray['columns'][columnName]['columnInfo'])"  
                         class="zmdi zmdi-hc-fw"></i>
                 </td>
-                <td>
-                    {{ columnArray['columns'][columnName]['display_name'] }}
+                <td (click)="copyOrPasteColumnData($event, columnName)">
+                    {{ columnArray['columns'][columnName]['display_name'] }} 
                 </td>
                 <td *ngIf="!inFormIsDataTransport" align="right">
                     <button 

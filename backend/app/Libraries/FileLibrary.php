@@ -253,6 +253,8 @@ class FileLibrary
         $column = $params['columnName'];
 
         $old = read_from_response_data($column.'_old');
+        $old = htmlspecialchars_decode($old);
+        
         $base64Image = read_from_response_data($column.'_base64_image');
         
         if($old == NULL) $old = [];

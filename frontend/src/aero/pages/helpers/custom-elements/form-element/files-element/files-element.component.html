@@ -15,19 +15,19 @@ name="{{ name }}" id="{{ name }}"
 
 <div class="row">
     <div
-        *ngFor="let file of getData('')"
+        *ngFor="let file of val; let i = index"
         class="col-lg-2 col-md-2 col-sm-3 m-0">
 
-        <a *ngIf="isImageFile(file.file_name)" data-fancybox="gallery" href="{{ file.destination_path + 'b_' + file.file_name  }}">
+        <a *ngIf="file.isImageFile" data-fancybox="gallery" href="{{ file.destination_path + 'b_' + file.file_name  }}">
             <img  
             class="img-fluid img-thumbnail" 
-            src="{{ file.destination_path + 's_' + file.file_name  }}"> 
+            src="{{ file['smallUrl'] }}"> 
         </a> 
         
-        <a *ngIf="!isImageFile(file.file_name)" target="_blank" href="{{ file.destination_path + file.file_name  }}">
+        <a *ngIf="!file.isImageFile" target="_blank" href="{{ file.destination_path + file.file_name  }}">
             <img  
             class="img-fluid img-thumbnail" 
-            src="{{ getFileIconUrl(file.file_name)  }}"> 
+            src="{{ file['iconUrl']  }}"> 
         </a> 
         <button class="btn btn-sm btn-danger" (click)="delete(file)">
             <i class="zmdi zmdi-delete"></i>

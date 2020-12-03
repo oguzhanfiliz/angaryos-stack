@@ -48,19 +48,14 @@ export class FilesElementComponent
                 this.val[i]['smallUrl'] = BaseHelper.getFileUrl(this.val[i], 's_');
                 this.val[i]['bigUrl'] = BaseHelper.getFileUrl(this.val[i], 'b_');
                 this.val[i]['url'] = BaseHelper.getFileUrl(this.val[i], '');
+                this.val[i]['iconUrl'] = this.getFileIconUrl(this.val[i].file_name);
+                this.val[i]['isImageFile'] = this.isImageFile(this.val[i].file_name);
             }
     }
 
     handleChange(event)
     {
         this.changed.emit(event);
-    }
-
-    getData(path = '')
-    {
-        if(this.val == null) return null;
-
-        return DataHelper.getData(this.val, path);
     }
 
     getJson(obj)
@@ -87,9 +82,9 @@ export class FilesElementComponent
         return imgExts.includes(ext.toLowerCase());
     }
 
-    getFileIconUrl(fileUrl)
+    getFileIconUrl(fileName)
     {
-        var temp = fileUrl.split('.');
+        var temp = fileName.split('.');
         var ext = temp[temp.length-1];
 
         var iconBaseUrl = "assets/img/";
