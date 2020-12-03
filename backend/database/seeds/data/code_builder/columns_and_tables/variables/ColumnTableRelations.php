@@ -179,8 +179,24 @@ $report_id_relation =
 [
     'relation_sql' => 'select id, display_name from reports',
     'relation_source_column' => 'id',
+    'relation_display_column' => 'display_name',
+];
+
+$additional_link_type_id_relation =
+[
+    'relation_sql' => 'select id, name from additional_link_types',
+    'relation_source_column' => 'id',
     'relation_display_column' => 'name',
 ];
+
+$table_group_id_relation =
+[
+    'relation_sql' => 'select id, name from table_groups',
+    'relation_source_column' => 'id',
+    'relation_display_column' => 'name_basic',
+];
+
+
 
 
 $column_table_relations =
@@ -249,4 +265,8 @@ $column_table_relations =
     'column_array_id' => $column_array_id_relation,
     
     'report_id' => $report_id_relation,
+    
+    'additional_link_type_id' => $additional_link_type_id_relation,
+    
+    'table_group_id' => $table_group_id_relation
 ];

@@ -5,6 +5,7 @@ import { CommonModule } from "@angular/common";
 import { environment } from './../../environments/environment';
 
 import { BaseHelper } from './helpers/base';
+import { DataHelper } from './helpers/data';
 import { MessageHelper } from './helpers/message';
 import { SessionHelper } from './helpers/session';
 import { GeneralHelper } from './helpers/general';
@@ -134,6 +135,16 @@ export class PagesComponent
       default:
         console.log(func);
     }
+  }
+  
+  additionalLinkClicked(additionalLink)
+  {
+    DataHelper.loadAdditionalLinkPayload(this, additionalLink);
+    
+    var url = DataHelper.getUrlFromAdditionalLink(additionalLink);
+    
+    if(additionalLink['open_new_window']) window.open(url);
+    else window.location.href = url;
   }
   
   openBackendLogs()

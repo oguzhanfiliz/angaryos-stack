@@ -66,10 +66,32 @@ class User extends Authenticatable
     {
         foreach($this->getTableGroups() as $tableGroup)
         {
+            if(strlen($tableGroup->table_ids) == 0) continue;
+            
             $tableIds = json_decode($tableGroup->table_ids);
             if(in_array($tableId, $tableIds))
                 return $tableGroup;
         }
+    }
+    
+    public function getAdditionalLinks()
+    {
+        if(!isset($this->auths['additional_links'])) return [];
+        
+        $links = [];
+        foreach($this->auths['additional_links'][0][0] as $id)
+        {
+            $link = get_attr_from_cache('additional_links', 'id', $id, '*');
+            unset($link->state);
+            unset($link->own_id);
+            unset($link->user_id);
+            unset($link->created_at);
+            unset($link->updated_at);
+            
+            array_push($links, $link);
+        }
+        
+        return $links;
     }
     
     private function getTableListForMenu()
@@ -141,10 +163,13 @@ class User extends Authenticatable
     {
         $tables = $this->getTableListForMenu();
         $tableGroups = $this->getTableGroupListForMenu($tables);
+        $additionalLinks = $this->getAdditionalLinks();
+        
         return 
         [
             'tables' => $tables,
-            'tableGroups' => $tableGroups 
+            'tableGroups' => $tableGroups,
+            'additionalLinks' => $additionalLinks
         ];
     }
     

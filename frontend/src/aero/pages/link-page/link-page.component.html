@@ -50,8 +50,15 @@
                                         {{ getTableName(tableGroup.id, tableId) }}
 
                                         </a>
-                                    </div>
+                                        
+                                        <a *ngFor="let additionalLink of additionalLinks" 
+                                        [hidden] = "additionalLink['table_group_id'] != tableGroup.id"
+                                        class="dropdown-item" (click)="additionalLinkClicked(additionalLink)">
+                                        
+                                        {{ additionalLink['name_basic'] }}
 
+                                        </a>
+                                    </div>
 
                                     <div class="img">
                                         <img src="{{ getTableGroupImageUrl(tableGroup) }}">

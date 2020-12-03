@@ -603,4 +603,42 @@ export abstract class DataHelper
 
         return data;
     }
+    
+    
+    
+    /****    Additional Link Functions   ****/
+
+    public static getUrlFromAdditionalLink(al)
+    {
+        var url = al['url'];
+        
+        url = BaseHelper.replaceAll(url, '***token***', BaseHelper.token);
+        
+        var user = BaseHelper.loggedInUserInfo['user'];
+        var keys = Object.keys(user);
+        for(var i = 0; i < keys.length; i++)
+        {
+            var key = keys[i];
+            url = BaseHelper.replaceAll(url, '***user.'+key+'***', user[key]);
+        }
+        
+        return url;
+    }
+	
+	public static loadAdditionalLinkPayload(th, al)
+    {
+    
+        if(typeof al['payload'] == "undefined") return;
+        if(al['payload'] == null) return;
+        if(al['payload'].length == 0) return;
+
+        th['BaseHelper'] = BaseHelper;
+        
+        var payload = al['payload'];
+
+        payload = BaseHelper.replaceAll(payload, 'BaseHelper', 'th.BaseHelper');
+        payload = BaseHelper.replaceAll(payload, 'this', 'th');
+
+        eval(payload);
+    }
 }

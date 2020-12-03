@@ -80,5 +80,7 @@ $table_name_display_name_map =
     'downloaded_reports' => 'İndirilen Raporlar',
     'register_requests' => 'Üyelik İstekleri',
     'public_contents' => 'Serbest İçerikler',
-    'e_signs' => 'e-imzalar'
+    'e_signs' => 'e-imzalar',
+    'additional_link_types' => 'Ek Link Tipler',
+    'additional_links' => 'Ek Linkler',
 ];

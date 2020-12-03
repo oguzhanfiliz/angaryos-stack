@@ -10,6 +10,12 @@
     <table *ngIf="columnArray['columns'][columnName]['visible']" class="light-table">
         <tbody>
             <tr class="{{ columnArray['columns'][columnName]['relationClass'] }}">
+                <td align="left" width="25" *ngIf="columnArray['columns'][columnName]['columnInfo'].length > 0">
+                    <i 
+                        style="cursor:pointer;font-size: 14; color: darkorange;" 
+                        (click)="showInfo(columnArray['columns'][columnName]['columnInfo'])"  
+                        class="zmdi zmdi-hc-fw"></i>
+                </td>
                 <td>
                     {{ columnArray['columns'][columnName]['display_name'] }}
                 </td>
@@ -57,7 +63,7 @@
                     </select>
                 </td>
             </tr><tr>
-                <td colspan="2">
+                <td colspan="5">
                     <form-element 
                         style="display: inline-table;background-color: transparent;"
                         (changed)="changed(columnName, $event)" 

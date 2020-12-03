@@ -6,7 +6,7 @@ $join_tables['departments'] =
     [
         'name_basic' => 'Bilgi kartında gösterilecek olan bu müdürlükteki personeller tablosu için tablo ilişkisi',
         
-        'join_table_id' => 2,//'user', Tablo yada kolon eklenme sıralaması değişirse yeni id yazılması gerekir
+        'join_table_id' => 2,//'users', Tablo yada kolon eklenme sıralaması değişirse yeni id yazılması gerekir
         'join_table_alias' => 'mudurlukteki_personeller',
         
         'connection_column_with_alias' => 'departments.id',
@@ -58,7 +58,7 @@ $join_tables['columns'] =
         
         'connection_column_with_alias' => 'columns.id',
         //'join_connection_type' => '@>',
-        'join_column_id' => 60//'column_ids' Tablo yada kolon eklenme sırası değişirse güncellenmesi gerekir
+        'join_column_id' => 61//'column_ids' Tablo yada kolon eklenme sırası değişirse güncellenmesi gerekir
     ],
 ];
 
@@ -73,7 +73,7 @@ $column_arrays['columns'] =
             'id', 'display_name', 'name', 'column_db_type_id', 'column_gui_type_id',
             'srid', 'up_column_id',
             'column_table_relation_id', 'subscriber_ids', 'column_validation_ids', 
-            'column_gui_trigger_ids', 'column_collective_info_id', 'default', 'e_sign_pattern_c', 'description',
+            'column_gui_trigger_ids', 'column_collective_info_id', 'default', 'e_sign_pattern_c', 'column_info', 'description',
             'state', 'own_id', 'created_at', 'user_id', 'updated_at'],
         'join_table_ids' => [],
         'join_columns' => '',

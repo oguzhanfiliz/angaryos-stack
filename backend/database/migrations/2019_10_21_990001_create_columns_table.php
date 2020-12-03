@@ -30,6 +30,7 @@ class CreateColumnsTable extends Migration
             $table->integer('column_collective_info_id')->nullable();
             $table->text('default')->nullable();
             $table->text('e_sign_pattern_c')->nullable();
+            $table->text('column_info')->nullable();
             $table->text('description')->nullable();
             
             $table->boolean('state')->nullable();

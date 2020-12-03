@@ -28,7 +28,11 @@ $files =
     
     'ReportTypes',
     
-    'Temp'
+    'Temp',
+    
+    'PublicContents',
+    
+    'AdditionalLinkTypes'
 ];
 
 foreach($files as $file)

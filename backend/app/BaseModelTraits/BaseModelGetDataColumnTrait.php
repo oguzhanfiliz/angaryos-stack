@@ -395,6 +395,8 @@ trait BaseModelGetDataColumnTrait
                 
                 $return->{$name}->e_sign = FALSE;
                 if(strlen(@$column->e_sign_pattern_c) > 0) $return->{$name}->e_sign = TRUE;
+                
+                $return->{$name}->column_info = $column->column_info;
             }
 
             return $return;

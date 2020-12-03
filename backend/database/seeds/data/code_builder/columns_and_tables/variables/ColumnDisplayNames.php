@@ -133,6 +133,12 @@ $column_name_display_name_map =
     'sign_at' => 'İmzalama Zamanı',
     'signed_text' => 'İmzalanan Metin',
     'sign_file' => 'İmza Dosyası',
+    'column_info' => 'Kolon Bilgisi',
+    'additional_link_type_id' => 'Link Tipi',
+    'url' => 'URL',
+    'open_new_window' => 'Yeni Pencere',
+    'table_group_id' => 'Tablo Grubu',
+    'payload' => 'Yük'
 ];
 
 

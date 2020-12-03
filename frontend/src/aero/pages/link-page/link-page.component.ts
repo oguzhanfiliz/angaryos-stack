@@ -1,6 +1,7 @@
 import {Component} from '@angular/core';
 
 import { BaseHelper } from './../helpers/base';
+import { DataHelper } from './../helpers/data';
 import { SessionHelper } from './../helpers/session';
 import { GeneralHelper } from './../helpers/general';
 import { AeroThemeHelper } from './../helpers/aero.theme';
@@ -18,6 +19,7 @@ export class LinkPageComponent
   firstPage = true;
   filterString = "";
   tableGroups = [];
+  additionalLinks = [];
    
   constructor(
     private generalHelper: GeneralHelper,
@@ -29,6 +31,18 @@ export class LinkPageComponent
     
     this.aeroThemeHelper.pageRutine();
     this.tableGroups = this.getTablesGroups();
+    
+    this.fillAdditionalLinks();
+  }
+  
+  private fillAdditionalLinks()
+  {
+    if(typeof BaseHelper.loggedInUserInfo['menu']['additionalLinks'] != "undefined")
+        this.additionalLinks = BaseHelper.loggedInUserInfo['menu']['additionalLinks'];
+        
+    for(var i = 0; i < this.additionalLinks.length; i++)
+        if(this.additionalLinks[i].table_group_id == null)
+            this.additionalLinks[i].table_group_id = 0;
   }
 
   private keyEvent(event)
@@ -61,8 +75,7 @@ export class LinkPageComponent
     
     var temp = BaseHelper.loggedInUserInfo['menu']['tableGroups'];
     for(var i = 0; i < temp.length; i++)
-      if(temp[i]['table_ids'].length > 0)
-      {
+    {
         if(this.filterString.length == 0)
           rt.push(temp[i]);
         else
@@ -71,24 +84,25 @@ export class LinkPageComponent
           item['table_ids'] = [];
  
           var tableIds = temp[i]['table_ids'];
-          for(var j = 0; j < tableIds.length; j++)
-          {
-            var table = this.getTable(item['id'], tableIds[j])
-            if(table == null) continue;
+          if(tableIds != null)
+            for(var j = 0; j < tableIds.length; j++)
+            {
+              var table = this.getTable(item['id'], tableIds[j])
+              if(table == null) continue;
 
-            if(
-              table['name'].toLocaleLowerCase().indexOf(this.filterString) > -1
-              ||
-              table['display_name'].toLocaleLowerCase().indexOf(this.filterString) > -1
-            )
-              item['table_ids'].push(tableIds[j]);
-          
-          }
+              if(
+                table['name'].toLocaleLowerCase().indexOf(this.filterString) > -1
+                ||
+                table['display_name'].toLocaleLowerCase().indexOf(this.filterString) > -1
+              )
+                item['table_ids'].push(tableIds[j]);
+
+            }
 
           if(item['table_ids'].length > 0) rt.push(item);
         }
-      } 
-        
+    } 
+    
     return rt;
   }
 
@@ -157,5 +171,15 @@ export class LinkPageComponent
         BaseHelper.writeToPipe('loadPageScriptsLightLoaded', false);
         this.aeroThemeHelper.loadPageScriptsLight();
     }, 500);
+  }
+  
+  additionalLinkClicked(additionalLink)
+  {
+    DataHelper.loadAdditionalLinkPayload(this, additionalLink);
+    
+    var url = DataHelper.getUrlFromAdditionalLink(additionalLink);
+    
+    if(additionalLink['open_new_window']) window.open(url);
+    else window.location.href = url; 
   }
 }

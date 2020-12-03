@@ -23,7 +23,7 @@ class TableController extends Controller
     
     public function __construct()
     {
-        //\Cache::flush();
+        \Cache::flush();
         
         $this->pipeOperations();        
         $this->fillAuthFunctions();  

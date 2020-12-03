@@ -110,9 +110,9 @@ class FileLibrary
                 $conn_id = ftp_connect(env('FILE_HOST', 'ftp.url'));
                 $login_result = ftp_login($conn_id, env('FILE_USER', 'user'), env('FILE_PASSWORD', 'password'));
                 
-                ftp_chmod($conn_id, 0777, env('FILE_ROOT', '/').$destinationYear);
-                ftp_chmod($conn_id, 0777, env('FILE_ROOT', '/').$destinationYear.'/'.$destinationMonth);
-                ftp_chmod($conn_id, 0777, env('FILE_ROOT', '/').$destinationYear.'/'.$destinationMonth.'/'.$destinationDay);
+                @ftp_chmod($conn_id, 0777, env('FILE_ROOT', '/').$destinationYear);
+                @ftp_chmod($conn_id, 0777, env('FILE_ROOT', '/').$destinationYear.'/'.$destinationMonth);
+                @ftp_chmod($conn_id, 0777, env('FILE_ROOT', '/').$destinationYear.'/'.$destinationMonth.'/'.$destinationDay);
                 @ftp_chmod($conn_id, 0777, env('FILE_ROOT', '/').$destinationYear.'/'.$destinationMonth.'/'.$destinationDay.'/'.$fileName);
 
                 if($this->isImage($file))
@@ -123,9 +123,9 @@ class FileLibrary
                     Storage::disk($disk)->put($destinationPath.'/m_'.$fileName, Storage::disk('temps')->get($destinationPath.'/m_'.$fileName));
                     Storage::disk($disk)->put($destinationPath.'/b_'.$fileName, Storage::disk('temps')->get($destinationPath.'/b_'.$fileName));
 
-                    ftp_chmod($conn_id, 0777, env('FILE_ROOT', '/').$destinationPath.'s_'.$fileName);
-                    ftp_chmod($conn_id, 0777, env('FILE_ROOT', '/').$destinationPath.'m_'.$fileName);
-                    ftp_chmod($conn_id, 0777, env('FILE_ROOT', '/').$destinationPath.'b_'.$fileName);
+                    @ftp_chmod($conn_id, 0777, env('FILE_ROOT', '/').$destinationPath.'s_'.$fileName);
+                    @ftp_chmod($conn_id, 0777, env('FILE_ROOT', '/').$destinationPath.'m_'.$fileName);
+                    @ftp_chmod($conn_id, 0777, env('FILE_ROOT', '/').$destinationPath.'b_'.$fileName);
                 }
 
                 ftp_close($conn_id);

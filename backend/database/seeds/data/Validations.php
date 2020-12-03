@@ -33,7 +33,7 @@ if(is_array($value))
         if(is_array($parameters))
             foreach($parameters as $param)
             {
-                $ext = last(explode('.', $file->getClientOriginalName()));
+                $ext = last(explode(\'.\', $file->getClientOriginalName()));
                 
                 if(strstr($file->getMimeType(), $param) || $ext == $param)
                 {

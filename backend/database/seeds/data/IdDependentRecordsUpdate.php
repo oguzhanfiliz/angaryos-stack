@@ -281,6 +281,26 @@ $update_data =
         'relation_display_column' => NULL
     ],
     
+    $additional_link_type_id_relation['relation_sql'] =>
+    [
+        'relation_table_id' => $tables['additional_link_types']->id,
+        'relation_source_column_id' => $columns['id']->id,
+        'relation_display_column_id' => $columns['name']->id,
+        'relation_sql' => NULL,
+        'relation_source_column' => NULL,
+        'relation_display_column' => NULL
+    ],
+    
+    $table_group_id_relation['relation_sql'] =>
+    [
+        'relation_table_id' => $tables['table_groups']->id,
+        'relation_source_column_id' => $columns['id']->id,
+        'relation_display_column_id' => $columns['name_basic']->id,
+        'relation_sql' => NULL,
+        'relation_source_column' => NULL,
+        'relation_display_column' => NULL
+    ],
+    
     $user_id_relation['relation_sql'] =>
     [
         'relation_table_id' => $tables['users']->id,

@@ -629,8 +629,8 @@ trait TableSubscriberTrait
         
         return
         [
-            'source' => $rec->{$params->sourceColumn->name},
-            'display' => $rec->{$params->displayColumnName}
+            'source' => @$rec->{$params->sourceColumn->name},
+            'display' => @$rec->{$params->displayColumnName}
         ];
     }
 

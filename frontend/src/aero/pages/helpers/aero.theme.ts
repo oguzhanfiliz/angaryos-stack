@@ -70,6 +70,7 @@ export class AeroThemeHelper
           {
             $.getScript('assets/ext_modules/ace-builds/src-min/mode-php.js');
             $.getScript('assets/ext_modules/ace-builds/src-min/mode-sql.js');
+            $.getScript('assets/ext_modules/ace-builds/src-min/mode-javascript.js');
             $.getScript('assets/ext_modules/ace-builds/src-min/theme-twilight.js');
             $.getScript('assets/ext_modules/ace-builds/src-min/theme-github.js');
           });
@@ -217,6 +218,17 @@ export class AeroThemeHelper
 
       return false;
     }
+    
+    private controlSearchForAdditionalLinkItem(item, search)
+    {
+      if(search.length == 0) return true;
+
+      search = search.toLocaleLowerCase();
+
+      if(item.name_basic.toLocaleLowerCase().indexOf(search) > -1) return true;
+
+      return false;
+    }
 
     private getTableGroupdById(id)
     {
@@ -241,8 +253,13 @@ export class AeroThemeHelper
     {
       var menu = [];
 
-      var tables = BaseHelper.loggedInUserInfo.menu.tables;      
-      var tableGroupIds = this.getTableGroupdByIds();//Object.keys(tables);
+      var tables = BaseHelper.loggedInUserInfo.menu.tables;  
+      
+      var additionalLinks = [];
+      if(typeof BaseHelper.loggedInUserInfo.menu.additionalLinks != "undefined")
+        additionalLinks = BaseHelper.loggedInUserInfo.menu.additionalLinks;
+              
+      var tableGroupIds = this.getTableGroupdByIds();
      
       for (var i = 0; i < tableGroupIds.length; i++) 
       {
@@ -253,25 +270,50 @@ export class AeroThemeHelper
           title: tableGroup['name_basic'],
           icon: tableGroup['icon'],
           toggled: search.length > 0,
+          tableGroupId: tableGroupIds[i],
           children: []
         }; 
  
-        if(typeof tables[tableGroupIds[i]] == "undefined")
-          continue;
+        /*if(typeof tables[tableGroupIds[i]] == "undefined")
+          continue;*/
 
         var children = []; 
-        var tempTables = tables[tableGroupIds[i]];
-        for(var j = 0; j < tempTables.length; j++)
+        
+        if(typeof tables[tableGroupIds[i]] != "undefined")
         {
-          if(!this.controlSearchForTableItem(tempTables[j], search)) continue;
+            var tempTables = tables[tableGroupIds[i]];
+            for(var j = 0; j < tempTables.length; j++)
+            {
+              if(!this.controlSearchForTableItem(tempTables[j], search)) continue;
 
-          var temp = 
-          {
-            title: tempTables[j].display_name,
-            link: '/'+BaseHelper.angaryosUrlPath+'/table/'+tempTables[j].name
-          };
+              var temp = 
+              {
+                type: 'standart',
+                title: tempTables[j].display_name,
+                link: '/'+BaseHelper.angaryosUrlPath+'/table/'+tempTables[j].name
+              };
 
-          children.push(temp);
+              children.push(temp);
+            }
+        }
+        
+        for(var k = 0; k < additionalLinks.length; k++)
+        {
+            var additionalLink = additionalLinks[k];
+            if(additionalLink.table_group_id == null) additionalLink.table_group_id = 0;
+            
+            if(additionalLink.table_group_id != tableGroupIds[i]) continue;
+            if(!this.controlSearchForAdditionalLinkItem(additionalLink, search)) continue;
+
+            var temp2 = 
+            {
+              type: 'additionalLink',
+              title: additionalLink['name_basic'],
+              additionalLink: additionalLink,
+              tableGroupId: additionalLink['table_group_id']
+            };
+
+            children.push(temp2);
         }
 
         if(children.length == 0) continue;

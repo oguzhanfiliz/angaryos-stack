@@ -208,6 +208,20 @@ $eSignAuth->fillVariables();
 $eSignAuth->save();
 
 
+$publicAuth = $this->get_base_record();
+$publicAuth['name_basic'] = 'Serbest İçerik Tablosu Serbest Kullanıcı Yetkisi';
+$publicAuth['auths'] = 
+[
+    'tables:public_contents:option:0',
+    'tables:public_contents:lists:0',
+    'tables:public_contents:queries:0'
+];
+
+$publicAuth = new BaseModel('auth_groups', $publicAuth);
+$publicAuth->fillVariables();
+$publicAuth->save();
+
+
 
 $this->publicUser = new BaseModel('users');
 $this->publicUser->tc = '11111111112';
@@ -215,6 +229,7 @@ $this->publicUser->name_basic = 'Serbets';
 $this->publicUser->surname = 'Kullanıcı';
 $this->publicUser->email = 'info@omersavas.com';
 $this->publicUser->password = \Hash::make('1234Aa.');
+$this->publicUser->auths = [$publicAuth->id];
 $this->publicUser->location = 'POINT(498781.6902 4365044.2955)';
 $this->publicUser->srid = 4326;
 $this->publicUser->state = TRUE;

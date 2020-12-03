@@ -109,7 +109,27 @@ export class ColumnArrayFormElementComponent
             {
                 this.columnArray['columns'][columnName]['relationClass'] = '';
             }
+            
+            this.columnArray['columns'][columnName]['columnInfo'] = this.getColumnInfo(columnName);
         }
+    }
+    
+    showInfo(info)
+    {
+        this.messageHelper.sweetAlert(info, "Bilgi", "info");
+    }
+    
+    getColumnInfo(columnName)
+    {
+        var info = this.columnArray['columns'][columnName]['column_info'];
+        if(info == null) return "";        
+        if(info.length == 0) return "";
+        
+        var obj = BaseHelper.jsonStrToObject(info);
+        if(typeof obj[this.tableName] != "undefined") return obj[this.tableName];
+        if(typeof obj["_all"] != "undefined") return obj["_all"];
+        
+        return "";
     }
 
     fillColumnVisibility()

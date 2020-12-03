@@ -223,6 +223,8 @@ export class DashboardComponent
     
     async fillDashboardsItemData(className, subClassName, itemName)
     {
+        if(window.location.href.indexOf("/dashboard") < 0) return;
+        
         var dashboardId = className+"."+subClassName+"."+itemName;
         
         switch(className)

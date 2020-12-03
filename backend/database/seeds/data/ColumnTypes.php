@@ -70,6 +70,7 @@ $column_gui_types['multipolygon'] = 'Coğrafi Alan (Çoklu)';
 $column_gui_types['codeeditor:php'] = 'Kod Editörü (PHP)';
 $column_gui_types['codeeditor:sql'] = 'Kod Editörü (SQL)';
 $column_gui_types['codeeditor:html'] = 'Kod Editörü (HTML)';
+$column_gui_types['codeeditor:javascript'] = 'Kod Editörü (JS)';
 $column_gui_types['multiselectdragdrop'] = 'Dinamik Taşı Bırak Liste';
 $column_gui_types['multiselectdragdrop:static'] = 'Static Taşı Bırak Liste';
 $column_gui_types['phone'] = 'Telefon';

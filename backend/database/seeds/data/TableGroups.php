@@ -126,6 +126,13 @@ $table_groups =
         'icon' => 'zmdi-view-dashboard',
         //'order' => $order++
     ],
+    [ 
+        'name_basic' => 'Raporlar',
+        'table_ids' => [ ],
+        'image' => json_decode('[{"disk": "uploads", "file_name": "reports.png", "destination_path": "2020/01/01/"}]'),
+        'icon' => 'zmdi-view-subtitles',
+        //'order' => $order++
+    ]
 ];
 
 $temp = $this->get_base_record();

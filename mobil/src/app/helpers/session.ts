@@ -46,8 +46,8 @@ export class SessionHelper
       {
         "page":1,
         "limit":5,
-        "column_array_id":"229",
-        "column_array_id_query":0,
+        "column_array_id":"0",
+        "column_array_id_query":"0",
         "sorts":{},
         "filters":{}
       };

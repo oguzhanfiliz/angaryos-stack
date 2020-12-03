@@ -125,7 +125,14 @@
                             </a>
                             <ul class="ml-menu">
                                 <li *ngFor="let childMenuItem of menuItem.children">
-                                    <a href="#{{ childMenuItem.link }}">{{ childMenuItem.title }}</a>
+                                    <a [hidden]="childMenuItem['type'] != 'standart'" href="#{{ childMenuItem.link }}">{{ childMenuItem.title }}</a>
+                                    
+                                    <a 
+                                        [hidden]="childMenuItem['type'] != 'additionalLink'" 
+                                        (click)="additionalLinkClicked(childMenuItem['additionalLink'])">
+                                        
+                                        {{ childMenuItem.title }}
+                                    </a>
                                 </li>
                             </ul>
                     </li>

@@ -186,6 +186,15 @@ return Cache::rememberForever($key, function()
         $display = 'Raporlar '.$table->display_name.' '.$report->name.' ('.$report->id.')';
         $auths[$source] = $display;
     }
+    
+    foreach(\DB::table('additional_links')->get() as $link)
+    {
+        $type = get_attr_from_cache('additional_link_types', 'id', $link->additional_link_type_id, 'name');
+        
+        $source = 'additional_links:0:0:'.$link->id;
+        $display = 'Ek Link '.$type.' '.$link->name_basic.' ('.$link->id.')';
+        $auths[$source] = $display;
+    }
 
     return $auths;        
 });
