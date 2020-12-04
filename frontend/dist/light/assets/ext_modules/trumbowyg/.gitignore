@@ -4,7 +4,7 @@
 /uploaded-files
 /node_modules
 /bower_components
-/dist
+/dist1
 /src/ui/sass/_sprite*
 /plugins/**/ui/sass/_sprite*
 

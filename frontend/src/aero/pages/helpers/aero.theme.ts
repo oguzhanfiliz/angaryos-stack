@@ -29,7 +29,7 @@ export class AeroThemeHelper
             
         }, 100);
 
-        if($('section.content').length > 1)
+        if($('section.content').length > 0)
         {
           var h = window.innerHeight;
           $('div#target-container-fluid').css('height', (h*0.85)+"px");
