@@ -41,6 +41,14 @@ export class BooleanFastChangeElementComponent
         var segments = temp.split('/');
         var tableName = segments[1];
         
+        if(segments[2] == 'deleted')
+        {   
+            this.messageHelper.sweetAlert("Kaydı güncellemek için önce geri yüklemelisiniz", "Hata", "warning");
+            this.rollback();
+            
+            return;
+        }
+        
         var params =
         {
             column_set_id: BaseHelper.loggedInUserInfo['auths']['tables'][tableName]['edits'][0],

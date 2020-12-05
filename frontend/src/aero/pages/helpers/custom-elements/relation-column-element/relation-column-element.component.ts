@@ -110,7 +110,7 @@ export class RelationColumnElementComponent
         
         this.generalHelper.startLoading();
         
-        this.sessionHelper.doHttpRequest("GET", url) 
+        this.sessionHelper.doHttpRequest("POST", url) 
         .then((data) => 
         {
             this.generalHelper.stopLoading();

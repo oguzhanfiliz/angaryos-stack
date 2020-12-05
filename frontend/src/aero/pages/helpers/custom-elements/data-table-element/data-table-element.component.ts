@@ -223,7 +223,7 @@ export class DataTableElementComponent
             'params': BaseHelper.objectToJsonStr(this.params)
         };
         
-        this.sessionHelper.doHttpRequest("GET", url, temp)
+        this.sessionHelper.doHttpRequest("POST", url, temp)
         .then((data) => this.dataLoaded(data));
     }
     
@@ -936,7 +936,7 @@ export class DataTableElementComponent
     {
         var url = this.sessionHelper.getBackendUrlWithToken()+"tables/"+this.tableName+"/"+record.id+"/restore";
         
-        this.sessionHelper.doHttpRequest("GET", url)
+        this.sessionHelper.doHttpRequest("POST", url)
         .then((data) => this.restoreSuccess(data));
     }
 
@@ -1012,7 +1012,7 @@ export class DataTableElementComponent
     {
         var url = this.sessionHelper.getBackendUrlWithToken()+"tables/"+this.tableName+"/"+record.id+"/clone";
         
-        this.sessionHelper.doHttpRequest("GET", url)
+        this.sessionHelper.doHttpRequest("POST", url)
         .then((data) => this.cloneSuccess(data));
     }
 
@@ -1099,7 +1099,7 @@ export class DataTableElementComponent
     {
         var url = this.sessionHelper.getBackendUrlWithToken()+"tables/"+this.tableName+"/"+record.id+"/delete";
         
-        this.sessionHelper.doHttpRequest("GET", url)
+        this.sessionHelper.doHttpRequest("POST", url)
         .then((data) => 
         {
             if(typeof data['message'] == "undefined")
@@ -1263,7 +1263,7 @@ export class DataTableElementComponent
     {
         var url = this.sessionHelper.getBackendUrlWithToken()+"missions/"+record['id']+"?"+data;
         
-        this.sessionHelper.doHttpRequest("GET", url)
+        this.sessionHelper.doHttpRequest("POST", url)
         .then((data) => 
         {
             if(typeof data['message'] == "undefined")

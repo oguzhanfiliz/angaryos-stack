@@ -25,7 +25,7 @@ export class PublicMapComponent
         private aeroThemeHelper: AeroThemeHelper
         )
     {
-        sessionHelper.doHttpRequest("GET", BaseHelper.backendUrl+"public/getLoggedInUserInfo")
+        sessionHelper.doHttpRequest("POST", BaseHelper.backendUrl+"public/getLoggedInUserInfo")
         .then((loggedInUserInfo) => 
         {
            this.loggedInUserInfoJson = BaseHelper.objectToJsonStr(loggedInUserInfo)

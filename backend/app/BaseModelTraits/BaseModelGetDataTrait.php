@@ -200,9 +200,29 @@ trait BaseModelGetDataTrait
         return $records;
     }
     
+    private function UpdateRecordsDataForResponseReverseClearStringForDB($records, $columns)
+    {
+        $single = FALSE;
+        if(get_class($records) == 'stdClass')
+        {
+            $records = [$records];
+            $single = TRUE;
+        }
+
+        foreach($records as $i => $record)
+            foreach($columns as $column)
+                $records[$i]->{$column->name} = helper('reverse_clear_string_for_db', $record->{$column->name});
+           
+        if($single) $records = $records[0];
+
+        return $records;
+    }
+    
     public function updateRecordsDataForResponse($records, $columns)
     {
         if(is_array($records)) $records = (Object)$records;
+        
+        $records = $this->UpdateRecordsDataForResponseReverseClearStringForDB($records, $columns);
         
         foreach($columns as $column)
         {

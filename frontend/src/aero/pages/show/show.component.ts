@@ -133,7 +133,7 @@ export class ShowComponent
         var params = this.getParamsForShow();
         var data = {'params': BaseHelper.objectToJsonStr(params)};
         
-        this.sessionHelper.doHttpRequest("GET", url, data)
+        this.sessionHelper.doHttpRequest("POST", url, data)
         .then((data) => this.dataLoaded(data));
     }
     

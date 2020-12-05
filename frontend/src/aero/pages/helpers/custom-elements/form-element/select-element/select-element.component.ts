@@ -127,7 +127,7 @@ export class SelectElementComponent
         $.ajax(
         {
             url : url,
-            type : "GET",
+            type : "POST",
             data : {},
             success : (data) =>
             {
@@ -188,6 +188,7 @@ export class SelectElementComponent
             ajax: 
             {
                 url: url,
+                type: "POST",
                 dataType: 'json',
                 delay: 1000,
                 cache: false,

@@ -32,7 +32,7 @@ export class SessionHelper
     {
       setTimeout(() => 
       {
-        this.doHttpRequest("GET", BaseHelper.backendUrl, null)
+        this.doHttpRequest("POST", BaseHelper.backendUrl, null)
         .then((data) => BaseHelper.backendServiceControl = true)
         .catch((errorMessage) => this.messageHelper.sweetAlert("Sunucu servisleri şuan çalışmıyor olabilir. Sorun yaşarsanız bir süre sonra tekrar deneyin.", "Sunucuya erişilemedi"));
       }, 100);
@@ -104,7 +104,7 @@ export class SessionHelper
         {
           this.messageHelper.toastMessage('Bu işlem zaman alabilir tamamlandığında size bildirilecek...');
 
-          this.doHttpRequest("GET", BaseHelper.backendUrl + "initializeDb")
+          this.doHttpRequest("POST", BaseHelper.backendUrl + "initializeDb")
           .then((data) =>
           {
             var message = "Tebrikler kurulum başarılı!"
@@ -237,7 +237,7 @@ export class SessionHelper
         
         this.generalHelper.startLoading();
 
-        this.doHttpRequest("GET", url)
+        this.doHttpRequest("POST", url)
         .then((data) => 
         {
             this.generalHelper.stopLoading();
@@ -277,7 +277,7 @@ export class SessionHelper
     {
       var url = this.getBackendUrlWithToken() + "logOut";
 
-      return this.doHttpRequest("GET", url, null) 
+      return this.doHttpRequest("POST", url, null) 
       .then((data) =>  
       {
         BaseHelper.clearUserData();
@@ -302,7 +302,7 @@ export class SessionHelper
     {
       var url = this.getBackendUrlWithToken() + "logOut";
 
-      return this.doHttpRequest("GET", url, null) 
+      return this.doHttpRequest("POST", url, null) 
       .then((data) =>  
       {
         BaseHelper.clearUserData()
@@ -314,7 +314,7 @@ export class SessionHelper
     {
       var url = this.getBackendUrlWithToken() + "getLoggedInUserInfo";
 
-      return this.doHttpRequest("GET", url, null) 
+      return this.doHttpRequest("POST", url, null) 
       .then((data) =>  
       {
         BaseHelper.setLoggedInUserInfo(data);
@@ -324,7 +324,7 @@ export class SessionHelper
 
     public tokenControl()
     {
-      return this.doHttpRequest("GET", this.getBackendUrlWithToken(), null);  
+      return this.doHttpRequest("POST", this.getBackendUrlWithToken(), null);  
     }
 
     public mapAuthControl()

@@ -174,7 +174,7 @@ export class AuthWizardComponent
         this.startLoading();
         
         //this.sessionHelper.doHttpRequest("POST", url, params) 
-        this.sessionHelper.doHttpRequest("GET", url, params) 
+        this.sessionHelper.doHttpRequest("POST", url, params) 
         .then((data) => 
         {
             this.stopLoading();
@@ -216,7 +216,7 @@ export class AuthWizardComponent
         this.startLoading();
         
         //this.sessionHelper.doHttpRequest("POST", url, params) 
-        this.sessionHelper.doHttpRequest("GET", url, params) 
+        this.sessionHelper.doHttpRequest("POST", url, params) 
         .then((data) => 
         {
             this.stopLoading();
@@ -424,7 +424,7 @@ export class AuthWizardComponent
         $.ajax(
         {
             url : url,
-            type : "GET",
+            type : "POST",
             data : params,
             success : (data) =>
             {

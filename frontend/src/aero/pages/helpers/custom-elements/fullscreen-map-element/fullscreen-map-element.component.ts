@@ -860,7 +860,7 @@ export class FullScreenMapElementComponent
         {
             this.sessionHelper.disableDoHttpRequestErrorControl = true;
             
-            await this.sessionHelper.doHttpRequest("GET", url, {params: BaseHelper.objectToJsonStr(params)}) 
+            await this.sessionHelper.doHttpRequest("POST", url, {params: BaseHelper.objectToJsonStr(params)}) 
             .then((data) => resolve(data))
             .catch((er) => resolve(null));
             
@@ -1724,7 +1724,7 @@ export class FullScreenMapElementComponent
             var url = this.sessionHelper.getBackendUrlWithToken()+"getSubTables/"+temp['tableName']+"/"+typeName;
             
             this.generalHelper.startLoading();
-            this.sessionHelper.doHttpRequest("GET", url)
+            this.sessionHelper.doHttpRequest("POST", url)
             .then(async (data) => 
             {
                 this.generalHelper.stopLoading();
@@ -1887,7 +1887,7 @@ export class FullScreenMapElementComponent
     {
         return new Promise((resolve, error) => 
         {
-            var request = this.sessionHelper.doHttpRequest("GET", url, data) 
+            var request = this.sessionHelper.doHttpRequest("POST", url, data) 
             .then((data) => 
             {
                 if(typeof data['message'] == "undefined")

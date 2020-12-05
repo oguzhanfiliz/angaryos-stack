@@ -222,7 +222,7 @@ export class MultiSelectDragDropElementComponent
         $.ajax(
         {
             url : url,
-            type : "GET",
+            type : "POST",
             data : params,
             success : (data) =>
             {

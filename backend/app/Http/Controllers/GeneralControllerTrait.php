@@ -327,9 +327,6 @@ trait GeneralControllerTrait
         $columnTableRelationData = $this->ImportRecordIfNotExistAndGetData($columnData['relation']); //column table relation record
         if($columnTableRelationData == FALSE) return FALSE;
 
-        global $pipe;
-        if(isset($pipe['omer'])) $pipe['savas'] = TRUE;
-        
         $subTableData = $this->ImportRecordIfNotExistAndGetData($columnData);//relation table record
         
         return $subTableData;
@@ -392,7 +389,6 @@ trait GeneralControllerTrait
             array_push($errors, $data);
             array_push($pipe['importRecordErrors'][$tableName], $errors);
             
-            if(isset($pipe['omer']) && isset($pipe['savas']) && isset($pipe['mehmet'])) dd($errors);
             return FALSE;
         }
         

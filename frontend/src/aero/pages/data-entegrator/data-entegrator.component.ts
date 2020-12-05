@@ -105,7 +105,7 @@ export class DataEntegratorComponent
     {
         var url = this.sessionHelper.getBackendUrlWithToken()+"tables/"+this.tableName+"/create";
 
-        this.sessionHelper.doHttpRequest("GET", url, {'params': BaseHelper.objectToJsonStr({column_set_id: 0})})
+        this.sessionHelper.doHttpRequest("POST", url, {'params': BaseHelper.objectToJsonStr({column_set_id: 0})})
         .then((data) => 
         {
             var keys = Object.keys(data['column_set']['column_arrays'][0]['columns']);
@@ -181,7 +181,7 @@ export class DataEntegratorComponent
 
         var url = this.sessionHelper.getBackendUrlWithToken()+"tables/data_source_remote_columns";
 
-        this.sessionHelper.doHttpRequest("GET", url, {'params': BaseHelper.objectToJsonStr(params)})
+        this.sessionHelper.doHttpRequest("POST", url, {'params': BaseHelper.objectToJsonStr(params)})
         .then((data) => 
         {
             for(var i = 0; i < data['records'].length; i++)
@@ -267,7 +267,7 @@ export class DataEntegratorComponent
         var url = this.sessionHelper.getBackendUrlWithToken()+"tables/data_source_col_relations/store";
         
         var id = 0;
-        await this.sessionHelper.doHttpRequest("GET", url, columnFormData) 
+        await this.sessionHelper.doHttpRequest("POST", url, columnFormData) 
         .then(async (data) => 
         {            
             if(typeof data['message'] == "undefined")
@@ -355,7 +355,7 @@ export class DataEntegratorComponent
 
         var url = this.sessionHelper.getBackendUrlWithToken()+"tables/data_source_tbl_relations/store";
         
-        this.sessionHelper.doHttpRequest("GET", url, table) 
+        this.sessionHelper.doHttpRequest("POST", url, table) 
         .then((data) => 
         {         
             if(typeof data['message'] == "undefined")

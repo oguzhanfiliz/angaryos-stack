@@ -316,7 +316,7 @@ trait TableTrait
         $arr['column_set_id'] = $params->request->column_set_id;
         foreach($params->request as $key => $value)
             if(in_array($key, $temp))
-                $arr[$key] = $value;
+                $arr[$key] = helper('clear_string_for_db', $value);
         
         if(isset($params->request->single_column))
             $arr['single_column_name'] = $params->request->single_column;
@@ -455,5 +455,13 @@ trait TableTrait
         ];
         
         return helper('response_as_file', $params);
+    }
+
+    private function UpdateInFormDataReverseClearStringForDB($inFormData)
+    {
+        $inFormData['source'] = helper('reverse_clear_string_for_db', $inFormData['source']);
+        $inFormData['display'] = helper('reverse_clear_string_for_db', $inFormData['display']);
+
+        return $inFormData;
     }
 }

@@ -23,7 +23,7 @@ class TableController extends Controller
     
     public function __construct()
     {
-        \Cache::flush();
+        //\Cache::flush();
         
         $this->pipeOperations();        
         $this->fillAuthFunctions();  
@@ -91,7 +91,7 @@ class TableController extends Controller
         if($inFormData)
             $return = [
                 'message' => $return,
-                'in_form_data' => $inFormData
+                'in_form_data' => $this->UpdateInFormDataReverseClearStringForDB($inFormData)
             ];
             
         return helper('response_success', $return);
@@ -158,7 +158,7 @@ class TableController extends Controller
         if($inFormData)
             $return = [
                 'message' => $return,
-                'in_form_data' => $inFormData
+                'in_form_data' => $this->UpdateInFormDataReverseClearStringForDB($inFormData)
             ];
             
         return helper('response_success', $return);

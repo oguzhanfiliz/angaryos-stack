@@ -9,10 +9,48 @@ function helper($function_name, $params = NULL)
 function read_from_response_data($key, $json = FALSE)
 {
     $r = require 'HelperFunctions/'.__FUNCTION__.'.php';
+    
     if($json)
+    {
         $r = helper('json_str_to_object', $r);
+        $r = clear_object_for_db($r);
+    }
     
     return $r;
+}
+
+function clear_object_for_db($obj)
+{
+    if(is_bool($obj)) 
+        return (bool)$obj;
+    else if(is_string($obj) || is_numeric($obj)) 
+        return helper('clear_string_for_db', $obj);
+    else if(is_array($obj))
+    {
+        foreach($obj as $key => $val)
+        {
+            if(is_bool($obj)) $obj[$key] = (bool)$obj;
+            else if(is_string($val) || is_numeric($val)) 
+                $obj[$key] = helper('clear_string_for_db', $val);
+            else
+                $obj[$key] = clear_object_for_db($val);
+        }  
+    }
+    else if(is_object($obj))
+    {
+        foreach(array_keys((array)$obj) as $key)
+        {
+            if(is_bool($obj->{$key}))
+                $obj->{$key} = (bool)$obj->{$key};
+            else if(is_string($obj->{$key}) || is_numeric($obj->{$key})) 
+                $obj->{$key} = helper('clear_string_for_db', $obj->{$key});
+            else
+                $obj->{$key} = clear_object_for_db($obj->{$key});
+        }  
+    }
+    else dd('clear_object_for_db', $obj); 
+
+    return $obj;
 }
 
 function get_attr_from_cache($tableName, $requestColumn, $requestData, $responseColumn)

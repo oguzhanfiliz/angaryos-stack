@@ -388,7 +388,7 @@ export class DashboardComponent
         
         var th = this;
 
-        await this.sessionHelper.doHttpRequest("GET", url) 
+        await this.sessionHelper.doHttpRequest("POST", url) 
         .then(async (data) => 
         {
             if(func != null) data = func(th, dashboardId, subClassName, itemName, data);

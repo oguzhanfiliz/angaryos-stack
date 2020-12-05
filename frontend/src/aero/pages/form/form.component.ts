@@ -166,7 +166,7 @@ export class FormComponent
         var params = this.getParamsForFormData();
 
         var data = {'params': BaseHelper.objectToJsonStr(params)};
-        this.sessionHelper.doHttpRequest("GET", url, data)
+        this.sessionHelper.doHttpRequest("POST", url, data)
         .then((data) => this.dataLoaded(data));
     }
     
@@ -338,7 +338,7 @@ export class FormComponent
         this.data['messagesJson'] = BaseHelper.objectToJsonStr(this.data['messages']);
     }
     
-    getElementsData(type = "GET")
+    getElementsData(type = "POST")
     {
         var data = null;
         if(type == "GET") data = {};

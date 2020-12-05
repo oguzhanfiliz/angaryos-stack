@@ -329,7 +329,7 @@ export class ColumnArrayFormElementComponent
         
         var url = this.sessionHelper.getBackendUrlWithToken()+"tables/"+tableName+"/"+recordId+"/clone";
         
-        this.sessionHelper.doHttpRequest("GET", url)
+        this.sessionHelper.doHttpRequest("POST", url)
         .then((data) => this.cloneRelationRecordResponsed(data, tableName, columnName, recordId));
     }
     
@@ -381,7 +381,7 @@ export class ColumnArrayFormElementComponent
         $.ajax(
         {
             url : url,
-            type : "GET",
+            type : "POST",
             data : params,
             success : (data) =>
             {

@@ -106,7 +106,7 @@ export class SearchComponent
         
         var th = this;
 
-        await this.sessionHelper.doHttpRequest("GET", url, 
+        await this.sessionHelper.doHttpRequest("POST", url, 
         {
             'column_array_id': table['lists'][0],
             'page': th.page
