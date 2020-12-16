@@ -23,14 +23,19 @@ function clear_object_for_db($obj)
 {
     if(is_bool($obj)) 
         return (bool)$obj;
-    else if(is_string($obj) || is_numeric($obj)) 
+    else if(is_numeric($obj)) 
+        return $obj;
+    else if(is_string($obj)) 
         return helper('clear_string_for_db', $obj);
     else if(is_array($obj))
     {
         foreach($obj as $key => $val)
         {
-            if(is_bool($obj)) $obj[$key] = (bool)$obj;
-            else if(is_string($val) || is_numeric($val)) 
+            if(is_bool($obj[$key])) 
+                $obj[$key] = (bool)$obj[$key];
+            else if(is_numeric($obj[$key])) 
+                $obj[$key] = $obj[$key];
+            else if(is_string($val)) 
                 $obj[$key] = helper('clear_string_for_db', $val);
             else
                 $obj[$key] = clear_object_for_db($val);
@@ -38,14 +43,29 @@ function clear_object_for_db($obj)
     }
     else if(is_object($obj))
     {
+        if(strstr(strtolower(get_class($obj)), 'file')) return $obj;
+        
         foreach(array_keys((array)$obj) as $key)
         {
-            if(is_bool($obj->{$key}))
-                $obj->{$key} = (bool)$obj->{$key};
-            else if(is_string($obj->{$key}) || is_numeric($obj->{$key})) 
-                $obj->{$key} = helper('clear_string_for_db', $obj->{$key});
-            else
-                $obj->{$key} = clear_object_for_db($obj->{$key});
+            try 
+            {
+                if(is_bool($obj->{$key})) 
+                    $obj->{$key} = (bool)$obj->{$key};
+                if(is_numeric($obj->{$key}))
+                    $obj->{$key} = $obj->{$key};
+                else if(is_string($obj->{$key})) 
+                    $obj->{$key} = helper('clear_string_for_db', $obj->{$key});
+                else
+                    $obj->{$key} = clear_object_for_db($obj->{$key});
+            } 
+            catch (\Exception $e) 
+            {
+                \Log::alert("helper:".$_SERVER['REQUEST_URI'].':'.json_encode([get_class($obj), array_keys((array)$obj), $obj, $_POST, $e->getMessage()]));
+            }
+            catch (\Error $e) 
+            {
+                \Log::alert("helper1:".$_SERVER['REQUEST_URI'].':'.json_encode([get_class($obj), array_keys((array)$obj), $obj, $_POST, $e->getMessage()]));
+            }
         }  
     }
     else dd('clear_object_for_db', $obj); 

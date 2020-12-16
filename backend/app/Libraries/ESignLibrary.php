@@ -22,8 +22,6 @@ class ESignLibrary
         
         eval(helper('clear_php_code', $pattern));
         
-        if($signedText == '***') custom_abort('not.build.e.sing.text');
-        
         return [$overrideMethod, $signedText];
     }
     
@@ -44,7 +42,7 @@ class ESignLibrary
         
         [$overrideMethod, $signedText] = $this->GetSignedTextAndOverrideMethod($params);
         
-        dd('$overrideMethod control');
+        if($signedText == '***') return;
         
         $override = DB::table('e_signs')
                         ->where('table_id', $params['table']->id)

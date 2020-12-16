@@ -114,6 +114,7 @@ public class Session {
             
             token = t;
             loggedInUserInfo = getLoggedInUserInfo();
+            if(loggedInUserInfo == null) return false;
             
             String tc = GeneralHelper.getSigning().getTCNumber();
             String userTc = ((LinkedTreeMap)loggedInUserInfo.get("user")).get("tc").toString();
@@ -195,7 +196,13 @@ public class Session {
                 return false;
             }
             
-            return fillToken(temp[0]);
+            if(fillToken(temp[0])) return true;
+            else
+            {
+                f = new File(tokenPath);
+                f.delete();                
+                return false;
+            }
             
         } catch (Exception e) {
             Log.send(e);
@@ -210,6 +217,10 @@ public class Session {
     
     public String httpGetBasic(String u) throws MalformedURLException, IOException
     {
+        HttpURLConnection conn = null;
+        BufferedReader rd = null;
+        StringBuilder result = null;
+        
         try {
             
             TrustManager[] trustAllCerts = new TrustManager[] {
@@ -237,12 +248,12 @@ public class Session {
             HttpsURLConnection.setDefaultHostnameVerifier(allHostsValid);
             
             URL url = new URL(u);
-            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            conn = (HttpURLConnection) url.openConnection();
             conn.setRequestMethod("GET");
             
-            BufferedReader rd = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+            rd = new BufferedReader(new InputStreamReader(conn.getInputStream()));
             
-            StringBuilder result = new StringBuilder();
+            result = new StringBuilder();
             String line;
             while ((line = rd.readLine()) != null) {
                result.append(line);
@@ -252,8 +263,23 @@ public class Session {
             return result.toString();
             
         } catch (Exception e) {
-            GeneralHelper.showMessageBox("Sunucuya erişilemedi! Lütfen sonra tekrar deneyin.");
-            return null;
+            
+            try {
+                rd = new BufferedReader(new InputStreamReader(conn.getErrorStream()));
+            
+                result = new StringBuilder();
+                String line;
+                while ((line = rd.readLine()) != null) {
+                   result.append(line);
+                }
+                rd.close();
+
+                return result.toString();
+            } catch (Exception ee) {
+                
+                GeneralHelper.showMessageBox("Sunucuya erişilemedi! Lütfen sonra tekrar deneyin.");
+                return null;
+            }
         }
     }
     
@@ -261,6 +287,8 @@ public class Session {
     {
         try {
             String json = this.httpGetBasic(u);
+            if(json == null) return null;
+            
             LinkedTreeMap r = GeneralHelper.jsonDecode(json);
             
             String status = r.get("status").toString();
@@ -318,6 +346,9 @@ public class Session {
         {
             case "mail.or.password.incorrect":
                 m = "Mail yada şifre yanlış!";
+                break;
+            case "fail.token":
+                m = "Oturum zaman aşımına uğramış tekrar giriş yapınız";
                 break;
         }
         
@@ -405,26 +436,9 @@ public class Session {
 
             HttpPost httpPost = new HttpPost(u);
 
-            //File file = new File(path);
-            //FileBody fileBody = new FileBody(file);
-
-            /*MultipartEntity reqEntity = new MultipartEntity(HttpMultipartMode.BROWSER_COMPATIBLE);
-            reqEntity.addPart("sign_file[]", fileBody);
-            
-            
-            httpPost.setEntity(reqEntity);
-
-            List<NameValuePair> data = new ArrayList<NameValuePair>(2);
-            data.add(new BasicNameValuePair("state", "1"));
-            data.add(new BasicNameValuePair("sign_at", GeneralHelper.getTimeStamp("yyyy-MM-dd HH:mm:ss")));
-            data.add(new BasicNameValuePair("sign_file_old", null));
-            data.add(new BasicNameValuePair("column_set_id", GeneralHelper.formColumnSetId+""));
-            data.add(new BasicNameValuePair("id", id));
-            
-            httpPost.setEntity(new UrlEncodedFormEntity(data, "UTF-8"));*/
             MultipartEntityBuilder builder = MultipartEntityBuilder.create();
             builder.addTextBody("state", "1", ContentType.TEXT_PLAIN);
-            builder.addTextBody("sign_at", GeneralHelper.getTimeStamp("yyyy-MM-dd HH:mm:ss"), ContentType.TEXT_PLAIN);
+            builder.addTextBody("signed_at", GeneralHelper.getTimeStamp("yyyy-MM-dd HH:mm:ss"), ContentType.TEXT_PLAIN);
             builder.addTextBody("sign_file_old", "", ContentType.TEXT_PLAIN);
             builder.addTextBody("column_set_id", GeneralHelper.formColumnSetId+"", ContentType.TEXT_PLAIN);
             builder.addTextBody("id", id, ContentType.TEXT_PLAIN);

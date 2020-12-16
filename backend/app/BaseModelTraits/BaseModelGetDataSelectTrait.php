@@ -47,6 +47,7 @@ trait BaseModelGetDataSelectTrait
 
         $temp  = str_replace('("', '( "', $params->column->select_raw);
         $temp  = str_replace(' "', ' '.$table.'."', ' '.$temp);
+        $temp = helper('reverse_clear_string_for_db', $temp);
         
         $params->model->addSelect(DB::raw($temp));
     }

@@ -177,9 +177,9 @@ public class MainWindow extends javax.swing.JFrame {
         String url = session.apiBaseUrl + session.token + "/tables/e_signs";
 
         String json = "{\"page\":1,\"limit\":\"7\",\"column_array_id\":\""+GeneralHelper.listColumnArrayId+"\",\"column_array_id_query\":\""+GeneralHelper.queryColumnArrayId;
-        json += "\",\"sorts\":{\"id\":true},\"filters\":{\"sign_at\":{\"type\":100,\"guiType\":\"datetime\",\"filter\":null,\"columnName\":\"sign_at\",\"json\":\"\"},\"state\":";
+        json += "\",\"sorts\":{\"id\":true},\"filters\":{\"signed_at\":{\"type\":100,\"guiType\":\"datetime\",\"filter\":null,\"columnName\":\"signed_at\",\"json\":\"\"},\"state\":";
         json += "{\"type\":1,\"guiType\":\"boolean\",\"filter\":true}},\"editMode\":true,\"columnNames\":[\"id\",\"table_id\",\"source_record_id\",\"column_id\",\"signed_text\",";
-        json += "\"sign_at\",\"sign_file\",\"description\",\"state\",\"own_id\",\"user_id\",\"created_at\",\"updated_at\"],\"filterColumnNames\":[]}";            
+        json += "\"signed_at\",\"sign_file\",\"description\",\"state\",\"own_id\",\"user_id\",\"created_at\",\"updated_at\"],\"filterColumnNames\":[]}";            
         
         url += "?params="+json;
         LinkedTreeMap rt = session.httpGet(url);

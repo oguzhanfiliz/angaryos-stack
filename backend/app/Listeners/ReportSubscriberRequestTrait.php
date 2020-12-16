@@ -173,6 +173,8 @@ trait ReportSubscriberRequestTrait
         {
             case 'json':
             case 'jsonb':
+            case 'multiselect':
+            case 'multiselectdragdrop':
                 foreach($json as $item) $return .=  $item->display .', ';
                 $return = substr($return, 0, -2);    
                 break;
@@ -180,6 +182,10 @@ trait ReportSubscriberRequestTrait
                 foreach($json as $item) $return = helper('get_file_url', $item) . ', ';
                 $return = substr($return, 0, -2);    
                 break;
+            case 'jsonviewer:newpage':
+                $return = json_encode($json);
+                break;
+            default: custom_abort('undefined.json.column.gui.type:'.$types[1]);
         }
         
         return $return;

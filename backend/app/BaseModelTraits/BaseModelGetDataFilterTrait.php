@@ -31,7 +31,8 @@ trait BaseModelGetDataFilterTrait
     {
         foreach($filters as $filterId)
         {
-            $sql = get_attr_from_cache('data_filters', 'id', $filterId, 'sql_code');            
+            $sql = get_attr_from_cache('data_filters', 'id', $filterId, 'sql_code');   
+            $sql = helper('reverse_clear_string_for_db', $sql); 
             $sql = $this->GetReplacedSql($sql, $tableName, $user);           
             $model->whereRaw($sql);      
         }
@@ -74,7 +75,8 @@ trait BaseModelGetDataFilterTrait
         $filterSqls = [];
         foreach($filters as $filterId)
         {
-            $sql = get_attr_from_cache('data_filters', 'id', $filterId, 'sql_code');            
+            $sql = get_attr_from_cache('data_filters', 'id', $filterId, 'sql_code');  
+            $sql = helper('reverse_clear_string_for_db', $sql); 
             $sql = $this->GetReplacedSql($sql, $tableName, $user);
             
             array_push($filterSqls, $sql);

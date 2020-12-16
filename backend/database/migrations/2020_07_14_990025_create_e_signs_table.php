@@ -20,7 +20,7 @@ class CreateESignsTable extends Migration
             $table->integer('source_record_id')->nullable();
             $table->integer('column_id')->nullable();
             $table->text('signed_text')->nullable();
-            $table->timestamp('sign_at')->nullable();
+            $table->timestamp('signed_at')->nullable();
             $table->jsonb('sign_file')->nullable();
             $table->text('description')->nullable();
             

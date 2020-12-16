@@ -184,7 +184,7 @@ export class FormComponent
     
     changeColumnVisibilityGuiTrigger()
     {
-        var data = this.getElementsData();
+        var data = this.getElementsData("GET");
         var columnNames = Object.keys(data);
         for(var i = 0; i < columnNames.length; i++)
             this.guiTriggerHelper.changeColumnVisibility(this.tableName, columnNames[i], this.getElementId(columnNames[i]), data);
@@ -444,7 +444,7 @@ export class FormComponent
         
         function func(params)
         {
-            var data = params.th.getElementsData();
+            var data = params.th.getElementsData("GET");
 
             var tableName = params.th.tableName;
             var columnName = params.event.columnName;

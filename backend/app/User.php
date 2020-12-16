@@ -74,26 +74,6 @@ class User extends Authenticatable
         }
     }
     
-    public function getAdditionalLinks()
-    {
-        if(!isset($this->auths['additional_links'])) return [];
-        
-        $links = [];
-        foreach($this->auths['additional_links'][0][0] as $id)
-        {
-            $link = get_attr_from_cache('additional_links', 'id', $id, '*');
-            unset($link->state);
-            unset($link->own_id);
-            unset($link->user_id);
-            unset($link->created_at);
-            unset($link->updated_at);
-            
-            array_push($links, $link);
-        }
-        
-        return $links;
-    }
-    
     private function getTableListForMenu()
     {
         $return = [];
@@ -109,7 +89,8 @@ class User extends Authenticatable
                 
                 $temp['name'] = $name;
                 $temp['display_name'] = get_attr_from_cache('tables', 'name', $name, 'display_name');
-                
+                $temp['display_name'] = helper('reverse_clear_string_for_db', $temp['display_name']);
+
                 $tableGroup = $this->getTableGruop($temp['id']);
                 if($tableGroup != NULL)
                     $groupId= $tableGroup->id;
@@ -164,13 +145,34 @@ class User extends Authenticatable
         $tables = $this->getTableListForMenu();
         $tableGroups = $this->getTableGroupListForMenu($tables);
         $additionalLinks = $this->getAdditionalLinks();
-        
+
         return 
         [
             'tables' => $tables,
             'tableGroups' => $tableGroups,
             'additionalLinks' => $additionalLinks
         ];
+    }
+
+    public function getAdditionalLinks()
+    {
+        if(!isset($this->auths['additional_links'])) return [];
+        
+        $links = [];
+        foreach($this->auths['additional_links'][0][0] as $id)
+        {
+            $link = get_attr_from_cache('additional_links', 'id', $id, '*');
+            unset($link->state);
+            unset($link->own_id);
+            unset($link->user_id);
+            unset($link->created_at);
+            unset($link->updated_at);
+            
+            $link->name_basic = helper('reverse_clear_string_for_db', $link->name_basic); 
+            array_push($links, $link);
+        }
+        
+        return $links;
     }
     
     public function getReportsArray()
@@ -206,7 +208,8 @@ class User extends Authenticatable
     private function getLayerInfo($tableName, $tableAuth)
     {
         $info['base_url'] = '';
-        $info['display_name'] = get_attr_from_cache('tables', 'name', $tableName, 'display_name');
+        $info['display_name'] = get_attr_from_cache('tables', 'name', $tableName, 'display_name');        
+        $info['display_name'] = helper('reverse_clear_string_for_db', $info['display_name']);
         
         $info['legend_url'] = get_attr_from_cache('tables', 'name', $tableName, 'legend_url');
         if(strlen($info['legend_url']) == 0)
@@ -248,6 +251,7 @@ class User extends Authenticatable
     {
         $info['base_url'] = $layer->layer_base_url;
         $info['display_name'] = $layer->name;
+        $info['display_name'] = helper('reverse_clear_string_for_db', $info['display_name']);
         
         $temp = explode(':', $layer->layer_name);
         
@@ -289,8 +293,9 @@ class User extends Authenticatable
     
     private function getCustomLayerInfo($layer)
     {
-        $info['base_url'] = '';
-        $info['display_name'] = $layer->name;        
+        $info['base_url'] = '';           
+        $info['display_name'] = helper('reverse_clear_string_for_db', $layer->name);
+
         $info['workspace'] = env('GEOSERVER_WORKSPACE', 'angaryos');
         $info['layer_name'] = helper('seo', $layer->name);
         $info['type'] = get_attr_from_cache('custom_layer_types', 'id', $layer->custom_layer_type_id, 'name');

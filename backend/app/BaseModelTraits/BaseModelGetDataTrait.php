@@ -173,7 +173,7 @@ trait BaseModelGetDataTrait
         $eSings = [];
         foreach($temp as $sign)
         {
-            $control = strlen($sign->sign_at) > 0;
+            $control = strlen($sign->signed_at) > 0;
             
             if(!isset($eSings[$sign->source_record_id])) $eSings[$sign->source_record_id] = [];
             

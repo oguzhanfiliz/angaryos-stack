@@ -15,6 +15,8 @@ class ChangeDataLibrary
             {
                 try 
                 {
+                    $value = helper('reverse_clear_string_for_db', $value);
+                    
                     $params = helper('get_null_object');
                     $params->value = json_decode ($value);
                 } 

@@ -43,7 +43,7 @@ class eSignController extends Controller
     private function getESignCount($token, $user)
     {
         $eSingCount = DB::table('e_signs')
-                        ->whereRaw('((sign_at::text = \'\') is not false)')
+                        ->whereRaw('((signed_at::text = \'\') is not false)')
                         ->where('own_id', $user->id)
                         ->where('state', TRUE)
                         ->count();

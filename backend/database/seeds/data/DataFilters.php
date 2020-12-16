@@ -87,7 +87,7 @@ $filter =
 [
     'name_basic' => 'Onaylanmış e-imzalar düzenlenemesin güncelleme filtresi',
     'data_filter_type_id' => $data_filter_types['update']->id,
-    'sql_code' => '(("sign_at"::text = \'\') IS NOT FALSE)' 
+    'sql_code' => '(("signed_at"::text = \'\') IS NOT FALSE)' 
 ];
 
 if(!isset($data_filters['e_signs'])) $data_filters['e_signs'] = [];

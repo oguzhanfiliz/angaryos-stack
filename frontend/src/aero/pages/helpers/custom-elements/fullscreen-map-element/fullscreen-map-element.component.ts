@@ -1799,6 +1799,7 @@ export class FullScreenMapElementComponent
         $.ajax(
         {
             dataType: "json",
+            type: "POST",
             url: url,
             data: null,
             success: (data) =>

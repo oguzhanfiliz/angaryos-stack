@@ -636,6 +636,8 @@ trait TableSubscriberTrait
 
     public function getDataForSelectElementSingleForTableIdAndColumnIdsForManyToOne($params)
     {
+        if($params->val == NULL) $params->val = [];
+        
         $recs = DB::table($params->tableName)
                 ->select(DB::raw($params->sourceColumn->name . ' as source'))
                 ->addSelect(DB::raw($params->displayColumnName . ' as display'))

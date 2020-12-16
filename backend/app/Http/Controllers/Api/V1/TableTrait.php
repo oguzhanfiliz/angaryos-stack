@@ -459,6 +459,8 @@ trait TableTrait
 
     private function UpdateInFormDataReverseClearStringForDB($inFormData)
     {
+        if(getType($inFormData) == 'object') $inFormData = (array)$inFormData;
+        
         $inFormData['source'] = helper('reverse_clear_string_for_db', $inFormData['source']);
         $inFormData['display'] = helper('reverse_clear_string_for_db', $inFormData['display']);
 
