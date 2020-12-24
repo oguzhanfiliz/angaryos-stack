@@ -59,7 +59,8 @@ trait ReportSubscriberRequestTrait
             'startCol' => $startCol,
             'overrideColumnSort' => $overrideColumnSort,
             'activeSheet' => $activeSheet,
-            'gridData' => @$gridData
+            'gridData' => @$gridData,
+            'report' => @$report
         ];
     }
     
@@ -109,7 +110,8 @@ trait ReportSubscriberRequestTrait
             'startCol' => $startCol,
             'activeSheet' => $activeSheet,
             'overrideColumnSort' => $overrideColumnSort,
-            'gridData' => @$gridData
+            'gridData' => @$gridData,
+            'report' => @$report
         ];
     }
     

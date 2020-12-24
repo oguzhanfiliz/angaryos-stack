@@ -189,6 +189,12 @@ export class DashboardComponent
         var key = this.getLocalKey("dashboards");
         this.dashboards = BaseHelper.readFromLocal(key);
         if(this.dashboards == null) this.dashboards = [];
+
+        for(var i = 0; i < this.dashboards.length; i++)
+        {
+            var d = this.dashboards[i];
+            this.dashboardDatas[d["dashboardId"]] = d;
+        }
         
         key = this.getLocalKey("deletedDashboards");
         this.deletedDashboards = BaseHelper.readFromLocal(key);

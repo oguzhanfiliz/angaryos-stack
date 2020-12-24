@@ -158,7 +158,11 @@ trait ReportSubscriberResponseTrait
     {
         global $pipe;
         
-        $data['tableDisplayName'] = get_attr_from_cache('tables', 'name', $pipe['table'], 'display_name');
+        if($data['report'])
+            $data['tableDisplayName'] = $data['report']->name;
+        else
+            $data['tableDisplayName'] = get_attr_from_cache('tables', 'name', $pipe['table'], 'display_name');
+        
         $data['tableDisplayName'] .= ' '. date("d-m-Y H:i:s");
         
         $uId = @\Auth::user()->id;

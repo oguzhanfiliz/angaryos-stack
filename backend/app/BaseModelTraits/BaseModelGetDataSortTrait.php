@@ -25,7 +25,10 @@ trait BaseModelGetDataSortTrait
     {
         $params = helper('get_null_object');
         $params->model = $model;
+        
         $params->column = $column;
+        $params->column->select_raw = @helper('reverse_clear_string_for_db', @$params->column->select_raw);
+
         $params->direction = $direction;
         
         ColumnClassificationLibrary::relation($this, __FUNCTION__, $column, NULL, $params);

@@ -32,10 +32,11 @@ Route::bind('table_name', function ($tableName)
 
 Route::bind('column_name', function ($columnName) 
 {
-    $column = get_model_from_cache('columns', 'name', $columnName);
-    if($column == NULL) abort(helper('response_error', 'fail.column.name'));
+    $column = new BaseModel('columns');
+    $column = $column->where('name', $columnName)->get();
+    if(count($column) == NULL) abort(helper('response_error', 'fail.column.name'));
     
-    return $column;
+    return $column[0];
 });
 
 Route::bind('id', function ($id) 
@@ -43,7 +44,10 @@ Route::bind('id', function ($id)
     if(!is_numeric($id)) abort(helper('response_error', 'fail.id'));
     
     global $pipe;    
-    $model = get_model_from_cache($pipe['table'], 'id', $id);    
+    
+    $model = new BaseModel($pipe['table']);
+    $model = $model->find($id);
+    
     if($model == NULL) abort(helper('response_error', 'fail.id'));
     
     return $model;
@@ -54,7 +58,10 @@ Route::bind('archive_id', function ($id)
     if(!is_numeric($id)) abort(helper('response_error', 'fail.archive_id'));
     
     global $pipe;
-    $model = get_model_from_cache($pipe['table'].'_archive', 'id', $id);    
+    
+    $model = new BaseModel($pipe['table']);
+    $model = $model->find($id);
+    
     if($model == NULL) abort(helper('response_error', 'fail.archive_id'));
     
     return $model;
@@ -65,7 +72,10 @@ Route::bind('mission', function ($id)
     if(!is_numeric($id)) abort(helper('response_error', 'fail.mission_id'));
     
     global $pipe;
-    $model = get_model_from_cache('missions', 'id', $id);    
+    
+    $model = new BaseModel('missions');
+    $model = $model->find($id);
+      
     if($model == NULL) abort(helper('response_error', 'fail.mission_id'));
     
     return $model;

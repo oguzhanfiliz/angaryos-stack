@@ -378,7 +378,10 @@ trait BaseModelGetDataWhereTrait
             }
             
             foreach($temp as $t)
+            {
+                if(is_string($t) && substr($t, 0, 1) != '"') $t = '"'.$t.'"';                 
                 $query->orWhereRaw($params->column_name_with_alias. ' @> \''.$t.'\'::jsonb');
+            }
         });
     }
     

@@ -22,12 +22,8 @@ trait BaseModelWhereStringTrait
 
         if(!isset($search->type)) custom_abort('uncorrect.spetial.params.for.string(type)');
 
-        for($i = 0; $i < 100; $i++)
-        {
-            if(!isset($search->{$i})) continue;
-
-            $where .= $columnWithAlias.' ilike \'%'.$search->{$i}.'%\' '.$search->type.' ';
-        }
+        foreach($search->data as $item)
+            $where .= $columnWithAlias.' ilike \'%'.$item.'%\' '.$search->type.' ';
 
         if(!isset($search->sub)) $where = substr($where, 0, -1 * (strlen($search->type)+2));
         else $where .= $this->getWhereStringFromSpetialSearch($columnWithAlias, $search->sub);
