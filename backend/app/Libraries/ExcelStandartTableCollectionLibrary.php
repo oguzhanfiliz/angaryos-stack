@@ -110,13 +110,18 @@ class ExcelStandartTableCollectionLibrary implements FromCollection, WithHeading
         $col = 'A';
         foreach($this->data['columns'] as $column)
         {
-            switch ($column->gui_type_name)
+            //backend/vendor/phpoffice/phpspreadsheet/src/PhpSpreadsheet/Style/NumberFormat.php;
+
+            switch (explode(':', $column->gui_type_name)[0])
             {
                 case 'datetime':
                     $format[$col++] = NumberFormat::FORMAT_DATE_DDMMYYYY;
                     break;
+                case 'money':
+                    $format[$col++] = '#,##0.00_-"'.strtoupper(explode(':', $column->gui_type_name)[1]).'"'; //#.##0,00
+                    break;
                 default:
-                    $col++;
+                $col++;
             }
         }
         

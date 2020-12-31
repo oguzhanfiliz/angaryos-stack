@@ -150,8 +150,9 @@ trait ReportSubscriberRequestTrait
                 }
                 else if(strstr($column->guiTypeName, 'money:'))
                 {
-                    $records[$i]->{$column->name} = number_format(sprintf('%0.2f', preg_replace("/[^0-9.]/", "", $records[$i]->{$column->name})),2);
-                    $records[$i]->{$column->name} .= ' ' . strtoupper(explode(':', $column->guiTypeName)[1]);
+                    $records[$i]->{$column->name} = str_replace(',', '.', $records[$i]->{$column->name});
+                    //$records[$i]->{$column->name} = number_format(sprintf('%0.2f', preg_replace("/[^0-9.]/", "", $records[$i]->{$column->name})),2);
+                    //$records[$i]->{$column->name} .= ' ' . strtoupper(explode(':', $column->guiTypeName)[1]);
                 }
             }
         }
