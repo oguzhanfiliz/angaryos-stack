@@ -30,13 +30,11 @@ class MessageLibrary
         return $connection;
     }
 
-    private static function runSshCommandAsSudo($connection, $command, $config, $timeOut)
+    private static function runSshCommandAsSudo($connection, $command, $config)
     {
         $connection->setTimeout(1);
         if(!$config['no_wait_for_sudo']) $connection->read('/.*@.*[$|#]/', /*NET_SSH2_READ_REGEX*/2);
         else  $connection->read();
-
-        $connection->setTimeout($timeOut);
 
         $connection->write($command."\n");
 
@@ -95,13 +93,15 @@ class MessageLibrary
         $connection = self::getSshConnectionObject($config['host'], $config['user_name'], $config['password'], $config['port']);
         if(!$connection) throw new \Exception('ssh.server.connection.error');
         
-        if(substr(strtolower(trim($command)), 0, 5) == 'sudo ')
-            $output = self::runSshCommandAsSudo($connection, $command, $config, $timeOut);
-        else 
-            $output = $connection->exec($command);
-        
-        self::$lastSshResponse = $output;
+        $connection->setTimeout($timeOut);
 
+        if(substr(strtolower(trim($command)), 0, 5) == 'sudo ')
+            $output = self::runSshCommandAsSudo($connection, $command, $config);
+        else 
+            $output = $connection->exec($command, $config['call_back_function']);
+
+        self::$lastSshResponse = $output;
+        
         if($clearAndParseOutput) $output = self::clearSshOutput($output, $config);
 
         return $output;

@@ -20,6 +20,7 @@ export abstract class BaseHelper
 
   public static tokenTimeOut = 1000 * 60 * 60 * 24 * 5;
   public static token:string = "";
+  public static firebaseToken:string = "";
   public static debug:boolean = true;
   public static loggedInUserInfo = null;
 
@@ -136,6 +137,9 @@ export abstract class BaseHelper
   {
     var temp = this.readFromLocal("token");
     if(temp != null) this.token = temp;
+    
+    temp = this.readFromLocal("firebaseToken");
+    if(temp != null) this.firebaseToken = temp;
   }
 
   private static fillLoggedInUserInfoIfExist()

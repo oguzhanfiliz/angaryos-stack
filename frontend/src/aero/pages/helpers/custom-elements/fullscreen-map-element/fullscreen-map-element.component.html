@@ -76,14 +76,7 @@
                             ngbDropdownItem>
                             
                             Alanlar
-                        </a>    
-                        <div class="divider"></div>
-                        <a 
-                            class="dropdown-item"
-                            ngbDropdownItem>
-                            
-                            NetCAD 'den al
-                        </a>  
+                        </a>     
                     </div>
                 </div>
 
@@ -124,6 +117,30 @@
         <tr>
             <td>
                 <h6 style="padding: 0; margin: 5 0 5 10;">Nesneler</h6>
+            </td>
+            <td width="65px" align="right">
+                <div                                                  
+                    class="btn-group" 
+                    ngbDropdown role="group">
+
+                    <button
+                        class="btn btn-sm float-right btn-primary pull-right" 
+                        id="drawButton"  
+                        ngbDropdownToggle> 
+
+                        Dönüştür
+                    </button>
+
+                    <div ngbDropdownMenu>
+                        <a 
+                            (click)="convertSelectedFeaturesToPoint()"
+                            class="dropdown-item"
+                            ngbDropdownItem>
+                            
+                            Noktaya Dönüştür
+                        </a>   
+                    </div>
+                </div>
             </td>
             <td width="65px" align="right">
                 <button (click)="dataTransport()" [class]="'btn btn-sm btn-primary ' + (isUpTableRecordSelected() ? '' : ' disabled')" type="button">
@@ -244,7 +261,7 @@
                                     (click)="toggleFeatureSelected(className, subClassName, typeName, i)"
                                     [class]="'feature-item ' + (feature['selected'] ? 'feature-item-selected' : '') ">
 
-                                    {{ feature['selected'] }}
+                                    {{ feature['selected'] ? 'Seçilmiş' : 'Seçilmemiş' }}
                                 </div>
                             </div>
                         </div>

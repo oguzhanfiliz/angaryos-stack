@@ -43,7 +43,7 @@ export class FullScreenMapElementComponent
     map = null;
     loggedInUserInfo = null;
     layerList = [];
-    toolsBarVisible = false;
+    toolsBarVisible = true;
     featuresTreeVisible = false;
     vectorFeaturesTree = {};
     mapClickMode = "getClickedFeatureInfo";
@@ -1653,6 +1653,51 @@ export class FullScreenMapElementComponent
         }
         
         return selectedFeatures;
+    }
+    
+    convertSelectedFeaturesToPoint()
+    {
+        var selectedFeatures = this.getSelectedFeatures();
+        var types = Object.keys(selectedFeatures);
+        
+        if(!types.includes("polygon") && !types.includes("linestring"))
+            return this.messageHelper.toastMessage('Aktarmak için seçilmiş nesne yok!');
+        
+        var t = ['polygon', 'linestring'];
+        for(var i = 0; i < t.length; i++)
+        {
+            var features = selectedFeatures[t[i]];
+            
+            if(typeof features == "undefined") continue;
+            
+            for(var j = 0; j < features.length; j++)
+            {
+                var feature = features[j];                
+                                
+                var newFeature = MapHelper.getCenterFeatureFromFeature(feature);
+
+                newFeature['featureObject'] = {'type': 'convertToPoint'};
+                newFeature['selected'] = true;
+                newFeature['visible'] = true;
+                newFeature['className'] = feature['className'];
+                newFeature['subClassName'] = feature['subClassName'];
+                newFeature['typeName'] = 'point';
+        
+                this.removeFeature(feature);
+                
+                this.createIfNotExistClassOnVectorSourceTree(newFeature['className']);
+                this.createIfNotExistSubClassOnVectorSourceTree(newFeature['className'], newFeature['subClassName']);
+                this.createIfNotExistTypeOnVectorSourceTree(newFeature['className'], newFeature['subClassName'], 'point');
+
+                var index = this.vectorFeaturesTree[newFeature['className']]['data'][newFeature['subClassName']]['data']['point']['data'].length;
+                newFeature['index'] = index;
+
+                MapHelper.addFeatures(this.map, [newFeature]);
+                this.vectorFeaturesTree[newFeature['className']]['data'][newFeature['subClassName']]['data']['point']['data'].push(newFeature);
+                
+                this.updateFeatureStyles();
+            }
+        }
     }
     
     dataTransport()

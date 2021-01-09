@@ -14,7 +14,8 @@ class CreateRecordCaches implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    private $record, $tableName;
+    public $record, $tableName;
+    public $timeout = 120;
     
     public function __construct($record, $tableName)
     {
@@ -24,6 +25,8 @@ class CreateRecordCaches implements ShouldQueue
 
     public function handle()
     {
+        if($this->tableName == NULL) return TRUE;
+        
         foreach($this->record as $requestColumnTemp => $requestDataTemp)
         {
             $cacheKey = 'tableName:'.$this->tableName.'|columnName:'.$requestColumnTemp.'|columnData:'.$requestDataTemp.'|returnData:*';
@@ -37,5 +40,10 @@ class CreateRecordCaches implements ShouldQueue
                 Cache::forever($cacheKey, $responseDataTemp);
             }
         }
+    }
+
+    public function error($exception)
+    {
+        \Log::alert('CreateRecordCaches:'.$exception->getMessage().':'.json_encode([(array)$this, debug_backtrace()]));
     }
 }

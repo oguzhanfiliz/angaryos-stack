@@ -226,7 +226,8 @@ export class SessionHelper
         clientInfo: 
         {
           type: 'browser',
-          agent: navigator.userAgent
+          agent: navigator.userAgent,
+          firebaseToken: BaseHelper.firebaseToken
         }
       });
     }

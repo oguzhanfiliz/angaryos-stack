@@ -18,6 +18,7 @@ class ClearRecordCaches implements ShouldQueue
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     public $tableName, $data, $type;
+    public $timeout = 120;
     
     public function __construct($tableName, $data, $type)
     {
@@ -28,6 +29,8 @@ class ClearRecordCaches implements ShouldQueue
 
     public function handle()
     {
+        if($this->tableName == NULL) return TRUE;
+        
         try 
         {
             $record = new BaseModel($this->tableName);
@@ -53,7 +56,6 @@ class ClearRecordCaches implements ShouldQueue
 
     public function error($exception)
     {
-        dd('ClearRecordCaches:'.$exception->getMessage().':'.json_encode([(array)$this, debug_backtrace()]));
         \Log::alert('ClearRecordCaches:'.$exception->getMessage().':'.json_encode([(array)$this, debug_backtrace()]));
     }
 }

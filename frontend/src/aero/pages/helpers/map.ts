@@ -1363,4 +1363,10 @@ export abstract class MapHelper
     
     return feature;
   }
+  
+  public static getCenterFeatureFromFeature(feature)
+  {
+    var point = new Point(this.getCenterOfExtent(feature.getGeometry().getExtent()));
+    return new Feature({ geometry: point });
+  }
 }
