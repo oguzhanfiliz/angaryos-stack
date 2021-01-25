@@ -281,4 +281,15 @@ export class PagesComponent
   {
     this.userEditUrl = BaseHelper.baseUrl+"table/users/"+BaseHelper.loggedInUserInfo.user.id+"/edit";
   }
+
+  additionalLinkClicked(additionalLink)
+  {
+    DataHelper.loadAdditionalLinkPayload(this, additionalLink);
+    
+    var url = DataHelper.getUrlFromAdditionalLink(additionalLink);
+    if(url == null || url.length == 0) return;
+    
+    if(additionalLink['open_new_window']) window.open(url);
+    else window.location.href = url;
+  }
 } 

@@ -272,6 +272,8 @@ export class FormComponent
         }
         else if(data['message'] == 'error')
         {
+            this.messageHelper.sweetAlert("Formda bazı hatalar var! Kontrol edin.", "Hata", "warning");
+
             this.fillFormErrorMessages(data['errors']);
             return false;
         }

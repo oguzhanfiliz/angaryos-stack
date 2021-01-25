@@ -1398,7 +1398,12 @@ export class FullScreenMapElementComponent
         }
 
         MapHelper.addFeatures(this.map, tempFeatures)
-        .then((features) => MapHelper.zoomToFeatures(this.map, features));
+        .then((features) =>
+        {
+            this.updateFeatureStyles();
+            
+            MapHelper.zoomToFeatures(this.map, features)
+        });
     }
 
     uploadKmz()
@@ -1605,9 +1610,9 @@ export class FullScreenMapElementComponent
             else
             {
                 if(temp.selected)
-                    style = MapHelper.getSelectedStyle(type);
+                    style = MapHelper.getSelectedStyle(type, temp.featureObject.name);
                 else
-                    style = MapHelper.getDefaultStyle(type);
+                    style = MapHelper.getDefaultStyle(type, temp.featureObject.name);
             }
 
             features[i].setStyle(style);
@@ -1963,11 +1968,64 @@ export class FullScreenMapElementComponent
     
     convertDataForDataTransform(record, feature, columnName, convertType)
     {
-        switch(convertType)
+        switch(convertType.split('.')[0])
         {
             case 'length': return feature.getGeometry().getLength();
             case 'area': return feature.getGeometry().getArea();
+            case 'fromData': 
+                var temp = convertType.replace('.kmz', '').replace('.kml', '').split('.');
+
+                var className = temp[1] + (typeof this.vectorFeaturesTree[temp[1]+".kmz"] != "undefined" ? ".kmz" : ".kml");
+                var subClassName = convertType.replace("fromData.", "").replace(className+".", "");
+
+                var r = this.getNearDataFromVectorFeaturesTree(className, subClassName, feature);
+
+                if(r == false)  throw new Error("Katmanda data bulunamadı! ("+convertType+")");
+
+                return r; 
+
             default: return record[columnName];
         }
+    }
+    
+    getNearDataFromVectorFeaturesTree(className, subClassName, feature)
+    {
+        var source = this.vectorFeaturesTree[className]['data'][subClassName]["data"];
+        var keys = Object.keys(source);
+
+        var centerFeature = MapHelper.getCenterFeatureFromFeature(feature);
+        var centerCords = centerFeature.getGeometry().getCoordinates();
+
+        var nearFeature = null;
+        var minDistance = Number.MAX_SAFE_INTEGER;
+
+        for(var i = 0; i < keys.length; i++)
+        {
+            var key = keys[i];
+
+             for(var j = 0; j < source[key]["data"].length; j++)
+            {
+                var temp = MapHelper.getCenterFeatureFromFeature(source[key]["data"][j]);
+                var coords = temp.getGeometry().getCoordinates()
+                
+                var x = centerCords[0] - coords[0];
+                if(x < 0) x = -1 * x;
+                
+                var y = centerCords[1] - coords[1];
+                if(y < 0) y = -1 * y;
+                
+                var distance = Math.sqrt(x*x+y*y);
+
+                if(distance < minDistance)
+                {
+                    minDistance = distance;
+                    nearFeature = source[key]["data"][j];
+                }                
+            }
+        }
+
+        if(nearFeature == null) return false;
+
+        return nearFeature.featureObject.name;
     }
 }

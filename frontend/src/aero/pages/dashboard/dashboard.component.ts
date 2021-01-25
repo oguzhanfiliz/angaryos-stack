@@ -304,7 +304,7 @@ export class DashboardComponent
         var func = (th, dashboardId, subClassName, itemName, data) => 
         {
             data["bindto"] = "#GraphicXY"+"_"+subClassName+"_"+itemName;
-            setTimeout(() => c3.generate(data), 1000);
+            $.getScript('assets/themes/aero/assets/bundles/c3.bundle.js', () => c3.generate(data));   
             return data;
         };
                 
@@ -325,7 +325,7 @@ export class DashboardComponent
         var func = (th, dashboardId, subClassName, itemName, data) => 
         {
             data["bindto"] = "#GraphicPie"+"_"+subClassName+"_"+itemName;
-            setTimeout(() => c3.generate(data), 1000);
+            $.getScript('assets/themes/aero/assets/bundles/c3.bundle.js', () => c3.generate(data));   
             return data;
         };
                 

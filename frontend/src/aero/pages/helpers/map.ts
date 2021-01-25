@@ -1220,27 +1220,108 @@ export abstract class MapHelper
     return html;
   }*/
 
-  public static getDefaultStyle(type)
+  public static getTextObjectForStyle(text, config = {})
+  {
+    if(text.length == 0) return null;
+
+    var def =
+    {
+      fillColor: "blue",
+      strokeColor: "#ffffff",
+      strokeWidth: 3,
+      offsetX: 0,
+      offsetY: -20,
+      textAlign: "center",
+      font: "Arial",
+    };
+
+    var keys = Object.keys(def);
+    for(var i = 0; i < keys.length; i++)
+    {
+      var key = keys[i];
+
+      if(typeof config[key] == "undefined") config[key] = def[key];
+    }
+
+    config["text"] = text;
+    config["fill"] = new Fill({color: config["fillColor"]});
+    config["stroke"] = new Stroke({color: config["strokeColor"], width: config["strokeWidth"]});
+    
+    return new Text(config);
+  }
+
+  public static getDefaultStyle(type, text = '')
   {
     switch(type)
     {
-      case 'Polygon': return null;
-      case 'Linestring': return null;
-      case 'Point': return null;
+      case 'Polygon': return this.getDefaultStylePolygon(text);
+      case 'Linestring': return this.getDefaultStyleLinestring(text);
+      case 'Point': return this.getDefaultStylePoint(text);
     }
   }
 
-  public static getSelectedStyle(type)
+  public static getDefaultStyleLinestring(text = '')
+  {
+    return new Style(
+    {
+      stroke: new Stroke(
+      {
+        color: '#09f',
+        width: 2
+      }),
+      text: this.getTextObjectForStyle(text)
+    });
+  }
+
+  public static getDefaultStylePolygon(text = '')
+  {
+    return new Style(
+    {
+      stroke: new Stroke(
+      {
+        color: '#09f',
+        width: 2
+      }),
+      fill: new Fill(
+      {
+        color: '#a4cce6c7'//ex. rgba(0, 0, 255, 0.9)
+      }),
+      text: this.getTextObjectForStyle(text)
+    });
+  }
+
+  public static getDefaultStylePoint(text = '')
+  {
+    return new Style(
+    {
+      image: new CircleStyle(
+      {
+        radius: 4,
+        fill: new Fill(
+        {
+          color: '#a4cce6c7'
+        }),
+        stroke: new Stroke(
+        {
+          color: '#09f',
+          width: 1
+        }),
+      }),
+      text: this.getTextObjectForStyle(text)
+    });
+  }
+
+  public static getSelectedStyle(type, text = '')
   {
     switch(type)
     {
-      case 'Polygon': return this.getSelectedStylePolygon();
-      case 'Linestring': return this.getSelectedStyleLinestring();
-      case 'Point': return this.getSelectedStylePoint();
+      case 'Polygon': return this.getSelectedStylePolygon(text);
+      case 'Linestring': return this.getSelectedStyleLinestring(text);
+      case 'Point': return this.getSelectedStylePoint(text);
     }
   }
 
-  public static getSelectedStyleLinestring()
+  public static getSelectedStyleLinestring(text = '')
   {
     return new Style(
     {
@@ -1248,11 +1329,12 @@ export abstract class MapHelper
       {
         color: 'red',
         width: 3
-      })
+      }),
+      text: this.getTextObjectForStyle(text)
     });
   }
 
-  public static getSelectedStylePolygon()
+  public static getSelectedStylePolygon(text = '')
   {
     return new Style(
     {
@@ -1264,11 +1346,12 @@ export abstract class MapHelper
       fill: new Fill(
       {
         color: 'rgba(0, 0, 255, 0.9)'
-      })
+      }),
+      text: this.getTextObjectForStyle(text)
     });
   }
 
-  public static getSelectedStylePoint()
+  public static getSelectedStylePoint(text = '')
   {
     return new Style(
     {
@@ -1279,7 +1362,8 @@ export abstract class MapHelper
         {
           color: 'red'
         })
-      })
+      }),
+      text: this.getTextObjectForStyle(text)
     });
   }
 

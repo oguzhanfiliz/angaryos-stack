@@ -280,8 +280,7 @@ class TableDBOperationsLibrary
         } 
         catch (\Exception $exc) 
         {
-            dd('ChangeColumn exception');
-            dd($exc);
+            dd('ChangeColumn exception', $exc);
             $this->ReturnError('column_db_type_id', [$exc->getMessage()]);
         }
     }

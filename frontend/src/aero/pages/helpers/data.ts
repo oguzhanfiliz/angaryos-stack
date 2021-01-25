@@ -613,6 +613,7 @@ export abstract class DataHelper
         var url = al['url'];
         
         url = BaseHelper.replaceAll(url, '***token***', BaseHelper.token);
+        if(url == null || url.length == 0) return "";
         
         var user = BaseHelper.loggedInUserInfo['user'];
         var keys = Object.keys(user);

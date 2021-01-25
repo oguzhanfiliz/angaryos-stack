@@ -34,6 +34,7 @@ trait TableSubscriberTrait
         
         $params->model->limit($params->limit);
         $params->model->offset($params->limit * ($params->page - 1));
+        
         $records = $params->model->get();
         
         $tableInfo = $model->getTableInfo($params->table_name);
@@ -132,7 +133,8 @@ trait TableSubscriberTrait
 
         foreach($params->columns as $column)
             if(!isset($column->select_raw))
-                $params->model->groupBy($params->table_name.'.'.$column->name);
+                if(!strstr(strtolower(get_attr_from_cache('column_db_types', 'id', $column->column_db_type_id, 'name')), 'json'))
+                    $params->model->groupBy($params->table_name.'.'.$column->name);
         
         return $params;
     }
