@@ -9,11 +9,11 @@ function helper($function_name, $params = NULL)
 function read_from_response_data($key, $json = FALSE)
 {
     $r = require 'HelperFunctions/'.__FUNCTION__.'.php';
-    
+
     if($json)
     {
-        $r = helper('json_str_to_object', $r);
-        $r = clear_object_for_db($r);
+        $r = helper('json_str_to_object', $r);        
+        $r = clear_object_for_db($r); 
     }
     
     return $r;
@@ -21,7 +21,9 @@ function read_from_response_data($key, $json = FALSE)
 
 function clear_object_for_db($obj)
 {
-    if(is_bool($obj)) 
+    if($obj == NULL) 
+        return $obj;
+    else if(is_bool($obj)) 
         return (bool)$obj;
     else if(is_numeric($obj)) 
         return $obj;
@@ -94,7 +96,7 @@ function param_value_is_correct($params, $name, $validation = '*auto*')
 }
 
 function send_log($level, $message, $object = NULL)
-{    
+{      
     global $pipe;
     
     if($object == NULL) $object = [];
@@ -108,6 +110,7 @@ function send_log($level, $message, $object = NULL)
     $object['host'] = @$_SERVER['HOSTNAME'];
     $object['uri'] = @$_SERVER['REQUEST_URI'];
     $object['logTime'] = date("Y-m-d h:i:sa");
+    $object['response_data'] = \Request::all();
     
     \App\Jobs\SendLog::dispatch($level, $message, json_encode($object));
 }
@@ -144,7 +147,7 @@ function dd_live($dump, ...$data)
         }
         else dd($data);
     }
-}
+} 
 
 function custom_abort_ext($message)
 {

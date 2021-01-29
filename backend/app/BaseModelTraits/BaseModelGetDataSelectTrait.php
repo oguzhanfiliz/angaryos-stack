@@ -127,7 +127,9 @@ trait BaseModelGetDataSelectTrait
     
     public function addSelectForColumnsDBTypesStatusForOneToOne($params)
     {
-        $temp = "string_agg($params->column_with_alias::text, '***')";
+        $temp = helper('reverse_clear_string_for_db', $params->column_with_alias);
+        
+        $temp = "string_agg($temp::text, '***')";
         $temp = "split_part($temp, '***', 1)";
         $temp .= ' as ' . $params->column->name;
         

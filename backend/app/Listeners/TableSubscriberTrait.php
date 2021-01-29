@@ -1269,7 +1269,7 @@ trait TableSubscriberTrait
         if($userIds != '*') $model = $model->whereIn('id', $userIds);
         $users = $model->get();
         
-        $cacheSubscriber = new CacheSubscriber(TRUE);
+        $cacheSubscriber = new CacheSubscriber(FALSE);
 
         foreach($users as $user)
             $cacheSubscriber->recordChangedSuccess('users', $user, 'update');
