@@ -543,8 +543,8 @@
                                                     aria-expanded="true" (click)="prevPage()">
                                                     Önceki
                                                 </button>
-                                            </td><td style="padding: 0px !important;">
-                                                <select *ngIf="data['pages'] > 1"
+                                            </td><td style="padding: 0px !important;" *ngIf="data['pages'] < 100">
+                                                <select *ngIf="data['pages'] > 1 && data['pages'] < 100"
                                                         style="width: 60px; height: 26px; padding: 0 5px; margin: 3px;" 
                                                         class="form-control ms"
                                                         [value]="params['page']"
@@ -553,6 +553,14 @@
                                                         {{ p }}
                                                     </option>
                                                 </select>
+                                            </td><td style="padding: 0 0 0 10px !important;" *ngIf="data['pages'] > 99">
+                                                <input   
+                                                    class="form-control" 
+                                                    style="width: 100px; height: 27px;text-align: center;"
+                                                    (change)="pageUpdated($event.target.value)" 
+                                                    [value]="params['page']">
+                                            </td><td style="padding: 0 10px 0 5px !important;" *ngIf="data['pages'] > 99">
+                                                / {{ data['pages'] }}    
                                             </td><td>
                                                 <button *ngIf="params['page'] < data['pages'] " class="btn btn-primary btn-sm" 
                                                     style="width: 60px !important; height: 26px; padding: 0 5px; white-space: nowrap;" 

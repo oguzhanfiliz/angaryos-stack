@@ -906,6 +906,13 @@ export class DataTableElementComponent
 
     pageUpdated(page)
     {
+        if(this.data['pages'] < parseInt(page))
+        {
+            page = this.params['page'];
+            $('#largePageSize').val(page);
+            return;
+        }
+         
         this.params['page'] = parseInt(page);
 
         this.saveParamsToLocal();
