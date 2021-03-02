@@ -123,7 +123,7 @@ trait TableSubscriberTrait
         $model->addSorts($params->model, $params->columns, $params->sorts);
         $model->addWheres($params->model, $params->columns, $params->filters);
         $model->addSelects($params->model, $params->columns);
-        $model->addFilters($params->model, $params->table_name/*, 'list'*/);//select içinde edit ve delete filtreleri de olması için gerekli
+        $model->addFilters($params->model, $params->table_name, 'list');
         
         $params->model->addSelect($params->table_name.'.id');
         
@@ -1020,8 +1020,7 @@ trait TableSubscriberTrait
         
         $params->guiTriggers = $model->getGuiTriggers($params->columns);
         
-        //edit fomdaki datalar için belki gerekebilir
-        //$model->addJoinsWithColumns($params->model, $params->columns);
+        $model->addJoinsWithColumns($params->model, $params->columns);
         
         $model->addFilters($params->model, $params->table, 'update');        
         $params->model->where($params->table.'.id', $model->id);        

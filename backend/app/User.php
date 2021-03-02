@@ -22,7 +22,10 @@ class User extends Authenticatable
     
     protected $hidden = 
     [
-        'password', 'remember_token',
+        'password', 
+        'remember_token', 
+        'mobil_cihaz_uuid',
+        'password_md5',
     ];
 
     protected $casts = 
@@ -436,6 +439,8 @@ class User extends Authenticatable
         $importantColumns = 
         [
             'password',
+            'mobil_cihaz_uuid',
+            'password_md5',
             'email_verified_at',
             'tokens',
             'remember_token',

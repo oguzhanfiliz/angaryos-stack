@@ -204,7 +204,7 @@ trait ReportSubscriberRequestTrait
         $model->addSorts($params->model, $params->columns, $params->sorts);
         $model->addWheres($params->model, $params->columns, $params->filters);
         $model->addSelects($params->model, $params->columns);
-        $model->addFilters($params->model, $params->table_name);
+        $model->addFilters($params->model, $params->table_name, 'list');
         
         $params->model->addSelect($params->table_name.'.id');
 

@@ -29,14 +29,16 @@ services:
             replicas: 1
         ports:
             - "8080:8080"
-            - "443:443"
+            - target: 443
+              published: 443 
+              mode: host
         volumes:
             - /var/run/docker.sock:/var/run/docker.sock
-            - ./services/traefic/traefik-stack.toml:/etc/traefik.toml
-            - ./services/traefic/data/traefik.log:/etc/traefik.log
-            - ./services/traefic/data/traefik-access.log:/etc/traefik-access.log
-            - ./services/traefic/self.crt:/etc/self.crt
-            - ./services/traefic/self.key:/etc/self.key
+            - ./services/traefik/traefik-stack.toml:/etc/traefik.toml
+            - ./services/traefik/data/traefik.log:/etc/traefik.log
+            - ./services/traefik/data/traefik-access.log:/etc/traefik-access.log
+            - ./services/traefik/self.crt:/etc/self.crt
+            - ./services/traefik/self.key:/etc/self.key
             - '/etc/localtime:/etc/localtime:ro'
         networks:
             - frontend-nw

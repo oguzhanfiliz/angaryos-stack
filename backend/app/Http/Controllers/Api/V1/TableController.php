@@ -87,13 +87,14 @@ class TableController extends Controller
         
         send_log('info', 'Response Store', [$record, $inFormData]);
         
-        $return = 'success';
-        if($inFormData)
-            $return = [
-                'message' => $return,
-                'in_form_data' => $this->UpdateInFormDataReverseClearStringForDB($inFormData)
-            ];
-            
+        $return = 
+        [
+            'message' => 'success',
+            'id' => $record->id
+        ];
+
+        if($inFormData) $return['in_form_data'] = $this->UpdateInFormDataReverseClearStringForDB($inFormData);
+        
         return helper('response_success', $return);
     }
 

@@ -262,6 +262,8 @@ trait BaseModelGetDataJoinTrait
         if(strlen($join->join_table_alias) > 0)
             $params->realtion_column_name = $join->join_table_alias.'.'.$params->realtion_column_name;
         
+        $join->connection_column_with_alias = helper('reverse_clear_string_for_db', $join->connection_column_with_alias);
+        
         $columnName = explode('.', $join->connection_column_with_alias);
         $columnName = last($columnName);
         $columnName = trim($columnName, '"');
