@@ -187,7 +187,11 @@ trait BaseModelGetDataColumnTrait
             return [$data, $joins];
         });
         
-        foreach($joins as  $join) $this->addJoinForColumnArray($model, $join);
+        foreach($joins as  $join) 
+        {
+            $join->connection_column_with_alias = helper('reverse_clear_string_for_db', $join->connection_column_with_alias);    
+            $this->addJoinForColumnArray($model, $join);
+        }
 
         return $data;
     }

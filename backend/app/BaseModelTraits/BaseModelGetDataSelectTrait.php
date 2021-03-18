@@ -45,10 +45,10 @@ trait BaseModelGetDataSelectTrait
         global $pipe;
         $table = $pipe['table'];
 
-        $temp  = str_replace('("', '( "', $params->column->select_raw);
-        $temp  = str_replace(' "', ' '.$table.'."', ' '.$temp);
+        $temp = str_replace('("', '( "', $params->column->select_raw);
+        $temp = str_replace(' "', ' '.$table.'."', ' '.$temp);
         $temp = helper('reverse_clear_string_for_db', $temp);
-        
+
         $params->model->addSelect(DB::raw($temp));
     }
     
@@ -56,8 +56,8 @@ trait BaseModelGetDataSelectTrait
     {
         $table = get_attr_from_cache('tables', 'id', $params->relation->relation_table_id, '*');
         $source = get_attr_from_cache('columns', 'id', $params->relation->relation_source_column_id, '*');
-        $display = get_attr_from_cache('columns', 'id', $params->relation->relation_display_column_id, '*');        
-        
+        $display = get_attr_from_cache('columns', 'id', $params->relation->relation_display_column_id, '*');       
+                
         $params->table_alias  = $params->column->name.'___'.$table->name.$params->relation->id;
         $params->relation_source_column_with_alias = $params->table_alias.'.'.$source->name;
         $params->column_with_alias  = $params->table_alias.'.'.$display->name;
@@ -146,6 +146,8 @@ trait BaseModelGetDataSelectTrait
         $temp = "'{' || string_agg(distinct ($temp), ', ') || '}'";
           
         $temp .= ' as ' . $params->column->name;
+        
+        $temp = helper('reverse_clear_string_for_db', $temp);
         
         $params->model->addSelect(DB::raw($temp));
     }

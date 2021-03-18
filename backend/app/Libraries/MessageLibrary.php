@@ -165,15 +165,15 @@ class MessageLibrary
         }
     }
     
-    public static function curl($url, $method = 'GET', $data = NULL, $header = NULL)
+    public static function curl($url, $method = 'GET', $data = NULL, $headers = NULL, $cookieFileName = NULL)
     {
         send_log('info', 'Curl request starting', [$url]);
         
         $ch = curl_init(); 
         curl_setopt($ch,CURLOPT_URL, $url);
         
-        if($header != NULL)
-            curl_setopt($ch, CURLOPT_HTTPHEADER, $header);
+        if($headers != NULL)
+            curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
         
         if($method == 'POST')
         {
@@ -182,7 +182,13 @@ class MessageLibrary
             if($data != NULL)
                 curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
         }
-        
+
+        if($cookieFileName)
+        {
+            curl_setopt($ch, CURLOPT_COOKIEJAR, $cookieFileName);
+            curl_setopt($ch, CURLOPT_COOKIEFILE, $cookieFileName);
+        }
+
         curl_setopt($ch,CURLOPT_RETURNTRANSFER,TRUE);
         curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; SV1; .NET CLR 1.0.3705; .NET CLR 1.1.4322)');
         curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, FALSE);

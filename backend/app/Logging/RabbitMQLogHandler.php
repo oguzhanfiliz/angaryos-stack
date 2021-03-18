@@ -36,7 +36,7 @@ class RabbitMQLogHandler extends AbstractProcessingHandler
         
         if(isset($return->obj))
         {
-            $infos = ['user', 'waitTime', 'host', 'logRandom', 'uri', 'logTime'];
+            $infos = ['user', 'waitTime', 'host', 'logRandom', 'uri', 'logTime', 'ip', 'response_data'];
             $temp = json_decode($return->obj);
             foreach($infos as $info)
                 if(isset($temp->{$info}))

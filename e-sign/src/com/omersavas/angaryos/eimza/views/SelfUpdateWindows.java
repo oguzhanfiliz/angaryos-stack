@@ -27,6 +27,7 @@ import javax.crypto.NoSuchPaddingException;
 import javax.swing.JOptionPane;
 import static com.omersavas.angaryos.eimza.helpers.GeneralHelper.loading;
 import com.omersavas.angaryos.eimza.models.Session;
+import tr.gov.tubitak.uekae.esya.api.common.ESYAException;
 
 /**
  *
@@ -58,7 +59,7 @@ public class SelfUpdateWindows extends javax.swing.JDialog {
         }
     }
     
-    public void Update() throws IOException
+    public void Update() throws IOException, ESYAException
     {
         jProgressBar1.setIndeterminate(true);
 

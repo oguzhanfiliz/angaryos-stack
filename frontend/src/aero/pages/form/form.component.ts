@@ -179,7 +179,23 @@ export class FormComponent
         {
             this.changeColumnVisibilityGuiTrigger();
             this.formLoad.emit(data);
-        }, 100);
+            
+            setTimeout(() => this.triggerAllColumns(), 1000);
+        }, 100); 
+    }
+    
+    triggerAllColumns()
+    {
+        var columnArrays = this.data['column_set']['column_arrays'];
+        for(var i = 0; i < columnArrays.length; i++)
+        {
+            var columnNames = Object.keys(columnArrays[i]['columns']);            
+            for(var k = 0; k < columnNames.length; k++)
+            {
+                var columnName = columnNames[k];
+                this.change({columnName: columnName});
+            }
+        }
     }
     
     changeColumnVisibilityGuiTrigger()
@@ -301,6 +317,12 @@ export class FormComponent
             {
                 var ext = ['subscribers', 'missions'];
                 if(this.recordId > 0 && ext.includes(this.tableName)) return;
+                
+                if(this.data["table_info"]["e_sign"])
+                {
+                    var temp = BaseHelper.readFromPipe('basePageComponent');
+                    temp.fillESigns();
+                }
 
                 this.generalHelper.navigate('table/'+this.tableName);
             }

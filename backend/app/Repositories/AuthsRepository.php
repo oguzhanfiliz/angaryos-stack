@@ -40,7 +40,7 @@ class AuthsRepository
             else
             {
                 $ag = \DB::table('auth_groups')->find($item);
-                $temp->_display_column = $ag->name_basic;
+                $temp->_display_column = @$ag->name_basic;
             }
             
             $temp->_source_column_name = '_source_column';

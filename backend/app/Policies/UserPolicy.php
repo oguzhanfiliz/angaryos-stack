@@ -6,6 +6,8 @@ use App\User;
 use App\BaseModel;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
+use App\Libraries\ColumnClassificationLibrary;
+
 class UserPolicy
 {
     use HandlesAuthorization;
@@ -47,12 +49,16 @@ class UserPolicy
     }
 
     public function create($user, $columnSetId)
-    {
+    {   
+        $this->selectDataControl($user, $columnSetId);
+
         return $this->columnSetOrArrayIsPermitted($user, $columnSetId, 'creates');
     }
 
     public function update($user, $record, $columnSetId, $singleColumnName = NULL)
     {
+        $this->selectDataControl($user, $columnSetId);
+
         $control = $this->columnSetOrArrayIsPermitted($user, $columnSetId, 'edits');
         if(!$control) return FALSE;
         

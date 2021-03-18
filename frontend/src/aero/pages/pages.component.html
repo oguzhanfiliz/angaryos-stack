@@ -173,5 +173,14 @@
         <input multiple style="display: none;" name="importRecordFile" id="importRecordFile" type="file" accept=".json">
         
         <router-outlet></router-outlet>
+        
+        
 
+        <button *ngIf="isESignUserTrue && eSigns.length > 0" 
+            alt="e-imza" id="eSignsButton" class="btn btn-primary btn-icon btn-icon btn-lg btn-round" 
+            autocomplete="false"
+            (click)="eSignControl()" role="tablist">
+
+            <span class="ti-pencil-alt"></span>
+        </button>
 </body>

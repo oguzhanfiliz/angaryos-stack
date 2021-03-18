@@ -230,7 +230,7 @@
                                                     </div>
                                                 </div>
                                             </td>
-                                            <td cdkDrag style="cursor: pointer;"
+                                            <td cdkDrag style="cursor: pointer;min-width: 100px !important;"
                                                 *ngFor="let columnName of params['columnNames']"
                                                 (click)="sortByColumn(columnName)">
                                                 <table class="light-table">
@@ -287,6 +287,7 @@
                                         <tr 
                                             *ngFor="let record of data['records']; let i = index"
                                             role="row" (contextmenu)="selectRecord($event, record, i)"
+                                            (dblclick)="edit(record)"
                                             [class]="record['recordClass']"> 
                                             <td>                                                
                                                 <div 
@@ -381,21 +382,21 @@
                                                 </button>
                                                 <br>
                                                 <span
-                                                    style="margin-top: 7px !important; cursor: pointer"
+                                                    style="margin-top: 7px !important; cursor: pointer;height: 7; width: 7; padding: 0;"
                                                     data-toggle="tooltip" 
                                                     title="Bu kayıt e-imza bekliyor" 
                                                     class="badge badge-warning" 
                                                     *ngIf="!archiveTable && record['_e_sings'][0] == false">
-                                                    -
+                                                    &nbsp;
                                                 </span>
                                                 
                                                 <span
-                                                    style="margin-top: 7px !important; cursor: pointer"
+                                                    style="margin-top: 7px !important; cursor: pointer;height: 7; width: 7; padding: 0;"
                                                     data-toggle="tooltip" 
                                                     title="e-imza tamamlandı" 
                                                     class="badge badge-success" 
                                                     *ngIf="!archiveTable &&  record['_e_sings'][0] == true">
-                                                    *
+                                                    &nbsp;
                                                 </span>
                                                     
                                             </td>
@@ -475,20 +476,20 @@
                                                             *ngIf="!archiveTable && record['_e_sings'][columnName] == false"> 
                                                             <span
                                                                 data-toggle="tooltip" 
-                                                                style="cursor: pointer"
+                                                                style="cursor: pointer;height: 7; width: 7; padding: 0;"
                                                                 title="Bu kolon e-imza bekliyor" 
                                                                 class="badge badge-warning" >
-                                                                -
+                                                                &nbsp;
                                                             </span>
                                                         </td><td 
                                                             style="vertical-align: top; width: 10px !important"
                                                             *ngIf="!archiveTable && record['_e_sings'][columnName] == true"> 
                                                             <span
                                                                 data-toggle="tooltip" 
-                                                                style="cursor: pointer"
+                                                                style="cursor: pointer;height: 7; width: 7; padding: 0;"
                                                                 title="e-imza tamamlandı" 
                                                                 class="badge badge-success" >
-                                                                *
+                                                                &nbsp;
                                                             </span>
                                                         </td>
                                                     </tr>                                                    

@@ -30,6 +30,8 @@ import tr.gov.tubitak.uekae.esya.api.smartcard.pkcs11.SmartCardException;
 import java.lang.Object;
 import java.lang.reflect.Method;
 import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 import java.util.AbstractMap;
 import java.util.ArrayList;
@@ -70,19 +72,18 @@ public class GeneralHelper {
     
     public static String rememberedESignPassword = "";
     
-    public static String mainInfoPath = "./files/control1.ang";   
+    public static String mainInfoPath = "./files/control1.ang"; 
+    public static String debugPath = "files/debug.ang";
+    public static String textPath = "files/text.ang";
+    public static String portPath = "files/port.ang";
+    
     public static boolean showMainInfoWindowOnLoad = false;
     
     public static boolean debug = true;
     public static String homePath = System.getProperty("user.home");
     public static String runningPath = (new File(".")).getAbsolutePath().replace("/.", "/").replace("\\.", "\\");
     public static String osName = System.getProperty("os.name");
-    private static String appPath = "";
-    
-    public static int formColumnSetId = 3;
-    public static int listColumnArrayId = 0;
-    public static int queryColumnArrayId = 0;
-    
+    private static String appPath = "";    
     
     
     public static void buzzer() {
@@ -170,7 +171,7 @@ public class GeneralHelper {
         return (ArrayList<LinkedTreeMap>)gson.fromJson(j, Object.class);
     }
     
-    public static Session getSession() throws IOException
+    public static Session getSession() throws IOException, ESYAException
     {
         if(session == null) session = new Session();        
         return session;
@@ -216,12 +217,16 @@ public class GeneralHelper {
         getMainWindow().loading(b);
     }
 
-    /*public static Image Logo() {
-        return Toolkit.getDefaultToolkit().getImage("img/logo.png");
-    }*/
+    public static Image Logo() {
+        return Toolkit.getDefaultToolkit().getImage("img/icon.png");
+    }
 
     public static String getTimeStamp(String s) {
         return new SimpleDateFormat(s).format(new Date());
+    }
+    
+    public static String readFromFile(String path) throws IOException {
+        return new String(Files.readAllBytes(Paths.get(path)));
     }
 
     /*public static void BildirimYap(String title, String desc) {

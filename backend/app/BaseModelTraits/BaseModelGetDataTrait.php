@@ -56,6 +56,8 @@ trait BaseModelGetDataTrait
     
     public function getModelForRelationData($params)
     {
+        global $pipe;
+        
         $temp = json_decode($params->column_array->join_table_ids);
         $params->joins = [];
         foreach($temp as $joinId)
@@ -64,6 +66,8 @@ trait BaseModelGetDataTrait
         $params->target_table = get_attr_from_cache('tables', 'id', $params->joins[0]->join_table_id, '*');//users t
         $params->target_column = get_attr_from_cache('columns', 'id', $params->joins[0]->join_column_id, '*');//department_id c
         $params->target_column->table_alias = $params->target_table->name;
+                
+        $pipe['table'] = $params->target_table->name;
         
         $params->record = new BaseModel($params->target_table->name);
         $params->record->fillVariables();
@@ -77,7 +81,7 @@ trait BaseModelGetDataTrait
         $params->record->addSorts($params->model, $params->columns, $params->sorts);
         $params->record->addWheres($params->model, $params->columns, $params->filters);
         $params->record->addSelects($params->model, $params->columns);
-        $params->record->addFilters($params->model, $params->table_name);
+        $params->record->addFilters($params->model, $params->table_name, 'list');
         
         $relationFilter = $this->getFilterForRelationData($params); 
         $params->record->addWhere($params->model, $params->target_column, $relationFilter);

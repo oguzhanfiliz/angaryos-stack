@@ -28,6 +28,8 @@ import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
+import java.net.ServerSocket;
+import java.net.Socket;
 import java.net.URI;
 import java.net.URL;
 import java.net.URLEncoder;
@@ -36,12 +38,17 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.security.InvalidKeyException;
+import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
+import java.util.Scanner;
+import java.util.concurrent.Callable;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
@@ -51,6 +58,7 @@ import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSession;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
+import javax.xml.bind.DatatypeConverter;
 import javax.xml.ws.Response;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -73,6 +81,8 @@ import org.apache.http.impl.client.HttpClients;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.params.CoreProtocolPNames;
 import org.apache.http.util.EntityUtils;
+import tr.gov.tubitak.uekae.esya.api.cmssignature.CMSSignatureException;
+import tr.gov.tubitak.uekae.esya.api.common.ESYAException;
 import tr.gov.tubitak.uekae.esya.api.smartcard.pkcs11.SmartOp;
 
 /**
@@ -81,138 +91,279 @@ import tr.gov.tubitak.uekae.esya.api.smartcard.pkcs11.SmartOp;
  */
 public class Session {
 
-    public String url = "https://192.168.10.185/", apiBaseUrl;
-    public String tokenPath = "files/token.ang",  mailPath = "files/mail.ang",  urlPath = "files/url.ang",  columnArrayAndSetAuthPath = "files/columnArrayAndSetAuth.ang";
-    public String token = "";
-    public LinkedTreeMap loggedInUserInfo = null;
-
-    public Session() throws IOException {
-        try {
-            File f = new File(urlPath);
-            if(f.exists()) this.url = (new String(Files.readAllBytes(Paths.get(this.urlPath))));
-        } catch (Exception e) { }        
-        
-        this.apiBaseUrl = this.url + "api/v1/";
-        
-        try {
-            File f = new File(columnArrayAndSetAuthPath);
-            if(f.exists())
-            {
-                String temp1 = (new String(Files.readAllBytes(Paths.get(this.columnArrayAndSetAuthPath))));
-                String[] temp2 = temp1.split("\\|");
-                
-                GeneralHelper.listColumnArrayId = Integer.parseInt(temp2[0]);
-                GeneralHelper.queryColumnArrayId = Integer.parseInt(temp2[1]);
-                GeneralHelper.formColumnSetId = Integer.parseInt(temp2[2]);
-            }
-        } catch (Exception e) { }
+    public ServerSocket server;
+    public Socket clientSocket;
+    public InputStream inputStream;
+    public OutputStream outputStream;
+    
+    public String tc = "";
+    
+    public Session() throws IOException, ESYAException {
+        tc = GeneralHelper.getSigning().getTCNumber();
     }
     
-    private boolean fillToken(String t) throws InvalidKeyException, IllegalBlockSizeException, BadPaddingException, FileNotFoundException, UnsupportedEncodingException
+    public void startSockerServer(int port)
     {
-        try {
-            
-            token = t;
-            loggedInUserInfo = getLoggedInUserInfo();
-            if(loggedInUserInfo == null) return false;
-            
-            String tc = GeneralHelper.getSigning().getTCNumber();
-            String userTc = ((LinkedTreeMap)loggedInUserInfo.get("user")).get("tc").toString();
-            if(!userTc.equals(tc))
-            {
-                GeneralHelper.showMessageBox("Cihaz başka bir kullanıcıya ait!");
-                return false;
-            }
-            
-            Encryption enc = GeneralHelper.getEncryption();
-        
-            File f = new File(tokenPath);
-            if(f.exists()) f.delete();
-            else f.createNewFile();
+        GeneralHelper.runAsync(new Callable<Void>() {
+            @Override
+            public Void call() throws Exception {
+                try {
+                    server = new ServerSocket(port);        
+                    clientSocket = server.accept();
+                    
+                    Log.info("Server başladı");
+                    
+                    GeneralHelper.getSession().waitForSocket();
+                } catch (Exception e) {
+                    Log.send(e);
+                    GeneralHelper.showMessageBox("E-imza sunucusu başlatılamadı!");
+                }
 
-            BigInteger serial = GeneralHelper.getSigning().getSerialNumber();
-            if(false && serial == BigInteger.ZERO)
-            {
-                GeneralHelper.showMessageBox("Cihaz takılı değil!");
-                return false;
+                return null;
             }
-            
-            token = t;
-            t += "|"+serial;
-            t += "|"+tc;
-            
-            PrintWriter writer = new PrintWriter(tokenPath, "UTF-8");
-            writer.print(enc.encode(t));
-            writer.close();
-
-            return true;
-        } catch (Exception e) {
-            Log.send(e);
-            return false;
-        }       
-    }    
+        });
+    }
     
-    public boolean controlRememberUser() throws InvalidKeyException, IllegalBlockSizeException, BadPaddingException{
-        try {
-            
-            if(SmartOp.getCardTerminals().length == 0) return false;
-            
-            File f = new File(mailPath);
-            if(!f.exists()) return false;
-            
-            String email = (new String(Files.readAllBytes(Paths.get(mailPath))));
-            GeneralHelper.createEncryptionObject(email);
-            Encryption enc = GeneralHelper.getEncryption();
-        
-            
-            f = new File(tokenPath);
-            if(!f.exists()) return false;            
-            
-            String t = enc.decode(new String(Files.readAllBytes(Paths.get(tokenPath))));
+    public void waitForSocket()
+    {
+        GeneralHelper.runAsync(new Callable<Void>() {
+            @Override
+            public Void call() throws Exception {
+                try {
+                    Log.info("Mesaj bekleniyor");
+                    
+                    inputStream  = clientSocket.getInputStream();
+                    outputStream = clientSocket.getOutputStream();
+                    
+                    String msg = readFromSocket();
+                    socketMessageReaded(msg); 
+                    
+                    Log.info("Mesaj ok yeniden dinlemeye başlanacak: " + msg);
+                } catch (Exception e) {
+                    clientSocket = server.accept();
+                }
 
-            if(t.length() == 0)
-            {
-                f.delete();
-                return false;
-            }
+                Thread.sleep(50);                    
+                waitForSocket();
                 
-            String[] temp = t.split("\\|");
-            if(temp.length != 3) 
-            {
-                f.delete();
-                return false;
+                Log.info("fnc ok");
+                return null;
             }
+        });
+    }
+    
+    private void socketMessageReaded(String msg) throws IOException, ESYAException, CMSSignatureException
+    {
+        String delimeter = "@@@";
+        
+        Log.info("Mesaj okundu: " + msg);
+        
+        if(msg.equals("")) return;
             
-            BigInteger rememberedSerial = new BigInteger(temp[1]);
-            String rememberedTc = temp[2];
-            
-            BigInteger currentSerial = GeneralHelper.getSigning().getSerialNumber();
-            String currentTc = GeneralHelper.getSigning().getTCNumber();
-            
-            if(!rememberedSerial.equals(currentSerial) | !rememberedTc.equals(currentTc))
-            {
-                GeneralHelper.showMessageBox("Bu kullanıcı hatırlanmıyor!");
-                f.delete();
-                return false;
-            }
-            
-            if(fillToken(temp[0])) return true;
-            else
-            {
-                f = new File(tokenPath);
-                f.delete();                
-                return false;
-            }
-            
-        } catch (Exception e) {
-            Log.send(e);
-            return false;
+        String ttt = msg.split(delimeter)[0];
+        
+        switch(msg.split(delimeter)[0])
+        {
+            case "connectionTest":
+                Log.info("Test mesajı: " + msg);
+                writeToSocket("connectionSuccess");
+                break;
+            case "getUserTc":
+                Log.info("Tc talebi: " + msg);
+                writeToSocket("tc"+delimeter+GeneralHelper.getSession().tc);
+                break;
+            case "eSign":
+                try 
+                {
+                    Log.info("İmzalama talebi: " + msg);
+                    String name = GeneralHelper.getSigning().getNewFileName();
+                    
+                    boolean control = GeneralHelper.getSigning().doESign(msg, name);                    
+                    if(!control) 
+                    {
+                        writeToSocket("eSignError"+delimeter+msg);
+                        break;
+                    }
+                        
+                    String filePath = SigningTestConstants.getDirectory() + "/" + name + ".p7s";
+                    control = uploadSign(filePath, msg); 
+                    
+                    if(!control) writeToSocket("eSignError"+delimeter+msg);
+                    else writeToSocket("eSignSuccess"+delimeter+msg);
+                }
+                catch (Exception e)
+                {
+                    Log.send(e);
+                }
+                break;
+            default:
+                Log.info("Geçersiz komut: " + msg);
+                writeToSocket("uncorrectRequest");
+                break;
         }
+        
+        Log.info("Mesaj için gereği yapıldı: " + msg);
     }
-
-    private String cleanQuotes(String s)
+    
+    private void writeToSocket(String msg) throws IOException
     {
-        return s.replaceAll("'", "").replaceAll("\"", "");
+        Log.info("Sokete yazılacak: " + msg);
+        
+        outputStream.write(encodeForSocket(msg));
+        outputStream.flush();
+        
+        Log.info("Sokete yazıldı: " + msg);
+    }
+    
+    private boolean socketHandShakeControl(byte[] b) throws UnsupportedEncodingException
+    {
+        Log.info("El sıkışma kontrol");
+        
+        String data = new String(b);
+        
+        Log.info("El sıkışma kontrol: " + data.substring(0, 3));
+        
+        if(!data.startsWith("GET")) return false;
+        
+        Log.info("El sıkışma başlıyor");
+        
+        Matcher get = Pattern.compile("^GET").matcher(data);
+
+        if (get.find()) {
+            Matcher match = Pattern.compile("Sec-WebSocket-Key: (.*)").matcher(data);
+            match.find();
+
+            byte[] response = null;
+            try {
+                response = ("HTTP/1.1 101 Switching Protocols\r\n"
+                        + "Connection: Upgrade\r\n"
+                        + "Upgrade: websocket\r\n"
+                        + "Sec-WebSocket-Accept: "
+                        + DatatypeConverter.printBase64Binary(
+                        MessageDigest
+                                .getInstance("SHA-1")
+                                .digest((match.group(1) + "258EAFA5-E914-47DA-95CA-C5AB0DC85B11")
+                                        .getBytes("UTF-8")))
+                        + "\r\n\r\n")
+                        .getBytes("UTF-8");
+            } catch (NoSuchAlgorithmException e) {
+                Log.send(e);
+                e.printStackTrace();
+            }
+
+            try {
+                outputStream.write(response, 0, response.length);
+            } catch (IOException e) {
+                Log.send(e);
+                e.printStackTrace();
+            }
+        }
+        
+        Log.info("El sıkışma başarılı");
+        
+        return true;        
+    }
+    
+    private String readFromSocket() throws IOException {
+        Log.info("Soket okunmak için beklenecek");
+        
+        int len = 0;
+        byte[] b = new byte[1024];
+        
+        len = inputStream.read(b);
+        Log.info("Soket data uzunluğu" + len);
+        if(len == -1)
+        {
+            Log.info("-1 uzunluklu mesaj geldi dinleme yeniden başlatılıyor.");
+            clientSocket = server.accept();
+            return "";
+        }
+        
+        if(this.socketHandShakeControl(b)) return "";//test et tekrar read bekleme koyulabilir belki. bi üstteki gibi
+        
+        Log.info("Mesaj el sıkışma talebi değil");
+        
+        byte rLength = 0;
+        int rMaskIndex = 2;
+        int rDataStart = 0;
+        //b[0] is always text in my case so no need to check;
+        byte data = b[1];
+        byte op = (byte) 127;
+        rLength = (byte) (data & op);
+
+        if(rLength==(byte)126) rMaskIndex=4;
+        if(rLength==(byte)127) rMaskIndex=10;
+
+        byte[] masks = new byte[4];
+
+        int j=0;
+        int i=0;
+        for(i=rMaskIndex;i<(rMaskIndex+4);i++){
+            masks[j] = b[i];
+            j++;
+        }
+
+        rDataStart = rMaskIndex + 4;
+
+        int messLen = len - rDataStart;
+
+        byte[] message = new byte[messLen];
+
+        for(i=rDataStart, j=0; i<len; i++, j++){
+            message[j] = (byte) (b[i] ^ masks[j % 4]);
+        }
+
+        String temp = new String(message); 
+        Log.info("Mesaj çözüldü: " + temp);
+        return temp;
+    }
+    
+    public static byte[] encodeForSocket(String mess) throws IOException{
+        byte[] rawData = mess.getBytes();
+
+        int frameCount  = 0;
+        byte[] frame = new byte[10];
+
+        frame[0] = (byte) 129;
+
+        if(rawData.length <= 125){
+            frame[1] = (byte) rawData.length;
+            frameCount = 2;
+        }else if(rawData.length >= 126 && rawData.length <= 65535){
+            frame[1] = (byte) 126;
+            int len = rawData.length;
+            frame[2] = (byte)((len >> 8 ) & (byte)255);
+            frame[3] = (byte)(len & (byte)255);
+            frameCount = 4;
+        }else{
+            frame[1] = (byte) 127;
+            int len = rawData.length;
+            frame[2] = (byte)((len >> 56 ) & (byte)255);
+            frame[3] = (byte)((len >> 48 ) & (byte)255);
+            frame[4] = (byte)((len >> 40 ) & (byte)255);
+            frame[5] = (byte)((len >> 32 ) & (byte)255);
+            frame[6] = (byte)((len >> 24 ) & (byte)255);
+            frame[7] = (byte)((len >> 16 ) & (byte)255);
+            frame[8] = (byte)((len >> 8 ) & (byte)255);
+            frame[9] = (byte)(len & (byte)255);
+            frameCount = 10;
+        }
+
+        int bLength = frameCount + rawData.length;
+
+        byte[] reply = new byte[bLength];
+
+        int bLim = 0;
+        for(int i=0; i<frameCount;i++){
+            reply[bLim] = frame[i];
+            bLim++;
+        }
+        for(int i=0; i<rawData.length;i++){
+            reply[bLim] = rawData[i];
+            bLim++;
+        }
+
+        return reply;
     }
     
     public String httpGetBasic(String u) throws MalformedURLException, IOException
@@ -222,31 +373,6 @@ public class Session {
         StringBuilder result = null;
         
         try {
-            
-            TrustManager[] trustAllCerts = new TrustManager[] {
-                new X509TrustManager() {
-                    public java.security.cert.X509Certificate[] getAcceptedIssuers() {
-                        return null;
-                    }
-                    public void checkClientTrusted(X509Certificate[] certs, String authType) {
-                    }
-                    public void checkServerTrusted(X509Certificate[] certs, String authType) {
-                    }
-                }
-            };
-            
-            SSLContext sc = SSLContext.getInstance("SSL");
-            sc.init(null, trustAllCerts, new java.security.SecureRandom());
-            HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
-
-            HostnameVerifier allHostsValid = new HostnameVerifier() {
-                public boolean verify(String hostname, SSLSession session) {
-                    return true;
-                }
-            };
-            
-            HttpsURLConnection.setDefaultHostnameVerifier(allHostsValid);
-            
             URL url = new URL(u);
             conn = (HttpURLConnection) url.openConnection();
             conn.setRequestMethod("GET");
@@ -308,12 +434,7 @@ public class Session {
     public LinkedTreeMap httpPost(String u, List<NameValuePair> data) {
         
         try {
-            HttpClient httpclient = HttpClients
-                                        .custom()
-                                        .setSSLContext(new SSLContextBuilder().loadTrustMaterial(null, TrustAllStrategy.INSTANCE).build())
-                                        .setSSLHostnameVerifier(NoopHostnameVerifier.INSTANCE)
-                                        .build();
-            
+            HttpClient httpclient = HttpClients.createDefault();
             HttpPost httppost = new HttpPost(u);
 
             httppost.setEntity(new UrlEncodedFormEntity(data, "UTF-8"));
@@ -355,95 +476,30 @@ public class Session {
         GeneralHelper.showMessageBox(m);
     }
     
-    private LinkedTreeMap getLoggedInUserInfo()
-    {
-        try {
-            return httpGet(apiBaseUrl + token + "/getLoggedInUserInfo");
-        } catch (Exception e) {
-            Log.send(e);
-        }
-        
-        return null;
-    }
-    
-    public boolean loginWithMail(String email, String password) throws IOException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException, NoSuchAlgorithmException, NoSuchPaddingException {
-        if(!Security.tryLogin()){
-            GeneralHelper.showMessageBox("Yeteri kadar deneme yaptınız! İzin verilmiyor...");
-            return false;
-        }
-        
-        email = cleanQuotes(email);
-        password = cleanQuotes(password);
-        
-        String u = apiBaseUrl + "login";
-
-        List<NameValuePair> data = new ArrayList<NameValuePair>(2);
-        data.add(new BasicNameValuePair("email", email));
-        data.add(new BasicNameValuePair("password", password));
-        data.add(new BasicNameValuePair("clientInfo", "{type: 'pc', app: 'e-imza.jar'}"));
-            
-        LinkedTreeMap r = httpPost(u, data);
-        if(r == null) return false;
-        
-        this.writeUserMailToFile(email);  
-        GeneralHelper.createEncryptionObject(email);
-        
-        if(fillToken(r.get("token").toString()))
-            return true;
-        else{
-            GeneralHelper.showMessageBox("Giriş yapıldı ama token oluşturulamadı! Yöneticiye başvurun.");
-            return false;
-        }
-        
-    }
-    
-    public boolean writeUserMailToFile(String email) throws FileNotFoundException, UnsupportedEncodingException
-    {
-        try {
-            File f = new File(mailPath);
-            if(f.exists()) f.delete();
-            else f.createNewFile();
-
-            PrintWriter writer = new PrintWriter(mailPath, "UTF-8");
-            writer.print(email);
-            writer.close();
-            
-            return true;
-        } catch (Exception e) {
-            Log.send(e);
-            return false;
-        }
-    }
-
-    public void logoutAndExit() {
-        File f = new File(tokenPath);
-        if(f.exists()) f.delete();
-        System.exit(0); 
-    }
-
-    public boolean uploadSign(LinkedTreeMap eSign, String path) {
+    public boolean uploadSign(String filePath, String msg) {
         
         try {
-            String id = eSign.get("id").toString().replace(".0", "");
+            String delimeter = "@@@";
             
-            String u = this.apiBaseUrl + this.token + "/tables/e_signs/"+id+"/update";
+            String[] arr = msg.split(delimeter);
+            String str = arr[1];
+            String url = arr[2];
+            String pin = arr[3];
+            String columnSetId = arr[4];
+            String recordId = arr[5];
+            
+            HttpClient httpClient = HttpClients.createDefault();
 
-            HttpClient httpClient = HttpClients
-                                        .custom()
-                                        .setSSLContext(new SSLContextBuilder().loadTrustMaterial(null, TrustAllStrategy.INSTANCE).build())
-                                        .setSSLHostnameVerifier(NoopHostnameVerifier.INSTANCE)
-                                        .build();
-
-            HttpPost httpPost = new HttpPost(u);
+            HttpPost httpPost = new HttpPost(url);
 
             MultipartEntityBuilder builder = MultipartEntityBuilder.create();
             builder.addTextBody("state", "1", ContentType.TEXT_PLAIN);
             builder.addTextBody("signed_at", GeneralHelper.getTimeStamp("yyyy-MM-dd HH:mm:ss"), ContentType.TEXT_PLAIN);
             builder.addTextBody("sign_file_old", "", ContentType.TEXT_PLAIN);
-            builder.addTextBody("column_set_id", GeneralHelper.formColumnSetId+"", ContentType.TEXT_PLAIN);
-            builder.addTextBody("id", id, ContentType.TEXT_PLAIN);
+            builder.addTextBody("column_set_id", columnSetId+"", ContentType.TEXT_PLAIN);
+            builder.addTextBody("id", recordId+"", ContentType.TEXT_PLAIN);
 
-            File f = new File(path);
+            File f = new File(filePath);
             builder.addBinaryBody( "sign_file[]", new FileInputStream(f), ContentType.create("application/pkcs7-signature"), f.getName() );
 
             HttpEntity multipart = builder.build();

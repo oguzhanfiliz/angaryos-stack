@@ -14,6 +14,8 @@ export class SessionHelper
     disableDoHttpRequestErrorControl = false; 
     doHttpRequestLastTime = 0;
     
+    socket = null;
+    
     constructor(
       private httpClient: HttpClient,
       private messageHelper: MessageHelper,
@@ -433,5 +435,76 @@ export class SessionHelper
       str = str.replace(/—-/g, "_");
 
       return str.toLowerCase();
+    }
+
+    async eSignCancel(sign)
+    {
+      var url = this.getBackendUrlWithToken()+"tables/e_signs/"+sign["id"]+"/update";
+
+      var setId = BaseHelper.loggedInUserInfo.auths['tables']['e_signs']["edits"][0];
+      
+      var params = 
+      {
+        "column_set_id": setId,
+        "in_form_column_name": "state",
+        "single_column": "state",
+        "state": 0
+      };
+
+      return this.doHttpRequest("POST", url, params) 
+      .then((data) => 
+      {
+        if(data["message"] == "success") return true;
+
+        this.messageHelper.sweetAlert("İmzalama reddederken hata oluştu!", 'Hata', 'warning');
+        return false;
+      })
+      .catch((e) => 
+      {
+        this.messageHelper.sweetAlert("İmzalama reddederken hata oluştu!", 'Hata', 'warning');
+      });
+    }
+
+    doESign(sign, password)
+    {
+      console.log('imzala');
+
+      var delimeter = "@@@";
+      var columnSetId = BaseHelper.loggedInUserInfo['auths']['tables']['e_signs']['edits'][0];
+
+      var msg = "eSign"+delimeter+sign.signed_text + delimeter;
+      msg += "https://kamu.kutahya.gov.tr/api/v1/"+BaseHelper.token+"/tables/e_signs/"+sign.id+"/update"+delimeter;
+      msg += password + delimeter;
+      msg += columnSetId + delimeter;
+      msg += sign.id + delimeter;
+
+      this.sendESignMessage(msg);
+    }
+
+    getConnectedeSignSocket()
+    {
+      if(this.socket != null)
+      {
+        console.log("socket kontrol et connected ise return olsun");
+        return this.socket;
+      }
+
+      try 
+      {
+        var host = 'ws://127.0.0.1:4326';
+        this.socket = new WebSocket(host);  
+
+        return this.socket;
+      } 
+      catch (error) 
+      {
+        return null;
+      }
+    }
+
+    async sendESignMessage(msg)
+    {
+      console.log('sokete gonder: ' + msg);
+      this.socket.send(msg);
     }
 }

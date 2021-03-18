@@ -18,12 +18,12 @@ trait BaseModelSelectColumnDataTrait
         $temp = helper('get_null_object');
         $temp->page = $params->page;
         $temp->search = $params->search;
-        $temp->up_column_name = $params->upColumnName;
-        $temp->up_column_data = $params->upColumnData;
-        $temp->request = $params->currentFormData;
+        $temp->up_column_name = @$params->upColumnName;
+        $temp->up_column_data = @$params->upColumnData;
+        $temp->request = @$params->currentFormData;
         $temp->record = @$params->upColumnDataRecord;
         $temp->column = $this;
-        $temp->record_per_page = $params->limit;
+        $temp->record_per_page = isset($params->limit) ? $params->limit : 10;
         
         return ColumnClassificationLibrary::relation(  $this, 
                                                         __FUNCTION__,
@@ -76,6 +76,17 @@ trait BaseModelSelectColumnDataTrait
             $query->whereRaw($source.'::text ilike \'%'.$params->search.'%\'');
             $query->orWhereRaw($display.'::text ilike \'%'.$params->search.'%\'');
         });        
+
+        
+        if(\Request::segment(7) == 'getRelationTableData') 
+        {
+            $tree = \Request::segment(8);
+            $columnArrayId = explode(':', $tree)[1];
+            $columnArray = get_attr_from_cache('column_arrays', 'id', $columnArrayId, '*');
+            $ids = json_decode($columnArray->join_table_ids);
+            $joinTable = get_attr_from_cache('join_tables', 'id', $ids[0], '*');
+            $pipe['table'] = get_attr_from_cache('tables', 'id', $joinTable->join_table_id, 'name');//pipe filter içinde kullanılıyor
+        }
         
         $temp->addFilters($model, $table->name, 'selectColumnData');
         

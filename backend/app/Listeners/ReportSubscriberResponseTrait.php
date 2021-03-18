@@ -46,6 +46,11 @@ trait ReportSubscriberResponseTrait
         return $this->responseRecordReportCustomFileStandartDataXlsx($data, 'Xls');
     }
 
+    private function responseRecordReportCustomFileGridDataXlsx($data)
+    {
+        return $this->responseRecordReportCustomFileStandartDataXlsx($data, 'Xlsx');
+    }
+
     public function responseRecordReportCustomFileStandartDataXlsx($data, $customType = 'Xlsx')
     {
         $disk = env('FILESYSTEM_DRIVER', 'uploads');

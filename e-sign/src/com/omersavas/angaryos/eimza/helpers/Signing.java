@@ -5,7 +5,6 @@
  */
 package com.omersavas.angaryos.eimza.helpers;
 
-import com.omersavas.angaryos.eimza.views.PasswordWindow;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.text.SimpleDateFormat;
@@ -62,22 +61,27 @@ public class Signing
         return temp.getSerialNumberAttribute();
     }
     
-    public boolean sing(String str, String pass, String name) throws CMSSignatureException, SmartCardException, ESYAException, IOException {
+    public boolean doESign(String msg, String name) throws CMSSignatureException, SmartCardException, ESYAException, IOException {
         try {
-            if(GeneralHelper.debug) System.out.println("test:A");
+            Log.info("test:A");
+                   
+            String delimeter = "@@@";
             
-            if(pass == null) return false;
-            if(pass.length() == 0) return false;
+            String[] arr = msg.split(delimeter);
+            String str = arr[1];
+            String url = arr[2];
+            String pin = arr[3];
+            String columnSetId = arr[4];
             
-            if(GeneralHelper.debug) System.out.println("B");
+            Log.info("B");
             try {                
-                if(GeneralHelper.debug) System.out.println("C");
+                Log.info("C");
                 if(SmartOp.getCardTerminals().length == 0){
                     GeneralHelper.showMessageBox("Takılı e-imza cihazı yok!");
                     return false;
                 }
                 
-                if(GeneralHelper.debug) System.out.println("D");
+                Log.info("D");
                 if(!SigningSmartCardManager.serial.equals(BigInteger.ZERO) && !SigningSmartCardManager.serial.equals(this.getSerialNumber())) {
                     GeneralHelper.showMessageBox("Farklı bir e imza cihazı takılmış! Tekrar giriş yapın.");
                     return false;
@@ -88,7 +92,7 @@ public class Signing
                 return false;
             }
                         
-            if(GeneralHelper.debug) System.out.println("G");
+            Log.info("G");
             BaseSignedData bs = new BaseSignedData();
         
             String t = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
@@ -97,51 +101,51 @@ public class Signing
             bs.addContent(content);
 
             HashMap<String, Object> params = new HashMap<String, Object>();
-            if(GeneralHelper.debug) System.out.println("H");
+            Log.info("H");
             //if the user does not want certificate validation at generating signature,he can add 
             //P_VALIDATE_CERTIFICATE_BEFORE_SIGNING parameter with its value set to false
             //params.put(EParameters.P_VALIDATE_CERTIFICATE_BEFORE_SIGNING, false);
 
             //necessary for certificate validation.By default,certificate validation is done 
             params.put(EParameters.P_CERT_VALIDATION_POLICY, SigningTestConstants.getPolicy());
-            if(GeneralHelper.debug) System.out.println("I");
+            Log.info("I");
             
             //By default, QC statement is checked,and signature wont be created if it is not a 
             //qualified certificate. 
             boolean checkQCStatement = SigningTestConstants.getCheckQCStatement();
-            if(GeneralHelper.debug) System.out.println("J");
+            Log.info("J");
             
             //Get qualified or non-qualified certificate.
             ECertificate cert = SigningSmartCardManager.getInstance().getSignatureCertificate(checkQCStatement, !checkQCStatement);
             
             EName temp = cert.getSubject();
             tc = temp.getSerialNumberAttribute();
-            if(GeneralHelper.debug) System.out.println("K");
+            Log.info("K");
             
-            BaseSigner signer = SigningSmartCardManager.getInstance().getSigner(pass, cert);
-            if(GeneralHelper.debug) System.out.println("L");
+            BaseSigner signer = SigningSmartCardManager.getInstance().getSigner(pin, cert);
+            Log.info("L");
             
             //add signer
             //Since the specified attributes are mandatory for bes,null is given as parameter 
             //for optional attributes
             bs.addSigner(ESignatureType.TYPE_BES, cert , signer, null, params);
-            if(GeneralHelper.debug) System.out.println("M");
+            Log.info("M");
             
             SigningSmartCardManager.getInstance().logout();
-            if(GeneralHelper.debug) System.out.println("N");
+            Log.info("N");
             
             byte [] signedDocument = bs.getEncoded();
             //return new String(signedDocument);
             //return signedDocument.toString();
             //return bs.getEncoded().toString();
             //
-            if(GeneralHelper.debug) System.out.println("O");
+            Log.info("O");
             //Genel.showMessageBox("Burada stringi return et hata olursa boş return et");
             //write the contentinfo to file
             AsnIO.dosyayaz(signedDocument,SigningTestConstants.getDirectory() + "/" + name + ".p7s");
 
             lastSignedText = str;
-            if(GeneralHelper.debug) System.out.println("P");
+            Log.info("P");
             return true;
                 
         } catch (LoginException e) {
@@ -156,26 +160,5 @@ public class Signing
 
     public String getNewFileName() {
         return GeneralHelper.getTimeStamp("yyyy-MM-dd_HHmmss");
-    }
-
-    public String getPasswordFromUser() {
-        try {
-            if(GeneralHelper.rememberedESignPassword.length() > 0) return GeneralHelper.rememberedESignPassword;
-                
-            PasswordWindow sp = new PasswordWindow(GeneralHelper.getMainWindow(), true);
-            sp.setLocationRelativeTo(null);
-            GeneralHelper.setCurrentWindow(sp);
-            sp.show();
-            
-            return sp.password;
-        } catch (Exception e) {
-            Log.send(e);
-        }
-        
-        try {
-            GeneralHelper.setCurrentWindow(GeneralHelper.getMainWindow());
-        } catch (Exception e) { }
-        
-        return "";
     }
 }

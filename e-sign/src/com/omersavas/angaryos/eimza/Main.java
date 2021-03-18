@@ -31,11 +31,9 @@ import javax.swing.plaf.basic.BasicInternalFrameUI;
  */
 public class Main {
     
-    private static String debugPath = "files/debug.ang";
-    
     private static void debugStateUpdate()
     {
-        File f = new File(debugPath);
+        File f = new File(GeneralHelper.debugPath);
         if(f.exists()) GeneralHelper.debug = true;
     }
     

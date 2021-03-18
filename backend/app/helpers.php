@@ -111,7 +111,8 @@ function send_log($level, $message, $object = NULL)
     $object['uri'] = @$_SERVER['REQUEST_URI'];
     $object['logTime'] = date("Y-m-d h:i:sa");
     $object['response_data'] = \Request::all();
-    
+    $object['ip'] = [@$_SERVER['HTTP_X_REAL_IP'], @$_SERVER['HTTP_X_FORWARDED_FOR'], @$_SERVER['REMOTE_ADDR']];
+
     \App\Jobs\SendLog::dispatch($level, $message, json_encode($object));
 }
 
@@ -157,3 +158,12 @@ function custom_abort_ext($message)
     $ids = json_decode(DEBUG_USER_IDS);
     if(!in_array($userId, $ids)) custom_abort($message);
 } 
+
+function send_firebese_notify($title, $msg, $user)
+{
+    $tokens = json_decode($user->tokens);
+    
+    foreach($tokens as $t)
+        if(strlen(@$t->clientInfo->firebaseToken) > 0)
+            \App\Libraries\MessageLibrary::fireBaseCloudMessaging($title, $msg, $t->clientInfo->firebaseToken);
+}

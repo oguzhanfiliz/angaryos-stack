@@ -66,3 +66,4 @@ error_reporting(E_ALL);
 define('BASE_PATH', '/var/www/backend/');
 $pipe['logRandom'] = date('dymHis').rand(100, 500);
 $pipe['laravelStart'] = microtime(true);
+$pipe['addedJoins'] = [];

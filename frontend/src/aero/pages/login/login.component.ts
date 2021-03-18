@@ -39,6 +39,17 @@ export class LoginComponent
         this.aeroThemeHelper.removeThemeClass();
         
         this.aeroThemeHelper.pageRutine();
+        
+        setTimeout(() => this.cookieControl(), 2000);
+    }
+
+    cookieControl()
+    {
+        var c = BaseHelper.readFromLocal('cookieControl');
+        if(c == null)
+            this.messageHelper.sweetAlert("Sitemizden en iyi şekilde faydalanabilmeniz için çerezler kullanılmaktadır. Bu siteye giriş yaparak çerez kullanımını kabul etmiş sayılıyorsunuz. Daha fazla bilgi için 'Güvenlik politikası' ve 'Aydınlatma Metni' sayfamızı ziyaret edebilirsiniz", "Çerez Kullanımı");
+        
+        BaseHelper.writeToLocal('cookieControl', true);
     }
 
     validate()

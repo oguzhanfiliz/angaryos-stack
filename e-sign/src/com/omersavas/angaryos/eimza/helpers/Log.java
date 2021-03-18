@@ -162,4 +162,10 @@ public class Log {
             return false;
         }
     }
+    
+    public static void info(String msg)
+    {
+        if(!GeneralHelper.debug) return;
+        System.out.println(msg);
+    }
 }

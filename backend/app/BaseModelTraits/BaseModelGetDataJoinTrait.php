@@ -44,6 +44,8 @@ trait BaseModelGetDataJoinTrait
     
     public function addJoinWithColumnForJoinTableIds($params)
     {
+        global $pipe;
+
         $joinIds = json_decode($params->relation->join_table_ids);
         
         if(@$params->disable_first_join) unset($joinIds[0]);
@@ -51,6 +53,9 @@ trait BaseModelGetDataJoinTrait
         $i = 0;
         foreach($joinIds as $joinId)
         {
+            //if(in_array($join->id, $pipe['addedJoins'])) continue;
+            //array_push($pipe['addedJoins'], $join->id);
+
             $params->joinIndex = $i++;
 
             $params->join = get_attr_from_cache('join_tables', 'id', $joinId, '*');
@@ -246,6 +251,11 @@ trait BaseModelGetDataJoinTrait
     
     public function addJoinForColumnArray($model, $join)
     {
+        global $pipe;
+
+        //if(isset($pipe['AddedJoin.'.$join->id])) return;
+        //$pipe['AddedJoin.'.$join->id] = TRUE;
+
         $params = helper('get_null_object');
         
         $params->join = $join;
@@ -263,7 +273,7 @@ trait BaseModelGetDataJoinTrait
             $params->realtion_column_name = $join->join_table_alias.'.'.$params->realtion_column_name;
         
         $join->connection_column_with_alias = helper('reverse_clear_string_for_db', $join->connection_column_with_alias);
-        
+
         $columnName = explode('.', $join->connection_column_with_alias);
         $columnName = last($columnName);
         $columnName = trim($columnName, '"');

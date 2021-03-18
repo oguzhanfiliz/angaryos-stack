@@ -27,6 +27,8 @@ export class RichTextElementComponent
     
     setRichTextElement()
     {
+        this.value = filterXSS(this.value);
+        
         var selector = " [name='"+this.name+"-rich-text']";
         if(this.upFormId.length > 0) selector = '[ng-reflect-id="'+this.upFormId+'"] '+selector;
         

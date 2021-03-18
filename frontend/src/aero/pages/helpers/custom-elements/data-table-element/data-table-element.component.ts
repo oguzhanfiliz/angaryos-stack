@@ -1001,6 +1001,7 @@ export class DataTableElementComponent
     
     edit(record)
     {
+        if(BaseHelper['pipe']['ctrlKey']) return;
         this.generalHelper.navigate("table/"+this.tableName+"/"+record.id+"/edit")
     }
     
@@ -1194,6 +1195,7 @@ export class DataTableElementComponent
             var className = this.getRecordRowClass(j, this.data['records'][j]);
             this.data['records'][j]['recordClass'] = className;
         }
+        
         this.clearSelectionText()
     }
     

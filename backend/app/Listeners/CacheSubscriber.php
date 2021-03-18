@@ -270,10 +270,13 @@ class CacheSubscriber
         }
     }
     
-    private function clearUserCache($record)
+    public function clearUserCache($record)
     {
-        ClearCache::{$this->dispatchType}('tableName:users|id:'.$record->id.'|authTree');
-        ClearCache::{$this->dispatchType}('user:'.$record->id.'|tableGroups');
+        //$temp = $this->dispatchType;
+        $temp = 'dispatchNow';//sync forever for users cache
+
+        ClearCache::{$temp}('tableName:users|id:'.$record->id.'|authTree');
+        ClearCache::{$temp}('user:'.$record->id.'|tableGroups');
         
         $keys = $this->getCacheKeys();
         foreach($keys as $key)
@@ -284,13 +287,13 @@ class CacheSubscriber
                 $token = explode('.', explode('userToken:', $key)[1])[0];
                 $user = helper('get_user_from_token', $token);
                 if($user == NULL)
-                    ClearCache::{$this->dispatchType}($key);
+                    ClearCache::{$temp}($key);
                 else if($record->id == $user->id);
-                    ClearCache::{$this->dispatchType}($key);
+                    ClearCache::{$temp}($key);
             }
             
         if($record->id == PUBLIC_USER_ID)
-            ClearCache::{$this->dispatchType}('publicUser');
+            ClearCache::{$temp}('publicUser');
     }
     
     private function clearSettingCache($record)
