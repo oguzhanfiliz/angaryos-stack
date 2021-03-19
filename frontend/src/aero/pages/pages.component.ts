@@ -11,14 +11,10 @@ import { SessionHelper } from './helpers/session';
 import { GeneralHelper } from './helpers/general';
 import { AeroThemeHelper } from './helpers/aero.theme';
 
-import Swal from 'sweetalert2';
-import 'sweetalert2/dist/sweetalert2.min.css';
-
 declare var $: any;
 
 @Component({
   selector: 'pages',
-  styleUrls: ['pages.component.scss'],
   templateUrl: 'pages.component.html'
 })
 export class PagesComponent 
@@ -28,10 +24,6 @@ export class PagesComponent
   profilePictureUrl = ""
   userEditUrl = ""
   //searchIntervalId = -1;
-
-  eSigns = [];
-  isESignUserTrue = false;
-  eSignTimeOut = 1000 * 60 * 5;
 
   constructor(
         public messageHelper: MessageHelper,
@@ -49,203 +41,7 @@ export class PagesComponent
     $('body').keydown((event) => this.keyEvent(event));
     $('body').keyup((event) => this.keyEvent(event));
     
-    $(".page-loader-wrapper").fadeOut();
-
-    this.eSignServerOperations();
-
-    BaseHelper.writeToPipe('basePageComponent', this);
-  }
-  
-  async eSignServerOperations()
-  {   
-    var socket = this.sessionHelper.getConnectedeSignSocket()
-    var th = this;
-
-    socket.onopen = async function() 
-    {
-      await BaseHelper.sleep(500);
-      th.sessionHelper.sendESignMessage("connectionTest");
-    };
-      
-      
-    socket.onmessage = async function(e) 
-    {
-      var delimeter = "@@@";
-
-      console.log("soketten gelen: " + e.data);
-      await BaseHelper.sleep(500);
-
-      switch(e.data.split(delimeter)[0])
-      {
-        case "connectionSuccess":          
-          th.sessionHelper.sendESignMessage("getUserTc"); 
-          break;
-        case "eSignSuccess":   
-          console.log("ok id:" +e.data.split(delimeter)[6]);
-
-          for(var i = 0; i < th.eSigns.length; i++)
-            if(th.eSigns[i]['id'] == e.data.split(delimeter)[6]) 
-            {
-              th.eSigns.splice(i, 1);
-              th.messageHelper.sweetAlert("İmzalama başarılı", "Tamamlandı", "success");
-              break;
-            }
-          break;
-        case "eSignError":   
-          console.log("error id:" +e.data.split(delimeter)[6]);
-          th.messageHelper.sweetAlert("İmzalama esnasında hata oluştu!", "Hata!", "warning");
-          break;
-        case "tc":    
-          if(BaseHelper.loggedInUserInfo.user.tc == e.data.split(delimeter)[1]) 
-            th.isESignUserTrue = true;
-          break;
-      }
-      
-    };
-  
-    socket.onclose = function() 
-    { 
-      console.log("soket kapandi"); 
-      th.sessionHelper.socket = null;
-      th.isESignUserTrue = false;
-    };
-  }
-
-  async eSignOperations()
-  {
-    if(typeof this.user['id'] == "undefined") return;
-
-    var key = "user:"+this.user['id']+".eSigns";
-    var eSigns = BaseHelper.readFromLocal(key);
-    
-    if(eSigns == null || eSigns.length == 0) await this.fillESigns();
-    else this.eSigns = eSigns;
-
-    this.eSignControl();
-  }
-
-  eSignControl()
-  {
-    var rememberKey = "user:"+this.user['id']+".eSignRemember";
-
-    if(!this.isESignUserTrue)
-    {
-      this.messageHelper.toastMessage("E-imza programını çalıştırınız!");
-      return
-    }
-
-    if(this.eSigns.length == 0) return;
-
-    var sign = this.eSigns[0];
-
-    var remembered = BaseHelper.readFromLocal(rememberKey);
-    if(remembered == null) remembered = "";
-
-    var checked = "";
-    if(remembered.length > 0) checked = 'checked';
-
-    Swal.fire(
-    {
-      title: 'Elektronik İmza',
-      html: `<br><p style="text-align: justify;"> `+sign['signed_text']+` </p><br>
-      <input value="`+remembered+`" type="password" id="ePassword" class="swal2-input"  autocomplete="off"  placeholder="E-imza şifreniz"><br>
-      <input `+checked+` type="checkbox" name="eRemember" id="eRemember"> Hatırla`,
-      confirmButtonText: 'İmzala',
-      cancelButtonText: 'İmzalamayı Reddet',
-      customClass: 
-      {
-        confirmButton: 'btn btn-success',
-        cancelButton: 'btn btn-danger'
-      },
-      buttonsStyling: false,
-      showCloseButton: true,
-      showCancelButton: true,
-      focusConfirm: true,
-      preConfirm: () => 
-      {
-        var password = Swal.getPopup().querySelector('#ePassword')['value'];
-        if(password.length == 0) Swal.showValidationMessage(`E-imza boş geçilemez`);
-      }
-    })
-    .then((result) => 
-    {
-      if(typeof result["value"] == "undefined" || !result["value"]) 
-      {
-        if(result['dismiss'] != 'cancel') return;
-
-        this.sessionHelper.eSignCancel(sign)
-        .then((control) => 
-        {
-          if(control) this.eSigns.splice(0,1);
-          var key = "user:"+this.user['id']+".eSigns";
-          BaseHelper.writeToLocal(key, this.eSigns, this.eSignTimeOut);
-        });
-        return;
-      }
-
-      var password = Swal.getPopup().querySelector('#ePassword')['value'];
-      var remember = Swal.getPopup().querySelector('#eRemember');
-      
-      if(remember.checked) BaseHelper.writeToLocal(rememberKey, password);
-      else BaseHelper.removeFromLocal(rememberKey);
-
-      this.sessionHelper.doESign(sign, password); 
-    });
-    
-    if(remembered.length == 0) 
-      setTimeout(() => {
-        $('#ePassword').val("")
-      }, 750);
-  }
-
-  async fillESigns()
-  {
-    var url = this.sessionHelper.getBackendUrlWithToken()+"tables/e_signs";
-
-    var params = 
-    {
-      "page":1,
-      "limit":10,
-      "sorts":{ "id":true },
-      "filters":
-      {
-        "state":
-        {
-          "type":1,
-          "guiType":"boolean",
-          "filter":true
-        },
-        "signed_at":
-        {
-          "type":100,
-          "guiType":"datetime",
-          "filter":null
-        }
-      }
-    }
-
-    var auth = BaseHelper.loggedInUserInfo.auths['tables']['e_signs'];
-           
-    var listId = auth["lists"][0];
-    var queryId = listId;
-    if(typeof auth['queries'] != "undefined" && typeof auth['queries'][0] != "undefined")
-        queryId = auth['queries'][0]
-        
-    params['column_array_id'] = listId;
-    params['column_array_id_query'] = queryId;
-
-    var th = this;
-    await this.sessionHelper.doHttpRequest("POST", url, {"params": BaseHelper.objectToJsonStr(params)}) 
-    .then((data) => 
-    {
-      this.eSigns = data['records'];
-
-      var key = "user:"+this.user['id']+".eSigns";
-      BaseHelper.writeToLocal(key, this.eSigns, this.eSignTimeOut);  
-
-      if(this.eSigns.length > 0) th.eSignControl() 
-    })
-    .catch((e) => {  });
+    $(".page-loader-wrapper").fadeOut()
   }
   
   private pageRutine() 
@@ -295,11 +91,6 @@ export class PagesComponent
       this.fillUserEditUrl();
       
       this.aeroThemeHelper.updateBaseMenu();
-      
-      setTimeout(() => 
-      {
-        this.eSignOperations();
-      }, 3000);
     })
   }
 
@@ -344,16 +135,6 @@ export class PagesComponent
       default:
         console.log(func);
     }
-  }
-  
-  additionalLinkClicked(additionalLink)
-  {
-    DataHelper.loadAdditionalLinkPayload(this, additionalLink);
-    
-    var url = DataHelper.getUrlFromAdditionalLink(additionalLink);
-    
-    if(additionalLink['open_new_window']) window.open(url);
-    else window.location.href = url;
   }
   
   openBackendLogs()
