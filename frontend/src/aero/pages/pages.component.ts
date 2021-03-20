@@ -235,6 +235,8 @@ export class PagesComponent
       }
     }
 
+	if(typeof BaseHelper.loggedInUserInfo.auths['tables'] == "undefined") return;
+    if(typeof BaseHelper.loggedInUserInfo.auths['tables']['e_signs'] == "undefined") return;
     var auth = BaseHelper.loggedInUserInfo.auths['tables']['e_signs'];
            
     var listId = auth["lists"][0];
@@ -355,16 +357,6 @@ export class PagesComponent
       default:
         console.log(func);
     }
-  }
-  
-  additionalLinkClicked(additionalLink)
-  {
-    DataHelper.loadAdditionalLinkPayload(this, additionalLink);
-    
-    var url = DataHelper.getUrlFromAdditionalLink(additionalLink);
-    
-    if(additionalLink['open_new_window']) window.open(url);
-    else window.location.href = url;
   }
   
   openBackendLogs()
