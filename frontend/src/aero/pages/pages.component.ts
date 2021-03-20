@@ -64,7 +64,7 @@ export class PagesComponent
     socket.onopen = async function() 
     {
       await BaseHelper.sleep(500);
-      th.sessionHelper.sendESignMessage("connectionTest");
+      th.sessionHelper.sendESignMessage(BaseHelper.objectToJsonStr({type: "connectionTest"}));
     };
       
       
@@ -73,31 +73,36 @@ export class PagesComponent
       var delimeter = "@@@";
 
       console.log("soketten gelen: " + e.data);
+
+      var data = BaseHelper.jsonStrToObject(e.data);
+
       await BaseHelper.sleep(500);
 
-      switch(e.data.split(delimeter)[0])
+      switch(data['type'])
       {
         case "connectionSuccess":          
-          th.sessionHelper.sendESignMessage("getUserTc"); 
+          th.sessionHelper.sendESignMessage(BaseHelper.objectToJsonStr({type: "getUserTc"}));
           break;
-        case "eSignSuccess":   
-          console.log("ok id:" +e.data.split(delimeter)[6]);
+        case "doESignSuccess":   
+          console.log("ok id:" +data["recordId"]);
 
           for(var i = 0; i < th.eSigns.length; i++)
-            if(th.eSigns[i]['id'] == e.data.split(delimeter)[6]) 
+            if(th.eSigns[i]['id'] == data["recordId"]) 
             {
               th.eSigns.splice(i, 1);
               th.messageHelper.sweetAlert("İmzalama başarılı", "Tamamlandı", "success");
               break;
             }
           break;
-        case "eSignError":   
-          console.log("error id:" +e.data.split(delimeter)[6]);
-          th.messageHelper.sweetAlert("İmzalama esnasında hata oluştu!", "Hata!", "warning");
+        case "doESignError":   
+          console.log("error id:" +data["recordId"]);
+          th.messageHelper.sweetAlert("İmzalama esnasında hata oluştu!", "Hata!", "error");
           break;
-        case "tc":    
-          if(BaseHelper.loggedInUserInfo.user.tc == e.data.split(delimeter)[1]) 
-            th.isESignUserTrue = true;
+        case "returnTc":    
+          if(BaseHelper.loggedInUserInfo.user.tc == data["tc"]) 
+            th.isESignUserTrue = true;          
+          else 
+            alert("E imza uygulaması çalışıyor ama takılı olan cihaz size ait değil!");
           break;
       }
       
@@ -126,15 +131,15 @@ export class PagesComponent
 
   eSignControl()
   {
+    if(this.eSigns.length == 0) return;
+
     var rememberKey = "user:"+this.user['id']+".eSignRemember";
 
     if(!this.isESignUserTrue)
     {
-      this.messageHelper.toastMessage("E-imza programını çalıştırınız!");
+      this.messageHelper.sweetAlert("E-imza programına erişim yok! Programı başka bir uygulama yada sekme kullanıyor olabilir. Tüm sekmeleri ve uygulamarı kapatıp bu pencereyi yenilemeyi deneyin.", "Hata", "error");
       return
     }
-
-    if(this.eSigns.length == 0) return;
 
     var sign = this.eSigns[0];
 
@@ -148,7 +153,7 @@ export class PagesComponent
     {
       title: 'Elektronik İmza',
       html: `<br><p style="text-align: justify;"> `+sign['signed_text']+` </p><br>
-      <input value="`+remembered+`" type="password" id="ePassword" class="swal2-input"  autocomplete="off"  placeholder="E-imza şifreniz"><br>
+      <input value="`+remembered+`" type="password" id="ePassword" class="swal2-input" autocomplete="off" placeholder="E-imza şifreniz"><br>
       <input `+checked+` type="checkbox" name="eRemember" id="eRemember"> Hatırla`,
       confirmButtonText: 'İmzala',
       cancelButtonText: 'İmzalamayı Reddet',
@@ -171,7 +176,7 @@ export class PagesComponent
     {
       if(typeof result["value"] == "undefined" || !result["value"]) 
       {
-        if(result['dismiss'] != 'cancel') return;
+        if(result['dismiss'].toString() != 'cancel') return;
 
         this.sessionHelper.eSignCancel(sign)
         .then((control) => 
@@ -186,12 +191,12 @@ export class PagesComponent
       var password = Swal.getPopup().querySelector('#ePassword')['value'];
       var remember = Swal.getPopup().querySelector('#eRemember');
       
-      if(remember.checked) BaseHelper.writeToLocal(rememberKey, password);
+      if(remember['checked']) BaseHelper.writeToLocal(rememberKey, password);
       else BaseHelper.removeFromLocal(rememberKey);
 
       this.sessionHelper.doESign(sign, password); 
     });
-    
+
     if(remembered.length == 0) 
       setTimeout(() => {
         $('#ePassword').val("")
@@ -220,6 +225,12 @@ export class PagesComponent
           "type":100,
           "guiType":"datetime",
           "filter":null
+        },
+        "own_id":
+        {
+          "type":1,
+          "guiType":"multiselect",
+          "filter":[ BaseHelper.loggedInUserInfo.user['id'].toString() ]
         }
       }
     }

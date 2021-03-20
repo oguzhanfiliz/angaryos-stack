@@ -469,16 +469,19 @@ export class SessionHelper
     {
       console.log('imzala');
 
-      var delimeter = "@@@";
       var columnSetId = BaseHelper.loggedInUserInfo['auths']['tables']['e_signs']['edits'][0];
 
-      var msg = "eSign"+delimeter+sign.signed_text + delimeter;
-      msg += "https://kamu.kutahya.gov.tr/api/v1/"+BaseHelper.token+"/tables/e_signs/"+sign.id+"/update"+delimeter;
-      msg += password + delimeter;
-      msg += columnSetId + delimeter;
-      msg += sign.id + delimeter;
-
-      this.sendESignMessage(msg);
+      var data =
+      {
+        type: "doESign",
+        columnSetId: columnSetId,
+        url: "https://kamu.kutahya.gov.tr/api/v1/"+BaseHelper.token+"/tables/e_signs/"+sign.id+"/update",
+        pin: password,
+        recordId: sign.id,
+        text: sign['signed_text']
+      };
+ 
+      this.sendESignMessage(BaseHelper.objectToJsonStr(data));
     }
 
     getConnectedeSignSocket()

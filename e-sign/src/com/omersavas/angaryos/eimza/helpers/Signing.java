@@ -5,6 +5,7 @@
  */
 package com.omersavas.angaryos.eimza.helpers;
 
+import com.google.gson.internal.LinkedTreeMap;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.text.SimpleDateFormat;
@@ -61,17 +62,12 @@ public class Signing
         return temp.getSerialNumberAttribute();
     }
     
-    public boolean doESign(String msg, String name) throws CMSSignatureException, SmartCardException, ESYAException, IOException {
+    public boolean doESign(LinkedTreeMap data, String name) throws CMSSignatureException, SmartCardException, ESYAException, IOException {
         try {
             Log.info("test:A");
-                   
-            String delimeter = "@@@";
-            
-            String[] arr = msg.split(delimeter);
-            String str = arr[1];
-            String url = arr[2];
-            String pin = arr[3];
-            String columnSetId = arr[4];
+                               
+            String str = data.get("text").toString();
+            String pin = data.get("pin").toString();
             
             Log.info("B");
             try {                

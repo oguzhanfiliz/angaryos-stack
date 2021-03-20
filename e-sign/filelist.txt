@@ -8,6 +8,8 @@
 "config/certval-policy-test.xml",
 
 "files/message.wav",
+"files/port.ang",
+"files/updateUrl.ang",
 
 "img/add.png",
 "img/cancel.png",
@@ -16,6 +18,9 @@
 "img/refresh.png",
 "img/reload.png",
 "img/remove.png",
+"img/icon.png",
+"img/icon16x16.png",
+"img/bg.jpg",
 
 "lib/akiscif-2.7.11.jar",
 "lib/armeabi-0.0.1.jar",
@@ -75,9 +80,11 @@
 "lib/sqlite-jdbc-3.7.2.jar",
 "lib/sunpkcs11.jar",
 "lib/wsdl4j-1.6.2.jar",
+"lib/servlet-api.jar",
+"lib/spark-core-2.9.3.jar",
 
 "lisans/lisans.xml",
 
 "filelist.txt",
-"e-imza.jar",
+"e-sign.jar",
 "version.txt",

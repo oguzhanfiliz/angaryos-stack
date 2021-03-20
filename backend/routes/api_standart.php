@@ -6,7 +6,8 @@ Route::any('/', '\App\Http\Controllers\GeneralController@serviceOk');
 Route::post('/initializeDb', '\App\Http\Controllers\GeneralController@initializeDb');
 
     
-Route::post('login', 'AuthController@login');//Tested
+Route::post('login', 'AuthController@login');
+Route::post('deviceLogin', 'AuthController@deviceLogin');
 
 Route::group(['prefix' => '{token}'], function ()
 {

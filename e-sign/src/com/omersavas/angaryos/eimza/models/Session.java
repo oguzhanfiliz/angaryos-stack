@@ -154,42 +154,54 @@ public class Session {
     
     private void socketMessageReaded(String msg) throws IOException, ESYAException, CMSSignatureException
     {
-        String delimeter = "@@@";
+        //String delimeter = "@@@";
         
         Log.info("Mesaj okundu: " + msg);
         
         if(msg.equals("")) return;
-            
-        String ttt = msg.split(delimeter)[0];
         
-        switch(msg.split(delimeter)[0])
+        LinkedTreeMap data = GeneralHelper.jsonDecode(msg);
+        
+        String type = "";
+        try {
+            type = data.get("type").toString();
+        } catch (Exception e) {
+        }
+        
+            
+        //String ttt = msg.split(delimeter)[0];
+        
+        switch(type)
         {
             case "connectionTest":
                 Log.info("Test mesajı: " + msg);
-                writeToSocket("connectionSuccess");
+                writeToSocket("{\"type\": \"connectionSuccess\"}");
                 break;
             case "getUserTc":
-                Log.info("Tc talebi: " + msg);
-                writeToSocket("tc"+delimeter+GeneralHelper.getSession().tc);
+                Log.info("Tc talebi: " + msg);                
+                writeToSocket("{\"type\": \"returnTc\", \"tc\": "+GeneralHelper.getSession().tc+"}");
                 break;
-            case "eSign":
+            case "doESign":
                 try 
                 {
                     Log.info("İmzalama talebi: " + msg);
                     String name = GeneralHelper.getSigning().getNewFileName();
                     
-                    boolean control = GeneralHelper.getSigning().doESign(msg, name);                    
+                    boolean control = GeneralHelper.getSigning().doESign(data, name);                    
                     if(!control) 
                     {
-                        writeToSocket("eSignError"+delimeter+msg);
+                        data.put("type", "doESignError");
+                        writeToSocket(GeneralHelper.jsonEncode(data));
                         break;
                     }
                         
                     String filePath = SigningTestConstants.getDirectory() + "/" + name + ".p7s";
-                    control = uploadSign(filePath, msg); 
+                    control = uploadSign(filePath, data); 
                     
-                    if(!control) writeToSocket("eSignError"+delimeter+msg);
-                    else writeToSocket("eSignSuccess"+delimeter+msg);
+                    if(!control) data.put("type", "doESignError");
+                    else data.put("type", "doESignSuccess");
+                    
+                    writeToSocket(GeneralHelper.jsonEncode(data));
                 }
                 catch (Exception e)
                 {
@@ -198,7 +210,7 @@ public class Session {
                 break;
             default:
                 Log.info("Geçersiz komut: " + msg);
-                writeToSocket("uncorrectRequest");
+                writeToSocket("{\"type\": \"uncorrectRequest\"}");
                 break;
         }
         
@@ -476,17 +488,12 @@ public class Session {
         GeneralHelper.showMessageBox(m);
     }
     
-    public boolean uploadSign(String filePath, String msg) {
+    public boolean uploadSign(String filePath, LinkedTreeMap data) {
         
         try {
-            String delimeter = "@@@";
-            
-            String[] arr = msg.split(delimeter);
-            String str = arr[1];
-            String url = arr[2];
-            String pin = arr[3];
-            String columnSetId = arr[4];
-            String recordId = arr[5];
+            String url = data.get("url").toString();
+            String columnSetId = data.get("columnSetId").toString();
+            String recordId = data.get("recordId").toString();
             
             HttpClient httpClient = HttpClients.createDefault();
 
