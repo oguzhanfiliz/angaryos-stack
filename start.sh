@@ -3,9 +3,9 @@ apt-get install -y docker.io git
 
 docker swarm init
 
-git clone https://github.com/karapazar/Angaryos
+git clone https://github.com/MikroGovernment/angaryos-stack.git
 
-cd Angaryos/
+cd angaryos-stack/
 
 chmod 755 -R frontend/
 chmod 777 -R backend/storage/

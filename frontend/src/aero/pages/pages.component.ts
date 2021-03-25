@@ -11,14 +11,10 @@ import { SessionHelper } from './helpers/session';
 import { GeneralHelper } from './helpers/general';
 import { AeroThemeHelper } from './helpers/aero.theme';
 
-import Swal from 'sweetalert2';
-import 'sweetalert2/dist/sweetalert2.min.css';
-
 declare var $: any;
 
 @Component({
   selector: 'pages',
-  styleUrls: ['pages.component.scss'],
   templateUrl: 'pages.component.html'
 })
 export class PagesComponent 
@@ -28,10 +24,6 @@ export class PagesComponent
   profilePictureUrl = ""
   userEditUrl = ""
   //searchIntervalId = -1;
-
-  eSigns = [];
-  isESignUserTrue = false;
-  eSignTimeOut = 1000 * 60 * 5;
 
   constructor(
         public messageHelper: MessageHelper,
@@ -49,6 +41,7 @@ export class PagesComponent
     $('body').keydown((event) => this.keyEvent(event));
     $('body').keyup((event) => this.keyEvent(event));
     
+
     $(".page-loader-wrapper").fadeOut();
 
     this.eSignServerOperations();
@@ -306,11 +299,6 @@ export class PagesComponent
       this.fillUserEditUrl();
       
       this.aeroThemeHelper.updateBaseMenu();
-      
-      setTimeout(() => 
-      {
-        this.eSignOperations();
-      }, 3000);
     })
   }
 
