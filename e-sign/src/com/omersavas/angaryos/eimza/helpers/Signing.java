@@ -6,6 +6,7 @@
 package com.omersavas.angaryos.eimza.helpers;
 
 import com.google.gson.internal.LinkedTreeMap;
+import java.io.File;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.text.SimpleDateFormat;
@@ -138,7 +139,11 @@ public class Signing
             Log.info("O");
             //Genel.showMessageBox("Burada stringi return et hata olursa boş return et");
             //write the contentinfo to file
-            AsnIO.dosyayaz(signedDocument,SigningTestConstants.getDirectory() + "/" + name + ".p7s");
+            
+            File tempDir = new File(SigningTestConstants.getDirectory());
+            tempDir.mkdirs();
+
+            AsnIO.dosyayaz(signedDocument, SigningTestConstants.getDirectory() + "/" + name + ".p7s");
 
             lastSignedText = str;
             Log.info("P");
@@ -146,6 +151,7 @@ public class Signing
                 
         } catch (LoginException e) {
             GeneralHelper.showMessageBox("İmzalama yapılamadı! ("+ e.getMessage() +")");
+            Log.send(e);
         }catch (Exception e) {
             Log.send(e);
         }

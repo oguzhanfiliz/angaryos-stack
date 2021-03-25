@@ -76,10 +76,12 @@ public class GeneralHelper {
     public static String debugPath = "files/debug.ang";
     public static String textPath = "files/text.ang";
     public static String portPath = "files/port.ang";
+    public static String sslDisablePath = "files/sslDisable.ang";
     
     public static boolean showMainInfoWindowOnLoad = false;
     
-    public static boolean debug = true;
+    public static boolean debug = false;
+    public static boolean sslDisable = false;    
     public static String homePath = System.getProperty("user.home");
     public static String runningPath = (new File(".")).getAbsolutePath().replace("/.", "/").replace("\\.", "\\");
     public static String osName = System.getProperty("os.name");

@@ -18,6 +18,6 @@ if($id < 1) return NULL;
 $user = User::find($id);
 
 $user = helper('clear_user_token', $user);
-if(!helper('control_user_token', ['user' => $user, 'token' => $params])) return NULL;
+if(!helper('control_token', ['record' => $user, 'token' => $params])) return NULL;
 
 return $user;

@@ -70,8 +70,6 @@ export class PagesComponent
       
     socket.onmessage = async function(e) 
     {
-      var delimeter = "@@@";
-
       console.log("soketten gelen: " + e.data);
 
       var data = BaseHelper.jsonStrToObject(e.data);

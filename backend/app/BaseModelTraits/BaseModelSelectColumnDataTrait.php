@@ -207,6 +207,9 @@ trait BaseModelSelectColumnDataTrait
         if(in_array($table->name, $this->deletables) && $pipe['SHOW_DELETED_TABLES_AND_COLUMNS'] != '1')
             $model->where($table->name.'.name', 'not like', 'deleted\_%');
         
+        $temp = new BaseModel($table->name); 
+		$temp->addFilters($model, $table->name, 'selectColumnData');
+        
         $params->count = $model->count();
         $params->records = $model->limit($params->record_per_page)->offset($offset)->get();
         
