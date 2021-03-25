@@ -98,6 +98,8 @@ public class Session {
     
     public String tc = "";
     
+    private String lastResponse = "";
+    
     public Session() throws IOException, ESYAException {
         tc = GeneralHelper.getSigning().getTCNumber();
     }
@@ -152,44 +154,62 @@ public class Session {
         });
     }
     
-    private void socketMessageReaded(String msg) throws IOException, ESYAException, CMSSignatureException
+    public String getLastResponse()
     {
-        String delimeter = "@@@";
-        
+        return this.lastResponse;
+    }
+    
+    private void socketMessageReaded(String msg) throws IOException, ESYAException, CMSSignatureException
+    {        
         Log.info("Mesaj okundu: " + msg);
         
         if(msg.equals("")) return;
-            
-        String ttt = msg.split(delimeter)[0];
         
-        switch(msg.split(delimeter)[0])
+        LinkedTreeMap data = GeneralHelper.jsonDecode(msg);
+        
+        String type = "";
+        try {
+            type = data.get("type").toString();
+        } catch (Exception e) {
+        }
+                
+        switch(type)
         {
             case "connectionTest":
                 Log.info("Test mesajı: " + msg);
-                writeToSocket("connectionSuccess");
+                writeToSocket("{\"type\": \"connectionSuccess\"}");
                 break;
             case "getUserTc":
-                Log.info("Tc talebi: " + msg);
-                writeToSocket("tc"+delimeter+GeneralHelper.getSession().tc);
+                Log.info("Tc talebi: " + msg);                
+                writeToSocket("{\"type\": \"returnTc\", \"tc\": "+GeneralHelper.getSession().tc+"}");
                 break;
-            case "eSign":
+            case "doESign":
                 try 
                 {
                     Log.info("İmzalama talebi: " + msg);
                     String name = GeneralHelper.getSigning().getNewFileName();
                     
-                    boolean control = GeneralHelper.getSigning().doESign(msg, name);                    
+                    boolean control = GeneralHelper.getSigning().doESign(data, name);                    
                     if(!control) 
                     {
-                        writeToSocket("eSignError"+delimeter+msg);
+                        data.put("type", "doESignError");
+                        data.put("log", Log.getLastLogMessage());
+                        data.put("response", this.getLastResponse());
+                        writeToSocket(GeneralHelper.jsonEncode(data));
                         break;
                     }
                         
                     String filePath = SigningTestConstants.getDirectory() + "/" + name + ".p7s";
-                    control = uploadSign(filePath, msg); 
+                    control = uploadSign(filePath, data); 
                     
-                    if(!control) writeToSocket("eSignError"+delimeter+msg);
-                    else writeToSocket("eSignSuccess"+delimeter+msg);
+                    if(!control){
+                        data.put("type", "doESignError");
+                        data.put("log", Log.getLastLogMessage());
+                        data.put("response", this.getLastResponse());
+                    }
+                    else data.put("type", "doESignSuccess");
+                    
+                    writeToSocket(GeneralHelper.jsonEncode(data));
                 }
                 catch (Exception e)
                 {
@@ -198,7 +218,7 @@ public class Session {
                 break;
             default:
                 Log.info("Geçersiz komut: " + msg);
-                writeToSocket("uncorrectRequest");
+                writeToSocket("{\"type\": \"uncorrectRequest\"}");
                 break;
         }
         
@@ -319,7 +339,7 @@ public class Session {
     }
     
     public static byte[] encodeForSocket(String mess) throws IOException{
-        byte[] rawData = mess.getBytes();
+        byte[] rawData = mess.getBytes(UTF_8);
 
         int frameCount  = 0;
         byte[] frame = new byte[10];
@@ -373,6 +393,12 @@ public class Session {
         StringBuilder result = null;
         
         try {
+            if(GeneralHelper.sslDisable)
+            {
+                SSLUtilities.trustAllHostnames();
+                SSLUtilities.trustAllHttpsCertificates();
+            }
+    
             URL url = new URL(u);
             conn = (HttpURLConnection) url.openConnection();
             conn.setRequestMethod("GET");
@@ -386,7 +412,9 @@ public class Session {
             }
             rd.close();
 
-            return result.toString();
+            this.lastResponse = result.toString();
+            
+            return this.lastResponse;
             
         } catch (Exception e) {
             
@@ -400,7 +428,9 @@ public class Session {
                 }
                 rd.close();
 
-                return result.toString();
+                this.lastResponse = result.toString();
+                
+                return this.lastResponse;
             } catch (Exception ee) {
                 
                 GeneralHelper.showMessageBox("Sunucuya erişilemedi! Lütfen sonra tekrar deneyin.");
@@ -434,7 +464,20 @@ public class Session {
     public LinkedTreeMap httpPost(String u, List<NameValuePair> data) {
         
         try {
-            HttpClient httpclient = HttpClients.createDefault();
+            
+            HttpClient httpclient;
+            
+            if(GeneralHelper.sslDisable)
+            {
+                httpclient = HttpClients
+                                        .custom()
+                                        .setSSLContext(new SSLContextBuilder().loadTrustMaterial(null, TrustAllStrategy.INSTANCE).build())
+                                        .setSSLHostnameVerifier(NoopHostnameVerifier.INSTANCE)
+                                        .build();
+            }
+            else 
+                httpclient = HttpClients.createDefault();
+            
             HttpPost httppost = new HttpPost(u);
 
             httppost.setEntity(new UrlEncodedFormEntity(data, "UTF-8"));
@@ -443,8 +486,8 @@ public class Session {
             HttpEntity entity = response.getEntity();
 
             if (entity != null) {
-                String json = EntityUtils.toString(entity);
-                LinkedTreeMap r = GeneralHelper.jsonDecode(json);
+                this.lastResponse = EntityUtils.toString(entity);
+                LinkedTreeMap r = GeneralHelper.jsonDecode(this.lastResponse);
             
                 String status = r.get("status").toString();
                 LinkedTreeMap d = (LinkedTreeMap)r.get("data");
@@ -476,17 +519,12 @@ public class Session {
         GeneralHelper.showMessageBox(m);
     }
     
-    public boolean uploadSign(String filePath, String msg) {
+    public boolean uploadSign(String filePath, LinkedTreeMap data) {
         
         try {
-            String delimeter = "@@@";
-            
-            String[] arr = msg.split(delimeter);
-            String str = arr[1];
-            String url = arr[2];
-            String pin = arr[3];
-            String columnSetId = arr[4];
-            String recordId = arr[5];
+            String url = data.get("url").toString();
+            String columnSetId = data.get("columnSetId").toString();
+            String recordId = data.get("recordId").toString();
             
             HttpClient httpClient = HttpClients.createDefault();
 
@@ -513,8 +551,8 @@ public class Session {
 
             if (entity == null) return false;
             
-            String json = EntityUtils.toString(entity);
-            LinkedTreeMap r = GeneralHelper.jsonDecode(json);
+            this.lastResponse = EntityUtils.toString(entity);
+            LinkedTreeMap r = GeneralHelper.jsonDecode(this.lastResponse);
 
             String status = r.get("status").toString();
 

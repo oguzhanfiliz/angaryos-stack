@@ -85,6 +85,9 @@ class ColumnClassificationLibrary
         {
             $columnName = explode('.', $relation->relation_source_column);
             $columnName = last($columnName);
+			$columnName = helper('reverse_clear_string_for_db', $columnName);
+			if($columnName[0] == '"' && $columnName[strlen($columnName)-1] == '"') $columnName = substr($columnName, 1, -1);
+            
             $targetColumn = get_attr_from_cache('columns', 'name', $columnName, '*');
         }
         else if($relation->column_data_source_id > 0)

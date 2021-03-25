@@ -196,7 +196,10 @@ trait UserPolicyTrait
         
         if($permissions == NULL) return FALSE;
         
-        if(isset($permissions->{$permitName}) && !$permissions->{$permitName}) return FALSE;
+        $keys = array_keys((array)$permissions);
+		//if(isset($permissions->{$permitName}) && !$permissions->{$permitName}) return FALSE;
+        if(in_array($permitName, $keys) && !$permissions->{$permitName}) return FALSE;
+		
         return TRUE;
     }
     

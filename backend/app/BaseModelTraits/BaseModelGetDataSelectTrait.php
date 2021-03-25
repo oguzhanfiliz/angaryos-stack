@@ -133,6 +133,13 @@ trait BaseModelGetDataSelectTrait
         $temp = "split_part($temp, '***', 1)";
         $temp .= ' as ' . $params->column->name;
         
+		global $pipe;
+        $table = $pipe['table'];
+
+        $temp = str_replace('("', '( "', $temp);
+        $temp = str_replace(' "', ' '.$table.'."', ' '.$temp);
+        $temp = helper('reverse_clear_string_for_db', $temp);
+        
         $params->model->addSelect(DB::raw($temp));
     }
     

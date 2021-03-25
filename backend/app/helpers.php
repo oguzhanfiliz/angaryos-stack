@@ -167,3 +167,9 @@ function send_firebese_notify($title, $msg, $user)
         if(strlen(@$t->clientInfo->firebaseToken) > 0)
             \App\Libraries\MessageLibrary::fireBaseCloudMessaging($title, $msg, $t->clientInfo->firebaseToken);
 }
+
+function tt(...$o)
+{
+    echo json_encode($o);
+    exit(0);
+}

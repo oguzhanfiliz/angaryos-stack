@@ -215,7 +215,8 @@ trait BaseModelGetDataTrait
 
         foreach($records as $i => $record)
             foreach($columns as $column)
-                $records[$i]->{$column->name} = helper('reverse_clear_string_for_db', $record->{$column->name});
+                if(is_string($record->{$column->name}))
+                    $records[$i]->{$column->name} = helper('reverse_clear_string_for_db', $record->{$column->name});
            
         if($single) $records = $records[0];
 

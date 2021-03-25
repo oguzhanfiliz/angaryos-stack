@@ -128,7 +128,7 @@ class User extends Authenticatable
         $temp = 
         [
             'id' => 0,
-            'name_basic' => 'Diğer Tablolar',
+            'name_basic' => 'Diğer',
             'table_ids' => [],
             'image' => '2020/01/01/other.png',
             'icon' => 'zmdi-aspect-ratio',
@@ -172,6 +172,7 @@ class User extends Authenticatable
             unset($link->updated_at);
             
             $link->name_basic = helper('reverse_clear_string_for_db', $link->name_basic); 
+            $link->payload = helper('reverse_clear_string_for_db', $link->payload);  
             array_push($links, $link);
         }
         

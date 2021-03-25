@@ -24,6 +24,8 @@ import java.awt.PopupMenu;
 import java.awt.SystemTray;
 import java.awt.Toolkit;
 import java.awt.TrayIcon;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -72,8 +74,8 @@ public class MainWindow extends javax.swing.JFrame {
         {
             GeneralHelper.createEncryptionObject("angaryos");
             
-            //this.selfUpdateWindow();
-            //this.infoWindow();
+            this.selfUpdateWindow();
+            this.infoWindow();
             
             this.addInSystemTry();
             this.frameOperations();
@@ -106,23 +108,44 @@ public class MainWindow extends javax.swing.JFrame {
             return;
         }
         
-        Image icon = Toolkit.getDefaultToolkit().getImage("img/icon.png");
+        Image icon = Toolkit.getDefaultToolkit().getImage("img/icon16x16.png");
         final TrayIcon trayIcon = new TrayIcon(icon);
         
         final SystemTray tray = SystemTray.getSystemTray();
        
        
         final PopupMenu popup = new PopupMenu();
-        
-        MenuItem aboutItem = new MenuItem("About");
-        popup.add(aboutItem);
-        
+                
         MenuItem showItem = new MenuItem("Göster");
+        showItem.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent event) {
+                try {
+                    GeneralHelper.getMainWindow().setVisible(true);
+                } catch (NoSuchAlgorithmException ex) {
+                    Logger.getLogger(MainWindow.class.getName()).log(Level.SEVERE, null, ex);
+                } catch (NoSuchPaddingException ex) {
+                    Logger.getLogger(MainWindow.class.getName()).log(Level.SEVERE, null, ex);
+                } catch (InvalidKeyException ex) {
+                    Logger.getLogger(MainWindow.class.getName()).log(Level.SEVERE, null, ex);
+                } catch (IllegalBlockSizeException ex) {
+                    Logger.getLogger(MainWindow.class.getName()).log(Level.SEVERE, null, ex);
+                } catch (BadPaddingException ex) {
+                    Logger.getLogger(MainWindow.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        });
         popup.add(showItem);
         
         popup.addSeparator();
         
         MenuItem exitItem = new MenuItem("Çıkış");
+        exitItem.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent event) {
+                System.exit(0);
+            }
+        });
         popup.add(exitItem);
        
         trayIcon.setPopupMenu(popup);

@@ -105,7 +105,7 @@ $column_arrays['e_signs'] =
         'column_array_type_id' => $column_array_types['direct_data']->id,
         'table_id' => 'e_signs',
         'column_ids' => 
-        [ 'signed_at', 'sign_file', 'state'],
+        [ 'id', 'signed_text', 'signed_at', 'sign_file', 'state', 'own_id'],
         'join_table_ids' => [],
         'join_columns' => '',
     ]

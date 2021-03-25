@@ -3,6 +3,7 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { BaseHelper } from './../../../base';
 
 declare var $: any;
+declare var filterXSS: any;
 
 @Component(
 {

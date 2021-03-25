@@ -35,6 +35,11 @@ public class Main {
     {
         File f = new File(GeneralHelper.debugPath);
         if(f.exists()) GeneralHelper.debug = true;
+        else  GeneralHelper.debug = false;
+        
+        f = new File(GeneralHelper.sslDisablePath);
+        if(f.exists()) GeneralHelper.sslDisable = true;
+        else  GeneralHelper.sslDisable = false;
     }
     
     public static void main(String[] args) throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException 

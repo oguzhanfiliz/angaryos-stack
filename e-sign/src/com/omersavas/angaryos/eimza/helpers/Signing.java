@@ -5,6 +5,8 @@
  */
 package com.omersavas.angaryos.eimza.helpers;
 
+import com.google.gson.internal.LinkedTreeMap;
+import java.io.File;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.text.SimpleDateFormat;
@@ -61,17 +63,12 @@ public class Signing
         return temp.getSerialNumberAttribute();
     }
     
-    public boolean doESign(String msg, String name) throws CMSSignatureException, SmartCardException, ESYAException, IOException {
+    public boolean doESign(LinkedTreeMap data, String name) throws CMSSignatureException, SmartCardException, ESYAException, IOException {
         try {
             Log.info("test:A");
-                   
-            String delimeter = "@@@";
-            
-            String[] arr = msg.split(delimeter);
-            String str = arr[1];
-            String url = arr[2];
-            String pin = arr[3];
-            String columnSetId = arr[4];
+                               
+            String str = data.get("text").toString();
+            String pin = data.get("pin").toString();
             
             Log.info("B");
             try {                
@@ -142,7 +139,11 @@ public class Signing
             Log.info("O");
             //Genel.showMessageBox("Burada stringi return et hata olursa boş return et");
             //write the contentinfo to file
-            AsnIO.dosyayaz(signedDocument,SigningTestConstants.getDirectory() + "/" + name + ".p7s");
+            
+            File tempDir = new File(SigningTestConstants.getDirectory());
+            tempDir.mkdirs();
+
+            AsnIO.dosyayaz(signedDocument, SigningTestConstants.getDirectory() + "/" + name + ".p7s");
 
             lastSignedText = str;
             Log.info("P");
@@ -150,6 +151,7 @@ public class Signing
                 
         } catch (LoginException e) {
             GeneralHelper.showMessageBox("İmzalama yapılamadı! ("+ e.getMessage() +")");
+            Log.send(e);
         }catch (Exception e) {
             Log.send(e);
         }

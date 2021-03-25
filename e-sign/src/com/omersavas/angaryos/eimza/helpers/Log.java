@@ -24,21 +24,24 @@ import javax.xml.transform.stream.*;
  */
 public class Log {
     public static boolean showMessage = true;
+    public static Exception lastLog;
+    
     
     private static void fail(String level, String m)
     {
-        if(showMessage) {
-            GeneralHelper.showMessageBox("Log gönderilemedi ve kaydedilemedi!");
-            GeneralHelper.showMessageBox(level+": " + m);
-        }
+        if(!showMessage) return;
+
+        GeneralHelper.showMessageBox("Log gönderilemedi ve kaydedilemedi! ("+level+": " + m+")");        
     }
     
     public static boolean send(Exception e)
     {
-        StackTraceElement[] st = Thread.currentThread().getStackTrace();
-                
+        lastLog = e;
+        
         try {
-            if(GeneralHelper.debug) GeneralHelper.showMessageBox(e.getLocalizedMessage());
+            StackTraceElement[] st = Thread.currentThread().getStackTrace();
+            
+            if(GeneralHelper.debug) GeneralHelper.showMessageBox("getLocalizedMessage: " + e.getLocalizedMessage());
             if(send("Error", "{\"Hata\":"+GeneralHelper.jsonEncode(e)+"},\"Stack\":"+GeneralHelper.jsonEncode(st))) 
             {
                 return true;
@@ -48,6 +51,15 @@ public class Log {
         
         fail("Error", e.getMessage());
         return false;
+    }
+    
+    public static String getLastLogMessage()
+    {
+        try {
+            return lastLog.getMessage();
+        } catch (Exception e) {
+            return "";
+        }
     }
     
     public static boolean send(String level, String j)
@@ -61,13 +73,9 @@ public class Log {
                 if(saveToLocal(level, j)) 
                    return true;
                 else
-                {
-                    fail(level, j);
                     return false;
-                }
             }
         } catch (Exception e) {
-            fail(level, e.getMessage());
             return false;
         }
     }

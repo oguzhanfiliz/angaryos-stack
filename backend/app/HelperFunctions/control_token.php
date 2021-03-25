@@ -1,6 +1,6 @@
 <?php
 
-foreach($params['user']->tokens as $token)
+foreach($params['record']->tokens as $token)
 {
     if($token['token'] == $params['token'])
         return TRUE;        

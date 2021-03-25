@@ -132,8 +132,12 @@ trait BaseModelGetRelationDataTrait
     public function fillRelationDataForTableIdAndColumnNames($params)
     {
         $table = get_attr_from_cache('tables', 'id', $params->relation->relation_table_id, 'name');
+        
         $source = $params->relation->relation_source_column;
+		$source = helper('reverse_clear_string_for_db', $source);
+		
         $display = $params->relation->relation_display_column;
+        $display = helper('reverse_clear_string_for_db', $display);
         
         $sorted = [];
         $temp = new BaseModel($table);

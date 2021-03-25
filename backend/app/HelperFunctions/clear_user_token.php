@@ -3,6 +3,7 @@
 $tokens = [];
 
 if($params == NULL) return $params;
+if(gettype($params->tokens) != 'array') $params->tokens = [];
 
 if($params->tokens != NULL)
     foreach($params->tokens as $i => $token)

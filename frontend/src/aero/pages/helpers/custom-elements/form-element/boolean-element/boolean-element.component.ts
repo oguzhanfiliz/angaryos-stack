@@ -31,7 +31,14 @@ export class BooleanElementComponent
             this.displayNameForTrue = DataHelper.convertDataByGuiTypeBoolean(null, null, this.guiType, true);
             this.displayNameForFalse = DataHelper.convertDataByGuiTypeBoolean(null, null, this.guiType, false); 
         
-            if(this.value.length > 0) return;
+            if(this.value != null && this.value.length > 0)
+            {
+                if(this.value == "1") this.value = "true";
+                else if(this.value == "0") this.value = "false";
+
+                return;
+            }
+            
             if(this.createForm != true) return;
             if(this.defaultData.length == 0) return;
 
