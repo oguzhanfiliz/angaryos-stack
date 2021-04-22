@@ -7,7 +7,12 @@ Route::post('/initializeDb', '\App\Http\Controllers\GeneralController@initialize
 
     
 Route::post('login', 'AuthController@login');
-Route::post('deviceLogin', 'AuthController@deviceLogin');
+Route::any('deviceLogin', 'AuthController@deviceLogin');
+
+Route::group(['prefix' => 'device/{deviceToken}'], function ()
+{
+      
+});
 
 Route::group(['prefix' => '{token}'], function ()
 {

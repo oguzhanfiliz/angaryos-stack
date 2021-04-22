@@ -116,7 +116,11 @@ public class Session {
                     Log.info("Server başladı");
                     
                     GeneralHelper.getSession().waitForSocket();
-                } catch (Exception e) {
+                }
+                catch(java.net.BindException b){
+                    GeneralHelper.showMessageBox("Şuan açık olan başka bir uygulama var!");
+                    System.exit(0);
+                }catch (Exception e) {
                     Log.send(e);
                     GeneralHelper.showMessageBox("E-imza sunucusu başlatılamadı!");
                 }
@@ -395,6 +399,8 @@ public class Session {
         try {
             if(GeneralHelper.sslDisable)
             {
+                Log.info("httpGetBasic sslDisable for " + u);
+                
                 SSLUtilities.trustAllHostnames();
                 SSLUtilities.trustAllHttpsCertificates();
             }
@@ -469,6 +475,7 @@ public class Session {
             
             if(GeneralHelper.sslDisable)
             {
+                Log.info("httpPost sslDisable for " + u);
                 httpclient = HttpClients
                                         .custom()
                                         .setSSLContext(new SSLContextBuilder().loadTrustMaterial(null, TrustAllStrategy.INSTANCE).build())
@@ -526,7 +533,19 @@ public class Session {
             String columnSetId = data.get("columnSetId").toString();
             String recordId = data.get("recordId").toString();
             
-            HttpClient httpClient = HttpClients.createDefault();
+            HttpClient httpclient;
+            
+            if(GeneralHelper.sslDisable)
+            {
+                Log.info("uploadSign sslDisable");
+                httpclient = HttpClients
+                                        .custom()
+                                        .setSSLContext(new SSLContextBuilder().loadTrustMaterial(null, TrustAllStrategy.INSTANCE).build())
+                                        .setSSLHostnameVerifier(NoopHostnameVerifier.INSTANCE)
+                                        .build();
+            }
+            else 
+                httpclient = HttpClients.createDefault();
 
             HttpPost httpPost = new HttpPost(url);
 
@@ -546,7 +565,7 @@ public class Session {
             
             
             
-            HttpResponse response = httpClient.execute(httpPost);            
+            HttpResponse response = httpclient.execute(httpPost);            
             HttpEntity entity = response.getEntity();
 
             if (entity == null) return false;

@@ -493,7 +493,7 @@ export class FormComponent
             setTimeout(() => params.th.changedColumnVisibilityOnPipe(), 200);
         }
 
-        return BaseHelper.doInterval('formElementChanged', func, params, 500);
+        return BaseHelper.doInterval('formElementChanged'+event['columnName'], func, params, 500);
     }
     
     guiTriggered(columnName, data = null)

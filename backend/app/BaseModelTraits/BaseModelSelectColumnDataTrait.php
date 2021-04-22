@@ -64,7 +64,10 @@ trait BaseModelSelectColumnDataTrait
         if(!strstr($display, '.')) $display = $table->name.'.'.$display; 
         
         $source = str_replace($alias.'.', $table->name.'.', $source);
+        $source = helper('reverse_clear_string_for_db', $source);  
+
         $display = str_replace($alias.'.', $table->name.'.', $display);
+        $display = helper('reverse_clear_string_for_db', $display); 
 
         
         $model->addSelect(DB::raw($source.' as source'));        

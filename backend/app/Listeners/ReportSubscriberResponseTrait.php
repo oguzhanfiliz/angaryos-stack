@@ -58,7 +58,8 @@ trait ReportSubscriberResponseTrait
         $tempPath = '/var/www/public/temps/';
         $tempFile = $file->destination_path.$file->file_name;
 
-        if(!Storage::disk('temps')->put($tempFile, Storage::disk($disk)->get($file->destination_path.$file->file_name))) 
+        $sourcePath = $file->destination_path.$file->file_name;
+        if(!Storage::disk('temps')->exists($tempFile) && !Storage::disk('temps')->put($tempFile, Storage::disk($disk)->get($sourcePath))) 
             custom_abort('file.write.error:'.$file->destination_path.$file->file_name.'->'.$tempFile);
         
         $tempFile = $tempPath.$tempFile;
@@ -212,7 +213,8 @@ trait ReportSubscriberResponseTrait
         $tempPath = '/var/www/public/temps/';
         $tempFile = $file->destination_path.$file->file_name;
 
-        if(!Storage::disk('temps')->put($tempFile, Storage::disk($disk)->get($file->destination_path.$file->file_name))) 
+        $sourcePath = $file->destination_path.$file->file_name;
+        if(!Storage::disk('temps')->exists($tempFile) && !Storage::disk('temps')->put($tempFile, Storage::disk($disk)->get($sourcePath))) 
             custom_abort('file.write.error:'.$file->destination_path.$file->file_name.'->'.$tempFile);
         
         $tempFile = $tempPath.$tempFile;

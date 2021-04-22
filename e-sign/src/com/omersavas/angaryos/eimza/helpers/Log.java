@@ -41,6 +41,13 @@ public class Log {
         try {
             StackTraceElement[] st = Thread.currentThread().getStackTrace();
             
+            String m = e.getLocalizedMessage();
+            if(m.indexOf("GUVENLIK_KOSULU_SAGLANAMADI") > 0)
+            {
+                GeneralHelper.showMessageBox("Şuan e-imza kullanılamıyor. Kullanabilecek uygulamaları kapatıp yeniden açmayı deneyin.");
+                System.exit(0);
+            }
+            
             if(GeneralHelper.debug) GeneralHelper.showMessageBox("getLocalizedMessage: " + e.getLocalizedMessage());
             if(send("Error", "{\"Hata\":"+GeneralHelper.jsonEncode(e)+"},\"Stack\":"+GeneralHelper.jsonEncode(st))) 
             {

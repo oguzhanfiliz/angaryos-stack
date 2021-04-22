@@ -69,7 +69,7 @@ if(!is_array($arr)) $arr = [$arr];
 foreach($arr as $data)
 {
     $validator = Validator::make([$name => $data], [$name => implode('|', $validation) ]);
-    if(!$validator->fails()) return true;
+    if(!@$validator->fails()) return true;
 
     $errors = $validator->errors()->getMessages();
 

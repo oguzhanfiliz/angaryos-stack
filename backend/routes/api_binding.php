@@ -20,6 +20,14 @@ Route::bind('token', function ($token)
     return $user;
 });
 
+Route::bind('deviceToken', function ($token) 
+{
+    $device = helper('get_device_from_token', $token);    
+    if($device == NULL) abort(helper('response_error', 'fail.token'));
+
+    return $device;
+});
+
 Route::bind('table_name', function ($tableName) 
 {
     $tableId = get_attr_from_cache('tables', 'name', $tableName, 'id');

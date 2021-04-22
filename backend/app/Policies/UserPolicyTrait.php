@@ -169,12 +169,20 @@ trait UserPolicyTrait
         
         return TRUE;
     }
+
+    private function getColumnSetIdForDelete()
+    {
+        global $pipe;
+        $id = @\Auth::user()->auths['tables'][$pipe['table']]['edits'][0];
+        return (int)$id;
+    }
     
     public function recordPermitted($record, $type, $columnSetId = 0)
     {
         switch ($type) 
         {
             case 'delete':
+                $columnSetId = $this->getColumnSetIdForDelete();
                 $permitName = '_is_deletable';
                 break;
             case 'clone':
@@ -391,6 +399,7 @@ trait UserPolicyTrait
         {
             $data = \Request::input($params->column->name);
             if(!$data) return;
+            if(is_string($data) && $data == '[]') return;
             
             $control = @json_decode($data);
             if($control)

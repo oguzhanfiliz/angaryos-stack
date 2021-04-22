@@ -35,8 +35,12 @@ trait BaseModelGetDataColumnTrait
             return [$data, $joins];
         });
         
+        $added = [];
         foreach($joins as  $join) 
         {
+            if(in_array($join->id, $added)) continue;
+            array_push($added, $join->id);
+            
             $join->connection_column_with_alias = helper('reverse_clear_string_for_db', $join->connection_column_with_alias);    
             $this->addJoinForColumnArray($model, $join);
         }
@@ -187,8 +191,12 @@ trait BaseModelGetDataColumnTrait
             return [$data, $joins];
         });
         
+        $added = [];
         foreach($joins as  $join) 
         {
+            if(in_array($join->id, $added)) continue;
+            array_push($added, $join->id);
+            
             $join->connection_column_with_alias = helper('reverse_clear_string_for_db', $join->connection_column_with_alias);    
             $this->addJoinForColumnArray($model, $join);
         }

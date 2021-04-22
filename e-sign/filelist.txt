@@ -10,6 +10,10 @@
 "files/message.wav",
 "files/port.ang",
 "files/updateUrl.ang",
+"files/sslDisable.ang",
+"files/e-imza.lnk",
+"files/KbsOtoGiris.url",
+"files/InternetiKapat.url",
 
 "img/add.png",
 "img/cancel.png",
