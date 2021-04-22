@@ -6,7 +6,8 @@ RUN apt-get install -y --no-install-recommends \
     python3 python3-pip libfreetype6-dev libjpeg62-turbo-dev libpng-dev \
     gconf-service libasound2 libatk1.0-0 libcairo2 libcups2 libfontconfig1 \
     libgdk-pixbuf2.0-0 libgtk-3-0 libnspr4 libpango-1.0-0 libxss1 fonts-liberation libappindicator1 \
-    libnss3 lsb-release xdg-utils wget docker.io sudo gnupg unixodbc-dev libgssapi-krb5-2
+    libnss3 lsb-release xdg-utils wget docker.io sudo gnupg unixodbc-dev libgssapi-krb5-2 \
+    tcpdump iputils-ping 
 
 WORKDIR /var/www
 
@@ -27,7 +28,7 @@ RUN curl -L -o /tmp/memcached.tar.gz "https://github.com/php-memcached-dev/php-m
     && rm /tmp/memcached.tar.gz
 
 RUN docker-php-ext-configure ldap --with-libdir=lib/x86_64-linux-gnu/
-RUN docker-php-ext-install pgsql pdo pdo_pgsql pdo_mysql sockets opcache zip xml ldap 
+RUN docker-php-ext-install pgsql pdo pdo_pgsql pdo_mysql sockets opcache zip xml ldap soap
 
 RUN wget https://packages.microsoft.com/keys/microsoft.asc 
 RUN apt-key add microsoft.asc 
@@ -38,8 +39,10 @@ RUN apt-get update
 RUN ACCEPT_EULA=Y apt-get install -y msodbcsql17
 RUN ACCEPT_EULA=Y apt-get install -y mssql-tools
 
-RUN pecl install sqlsrv
-RUN pecl install pdo_sqlsrv
+#RUN pecl install sqlsrv
+#RUN pecl install pdo_sqlsrv
+RUN pecl install sqlsrv-5.3.0
+RUN pecl install pdo_sqlsrv-5.3.0
 
 RUN pip3 install selenium beautifulsoup4 lxml
 
