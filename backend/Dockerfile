@@ -6,8 +6,7 @@ RUN apt-get install -y --no-install-recommends \
     python3 python3-pip libfreetype6-dev libjpeg62-turbo-dev libpng-dev \
     gconf-service libasound2 libatk1.0-0 libcairo2 libcups2 libfontconfig1 \
     libgdk-pixbuf2.0-0 libgtk-3-0 libnspr4 libpango-1.0-0 libxss1 fonts-liberation libappindicator1 \
-    libnss3 lsb-release xdg-utils wget docker.io sudo gnupg unixodbc-dev libgssapi-krb5-2 \
-    tcpdump iputils-ping 
+    libnss3 lsb-release xdg-utils wget docker.io sudo gnupg unixodbc-dev libgssapi-krb5-2 
 
 WORKDIR /var/www
 
@@ -50,6 +49,8 @@ RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local
 
 RUN groupadd -g 1000 www
 RUN useradd -u 1000 -ms /bin/bash -g www www && echo "www:www" | chpasswd
+
+RUN apt-get install -y tcpdump iputils-ping net-tools
 
 COPY . /var/www
 
