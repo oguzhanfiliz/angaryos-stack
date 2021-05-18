@@ -325,6 +325,11 @@ trait TableSubscriberTrait
         return '[columnDataSources: '.$name.']';
     }
     
+    public function getTableNameForGetDataForExportRecursiveForTableIdAndColumnNames($params)
+    {
+        return get_attr_from_cache('tables', 'id', $params->relation->relation_table_id, 'name');
+    }
+    
     
     
     /****    Archive    ****/

@@ -333,6 +333,8 @@ export class FormComponent
             data['inFormColumnName'] = this.inFormColumnName;
             data['inelementId'] = this.id;
             data['inFormRecordId'] = this.inFormRecordId;
+            data['inFormElementsData'] = this.getElementsData("GET");
+            
             this.formSaved.emit(data); 
         }
     }

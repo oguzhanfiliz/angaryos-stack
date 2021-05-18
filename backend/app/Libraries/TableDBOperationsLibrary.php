@@ -22,8 +22,7 @@ class TableDBOperationsLibrary
     public function __construct() 
     {
         foreach($this->defaultColumnNames as $name)
-            array_push ($this->defaultColumnIds, 
-                        get_attr_from_cache('columns', 'name', $name, 'id'));
+            array_push ($this->defaultColumnIds, DB::table('columns')->where('name', $name)->first()->id);
     }
     
     
@@ -72,8 +71,8 @@ class TableDBOperationsLibrary
         
         foreach($columnIds as $columnId)
         {
-            $columnDbTypeId = get_attr_from_cache('columns', 'id', $columnId, 'column_db_type_id');
-            $columnDbType = get_attr_from_cache('column_db_types', 'id', $columnDbTypeId, 'name');
+            $columnDbTypeId = DB::table('columns')->find($columnId)->column_db_type_id;
+            $columnDbType = DB::table('column_db_types')->find($columnDbTypeId)->name;
             
             if(!in_array($columnDbType, $geometryColumnTypes)) continue;
             
@@ -123,8 +122,8 @@ class TableDBOperationsLibrary
         
         foreach($columnIds as $columnId)
         {
-            $columnDbTypeId = get_attr_from_cache('columns', 'id', $columnId, 'column_db_type_id');
-            $columnDbType = get_attr_from_cache('column_db_types', 'id', $columnDbTypeId, 'name');
+            $columnDbTypeId = DB::table('columns')->find($columnId)->column_db_type_id;
+            $columnDbType = DB::table('column_db_types')->find($columnDbTypeId)->name;
             
             if(!in_array($columnDbType, $geometryColumnTypes)) continue;
 
@@ -163,7 +162,7 @@ class TableDBOperationsLibrary
         foreach($names as $name)
             foreach($table->column_ids as $columnId)
             {
-                $columnName = get_attr_from_cache('columns', 'id', $columnId, 'name');
+                $columnName = DB::table('columns')->find($columnId)->name;
                 if(strstr($columnName, $name)) return $columnId;
             }
             
@@ -253,8 +252,8 @@ class TableDBOperationsLibrary
     private function ChangeColumn($tableName, $newColumn)
     {
         $geoColumns = $this->geoColumns;
-        $type = get_attr_from_cache('column_db_types', 'id', $newColumn['column_db_type_id'], 'schema_code');
-        
+        $type = DB::table('column_db_types')->find($newColumn['column_db_type_id'])->schema_code;
+                
         try 
         {
             if(in_array($type, $geoColumns))
@@ -367,7 +366,7 @@ class TableDBOperationsLibrary
     
     private function DeleteColumnsInColumnArray($tableName, $columnId)
     {
-        $tableId = get_attr_from_cache('tables', 'name', $tableName, 'id');
+        $tableId = DB::table('tables')->where('name', $tableName)->first()->id;
         
         $model = new BaseModel('column_arrays');
 
@@ -445,7 +444,7 @@ class TableDBOperationsLibrary
         
         $columns = [];
         foreach($columnIds as $columnId)
-            array_push($columns, get_attr_from_cache ('columns', 'id', $columnId, '*'));
+            array_push($columns, DB::table('columns')->find($columnId));
         
         $this->ReturnErrorIFTableHasDeletedRecord($columns);
     }
@@ -502,16 +501,13 @@ class TableDBOperationsLibrary
 
             foreach($columns as $column)
             {
-                $dbType = get_attr_from_cache('column_db_types', 'id', $column->column_db_type_id, '*');
+                $dbType = DB::table('column_db_types')->find($column->column_db_type_id);
                 if(in_array($dbType->name, $geoColumns)) continue;
                 
-                /*if(strlen($column->default) > 0)
-                    $table->{$dbType->schema_code}($column->name)->default($column->default);
-                else*/
-                    $table->{$dbType->schema_code}($column->name)->nullable();
+                $table->{$dbType->schema_code}($column->name)->nullable();
             }
 
-            $table->boolean('state')/*->default(TRUE)*/->nullable();
+            $table->boolean('state')->nullable();
             $table->integer('own_id')->nullable();
             $table->integer('user_id')->nullable();
             $table->timestamps();
@@ -519,7 +515,7 @@ class TableDBOperationsLibrary
 
         foreach($columns as $column)
         {
-            $dbTypeName = get_attr_from_cache('column_db_types', 'id', $column->column_db_type_id, 'name');
+            $dbTypeName = DB::table('column_db_types')->find($column->column_db_type_id)->name;
             if(in_array($dbTypeName, $geoColumns))
             {
                 $srid = $column->srid;
@@ -585,8 +581,9 @@ class TableDBOperationsLibrary
         {
             foreach($addedColumnIds as $columnId)
             {
-                $column = get_attr_from_cache('columns', 'id', $columnId, '*');
-                $dbType = get_attr_from_cache('column_db_types', 'id', $column->column_db_type_id, '*');
+                $column = DB::table('columns')->find($columnId);
+                $dbType = DB::table('column_db_types')->find($column->column_db_type_id);
+                
                 if(in_array($dbType->name, $geoColumns)) continue;
                 
                 $table->{$dbType->schema_code}($column->name)->nullable();
@@ -594,7 +591,7 @@ class TableDBOperationsLibrary
             
             foreach($deletedColumnIds as $columnId)
             {
-                $columnName = get_attr_from_cache('columns', 'id', $columnId, 'name');
+                $columnName = DB::table('columns')->find($columnId)->name;
                 
                 $columns = array_keys(helper('get_all_columns_from_db', $tableName));
                 $i = '';
@@ -610,9 +607,10 @@ class TableDBOperationsLibrary
 
         foreach($addedColumnIds as $columnId)
         {
-            $column = get_attr_from_cache('columns', 'id', $columnId, '*');
-            $dbType = get_attr_from_cache('column_db_types', 'id', $column->column_db_type_id, '*');
             
+            $column = DB::table('columns')->find($columnId);
+            $dbType = DB::table('column_db_types')->find($column->column_db_type_id);
+                
             if(in_array($dbType->name, $geoColumns))
             {
                 $srid = $column->srid;
@@ -693,7 +691,7 @@ class TableDBOperationsLibrary
         
         foreach($addedColumnIds as $columnId)
         {
-            $columnName = get_attr_from_cache('columns', 'id', $columnId, 'name');                
+            $columnName = DB::table('columns')->find($columnId)->name;               
             if(substr($columnName, 0, 8) == 'deleted_') continue;   
 
             $this->RenameColumn($tableName, 'deleted_'.$columnName, $columnName);
@@ -701,7 +699,7 @@ class TableDBOperationsLibrary
 
         foreach($deletedColumnIds as $columnId)
         {
-            $columnName = get_attr_from_cache('columns', 'id', $columnId, 'name');
+            $columnName = DB::table('columns')->find($columnId)->name;   
 
             if(substr($columnName, 0, 8) == 'deleted_') continue;
 
@@ -718,7 +716,7 @@ class TableDBOperationsLibrary
         $columns = [];
         foreach($columnIds as $columnId)
         {
-            $column = get_attr_from_cache('columns', 'id', $columnId, '*');
+            $column = DB::table('columns')->find($columnId);   
             if(in_array($column->name, $this->defaultColumnNames)) continue;
 
             array_push($columns, $column);
@@ -781,7 +779,7 @@ class TableDBOperationsLibrary
         foreach($columnIds as $columnId)
             if(!in_array($columnId, $this->defaultColumnIds))
             {
-                $column = get_attr_from_cache('columns', 'id', $columnId, '*');
+                $column = DB::table('columns')->find($columnId);   
                 array_push($columns, $column);
             }
             

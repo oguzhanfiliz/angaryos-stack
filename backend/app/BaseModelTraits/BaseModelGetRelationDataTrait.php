@@ -84,8 +84,8 @@ trait BaseModelGetRelationDataTrait
         }
         
         $recs = [];
-        for($i = 0; $i < count($sorted); $i++)
-            array_push ($recs, $sorted[$i]);
+        foreach($sorted as $key => $sort)
+            array_push ($recs, $sort);
         
         if($params->column->column_db_type_id == $params->relation->column_db_type_id) 
         {

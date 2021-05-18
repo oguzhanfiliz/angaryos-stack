@@ -317,10 +317,15 @@ export abstract class BaseHelper
       return ("0" + d).slice(-2)
     }
 
-    var rt = [date.getUTCFullYear(), zeroPad(date.getMonth() + 1), zeroPad(date.getDate())].join("-");
-    rt += " ";
-    rt += [zeroPad(date.getHours()), zeroPad(date.getMinutes()), zeroPad(date.getSeconds())].join(":");
-    return rt;
+    try 
+    {
+      var rt = [date.getUTCFullYear(), zeroPad(date.getMonth() + 1), zeroPad(date.getDate())].join("-");
+      rt += " ";
+      rt += [zeroPad(date.getHours()), zeroPad(date.getMinutes()), zeroPad(date.getSeconds())].join(":");
+      return rt;
+    } catch (error) { }
+
+    return "";
   }
 
   public static dBDateTimeStringToHumanDateTimeString(dateString) 

@@ -141,7 +141,7 @@ export class PagesComponent
 
     var sign = this.eSigns[0];
 
-    var remembered = BaseHelper.readFromLocal(rememberKey);
+    var remembered = BaseHelper.readFromLocal(rememberKey); 
     if(remembered == null) remembered = "";
 
     var checked = "";

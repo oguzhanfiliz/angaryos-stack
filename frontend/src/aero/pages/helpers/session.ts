@@ -14,7 +14,7 @@ export class SessionHelper
     disableDoHttpRequestErrorControl = false; 
     doHttpRequestLastTime = 0;
     
-    socket = null;
+    socket = null; 
     
     constructor(
       private httpClient: HttpClient,
