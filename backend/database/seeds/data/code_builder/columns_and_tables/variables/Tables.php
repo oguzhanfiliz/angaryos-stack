@@ -83,4 +83,6 @@ $table_name_display_name_map =
     'e_signs' => 'e-imzalar',
     'additional_link_types' => 'Ek Link Tipler',
     'additional_links' => 'Ek Linkler',
+    
+    'devices' => 'Cihazlar',
 ];

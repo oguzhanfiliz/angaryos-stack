@@ -125,9 +125,16 @@ export class ColumnArrayFormElementComponent
         if(info == null) return "";        
         if(info.length == 0) return "";
         
-        var obj = BaseHelper.jsonStrToObject(info);
-        if(typeof obj[this.tableName] != "undefined") return obj[this.tableName];
-        if(typeof obj["_all"] != "undefined") return obj["_all"];
+        try
+        {
+            var obj = BaseHelper.jsonStrToObject(info);
+            if(typeof obj[this.tableName] != "undefined") return obj[this.tableName];
+            if(typeof obj["_all"] != "undefined") return obj["_all"];
+        }
+        catch(e)
+        {
+            return info;
+        }
         
         return "";
     }

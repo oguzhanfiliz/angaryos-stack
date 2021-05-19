@@ -51,8 +51,7 @@ if(isset($column_arrays[$table]))
         
         foreach($column_array['column_ids'] as $jj => $columnName)
             if(!is_numeric($columnName))
-                if(!is_numeric($columnName))
-                    $column_array['column_ids'][$jj] = $columns[$columnName]->id;
+                $column_array['column_ids'][$jj] = $columns[$columnName]->id;
             
         foreach($column_array['join_table_ids'] as $iiii => $jti)
             $column_array['join_table_ids'][$iiii] = $join_tables[$table][$jti]->id;

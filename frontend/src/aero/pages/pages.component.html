@@ -133,6 +133,13 @@
                                         
                                         {{ childMenuItem.title }}
                                     </a>
+                                    
+                                    <div 
+                                        *ngIf="childMenuItem.linkDescription.length > 0"
+                                        class="link_description">
+                                        
+                                        {{ childMenuItem.linkDescription }}
+                                    </div>
                                 </li>
                             </ul>
                     </li>

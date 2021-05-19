@@ -1004,6 +1004,33 @@ export class DataTableElementComponent
         if(BaseHelper['pipe']['ctrlKey']) return;
         this.generalHelper.navigate("table/"+this.tableName+"/"+record.id+"/edit")
     }
+
+    editOrShow(record)
+    {
+        if(BaseHelper['pipe']['ctrlKey']) return;
+        
+        try
+        {
+            var temp = BaseHelper.loggedInUserInfo.auths['tables'][this.tableName]["edits"][0];
+            if(typeof temp != "undefined")
+            {
+                this.generalHelper.navigate("table/"+this.tableName+"/"+record.id+"/edit");
+                return;
+            }
+        }
+        catch(e) {}
+        
+        try
+        {
+            var temp = BaseHelper.loggedInUserInfo.auths['tables'][this.tableName]["shows"][0];
+            if(typeof temp != "undefined")
+            {
+                this.generalHelper.navigate("table/"+this.tableName+"/"+record.id);
+                return;
+            }
+        }
+        catch(e) {}
+    }
     
     clone(record)
     {

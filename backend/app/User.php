@@ -91,8 +91,12 @@ class User extends Authenticatable
                 if($temp['id'] == NULL) continue;
                 
                 $temp['name'] = $name;
+                
                 $temp['display_name'] = get_attr_from_cache('tables', 'name', $name, 'display_name');
                 $temp['display_name'] = helper('reverse_clear_string_for_db', $temp['display_name']);
+
+                $temp['link_description'] = get_attr_from_cache('tables', 'name', $name, 'link_description');
+                $temp['link_description'] = helper('reverse_clear_string_for_db', $temp['link_description']);
 
                 $tableGroup = $this->getTableGruop($temp['id']);
                 if($tableGroup != NULL)
@@ -172,6 +176,7 @@ class User extends Authenticatable
             unset($link->updated_at);
             
             $link->name_basic = helper('reverse_clear_string_for_db', $link->name_basic); 
+            $link->link_description = helper('reverse_clear_string_for_db', $link->link_description); 
             $link->payload = helper('reverse_clear_string_for_db', $link->payload);  
             array_push($links, $link);
         }

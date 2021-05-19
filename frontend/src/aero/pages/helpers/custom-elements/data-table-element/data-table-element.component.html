@@ -287,7 +287,7 @@
                                         <tr 
                                             *ngFor="let record of data['records']; let i = index"
                                             role="row" (contextmenu)="selectRecord($event, record, i)"
-                                            (dblclick)="edit(record)"
+                                            (dblclick)="editOrShow(record)"
                                             [class]="record['recordClass']"> 
                                             <td>                                                
                                                 <div 

@@ -19,6 +19,9 @@ $files =
     'TableGroups',    
     'LogLevels',
     
+    'AdditionalLinkTypes',
+    'AdditionalLinks',
+    
     'Users',
     
     'IdDependentRecordsUpdate',
@@ -32,7 +35,6 @@ $files =
     
     'PublicContents',
     
-    'AdditionalLinkTypes'
 ];
 
 foreach($files as $file)

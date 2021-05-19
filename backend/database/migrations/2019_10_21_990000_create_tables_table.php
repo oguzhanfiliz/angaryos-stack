@@ -26,6 +26,7 @@ class CreateTablesTable extends Migration
             $table->text('e_sign_pattern_t')->nullable();
             
             $table->text('description')->nullable();
+            $table->string('link_description')->nullable();
             
             $table->boolean('state')->nullable();
             $table->integer('own_id');

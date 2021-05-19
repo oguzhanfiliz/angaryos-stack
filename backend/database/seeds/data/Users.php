@@ -161,6 +161,11 @@ array_push($adminAuths, 'dashboards:ComboBoxList:Test:0');
 
 
 
+array_push($adminAuths, 'additional_links:0:0:'.$additional_links['clear_cache']->id);
+array_push($adminAuths, 'additional_links:0:0:'.$additional_links['reload_user_auth']->id);
+
+
+
 array_push($adminAuths, 'map:0:0:0');
 array_push($adminAuths, 'map:kmz:upload:0');
 

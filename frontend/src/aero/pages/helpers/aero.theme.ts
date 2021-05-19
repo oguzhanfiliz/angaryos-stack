@@ -273,9 +273,6 @@ export class AeroThemeHelper
           tableGroupId: tableGroupIds[i],
           children: []
         }; 
- 
-        /*if(typeof tables[tableGroupIds[i]] == "undefined")
-          continue;*/
 
         var children = []; 
         
@@ -290,6 +287,7 @@ export class AeroThemeHelper
               {
                 type: 'standart',
                 title: tempTables[j].display_name,
+                linkDescription: tempTables[j].link_description,
                 link: '/'+BaseHelper.angaryosUrlPath+'/table/'+tempTables[j].name
               };
 
@@ -309,6 +307,7 @@ export class AeroThemeHelper
             {
               type: 'additionalLink',
               title: additionalLink['name_basic'],
+              linkDescription: additionalLink['link_description'],
               additionalLink: additionalLink,
               tableGroupId: additionalLink['table_group_id']
             };

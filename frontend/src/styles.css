@@ -164,6 +164,14 @@ section.content
     margin: 0 !important;
 }
 
+.link_description
+{
+    font-size: 10px;
+    margin-left: 40px;
+    padding-bottom: 8px;
+    color: darkgray;
+}
+
 #close
 {
     position: absolute !important;

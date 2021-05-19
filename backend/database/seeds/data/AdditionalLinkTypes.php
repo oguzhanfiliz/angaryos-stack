@@ -10,6 +10,6 @@ foreach($additional_link_types as $additional_link_type => $null)
 {
     $temp['name'] = $additional_link_type;
     
-    $column_validations[$validation] = new BaseModel('additional_link_types', $temp);
-    $column_validations[$validation]->save();
+    $additional_link_types[$additional_link_type] = new BaseModel('additional_link_types', $temp);
+    $additional_link_types[$additional_link_type]->save();
 }

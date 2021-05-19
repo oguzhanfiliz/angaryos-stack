@@ -138,7 +138,11 @@ $column_name_display_name_map =
     'url' => 'URL',
     'open_new_window' => 'Yeni Pencere',
     'table_group_id' => 'Tablo Grubu',
-    'payload' => 'Yük'
+    'payload' => 'Yük',
+    
+    'link_description' => 'Link Açıklaması',
+    'device_unique_info' => 'Cihaz benzersiz ID',
+    'ip' => 'IP Adres(ler)i',
 ];
 
 

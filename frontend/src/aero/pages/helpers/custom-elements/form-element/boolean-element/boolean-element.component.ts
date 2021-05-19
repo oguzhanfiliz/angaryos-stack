@@ -38,7 +38,7 @@ export class BooleanElementComponent
 
                 return;
             }
-            
+
             if(this.createForm != true) return;
             if(this.defaultData.length == 0) return;
 

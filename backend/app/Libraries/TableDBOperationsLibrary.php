@@ -21,8 +21,20 @@ class TableDBOperationsLibrary
     
     public function __construct() 
     {
-        foreach($this->defaultColumnNames as $name)
-            array_push ($this->defaultColumnIds, DB::table('columns')->where('name', $name)->first()->id);
+        
+    }
+    
+    private function FillDefaultColumnIds()
+    {
+        if(count($this->defaultColumnIds) > 0) return;
+        
+        try {
+            foreach($this->defaultColumnNames as $name)
+                array_push ($this->defaultColumnIds, DB::table('columns')->where('name', $name)->first()->id);
+    
+        } catch (\Exception $exc) {
+            dd(DB::table('columns')->get(), $name ,$exc);echo $exc->getTraceAsString();
+        }
     }
     
     
@@ -727,6 +739,8 @@ class TableDBOperationsLibrary
     
     public function GetColumnIdsForColumnIdsInjection($columns)
     {
+        $this->FillDefaultColumnIds();
+        
         $column_ids = [];
         
         array_push($column_ids, $this->defaultColumnIds[array_search('id', $this->defaultColumnNames)]);
@@ -775,6 +789,8 @@ class TableDBOperationsLibrary
     
     public function GetRealColumnsFromColumnIds($columnIds)
     {
+        $this->FillDefaultColumnIds();
+        
         $columns = [];
         foreach($columnIds as $columnId)
             if(!in_array($columnId, $this->defaultColumnIds))
@@ -787,7 +803,9 @@ class TableDBOperationsLibrary
     }
     
     public function GetDeletedColumns($currentColumnIds, $columnIds)
-    {      
+    {     
+        $this->FillDefaultColumnIds();
+        
         if(!is_array($currentColumnIds))
             $currentColumnIds = json_decode($currentColumnIds);
         
@@ -806,6 +824,8 @@ class TableDBOperationsLibrary
     
     public function GetAddedColumns($currentColumnIds, $columnIds)
     {
+        $this->FillDefaultColumnIds();
+        
         if(!is_array($currentColumnIds))
             $currentColumnIds = json_decode($currentColumnIds);
         

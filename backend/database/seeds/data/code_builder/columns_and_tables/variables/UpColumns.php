@@ -49,7 +49,7 @@ $up_columns['column_id'] = $up_columns['column_ids'];
 $up_columns['data_source_rmt_table_id'] =
 [
     'name_basic' => 'sadece seçili veri kaynağının tabloları gelsin',
-    'column_id' => 91,//'data_source_id',//Tablo yada kolon eklenme sırası değişirse güncellenmesi gerekir
+    'column_id' => 92,//'data_source_id',//Tablo yada kolon eklenme sırası değişirse güncellenmesi gerekir
     'table_ids' => [/*'data_source_tbl_relations'*/43],//Tablo yada kolon eklenme sırası değişirse güncellenmesi gerekir
     'php_code' => '<?php
 $temp = DB::table(\'data_source_remote_tables\')
@@ -63,7 +63,7 @@ foreach($temp as $item) array_push($return, $item);
 $up_columns['column_array_ids'] =
 [
     'name_basic' => 'sadece seçili tablonun dizileri gelsin',
-    'column_id' => 65,//'table_id',//Tablo yada kolon eklenme sırası değişirse güncellenmesi gerekir
+    'column_id' => 66,//'table_id',//Tablo yada kolon eklenme sırası değişirse güncellenmesi gerekir
     'table_ids' => [/*'column_arrays'*/21],//Tablo yada kolon eklenme sırası değişirse güncellenmesi gerekir
     'php_code' => '<?php
 $temp = DB::table(\'column_arrays\')
