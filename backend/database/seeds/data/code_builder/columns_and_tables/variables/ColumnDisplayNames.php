@@ -143,6 +143,21 @@ $column_name_display_name_map =
     'link_description' => 'Link Açıklaması',
     'device_unique_info' => 'Cihaz benzersiz ID',
     'ip' => 'IP Adres(ler)i',
+    
+    
+    'title' => 'Başlık',
+    'announcement' => 'Duyuru',
+    'type' => 'tip',
+    'all_users' => 'Tüm Kullanıcılar',
+    'department_ids' => 'Müdürlükler',
+    'user_ids' => 'Kullanıcılar',
+    'sms' => 'SMS',
+    'mail' => 'Mail',
+    'notification' => 'Bildirim',
+    'web' => 'Web',
+    'start_time' => 'Başlama Zamanı',
+    'end_time' => 'Bitiş Zamanı',
+    'phone' => 'Telefon',
 ];
 
 

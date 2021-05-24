@@ -28,7 +28,7 @@ trait ReportSubscriberRequestTrait
 
         $records = $params->model->get();
         $records = $model->updateRecordsDataForResponse($records, $params->columns);
-        $records = $this->UpdateRecordsDataForReport($records, $params);
+        $records = $this->UpdateRecordsDataForReport($records, $params->columns);
         $record = $records[0];
 
         $tableInfo = $model->getTableInfo($params->table_name);
@@ -81,7 +81,7 @@ trait ReportSubscriberRequestTrait
         
         $records = $params->model->get();
         $records = $model->updateRecordsDataForResponse($records, $params->columns);
-        $records = $this->UpdateRecordsDataForReport($records, $params);
+        $records = $this->UpdateRecordsDataForReport($records, $params->columns);
         
         $tableInfo = $model->getTableInfo($params->table_name);
         
@@ -123,10 +123,8 @@ trait ReportSubscriberRequestTrait
         return $report->column_array_id;
     }
     
-    public function UpdateRecordsDataForReport($records, $params)
+    public function UpdateRecordsDataForReport($records, $columns)
     {
-        $columns = $params->columns;
-        
         $jsonColumns = [];
         
         foreach($columns as $column)

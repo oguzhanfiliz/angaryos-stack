@@ -119,3 +119,15 @@ $column_sets['e_signs'] =
         'column_array_ids' => [0]
     ]
 ];
+
+$column_arrays['announcements'] =
+[
+    [
+        'name_basic' => 'Duyurular Genel Personel Yetkisi Liste',
+        'column_array_type_id' => $column_array_types['direct_data']->id,
+        'table_id' => 'announcements',
+        'column_ids' =>  [ 'id', 'title', 'announcement', 'icon', 'type', 'created_at'],
+        'join_table_ids' => [],
+        'join_columns' => '',
+    ]
+];

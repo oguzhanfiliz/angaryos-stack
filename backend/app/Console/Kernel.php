@@ -19,10 +19,24 @@ class Kernel extends ConsoleKernel
             if(strlen($dataEntegrator->cron) > 0)
                 $schedule->call(function () use($dataEntegrator) 
                 {
-                    Artisan::call('data:entegrator', 
-                    [
-                        'tableRelationId' => $dataEntegrator->id,
-                    ]);
+                    try 
+                    {
+                        send_log('info', 'Data entegrator schedule start...', $dataEntegrator);
+                        
+                        Artisan::call('data:entegrator', 
+                        [
+                            'tableRelationId' => $dataEntegrator->id,
+                        ]);
+
+                        send_log('info', 'Data entegrator schedule complate', $dataEntegrator); 
+                    } 
+                    catch (\Exception $ex) 
+                    {                        
+                        send_log('info', 'Data entegrator schedule fail', [$dataEntegrator, $ex->getMessage(), $ex]); 
+                    }   
+
+
+                    
                 })->cron($dataEntegrator->cron);
     }
     
@@ -33,7 +47,16 @@ class Kernel extends ConsoleKernel
             if(strlen($mission->cron) > 0)
                 $schedule->call(function () use($mission) 
                 {
-                    eval(helper('clear_php_code', $mission->php_code));  
+                    try 
+                    {
+                        send_log('info', 'Mission schedule start...', $mission);
+                        eval(helper('clear_php_code', $mission->php_code)); 
+                        send_log('info', 'Mission schedule complate', $mission); 
+                    } 
+                    catch (\Exception $ex) 
+                    {                        
+                        send_log('info', 'Mission schedule fail', [$mission, $ex->getMessage(), $ex]); 
+                    }                    
                 })->cron($mission->cron);
     }
 

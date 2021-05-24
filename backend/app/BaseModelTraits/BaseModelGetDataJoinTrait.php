@@ -96,6 +96,9 @@ trait BaseModelGetDataJoinTrait
     {
         if(isset($params->column->join_table_alias)) 
             $params->join_table_alias = $params->column->join_table_alias;
+			
+		$params->join_source = helper('reverse_clear_string_for_db', $params->join_source);
+		if($params->join_source[0] == '"' && $params->join_source[strlen($params->join_source)-1] == '"') $params->join_source = substr($params->join_source, 1, -1);
         
         $params->model->leftJoin(
                 $params->join_table->name . ' as ' . $params->join_table_alias, 
@@ -110,6 +113,9 @@ trait BaseModelGetDataJoinTrait
                 .$this->getTable().'.'.$params->column->name.') with ordinality ' 
                 .' as '.$params->join_table_alias.'_lateral';
         $params->model->leftJoin(DB::raw($lateral), DB::raw('true'), '=', DB::raw('true'));
+		
+		$params->join_source = helper('reverse_clear_string_for_db', $params->join_source);
+		if($params->join_source[0] == '"' && $params->join_source[strlen($params->join_source)-1] == '"') $params->join_source = substr($params->join_source, 1, -1);
         
         $params->model->leftJoin(
                 $params->join_table->name . ' as ' . $params->join_table_alias, 
@@ -280,6 +286,8 @@ trait BaseModelGetDataJoinTrait
         $params->column = get_attr_from_cache('columns', 'name', $columnName, '*');
         
         $params->relation = get_attr_from_cache('columns', 'id', $join->join_column_id, '*');
+        
+        if(!$params->column) return $this->addJoinForColumnArrayForOneToOne($params);
         
         return ColumnClassificationLibrary::relationDbTypes(   $this, 
                                                                 __FUNCTION__, 

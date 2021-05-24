@@ -232,7 +232,11 @@ trait BaseModelGetDataTrait
         foreach($columns as $column)
         {
             if(!isset($column->column_gui_type_id)) 
-                dd('updateRecordsDataForResponse');
+            {
+                $column->column_gui_type_id = get_attr_from_cache('columns', 'id', $column->id, 'column_gui_type_id');
+                $column->column_db_type_id = get_attr_from_cache('columns', 'id', $column->id, 'column_db_type_id');
+                if(!$column->column_gui_type_id) dd('updateRecordsDataForResponse', $column);
+            }
             
             $records = $this->UpdateGeoColumnsDataForResponse($records, $column);
             

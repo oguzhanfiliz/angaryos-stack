@@ -303,6 +303,20 @@ $return = $helper->Event($params);
 ?>'
 ];
 
+$subscribers['table']['announcements'][0] =
+[
+    'name_basic' => 'Duyuru için Bildirim/Sms/Mail takipçisi',
+    'subscriber_type_id' => $subscriber_types['after']->id,
+    'php_code' => '<?php
+
+if($type != \'create\') return;
+if(strlen($record->start_time) > 0) return;
+
+\App\Jobs\AnnouncementControl::dispatch($record->id);
+
+?>'
+];
+
 
 
 foreach($subscribers as $type => $set)

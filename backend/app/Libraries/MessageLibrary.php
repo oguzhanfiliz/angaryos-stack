@@ -9,9 +9,10 @@ use Log;
 class MessageLibrary 
 {
     private static $rabbitMQObject = NULL;
-    private static $sshConnectionObjects = [];
-    
+    public static $sshConnectionObjects = [];
+
     public static $lastSshResponse = NULL;
+    public static $lastSmsResponse = NULL;
 
     public static function getSshConnectionObject($host, $user, $password, $port = NULL)
     {
@@ -32,6 +33,8 @@ class MessageLibrary
 
     private static function runSshCommandAsSudo($connection, $command, $config)
     {
+        //NET_SSH2_READ_SIMPLE 1
+        
         $connection->setTimeout(1);
         if(!$config['no_wait_for_sudo']) $connection->read('/.*@.*[$|#]/', /*NET_SSH2_READ_REGEX*/2);
         else  $connection->read();
@@ -88,7 +91,7 @@ class MessageLibrary
 
     public static function sendCommandWithSsh($config, $command, $clearAndParseOutput = TRUE, $timeOut = 5)
     {
-        if(strlen($config['port']) == 0) $config['port'] = 22;
+        if(!isset($config['port'])) $config['port'] = 22;
 
         $connection = self::getSshConnectionObject($config['host'], $config['user_name'], $config['password'], $config['port']);
         if(!$connection) throw new \Exception('ssh.server.connection.error');
@@ -98,7 +101,12 @@ class MessageLibrary
         if(substr(strtolower(trim($command)), 0, 5) == 'sudo ')
             $output = self::runSshCommandAsSudo($connection, $command, $config);
         else 
-            $output = $connection->exec($command, $config['call_back_function']);
+        {
+            if(!isset($config['call_back_function']))
+                $output = $connection->exec($command);
+            else
+                $output = $connection->exec($command, $config['call_back_function']);
+        }
 
         self::$lastSshResponse = $output;
         
@@ -208,23 +216,27 @@ class MessageLibrary
         return ['response' => $response, 'error' => $error];
     }
     
-    public static function sendSms($tel, $message) 
+    public static function sendSms($tel, $message, $raw = FALSE) 
     {
         send_log('info', 'Send sms request', [$tel, $message]);
+        
+        $tel = str_replace(' ', '%20', $tel);
         
         $url = str_replace('$TEL', $tel, SMS_URL);
         $url = str_replace('$MESSAGE', urlencode($message), $url);
         
-        $data = self::curl($url);
+        self::$lastSmsResponse = self::curl($url);
         
-        send_log('info', 'Send sms end', [$data]);
+        send_log('info', 'Send sms end', [self::$lastSmsResponse]);
         
-        return $data['error'] != FALSE;
+        if($raw) return self::$lastSmsResponse;
+
+        return self::$lastSmsResponse['error'] != FALSE;
     }
     
-    public static function sendMail($subject, $mail, $emailsWithNames, $attachments = [])
+    public static function sendMail($subject, $html, $emailsWithNames, $attachments = [])
     {
-        Mail::send("email.base", ["html" => $mail], function ($message) use($subject, $emailsWithNames, $attachments)
+        Mail::send("email.base", ["html" => $html], function ($message) use($subject, $emailsWithNames, $attachments)
         {
             foreach($emailsWithNames as $emailsWithName)
                 $message->to($emailsWithName['email'], $emailsWithName['name'])->subject($subject);
@@ -236,7 +248,7 @@ class MessageLibrary
         return Mail::failures();
     }
     
-    public function fireBaseCloudMessaging($title, $text, $to = FB_BASE_TOPIC)
+    public static function fireBaseCloudMessaging($title, $text, $to = FB_BASE_TOPIC)
     {
         send_log('info', 'Send FCM request', [$to, $title, $text]);
         
@@ -259,6 +271,6 @@ class MessageLibrary
         
         send_log('info', 'Send FCM end', [$data]);
         
-        return $data['error'] != FALSE;
+        return $data['error'] == FALSE;
     }
 }

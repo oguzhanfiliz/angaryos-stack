@@ -21,26 +21,18 @@ function read_from_response_data($key, $json = FALSE)
 
 function clear_object_for_db($obj)
 {
-    if($obj == NULL) 
-        return $obj;
-    else if(is_bool($obj)) 
-        return (bool)$obj;
-    else if(is_numeric($obj)) 
-        return $obj;
-    else if(is_string($obj)) 
-        return helper('clear_string_for_db', $obj);
+    if($obj == NULL) return $obj;
+    else if(is_bool($obj))  return (bool)$obj;
+    else if(is_numeric($obj)) return $obj;
+    else if(is_string($obj))  return helper('clear_string_for_db', $obj);
     else if(is_array($obj))
     {
         foreach($obj as $key => $val)
         {
-            if(is_bool($obj[$key])) 
-                $obj[$key] = (bool)$obj[$key];
-            else if(is_numeric($obj[$key])) 
-                $obj[$key] = $obj[$key];
-            else if(is_string($val)) 
-                $obj[$key] = helper('clear_string_for_db', $val);
-            else
-                $obj[$key] = clear_object_for_db($val);
+            if(is_bool($obj[$key])) $obj[$key] = (bool)$obj[$key];
+            else if(is_numeric($obj[$key]))  $obj[$key] = $obj[$key];
+            else if(is_string($val))   $obj[$key] = helper('clear_string_for_db', $val);
+            else  $obj[$key] = clear_object_for_db($val);
         }  
     }
     else if(is_object($obj))
@@ -51,14 +43,10 @@ function clear_object_for_db($obj)
         {
             try 
             {
-                if(is_bool($obj->{$key})) 
-                    $obj->{$key} = (bool)$obj->{$key};
-                if(is_numeric($obj->{$key}))
-                    $obj->{$key} = $obj->{$key};
-                else if(is_string($obj->{$key})) 
-                    $obj->{$key} = helper('clear_string_for_db', $obj->{$key});
-                else
-                    $obj->{$key} = clear_object_for_db($obj->{$key});
+                if(is_bool($obj->{$key}))  $obj->{$key} = (bool)$obj->{$key};
+                if(is_numeric($obj->{$key}))  $obj->{$key} = $obj->{$key};
+                else if(is_string($obj->{$key}))  $obj->{$key} = helper('clear_string_for_db', $obj->{$key});
+                else $obj->{$key} = clear_object_for_db($obj->{$key});
             } 
             catch (\Exception $e) 
             {

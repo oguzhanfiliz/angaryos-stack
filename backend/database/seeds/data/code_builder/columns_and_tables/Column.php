@@ -55,7 +55,8 @@ $column_gui_type_override =
     'tokens' => $column_gui_types['jsonviewer:newpage']->id,
     'state' => $column_gui_types['boolean:fastchange']->id,
     'payload' => $column_gui_types['codeeditor:javascript']->id,
-    'additional_link_type_id' => $column_gui_types['select:static']->id
+    'additional_link_type_id' => $column_gui_types['select:static']->id,
+    'phone' => $column_gui_types['phone']->id
 ];
 
 $columnDefaults =

@@ -213,13 +213,42 @@ $eSignAuth->fillVariables();
 $eSignAuth->save();
 
 
-$publicAuth = $this->get_base_record();
-$publicAuth['name_basic'] = 'Serbest İçerik Tablosu Serbest Kullanıcı Yetkisi';
-$publicAuth['auths'] = 
+$announcementAuth = $this->get_base_record();
+$announcementAuth['name_basic'] = 'Duyurular Genel Personel Yetkisi';
+$announcementAuth['auths'] = 
+[
+    'tables:announcements:option:0', 
+    'tables:announcements:lists:'.$column_arrays['announcements'][0]->id,
+    'tables:announcements:queries:'.$column_arrays['announcements'][0]->id,
+    'filters:announcements:list:'.$data_filters['announcements'][0]->id
+];
+
+$announcementAuth = new BaseModel('auth_groups', $announcementAuth);
+$announcementAuth->fillVariables();
+$announcementAuth->save();
+
+
+$publicContentsAuth = $this->get_base_record();
+$publicContentsAuth['name_basic'] = 'Serbest İçerik Genel Personel Yetkisi';
+$publicContentsAuth['auths'] = 
 [
     'tables:public_contents:option:0',
     'tables:public_contents:lists:0',
     'tables:public_contents:queries:0'
+];
+
+$publicContentsAuth = new BaseModel('auth_groups', $publicContentsAuth);
+$publicContentsAuth->fillVariables();
+$publicContentsAuth->save();
+
+
+$publicAuth = $this->get_base_record();
+$publicAuth['name_basic'] = 'Serbest İçerik Tablosu Serbest Kullanıcı Yetkisi';
+$publicAuth['auths'] = 
+[
+    $publicContentsAuth->id,
+    $announcementAuth->id,
+    $eSignAuth->id
 ];
 
 $publicAuth = new BaseModel('auth_groups', $publicAuth);

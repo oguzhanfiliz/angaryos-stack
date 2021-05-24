@@ -83,7 +83,9 @@ $data_filters['common'] =
     ]
 ];
 
-$filter =
+
+
+$eSignFilter =
 [
     'name_basic' => 'Onaylanmış e-imzalar düzenlenemesin güncelleme filtresi',
     'data_filter_type_id' => $data_filter_types['update']->id,
@@ -91,7 +93,30 @@ $filter =
 ];
 
 if(!isset($data_filters['e_signs'])) $data_filters['e_signs'] = [];
-array_push($data_filters['e_signs'], $filter);
+array_push($data_filters['e_signs'], $eSignFilter);
+
+
+
+$announcementFilter =
+[
+    'name_basic' => 'Sadece kendine duyuruları görebilme liste filtresi',
+    'data_filter_type_id' => $data_filter_types['list']->id,
+    'sql_code' => '(all_users or 
+        department_ids  @> \'$user->department_id\' or department_ids  @> \'"$user->department_id"\' or
+        user_ids  @> \'$user->id\' or user_ids  @> \'"$user->id"\') and 
+
+        web and
+
+        ( (start_time::text = \'\') IS NOT false or start_time <= NOW()) and
+        ( (end_time::text = \'\') IS NOT false or end_time >= NOW()) and
+        state' 
+];
+
+if(!isset($data_filters['announcements'])) $data_filters['announcements'] = [];
+array_push($data_filters['announcements'], $announcementFilter);
+
+
+
 
 foreach($data_filters as $tableName => $filters)
     foreach($filters as $kk => $filter)

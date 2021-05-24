@@ -32,6 +32,8 @@ export class PagesComponent
   eSigns = [];
   isESignUserTrue = false;
   eSignTimeOut = 1000 * 60 * 5;
+  
+  announcements = [];
 
   constructor(
         public messageHelper: MessageHelper,
@@ -52,8 +54,53 @@ export class PagesComponent
     $(".page-loader-wrapper").fadeOut();
 
     this.eSignServerOperations();
+    this.announcementOperations();
 
     BaseHelper.writeToPipe('basePageComponent', this);
+  }
+  
+  async announcementOperations()
+  {
+    var url = this.sessionHelper.getBackendUrlWithToken()+"tables/announcements";
+
+    var params = 
+    {
+      "page":1,
+      "limit":10,
+      "sorts":{ "id": false },
+      "filters": { }
+    }
+
+    if(typeof BaseHelper.loggedInUserInfo.auths['tables'] == "undefined") return;
+    if(typeof BaseHelper.loggedInUserInfo.auths['tables']['announcements'] == "undefined") return;
+    var auth = BaseHelper.loggedInUserInfo.auths['tables']['announcements'];
+    if(typeof auth == "undefined") return;
+    
+    var listId = auth["lists"][0];
+    var queryId = listId;
+    if(typeof auth['queries'] != "undefined" && typeof auth['queries'][0] != "undefined")
+        queryId = auth['queries'][0]
+        
+    params['column_array_id'] = listId;
+    params['column_array_id_query'] = queryId;
+
+    var th = this;
+    await this.sessionHelper.doHttpRequest("POST", url, {"params": BaseHelper.objectToJsonStr(params)}) 
+    .then((data) => 
+    {
+      th.announcements = data['records']; 
+      for(var i = 0; i < th.announcements.length; i++)
+      {
+        if(th.announcements[i]['type'] == null || th.announcements[i]['type'] == '')
+          th.announcements[i]['type'] = 'blue';
+          
+        if(th.announcements[i]['icon'] == null || th.announcements[i]['icon'] == '')
+          th.announcements[i]['icon'] = 'zmdi zmdi-vibration';
+      }
+
+      console.log(th.announcements )
+    })
+    .catch((e) => {  });
   }
   
   async eSignServerOperations()

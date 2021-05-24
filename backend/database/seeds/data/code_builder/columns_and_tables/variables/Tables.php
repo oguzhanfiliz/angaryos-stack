@@ -85,4 +85,5 @@ $table_name_display_name_map =
     'additional_links' => 'Ek Linkler',
     
     'devices' => 'Cihazlar',
+    'announcements' => 'Duyurular',
 ];

@@ -44,6 +44,15 @@ exec('echo www | sudo -S docker exec '.".'$containerId'.".' /bin/bash -c \''.".'
 
 ?>";
 
+$missions['announcement_control']['name'] = 'Duyuru zamanı kontrol';
+$missions['announcement_control']['cron'] = '* * * * *';
+$missions['announcement_control']['php_code'] = '<?php
+
+$lib = new \App\Libraries\AnnouncementLibrary();
+$lib->Control();
+
+?>';
+
 foreach($missions as $name => $array)
 {
     $temp = $this->get_base_record();
