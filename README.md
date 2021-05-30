@@ -2,7 +2,7 @@
 
 Merhaba. Bu; yazılımcıları yazılımın angarya kısmından kurtarıp esas işe odaklanmalarını sağlayacak olan açık kaynak bir yazılım geliştirme altyapısıdır.
 
-//TODO servis diyagramı
+![Diagram](./services/files/images/Diagram.png)
 
 Sistem tamamen docker-stack üzerinde çalışmaktadır. Bu sayede daha yoğun uygulamalar için ölçekleneblir. GIS desteği sayesinde coğrafi veri üretebilmenizi ve saklayabilmenizi sağlar. Yoğun dosya trafiği olan uygulamalarda kullanabilmeniz için dosya sunucusu bağımsız bir servis olarak eklenmiştir. Log tutmak için -varsayılan olarak kapalı olsa da- Elastic search-Logstash-Kibana kurulmuştur. Ayrıca asenkron ve rutin işlemler için Jobs ve Cron servisleri bağımsız olarak çalışmaktadır.
 
