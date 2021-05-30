@@ -12,5 +12,6 @@ chmod 777 -R backend/storage/
 chmod 777 -R backend/public/
 chmod 777 -R backend/bootstrap/cache/
 chmod 777 -R services/
+chmod 600 services/postgresql/.pgpass
 
 docker stack deploy --compose-file ./docker-stack.yml angaryos

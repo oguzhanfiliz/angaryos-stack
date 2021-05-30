@@ -32,6 +32,9 @@ services:
             - target: 443
               published: 443 
               mode: host
+            - target: 80
+              published: 80 
+              mode: host
         volumes:
             - /var/run/docker.sock:/var/run/docker.sock
             - ./services/traefik/traefik-stack.toml:/etc/traefik.toml
@@ -264,7 +267,7 @@ services:
             - "9001:15672"
         deploy:
             mode: replicated
-            replicas: 1
+            replicas: 0
         volumes:
             - '/etc/localtime:/etc/localtime:ro'
         networks:

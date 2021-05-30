@@ -39,3 +39,10 @@ Döküman hazırlanıyor...
 
 
 **** Varsayılan web arayüz teması bir lisans anahtarına ihtiyaç duyar.
+
+
+
+
+
+
+update.py anlat
