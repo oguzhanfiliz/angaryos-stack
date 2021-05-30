@@ -39,9 +39,7 @@ Bu uygulama, içerisinde bir çok servisi barındırır. Bu sebeple önerilen, s
 
 ```
 sudo wget https://raw.githubusercontent.com/MikroGovernment/angaryos-stack/master/start.sh
-sudo wget https://raw.githubusercontent.com/MikroGovernment/angaryos-stack/master/payload.sh
 sudo chmod +x start.sh
-sudo chmod +x payload.sh
 sudo ./start.sh
 ```
 

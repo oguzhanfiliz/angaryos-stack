@@ -14,6 +14,7 @@ chmod 777 -R ./backend/bootstrap/cache/
 chmod 777 -R ./services/
 chmod 600 ./services/postgresql/.pgpass
 
+chmod 777 ./payload.sh
 ./payload.sh
 
 docker stack deploy --compose-file ./docker-stack.yml angaryos
