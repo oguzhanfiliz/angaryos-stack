@@ -197,7 +197,7 @@ export class SessionHelper
 
           if(this.redirectInitializeIfDbNotInitialized(error)) 
           {
-            reject(error.message);
+            resolve(error.message);
             return;
           }          
           else if(this.redirectLoginPageIfTokenIsFail(error)) 
