@@ -18,6 +18,7 @@ declare var $: any;
 export class LoginComponent 
 {
     public loading = false;
+    public baseUrl = "";
 
     public user = 
     {
@@ -39,6 +40,8 @@ export class LoginComponent
         this.aeroThemeHelper.removeThemeClass();
         
         this.aeroThemeHelper.pageRutine();
+        
+        this.baseUrl = BaseHelper.backendBaseUrl + "#/";
         
         setTimeout(() => this.cookieControl(), 2000);
     }
