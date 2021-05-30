@@ -67,3 +67,14 @@ Döküman hazırlanıyor...
 ## Güncelleme
 
 Güncelleme yapmadan önce framework içerisinde değiştirdiğiniz dosyaların adresini "./.updateignore" dosyasına eklemelisiniz; yoksa üzerine yazılabilir. Örnek bir .updateignore dosyasına "./.updateignore-example" yolundan ulaşabilirsiniz. Ardından ana dizinde "python3 update.py" komutu ile güncellemeyi başlatabilirsiniz. Güncelleyici her ihtimale karşı bazı önemli dizinlerinizi "./../AngaryosBackup..." dizinine yedekleyecektir.
+
+
+## Önizleme
+
+![Giriş](./services/files/images/ss1.png)
+
+![Göstergeler](./services/files/images/ss2.png)
+
+![Veri Tabloları](./services/files/images/ss3.png)
+
+![Harita](./services/files/images/ss4.png)
