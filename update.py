@@ -99,7 +99,8 @@ try:
             "backend/routes/", 
             "frontend/src/aero/", 
             "services/geoserver/", 
-            "services/postgresql/data/"
+            "services/postgresql/data/",
+            "frontend/src/environments/"
         ]
 
         for f in files:
@@ -110,15 +111,16 @@ try:
     def save_ignored_files():
         write_log(1, "Save ignored files starting")
 
-        temp_file_operatisons()
+        temp_file_operatisons()  
         
         files = [
-            "frontend/src/environments/", 
-            "services/postgresql/data/"
+            "./frontend/src/environments/", 
+            "./backend/.env", 
+            "./services/postgresql/data/"
         ]
 
         for f in files:
-            copy("./"+f, "./temp/"+f)      
+            copy("./"+f, "./temp/"+f)    
 
         f = open(".updateignore", "r")
         for item in f:
@@ -132,8 +134,9 @@ try:
         write_log(1, "Clone ignored files starting")
 
         files = [
-            "frontend/src/environments/", 
-            "services/postgresql/data/"
+            "./frontend/src/environments/", 
+            "./backend/.env", 
+            "./services/postgresql/data/"
         ]
 
         for f in files:
@@ -148,7 +151,11 @@ try:
         write_log(1, "Clone ignored files OK")
 
     def dump_db():
-        os.popen("docker exec $(docker container ls | grep postgis | awk -F ' ' '{print $1}') /bin/bash -c 'pg_dump -Fc postgres -U postgres -h postgresql -f /var/lib/postgresql/`date +%Y-%m-%d_%H:%M`.dump'").read()
+        rt = os.popen("docker exec $(docker container ls | grep postgis | awk -F ' ' '{print $1}') /bin/bash -c 'pg_dump -Fc postgres -U postgres -h postgresql -f /var/lib/postgresql/`date +%Y-%m-%d_%H:%M`.dump'").read()
+        
+        if rt != "":
+            print("Error for dump_db: " +rt)
+            sys.exit()
 
     def stop_stack():
         os.popen("docker stack rm angaryos 2> /dev/null").read()
@@ -162,13 +169,13 @@ try:
     
     def clone_repo():
         write_log(1, "Clone repo starting")
-        os.popen("git clone https://github.com/karapazar/Angaryos").read()
+        os.popen("git clone https://github.com/MikroGovernment/angaryos-stack.git").read()
         write_log(1, "Clone repo OK")
 
-        os.popen("cp -rf ./Angaryos/ ./../").read()
+        os.popen("cp -rf ./angaryos-stack/ ./../").read()
         write_log(1, "Copy repo OK")
 
-        os.popen("rm -rf ./Angaryos/").read()
+        os.popen("rm -rf ./angaryos-stack/").read()
         write_log(1, "Remove repo OK")
 
     def remove_temp():
@@ -177,11 +184,12 @@ try:
         write_log(1, "Temp file remove OK")
     
     def set_permission():
-        os.popen("chmod 755 -R frontend/").read()
-        os.popen("chmod 755 -R backend/").read()
-        os.popen("chmod 777 -R backend/storage/").read()
-        os.popen("chmod 777 -R backend/public/").read()
-        os.popen("chmod 777 -R backend/bootstrap/cache/").read()
+        os.popen("chmod 755 -R ./frontend/").read()
+        os.popen("chmod 755 -R ./backend/").read()
+        os.popen("chmod 777 -R ./backend/storage/").read()
+        os.popen("chmod 777 -R ./backend/public/").read()
+        os.popen("chmod 777 -R ./backend/bootstrap/cache/").read()
+        os.popen("chmod 600 ./services/postgresql/.pgpass").read()
 
         write_log(1, "Set permission OK")
 

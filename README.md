@@ -46,3 +46,10 @@ Döküman hazırlanıyor...
 
 
 update.py anlat
+
+
+
+servisler hakkında bir resim koy ve anlat
+
+
+elastic search açmayı anlat
