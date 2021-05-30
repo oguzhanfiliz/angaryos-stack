@@ -69,6 +69,8 @@ Döküman hazırlanıyor...
 
 Güncelleme yapmadan önce framework içerisinde değiştirdiğiniz dosyaların adresini "./.updateignore" dosyasına eklemelisiniz; yoksa üzerine yazılabilir. Örnek bir .updateignore dosyasına "./.updateignore-example" yolundan ulaşabilirsiniz. Ardından ana dizinde "python3 update.py" komutu ile güncellemeyi başlatabilirsiniz. Güncelleyici her ihtimale karşı bazı önemli dizinlerinizi "./../AngaryosBackup..." dizinine yedekleyecektir.
 
+Güncelleme tamamlanınca "https://host.adresiniz/api/v1/upgradeDb" adresine bir istek atarak -varsa- veritabanı tarafında yapılması gereken upgrade işlemlerini başlatabilirsiniz. Bu adresi çağırmadan önce veritabanında neler değişeceği hakkındaki güncelleme notlarını okumanızı tavsiye ederim.
+
 
 ## Önizleme
 
