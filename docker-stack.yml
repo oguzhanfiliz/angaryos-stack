@@ -84,6 +84,33 @@ services:
                 traefik.enable: "true"
                 traefik.backend: "frontend"
                 traefik.docker.network: "angaryos_frontend-nw"
+                
+    varnishFrontend:
+        image: million12/varnish
+        command: bash -c "/start.sh && sleep 15 && echo 'basladi'"
+        environment:
+            - CACHE_SIZE=128m
+        deploy:
+            mode: replicated
+            replicas: 1
+            labels:
+                traefik.varnishFrontendAssets.frontend.rule: "PathPrefix:/assets"
+                traefik.varnishFrontendVendor.frontend.rule: "PathPrefix:/vendor.js"
+                traefik.varnishFrontendManifest.frontend.rule: "PathPrefix:/manifes.json"
+                traefik.varnishFrontendRuntime.frontend.rule: "PathPrefix:/runtime.js"
+                traefik.varnishFrontendPolyfills.frontend.rule: "PathPrefix:/polyfills.js"
+                traefik.varnishFrontendStyles.frontend.rule: "PathPrefix:/styles.js"
+                traefik.varnishFrontendMain.frontend.rule: "PathPrefix:/main.js"
+                traefik.varnishFrontendScripts.frontend.rule: "PathPrefix:/scripts.js"
+                
+                traefik.port: "80"
+                traefik.enable: "true"
+                traefik.backend: "varnish"
+                traefik.docker.network: "angaryos_frontend-nw"
+        volumes:
+            - ./services/varnish/frontend.vcl:/etc/varnish/default.vcl
+        networks:
+            - frontend-nw
 
 
 
