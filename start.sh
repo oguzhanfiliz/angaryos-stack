@@ -14,7 +14,7 @@ chmod 777 -R ./backend/bootstrap/cache/
 chmod 777 -R ./services/
 chmod 600 ./services/postgresql/.pgpass
 
-read -p "Enter new host address: "  hostAdress
+read -p "Enter new host address (ex: 192.168.3.50, bulut.omersavas.com): "  hostAdress
 
 declare -a arr=("./backend/.env" "./frontend/src/environments/environment.prod.ts" "./frontend/src/environments/environment.ts")
 for i in "${arr[@]}"

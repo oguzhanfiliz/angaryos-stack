@@ -21,8 +21,7 @@ Sistem tamamen docker-stack üzerinde çalışmaktadır. Bu sayede daha yoğun u
 | Key/Value Cache | Memcache              |                                |
 | Ftp/File        | Vsftpd                |                                |
 | Queue           | Rabbit                |                                |
-| CTX Manager     | Partainer             |                                |
-| CTX Manager     | Partainer             |                                |
+| CTX Manager     | Portainer             |                                |
 
 
 ## Gereksinimler
