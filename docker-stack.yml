@@ -183,7 +183,7 @@ services:
             - "9004:8100"
         deploy:
             mode: replicated
-            replicas: 1
+            replicas: 0
             
             
             
@@ -288,7 +288,7 @@ services:
             - elk-nw
         deploy:
             mode: replicated
-            replicas: 1            
+            replicas: 0            
         volumes:
             - ./services/logs/elasticsearch/data:/usr/share/elasticsearch/data
             - ./services/logs/elasticsearch/config/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
@@ -310,7 +310,7 @@ services:
             - elasticsearch
         deploy:
             mode: replicated
-            replicas: 1
+            replicas: 0
 
     kibana:
         hostname: 'kibana'
@@ -324,7 +324,7 @@ services:
             - elk-nw
         deploy:
             mode: replicated
-            replicas: 1
+            replicas: 0
 
 
 

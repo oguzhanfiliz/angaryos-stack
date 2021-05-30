@@ -16,7 +16,7 @@ Light bir kurulum istiyorsanız ./backend/.env içindeki "LOG_CHANNEL" ayarını
 
 ### Linux
 ```
-sudo wget https://raw.githubusercontent.com/karapazar/Angaryos/master/start.sh
+sudo wget https://raw.githubusercontent.com/MikroGovernment/angaryos-stack/master/start.sh
 sudo chmod +x start.sh
 sudo ./start.sh
 ```
