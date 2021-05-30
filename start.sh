@@ -16,6 +16,5 @@ chmod 600 ./services/postgresql/.pgpass
 
 chmod 777 ./payload.sh
 chmod +x ./payload.sh
-./payload.sh
 
 docker stack deploy --compose-file ./docker-stack.yml angaryos
