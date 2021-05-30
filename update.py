@@ -153,10 +153,14 @@ try:
         write_log(1, "Clone ignored files OK")
 
     def dump_db():
-        rt = os.popen("docker exec $(docker container ls | grep postgis | awk -F ' ' '{print $1}') /bin/bash -c 'pg_dump -Fc postgres -U postgres -h postgresql -f /var/lib/postgresql/`date +%Y-%m-%d_%H:%M`.dump'").read()
-        
-        if rt != "":
-            print("Error for dump_db: " +rt)
+        try:
+            rt = os.popen("docker exec $(docker container ls | grep postgis | awk -F ' ' '{print $1}') /bin/bash -c 'pg_dump -Fc postgres -U postgres -h postgresql -f /var/lib/postgresql/`date +%Y-%m-%d_%H:%M`.dump' 2>&1").read()
+            
+            if rt != "":
+                print("Error for dump_db: " +rt)
+                sys.exit()
+        except Exception as temp:
+            print("Exception for dump_db: " +str(temp))
             sys.exit()
 
     def stop_stack():
