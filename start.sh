@@ -24,3 +24,5 @@ do
 done
 
 docker stack deploy --compose-file ./docker-stack.yml angaryos
+
+echo 'served at https://'"$hostAdress"'/'
