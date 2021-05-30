@@ -4,6 +4,7 @@ Route::options('/{any}', '\App\Http\Controllers\GeneralController@serviceOk');
 
 Route::any('/', '\App\Http\Controllers\GeneralController@serviceOk');
 Route::post('/initializeDb', '\App\Http\Controllers\GeneralController@initializeDb');
+Route::get('/upgradeDb', '\App\Http\Controllers\GeneralController@upgradeDb');
 
     
 Route::post('login', 'AuthController@login');
