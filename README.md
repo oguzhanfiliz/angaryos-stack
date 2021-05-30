@@ -31,7 +31,7 @@ Sistem tamamen docker-stack üzerinde çalışmaktadır. Bu sayede daha yoğun u
 
 ## Kurulum
 
-Bu uygulama, içerisinde bir çok servisi barındırır. Bu sebeple önerilen, sanal bir işletim sistemi[1] üzerinde kurulum yapılmasıdır. Aşağıdaki kurulum komutunu çalıştırdığınızda sizden host adresi istenecektir; (örn: 192.168.3.50 yada bulut.omersavas.com gibi) ardından kurulum, gerekli ayarları yapıp servisleri başlatır. Uygulamaya https://host.adresiniz/ üzerinden erişiebilirsiniz
+Bu uygulama, içerisinde bir çok servisi barındırır. Bu sebeple önerilen, sanal bir işletim sistemi[1] üzerinde kurulum yapılmasıdır. Aşağıdaki kurulum komutunu çalıştırdığınızda sizden host adresi istenecektir; ardından kurulum, gerekli ayarları yapıp servisleri başlatır. Uygulamaya https://host.adresiniz/ üzerinden erişiebilirsiniz
 
 [1] Testler UbuntuServer16.04 (X64) işletim sistemi üzerinde yapıldığı için önerilmektedir.
 
@@ -55,7 +55,6 @@ hazırlanıyor...
 
 ```
 hazırlanıyor...
-
 ```
 
 ## Kullanım
