@@ -16,7 +16,7 @@ chmod 600 ./services/postgresql/.pgpass
 
 read -p "Enter new host address (ex: 192.168.3.50, bulut.omersavas.com): "  hostAdress
 
-declare -a arr=("./backend/.env" "./frontend/src/environments/environment.prod.ts" "./frontend/src/environments/environment.ts")
+declare -a arr=("./angaryos-stack/backend/.env" "./angaryos-stack/frontend/src/environments/environment.prod.ts" "./angaryos-stack/frontend/src/environments/environment.ts")
 for i in "${arr[@]}"
 do
    echo 'replace: '"$i"
