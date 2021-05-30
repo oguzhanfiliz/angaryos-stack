@@ -122,11 +122,12 @@ try:
         for f in files:
             copy("./"+f, "./temp/"+f)    
 
-        f = open(".updateignore", "r")
-        for item in f:
-            if len(item.strip()) > 0:
-                copy("./"+item.strip(), "./temp/"+item.strip())       
-        f.close()
+        if os.path.exists(".updateignore"):
+            f = open(".updateignore", "r")
+            for item in f:
+                if len(item.strip()) > 0:
+                    copy("./"+item.strip(), "./temp/"+item.strip())       
+            f.close()
         
         write_log(1, "Save ignored files OK")
 
@@ -142,11 +143,12 @@ try:
         for f in files:
             copy("./temp/"+f, "./"+f, True) 
         
-        f = open(".updateignore", "r")
-        for item in f:
-            if len(item.strip()) > 0:
-                copy("./temp/"+item.strip(), "./"+item.strip(), True)      
-        f.close()
+        if os.path.exists(".updateignore"):
+            f = open(".updateignore", "r")
+            for item in f:
+                if len(item.strip()) > 0:
+                    copy("./temp/"+item.strip(), "./"+item.strip(), True)      
+            f.close()
 
         write_log(1, "Clone ignored files OK")
 
