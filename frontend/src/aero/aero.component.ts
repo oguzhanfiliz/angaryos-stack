@@ -17,12 +17,26 @@ export class AeroComponent
   {
     BaseHelper.preLoad();
     this.firebaseCloudMessageBegin();
-    if(BaseHelper.token.length == 0) this.generalHelper.navigate('/login');
+    this.redirectToLoginIfLoggedOut()
   }
 
   firebaseCloudMessageBegin()
   {
     this.messagingService.requestPermission()
     this.messagingService.receiveMessage()    
+  }
+  
+  redirectToLoginIfLoggedOut()
+  {
+    if(BaseHelper.token.length > 0) return;
+      
+    var ext = ['lppd', 'privacy-politica'];
+    for(var i = 0; i < ext.length; i++)
+    {
+        var control = window.location.href.indexOf(ext[i]);
+        if(control > -1) return;
+    }
+        
+    this.generalHelper.navigate('/login');
   }
 } 

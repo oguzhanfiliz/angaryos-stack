@@ -176,7 +176,7 @@ class User extends Authenticatable
             unset($link->updated_at);
             
             $link->name_basic = helper('reverse_clear_string_for_db', $link->name_basic); 
-            $link->link_description = helper('reverse_clear_string_for_db', $link->link_description); 
+            $link->link_description = helper('reverse_clear_string_for_db', @$link->link_description); 
             $link->payload = helper('reverse_clear_string_for_db', $link->payload);  
             array_push($links, $link);
         }

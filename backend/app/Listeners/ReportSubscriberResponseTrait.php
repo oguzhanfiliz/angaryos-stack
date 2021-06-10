@@ -239,7 +239,7 @@ trait ReportSubscriberResponseTrait
         foreach(explode('/', $data['storePath']) as $path)
         {
             $fullPath .= $path;
-            ftp_chmod($conn_id, 0777, env('FILE_ROOT', '/').$fullPath);
+            @ftp_chmod($conn_id, 0777, env('FILE_ROOT', '/').$fullPath);
             $fullPath .= '/';
         }
             

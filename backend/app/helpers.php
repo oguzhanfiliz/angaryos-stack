@@ -149,11 +149,18 @@ function custom_abort_ext($message)
 
 function send_firebese_notify($title, $msg, $user)
 {
+    if(strlen(@$user->tokens) == 0) return;
+    
     $tokens = json_decode($user->tokens);
+    if(!is_array($tokens))
+    {
+        \Log::alert('token.is.not.array'.json_encode([$user->tokens, $user]));
+        return;
+    }
     
     foreach($tokens as $t)
         if(strlen(@$t->clientInfo->firebaseToken) > 0)
-            \App\Libraries\MessageLibrary::fireBaseCloudMessaging($title, $msg, $t->clientInfo->firebaseToken);
+            \App\Libraries\MessageLibrary::fireBaseCloudMessaging($title, $msg, $t->clientInfo->firebaseToken);    
 }
 
 function tt(...$o)
