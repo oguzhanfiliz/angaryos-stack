@@ -22,6 +22,11 @@ address = ":8080"
     [[entryPoints.https.tls.certificates]]
     certFile = "/etc/self.crt"
     keyFile = "/etc/self.key"
+  [entryPoints.transport]
+    [entryPoints.transport.respondingTimeouts]
+      readTimeout = 3000
+      writeTimeout = 3000
+      idleTimeout = 3000
   
 [retry]
 
