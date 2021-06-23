@@ -188,18 +188,24 @@ export class PagesComponent
 
     var sign = this.eSigns[0];
 
-    var remembered = BaseHelper.readFromLocal(rememberKey); 
+    var remembered = BaseHelper.readFromLocal(rememberKey);
     if(remembered == null) remembered = "";
 
     var checked = "";
     if(remembered.length > 0) checked = 'checked';
+
+    var count = this.eSigns.length;
 
     Swal.fire(
     {
       title: 'Elektronik İmza',
       html: `<br><p style="text-align: justify;"> `+sign['signed_text']+` </p><br>
       <input value="`+remembered+`" type="password" id="ePassword" class="swal2-input" autocomplete="off" placeholder="E-imza şifreniz"><br>
-      <input `+checked+` type="checkbox" name="eRemember" id="eRemember"> Hatırla`,
+      <table width="100%"><tr><td>
+        <input `+checked+` type="checkbox" name="eRemember" id="eRemember"> Hatırla 
+      </td><td align="right">
+        <span style="color: crimson; font-weight: bolder; font-size: 14;">Tümünü İmzala (`+count+`)</span> <input type="checkbox" name="eAll" id="eAll">
+      </td></tr></table>`,
       confirmButtonText: 'İmzala',
       cancelButtonText: 'İmzalamayı Reddet',
       customClass: 
@@ -217,7 +223,7 @@ export class PagesComponent
         if(password.length == 0) Swal.showValidationMessage(`E-imza boş geçilemez`);
       }
     })
-    .then((result) => 
+    .then( async (result) => 
     {
       if(typeof result["value"] == "undefined" || !result["value"]) 
       {
@@ -235,11 +241,21 @@ export class PagesComponent
 
       var password = Swal.getPopup().querySelector('#ePassword')['value'];
       var remember = Swal.getPopup().querySelector('#eRemember');
+      var all = Swal.getPopup().querySelector('#eAll');
       
       if(remember['checked']) BaseHelper.writeToLocal(rememberKey, password);
       else BaseHelper.removeFromLocal(rememberKey);
 
-      this.sessionHelper.doESign(sign, password); 
+      if(all)
+      {
+        for(var i = 0; i < this.eSigns.length; i++)
+        {
+          var sign = this.eSigns[i];
+          this.sessionHelper.doESign(sign, password);
+          await BaseHelper.sleep(1000 * 20);
+        }
+      }
+      else this.sessionHelper.doESign(sign, password); 
     });
 
     if(remembered.length == 0) 

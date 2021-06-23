@@ -236,6 +236,8 @@ class MessageLibrary
     
     public static function sendMail($subject, $html, $emailsWithNames, $attachments = [])
     {
+        send_log('info', 'Send mail start', [$subject, $html, $emailsWithNames, $attachments]);
+
         Mail::send("email.base", ["html" => $html], function ($message) use($subject, $emailsWithNames, $attachments)
         {
             foreach($emailsWithNames as $emailsWithName)
@@ -244,8 +246,11 @@ class MessageLibrary
             foreach($attachments as $attachment)
                 $message->attach($attachment);
         });
+
+        $r = Mail::failures();
+        send_log('info', 'Send mail OK', $r);
         
-        return Mail::failures();
+        return $r;
     }
     
     public static function fireBaseCloudMessaging($title, $text, $to = FB_BASE_TOPIC)

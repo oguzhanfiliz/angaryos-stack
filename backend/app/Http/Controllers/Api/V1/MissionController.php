@@ -22,7 +22,7 @@ class MissionController extends Controller
     
     public function DoMission(User $user, BaseModel $mission)
     {   
-        send_log('info', 'Request Mission Trigger');
+        send_log('info', 'Request Mission Trigger', $mission);
         
         $this->ControlMissionAuth($mission);
                 

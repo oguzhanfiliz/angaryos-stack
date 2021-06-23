@@ -800,7 +800,10 @@ trait TableSubscriberTrait
     public function getDataForSelectElementForTableIdAndColumnIds($params)
     {
         $sourceColumnName = get_attr_from_cache('columns', 'id', $params->relation->relation_source_column_id, 'name');
+        $sourceColumnName = helper('reverse_clear_string_for_db', $sourceColumnName); 
+        
         $displayColumnName = get_attr_from_cache('columns', 'id', $params->relation->relation_display_column_id, 'name');
+        $displayColumnName = helper('reverse_clear_string_for_db', $displayColumnName); 
         
         return
         [
@@ -812,7 +815,10 @@ trait TableSubscriberTrait
     public function getDataForSelectElementForTableIdAndColumnNames($params)
     {
         $source = $params->relation->relation_source_column;
+        $source = helper('reverse_clear_string_for_db', $source); 
+         
         $display = $params->relation->relation_display_column;
+        $display = helper('reverse_clear_string_for_db', $display); 
         
         $temp = new BaseModel($params->record->getTable());
         $temp = $temp->selectRaw('*, ('.$display.') as tempdisplay');

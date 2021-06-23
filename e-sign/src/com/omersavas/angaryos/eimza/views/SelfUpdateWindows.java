@@ -27,6 +27,8 @@ import javax.crypto.NoSuchPaddingException;
 import javax.swing.JOptionPane;
 import static com.omersavas.angaryos.eimza.helpers.GeneralHelper.loading;
 import com.omersavas.angaryos.eimza.models.Session;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import tr.gov.tubitak.uekae.esya.api.common.ESYAException;
 
 /**
@@ -114,7 +116,6 @@ public class SelfUpdateWindows extends javax.swing.JDialog {
         this.DownloadTrustedCertificate();
 
         updated = true;
-        dispose();
     }
     
     public void DownloadTrustedCertificate() throws MalformedURLException, IOException
@@ -145,11 +146,53 @@ public class SelfUpdateWindows extends javax.swing.JDialog {
         }
     }
     
+    public void CopyFile(File in, File out) throws FileNotFoundException, IOException
+    {
+        try (FileInputStream fis = new FileInputStream(in);
+             FileOutputStream fos = new FileOutputStream(out)) {
+
+            byte[] buffer = new byte[1024];
+            int length;
+
+            while ((length = fis.read(buffer)) > 0) {
+                fos.write(buffer, 0, length);
+            }
+        }
+    }
+    
+    public void ShortcutOperations() throws FileNotFoundException, IOException
+    {
+        String startupPath = System.getProperty("user.home")+"\\Start Menu\\Programs\\Startup\\e-imza.lnk"; 
+        File startupFile = new File(startupPath);
+        
+        String eSignShortcutPath = "C:\\eSign\\files\\e-imza.lnk";
+        File eSignShortcutFile = new File(eSignShortcutPath);
+        
+        String eSignDesktopPath = System.getProperty("user.home")+"\\Desktop\\e-imza.lnk"; 
+        File eSignDesktopFile = new File(eSignDesktopPath);
+        
+        CopyFile(eSignShortcutFile, startupFile);
+        CopyFile(eSignShortcutFile, eSignDesktopFile);
+        
+        
+        
+        File autoLoginShortcutFile = new File("C:\\eSign\\files\\KbsOtoGiris.url");
+        File closeConnectionShortcutFile = new File("C:\\eSign\\files\\InternetiKapat.url");
+         
+        File autoLoginDesktopFile = new File(System.getProperty("user.home")+"\\Desktop\\KBS Oto Giriş.url");
+        File closeConnectionDescktopFile = new File(System.getProperty("user.home")+"\\Desktop\\İnterneti Kapat.url");
+        
+        CopyFile(autoLoginShortcutFile, autoLoginDesktopFile);
+        CopyFile(closeConnectionShortcutFile, closeConnectionDescktopFile);
+    }
+    
     public void UpdateAsync() throws IOException
     {
         Thread asyn = new Thread(() ->{
             try {
-                Update();
+                Update();                
+                if(updated) ShortcutOperations();                
+                dispose();
             } catch (Exception ex) {
                 Log.send(ex);
             }
