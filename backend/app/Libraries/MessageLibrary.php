@@ -162,14 +162,17 @@ class MessageLibrary
         } 
         catch (\Exception $ex) 
         {
-            $json = json_encode(
+            /*$json = json_encode(
             [
                 'mesaage' => $ex->getMessage(),
                 'ex' => (array)$ex                
-            ]);
+            ]);*/
             
             if(!strstr($ex->getMessage(), 'Channel connection is closed'))
-                \Log::alert('Rabitt mesaj gönderilirken hata oluştu. (json:'.$json.')');
+            {
+                //\Log::alert('Rabitt mesaj gönderilirken hata oluştu. (json:'.$json.')');
+                \App\Jobs\SendLog::dispatch($queue, $message); 
+            }
         }
     }
     

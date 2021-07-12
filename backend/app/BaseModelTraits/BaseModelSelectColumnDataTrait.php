@@ -190,8 +190,12 @@ trait BaseModelSelectColumnDataTrait
         $relationTable = $params->column->getRelationData('column_table_relation_id');
         
         $table = $relationTable->getRelationData('relation_table_id');
+        
         $sourceColumn = $relationTable->relation_source_column;
+        $sourceColumn = helper('reverse_clear_string_for_db', $sourceColumn);
+        
         $displayColumn = $relationTable->relation_display_column;
+        $displayColumn = helper('reverse_clear_string_for_db', $displayColumn);
         
         $offset = ($params->page - 1) * $params->record_per_page;
         $model = DB::table($table->name)

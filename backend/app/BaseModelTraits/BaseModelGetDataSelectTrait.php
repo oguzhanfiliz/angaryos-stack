@@ -68,8 +68,12 @@ trait BaseModelGetDataSelectTrait
     public function addSelectForTableIdAndColumnNames($params)
     {
         $table = get_attr_from_cache('tables', 'id', $params->relation->relation_table_id, '*');
+        
         $source = $params->relation->relation_source_column;
+        $source = helper('reverse_clear_string_for_db', $source);
+        
         $display = $params->relation->relation_display_column;        
+        $display = helper('reverse_clear_string_for_db', $display);
         
         $params->table_alias  = $params->column->name.'___'.$table->name.$params->relation->id;
         $params->relation_source_column_with_alias = $params->table_alias.'.'.$source;
