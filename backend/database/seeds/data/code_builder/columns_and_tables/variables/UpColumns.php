@@ -3,7 +3,7 @@
 $up_columns['column_ids'] =
 [
     'name_basic' => 'sadece seçili tablonun kolonları gelsin',
-    'column_id' => 66,//'table_id',//Tablo yada kolon eklenme sırası değişirse güncellenmesi gerekir
+    'column_id' => 67,//'table_id',//Tablo yada kolon eklenme sırası değişirse güncellenmesi gerekir
     
     ///*'column_arrays'*/21 vardı iptal edildi. kolon dizilerinde join tablo eklenir ise başk tablolardan da kolon seçmek gerekebilir
     'table_ids' => [],////Tablo yada kolon eklenme sırası değişirse güncellenmesi gerekir
