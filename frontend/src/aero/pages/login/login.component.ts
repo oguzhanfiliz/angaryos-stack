@@ -6,6 +6,9 @@ import { SessionHelper } from './../helpers/session';
 import { MessageHelper } from './../helpers/message';
 import { GeneralHelper } from './../helpers/general';
 import { AeroThemeHelper } from './../helpers/aero.theme';
+
+import Swal from 'sweetalert2';
+import 'sweetalert2/dist/sweetalert2.min.css';
  
 declare var $: any;
 
@@ -44,6 +47,42 @@ export class LoginComponent
         this.baseUrl = BaseHelper.backendBaseUrl + "#/";
         
         setTimeout(() => this.cookieControl(), 2000);
+    }
+    
+    forgetPassword()
+    {
+        var th = this;
+        
+        Swal.fire(
+        {
+          title: 'Şifre Hatırlatıcı',
+          html: `<input type="text" id="mail" class="swal2-input" autocomplete="off" placeholder="Mail Adresiniz">`,
+          confirmButtonText: 'Şifremi Sıfırla',
+          cancelButtonText: 'İptal',
+          customClass: 
+          {
+            confirmButton: 'btn btn-success',
+            cancelButton: 'btn btn-danger'
+          },
+          buttonsStyling: false,
+          showCloseButton: true,
+          showCancelButton: true,
+          focusConfirm: true,
+          preConfirm: () => 
+          {
+            var mail = Swal.getPopup().querySelector('#mail')['value'];
+            if(mail.length == 0) Swal.showValidationMessage(`Mail boş geçilemez`);
+          }
+        })
+        .then( async (result) => 
+        {
+            if(typeof result["value"] == "undefined" || result["value"] == false) return;
+            
+            var mail = Swal.getPopup().querySelector('#mail')['value'];
+            console.log(mail +" adresine şifre hatırlatma emaili at");
+            th.messageHelper.sweetAlert("Mail adresinize gönderilen link ile şifre sıfırlama yapabilirsiniz.", "Şifre Hatırlatma");
+        
+        });
     }
 
     cookieControl()

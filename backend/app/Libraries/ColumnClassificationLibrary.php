@@ -8,6 +8,8 @@ class ColumnClassificationLibrary
     
     public static function relation($controller, $prefix, $column, $relation, $params)
     {
+        global $pipe;
+        
         $functions = ['BasicColumn', 'JoinedColumn', 'TableIdAndColumnIds', 'RelationSql', 'JoinTableIds', 'DataSource', 'TableIdAndColumnNames'];
         
         if(strlen($column->column_table_relation_id) > 0)
@@ -34,11 +36,15 @@ class ColumnClassificationLibrary
         }
         
         $functionName = $prefix.'For'.$functions[$id];
+        if(isset($pipe['ColumnClassificationLibraryDebug'])) dd('ColumnClassificationLibrary::relation', $functionName);
+        
         return $controller->{$functionName}($params);
     }
     
     public static function relationDbTypes($controller, $prefix, $sourceColumn, $targetColumn, $params)
     {
+        global $pipe;
+        
         $functions = ['OneToOne', 'OneToMany', 'ManyToOne'];
         
         $jsonType = get_attr_from_cache('column_db_types', 'name', 'jsonb', 'id');
@@ -56,6 +62,8 @@ class ColumnClassificationLibrary
             abort(helper('response_error', 'relation_db_types.different.types'));
         
         $functionName = $prefix.'For'.$functions[$id];
+        if(isset($pipe['ColumnClassificationLibraryDebug'])) dd('ColumnClassificationLibrary::relationDbTypes', $functionName);
+        
         return $controller->{$functionName}($params);
     }
     

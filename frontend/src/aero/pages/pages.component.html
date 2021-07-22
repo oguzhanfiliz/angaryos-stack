@@ -30,7 +30,7 @@
                 </li>
                 
                 <li class="dropdown" *ngIf="announcements.length > 0">
-                    <a class="dropdown-toggle" style="padding: 10px !important; margin-bottom: 10px !important;"
+                    <a *ngIf="newAnnouncements" class="dropdown-toggle" style="padding: 10px !important; margin-bottom: 10px !important;"
                         title="Duyurular" data-toggle="dropdown" 
                         role="button" aria-expanded="false">
 
@@ -40,19 +40,25 @@
                             <span class="point" style="background-color: #ce1b1b;"></span>
                         </div>
                     </a>
+                    <a *ngIf="!newAnnouncements" class="dropdown-toggle" style="padding: 10px !important; margin-bottom: 10px !important;"
+                        title="Duyurular" data-toggle="dropdown" 
+                        role="button" aria-expanded="false">
+
+                        <i style="color: black;" class="zmdi zmdi-notifications"></i>
+                    </a>
                     <ul class="dropdown-menu slideUp2" x-placement="bottom-start" style="position: absolute; will-change: transform; top: 0px; left: 0px; transform: translate3d(0px, 50px, 0px);">
-                        <li class="header">Bildirimler</li>
+                        <li class="header">Duyurular</li>
                         <div class="slimScrollDiv" style="position: relative; overflow: hidden; width: auto; height: 330px;">
                             <li 
                                 class="body" 
                                 style="overflow: auto; width: auto; height: 330px;">
                                 <ul class="menu list-unstyled" style="width: 100%;">
-                                    <li *ngFor="let item of announcements">
-                                        <a href="javascript:void(0);">
+                                    <li *ngFor="let item of announcements" [class]="item['new'] ? 'newAnnouncement' : ''">
+                                        <a (click)="announcementReaded(item)" href="javascript:void(0);">
                                             <div [class]="'icon-circle bg-'+item.type"><i [class]="item.icon"></i></div>
                                             <div class="menu-info">
                                                 <h4>{{ item.title }}</h4>
-                                                <p><i class="zmdi zmdi-time"></i> {{ item.created_at }} </p>
+                                                <p><i class="zmdi zmdi-time"></i> {{ item.created_at }} {{ item["new"] }} </p>
                                                 <div
                                                     style="color: gray; width: 200px;"
                                                     [innerHtml]="item.announcement"

@@ -17,10 +17,12 @@
                         <div class="input-group mb-3">
                             <input class="form-control"  name="password" type="password" [(ngModel)]="user.password" placeholder="Şifre">
                             <div class="input-group-append">                                
-                                <span class="input-group-text"><a href="forgot-password.html" class="forgot" title="Forgot Password"><i class="zmdi zmdi-lock"></i></a></span>
+                                <span class="input-group-text"><i class="zmdi zmdi-lock"></i></span>
                             </div>                            
                         </div>
-                        
+                        <div class="mb-3" style="text-align: right">
+                            <a style="font-size: 11px;" (click)="forgetPassword()">Şifremi Unuttum</a>
+                        </div>
                         <button 
                             (click)="doLogin()" 
                             [class]="'btn btn-primary btn-block waves-effect waves-light ' + (loading ? 'disabled' : '')"
@@ -32,7 +34,7 @@
                 </form>
                 <div class="copyright text-center">
                     &copy;
-                    <script>document.write(new Date().getFullYear())</script> 2020,
+                    <script>document.write(new Date().getFullYear())</script> 2021,
                     <span><a href="http://www.omersavas.com">omersavas</a></span>
                 </div>                
                 <div class="copyright text-center" style="margin-top: 10;">

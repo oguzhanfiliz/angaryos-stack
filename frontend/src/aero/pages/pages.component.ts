@@ -34,6 +34,7 @@ export class PagesComponent
   eSignTimeOut = 1000 * 60 * 5;
   
   announcements = [];
+  newAnnouncements = false;
 
   constructor(
         public messageHelper: MessageHelper,
@@ -97,10 +98,52 @@ export class PagesComponent
         if(th.announcements[i]['icon'] == null || th.announcements[i]['icon'] == '')
           th.announcements[i]['icon'] = 'zmdi zmdi-vibration';
       }
-
-      console.log(th.announcements )
+      
+      th.newAnnouncementsControl();
     })
     .catch((e) => {  });
+  }
+  
+  announcementReaded(announcement)
+  {
+    var readed = BaseHelper.readFromLocal("readedAnnouncements");
+    if(readed == null) readed = [];
+    
+    var id = announcement["id"];
+    if(readed.includes(id)) return;
+    
+    readed.push(id);
+    BaseHelper.writeToLocal("readedAnnouncements", readed);
+    
+    for(var i = 0; i < this.announcements.length; i++)
+    {
+        var id = this.announcements[i]["id"];
+        if(id != announcement["id"]) continue;
+        
+        this.announcements[i]["new"] = false;
+        break;
+    }
+    
+    this.newAnnouncementsControl();
+  }
+  
+  newAnnouncementsControl()
+  {
+    var readed = BaseHelper.readFromLocal("readedAnnouncements");
+    if(readed == null) readed = [];
+    
+    for(var i = 0; i < this.announcements.length; i++)
+    {
+        var id = this.announcements[i]["id"];
+        if(readed.includes(id))
+        {
+            this.announcements[i]["new"] = false;
+            continue;
+        }
+                
+        this.announcements[i]["new"] = true;
+        this.newAnnouncements = true;
+    }
   }
   
   async eSignServerOperations()

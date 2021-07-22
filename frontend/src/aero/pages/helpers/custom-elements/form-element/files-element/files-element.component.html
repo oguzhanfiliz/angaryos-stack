@@ -18,13 +18,13 @@ name="{{ name }}" id="{{ name }}"
         *ngFor="let file of val; let i = index"
         class="col-lg-2 col-md-2 col-sm-3 m-0">
 
-        <a *ngIf="file.isImageFile" data-fancybox="gallery" href="{{ file.destination_path + 'b_' + file.file_name  }}">
+        <a *ngIf="file.isImageFile" data-fancybox="gallery" href="{{ file['bigUrl']  }}">
             <img  
             class="img-fluid img-thumbnail" 
             src="{{ file['smallUrl'] }}"> 
         </a> 
         
-        <a *ngIf="!file.isImageFile" target="_blank" href="{{ file.destination_path + file.file_name  }}">
+        <a *ngIf="!file.isImageFile" target="_blank" href="{{ file['url']  }}">
             <img  
             class="img-fluid img-thumbnail" 
             src="{{ file['iconUrl']  }}"> 

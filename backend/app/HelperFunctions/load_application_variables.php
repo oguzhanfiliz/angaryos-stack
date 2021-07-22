@@ -10,7 +10,11 @@ $settings = \Cache::rememberForever('settings', function()
     try 
     {
         foreach(@\DB::table('settings')->get() as $setting)
-            $s[trim($setting->name)] = trim($setting->value);
+        {
+            $temp = $setting->value;
+            $temp = helper('reverse_clear_string_for_db', $temp);
+            $s[trim($setting->name)] = trim($temp);
+        }
         
         return @$s;
     } 

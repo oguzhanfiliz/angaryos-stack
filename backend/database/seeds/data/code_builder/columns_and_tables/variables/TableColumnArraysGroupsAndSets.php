@@ -6,7 +6,7 @@ $join_tables['departments'] =
     [
         'name_basic' => 'Bilgi kartında gösterilecek olan bu müdürlükteki personeller tablosu için tablo ilişkisi',
         
-        'join_table_id' => 2,//'users', Tablo yada kolon eklenme sıralaması değişirse yeni id yazılması gerekir
+        'join_table_id' => 2,//'users', Tablo yada kolon eklenme sırası değişirse güncellenmesi gerekir
         'join_table_alias' => 'mudurlukteki_personeller',
         
         'connection_column_with_alias' => 'departments.id',
@@ -58,7 +58,7 @@ $join_tables['columns'] =
         
         'connection_column_with_alias' => 'columns.id',
         //'join_connection_type' => '@>',
-        'join_column_id' => 61//'column_ids' Tablo yada kolon eklenme sırası değişirse güncellenmesi gerekir
+        'join_column_id' => 59//'column_ids' Tablo yada kolon eklenme sırası değişirse güncellenmesi gerekir
     ],
 ];
 
