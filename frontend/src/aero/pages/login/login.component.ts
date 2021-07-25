@@ -56,7 +56,7 @@ export class LoginComponent
         Swal.fire(
         {
           title: 'Şifre Hatırlatıcı',
-          html: `<input type="text" id="mail" class="swal2-input" autocomplete="off" placeholder="Mail Adresiniz">`,
+          html: `<input type="text" id="mail" class="swal2-input" autocomplete="off" placeholder="E-mail yada TC No">`,
           confirmButtonText: 'Şifremi Sıfırla',
           cancelButtonText: 'İptal',
           customClass: 
@@ -79,9 +79,19 @@ export class LoginComponent
             if(typeof result["value"] == "undefined" || result["value"] == false) return;
             
             var mail = Swal.getPopup().querySelector('#mail')['value'];
-            console.log(mail +" adresine şifre hatırlatma emaili at");
-            th.messageHelper.sweetAlert("Mail adresinize gönderilen link ile şifre sıfırlama yapabilirsiniz.", "Şifre Hatırlatma");
-        
+            var url = BaseHelper.backendUrl+'public/missions/5?user='+mail;
+            th.sessionHelper.doHttpRequest("GET", url) 
+            .then((data) => 
+            {
+                if(data["message"] == "OK")
+                    th.messageHelper.sweetAlert("Mail adresinize gönderilen link ile şifre sıfırlama yapabilirsiniz.", "Şifre Hatırlatma");
+                else
+                    th.messageHelper.sweetAlert("Beklenmedik cevap geldi!", "Hata", "warning");
+            })
+            .catch((e) => 
+            { 
+                th.messageHelper.sweetAlert("Beklenmedik cevap geldi!", "Hata", "warning");
+            });
         });
     }
 

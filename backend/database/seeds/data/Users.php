@@ -248,7 +248,9 @@ $publicAuth['auths'] =
 [
     $publicContentsAuth->id,
     $announcementAuth->id,
-    $eSignAuth->id
+    $eSignAuth->id,
+    'missions:'.$missions['reset_password_request']->id.':0:0',
+    'missions:'.$missions['reset_password']->id.':0:0'
 ];
 
 $publicAuth = new BaseModel('auth_groups', $publicAuth);
