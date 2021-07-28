@@ -213,9 +213,19 @@ export class FormComponent
         this['temp'] = Math.random();
     }
     
+       
     fillDataAdditionalVariables(data)
     {
-        data['title'] = DataHelper.getTitleOrDefault(data['column_set']['name'], this.recordId == 0 ? 'Ekle' : 'Düzenle');
+        var manyChar = ['ler','lar'];
+        var tableDisplayName = data['table_info']['display_name'];
+        var subChar= tableDisplayName.substr(tableDisplayName.length - 3);
+        var currentTableName;
+        if(manyChar.includes(subChar)){
+            currentTableName = tableDisplayName.slice(0,-3);
+        }else{
+            currentTableName = tableDisplayName;
+        }    
+        data['title'] = DataHelper.getTitleOrDefault(data['column_set']['name'], this.recordId == 0 ? currentTableName+' Ekle' : 'Düzenle');
         
         var recordJson = ''; 
         if(typeof data['record'] != "undefined") recordJson = BaseHelper.objectToJsonStr(data['record']);
@@ -235,6 +245,7 @@ export class FormComponent
         
         return data;  
     }
+    
     
     getParamsForSave()
     {
