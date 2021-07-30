@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:angaryos/helper/ResponsiveHelper.dart';
 import 'package:angaryos/view/TakePicturePage.dart';
 import 'package:angaryos/view/TakePicturePageWeb.dart';
 import 'package:camera/camera.dart';
@@ -22,27 +23,28 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:nfc_manager/nfc_manager.dart';
 import 'package:package_info/package_info.dart';
 import 'package:path/path.dart';
-import 'package:sweetalert/sweetalert.dart';
 import 'package:trust_fall/trust_fall.dart';
 import 'package:universal_html/html.dart' as html;
 import 'package:geolocator/geolocator.dart';
 import 'LogHelper.dart';
-import 'package:reflectable/reflectable.dart';
-
-class Reflector extends Reflectable {
-  const Reflector()
-      : super(invokingCapability); // Request the capability to invoke methods.
-}
-
-const reflector = const Reflector();
+import 'AngaryosCustomAlert.dart';
 
 class BaseHelper {
   //****    Variables    *****//
 
-  static String backendBaseUrl = "https://192.168.10.185/api/v1/";
+  static String baseUrl = "https://192.168.10.185/";
+  static String backendBaseUrl = baseUrl + "api/v1/";
   static String firebaseDynamicLinkDomain = "https://angaryos.page.link";
   static String firebaseCMMainTopic = "angaryos_test";
   static String? firebaseCMToken = null;
+  static String applicationName = "Angaryos";
+  static String applicationTitle = "Angaryos Mobile";
+
+  static String logoUrl25 =
+      baseUrl + "assets/themes/aero/assets/images/logo25x25.png";
+  static String logoUrl100 =
+      baseUrl + "assets/themes/aero/assets/images/logo100x100.png";
+  static String logoPath = "assets/images/logo.png";
 
   static var availableLanguages = ["tr", "en", "ar"];
   static String defaultLanguage = "tr";
@@ -54,7 +56,7 @@ class BaseHelper {
   static final _secureLocalStorage = new FlutterSecureStorage();
   static final html.Storage? _localStorage =
       kIsWeb ? html.window.localStorage : null;
-  static dynamic pipe;
+  static dynamic pipe = {};
   static bool debug = true;
   static String? lastCardId;
   static FirebaseApp? fireBaseApp;
@@ -68,23 +70,23 @@ class BaseHelper {
     'denemSayisi': 22,
   };
 
+  static Function(dynamic menuItem)? setPageWidgetOnLayout;
+
   //****    General    *****//
 
   static Future<bool> mobileControl([bool? message]) async {
     if (!kIsWeb) return true;
 
     message ??= true;
-    if (message)
-      toastMessage(await tr("Bu özellik tarayıcı için kullanılamaz!"));
+    if (message) toastMessage(tr("Bu özellik tarayıcı için kullanılamaz!"));
     return false;
   }
 
   static Future<bool> iosControl([bool? message]) async {
-    if (!kIsWeb && Platform.isIOS) return true; 
+    if (!kIsWeb && Platform.isIOS) return true;
 
     message ??= true;
-    if (message)
-      toastMessage(await tr("Bu özellik IOS için kullanılamaz!"));
+    if (message) toastMessage(tr("Bu özellik IOS için kullanılamaz!"));
     return false;
   }
 
@@ -109,17 +111,24 @@ class BaseHelper {
     Navigator.of(context!).pushNamed("/" + BaseHelper.defaultLanguage + "/");
   }
 
-  static void navigate(String name) {
+  static void navigate(String name, [BuildContext? cntx, bool? basePage]) {
+    basePage ??= false;
+    cntx ??= BaseHelper.context;
+
     if (name.substring(0, 1) == "/") name = name.substring(1);
-    toastMessage("navigate: " + name);
-    Navigator.of(context!).pushNamed(
-        "/" + BaseHelper.currentLanguage + "/" + name,
-        arguments: "");
+
+    if (basePage) {
+      Navigator.of(cntx!).pushNamedAndRemoveUntil(
+          "/" + BaseHelper.currentLanguage + "/" + name, (route) => true);
+    } else {
+      Navigator.of(cntx!).pushNamed(
+          "/" + BaseHelper.currentLanguage + "/" + name,
+          arguments: "");
+    }
   }
 
   static void redirectToLoginUrl() {
-    /*Navigator.of(context!).pushNamed("/" + BaseHelper.defaultLanguage + "/login");*/
-    toastMessage("logine yönlendir.");
+    navigate("login");
   }
 
   static List<String>? parseAndValidateUrl(String url) {
@@ -157,7 +166,18 @@ class BaseHelper {
     }
   }
 
-  static dynamic getLanguageObject(String language) async {
+  static String translate(String key, [String? language]) {
+    language ??= currentLanguage;
+
+    try {
+      var temp = languages[language][key];
+      if (temp != null) return temp;
+    } catch (e) {}
+
+    return language + ":" + key;
+  }
+
+  /*static dynamic getLanguageObject(String language) async {
     if (!availableLanguages.contains(language)) return null;
 
     if (!languages.containsKey(language)) {
@@ -181,19 +201,40 @@ class BaseHelper {
   }
 
   static FutureBuilder<String> getTranslatedTextWidget(String key,
-      [String? language]) {
+      [Color? textColor, String? language]) {
+    textColor ??= Colors.white;
+    language ??= currentLanguage;
+
     return FutureBuilder<String>(
       future: getTranslatedTextAsync(key, language),
       builder: (BuildContext context, AsyncSnapshot<String> ss) {
         if (ss.hasData)
-          return Text(ss.data!);
+          return Text(ss.data!, style: TextStyle(color: textColor));
         else if (ss.hasError)
-          return Text(key);
+          return Text(key, style: TextStyle(color: textColor));
         else
-          return Text(key);
+          return Text(key, style: TextStyle(color: textColor));
       },
     );
   }
+
+  static FutureBuilder<String> getTranslatedTextWidgetWithStyle(String key,
+      [TextStyle? style, String? language]) {
+    style ??= TextStyle();
+    language ??= currentLanguage;
+
+    return FutureBuilder<String>(
+      future: getTranslatedTextAsync(key, language),
+      builder: (BuildContext context, AsyncSnapshot<String> ss) {
+        if (ss.hasData)
+          return Text(ss.data!, style: style);
+        else if (ss.hasError)
+          return Text(key, style: style);
+        else
+          return Text(key, style: style);
+      },
+    );
+  }*/
 
   //****    Data    ****//
 
@@ -209,8 +250,12 @@ class BaseHelper {
     pipe[key] = value;
   }
 
-  static void readFromPipe(String key) {
-    return pipe[key];
+  static dynamic readFromPipe(String key) {
+    try {
+      return pipe[key];
+    } catch (e) {
+      return null;
+    }
   }
 
   static Future<void> writeToLocal(String key, dynamic value,
@@ -247,10 +292,14 @@ class BaseHelper {
   static Future<dynamic> readFromLocal(String key) async {
     String? jsonStr;
 
-    if (kIsWeb)
-      jsonStr = decode(_localStorage![key]);
-    else
-      jsonStr = await _secureLocalStorage.read(key: key);
+    try {
+      if (kIsWeb)
+        jsonStr = decode(_localStorage![key]);
+      else
+        jsonStr = await _secureLocalStorage.read(key: key);
+    } catch (e) {
+      LogHelper.info(tr("Cihazdan data okunamadı"), [key, e.toString()]);
+    }
 
     if (jsonStr == null) return null;
 
@@ -265,6 +314,13 @@ class BaseHelper {
         _secureLocalStorage.delete(key: key);
       return null;
     }
+  }
+
+  static void removeFromLocal(String key) {
+    if (kIsWeb)
+      _localStorage!.remove(key);
+    else
+      _secureLocalStorage.delete(key: key);
   }
 
   static String encode(String? data) {
@@ -282,7 +338,7 @@ class BaseHelper {
 
     bool control = await Geolocator.isLocationServiceEnabled();
     if (!control && showMessage)
-      toastMessage(await tr("Konumuz alınamadı! GPS kapalı olabilir."));
+      toastMessage(tr("Konumuz alınamadı! GPS kapalı olabilir."));
 
     return control;
   }
@@ -323,22 +379,30 @@ class BaseHelper {
   }
 
   static void messageBox(context, String title,
-      [String? subtitle, SweetAlertStyle? style]) {
-    style ??= SweetAlertStyle.success;
-    SweetAlert.show(context, title: title, subtitle: subtitle, style: style);
+      [String? text,
+      String? type,
+      Color? color,
+      String? buttonText,
+      IconData? icon]) {
+    showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AngaryosCustomAlert(
+              title, text, type, color, buttonText, icon);
+        });
   }
 
   static void confirm(context, String title,
       [String? subtitle,
-      SweetAlertStyle? style,
+      //SweetAlertStyle? style,
       Null Function(bool vars)? callback]) async {
-    style ??= SweetAlertStyle.confirm;
+    /*style ??= SweetAlertStyle.confirm;
     SweetAlert.show(context,
         title: title,
         subtitle: subtitle,
         style: style,
         showCancelButton: true,
-        onPress: callback);
+        onPress: callback);*/
   }
 
   //****    Media    ****/
@@ -366,7 +430,7 @@ class BaseHelper {
 
         String? ext = basename(file.name).split(".").last.toLowerCase();
         if (fileTypes != "*" && !typeArray.contains(ext)) {
-          toastMessage(await tr(
+          toastMessage(tr(
               "Seçilen dosyalar içinde geçersiz tipte dosya var. Dosya dikkate alınmadı!"));
           continue;
         }
@@ -378,20 +442,20 @@ class BaseHelper {
 
       return files.length == 0 ? null : files;
     } catch (e) {
-      LogHelper.error(await tr("Method içinde hata: ") + "getFilesFromLibrary",
-          e.toString());
+      LogHelper.error(
+          tr("Method içinde hata: ") + "getFilesFromLibrary", e.toString());
     }
   }
 
   static Future<File?> takePhotoFromCamera(context) async {
     if (kIsWeb) {
-      toastMessage(await tr("Kamera şidilik web için kullanılamıyor..."));
+      toastMessage(tr("Kamera şidilik web için kullanılamıyor..."));
       return null;
       //return await Navigator.push(context,  MaterialPageRoute(builder: (context) => TakePicturePageWeb()));
     } else {
       var temp = await availableCameras();
-      if(temp.length == 0){
-        toastMessage(await tr("Cihazınızda kamera yok!"));
+      if (temp.length == 0) {
+        toastMessage(tr("Cihazınızda kamera yok!"));
         return null;
       }
 
@@ -408,7 +472,7 @@ class BaseHelper {
     showMessage ??= true;
     bool control = await NfcManager.instance.isAvailable();
     if (!control && showMessage)
-      toastMessage(await tr("Cihazınızda NFC yok yada kapalı!"));
+      toastMessage(tr("Cihazınızda NFC yok yada kapalı!"));
 
     return control;
   }
@@ -434,12 +498,12 @@ class BaseHelper {
     if (!control) return null;
 
     FlutterNfcReader.read().then((response) async {
-      LogHelper.info(await tr("RFID kart okundu"), response.id);
+      LogHelper.info(tr("RFID kart okundu"), response.id);
       lastCardId = response.id;
       stopCardListen();
     });
 
-    toastMessage(await tr("Cihazınızı karta yaklaştırınız"));
+    toastMessage(tr("Cihazınızı karta yaklaştırınız"));
   }
 
   static Future<void> stopCardListen() async {
@@ -541,7 +605,7 @@ class BaseHelper {
       "appCodeName": webBrowserInfo.appCodeName,
       "appName": webBrowserInfo.appName,
       "appVersion": webBrowserInfo.appVersion,
-      "browserName": webBrowserInfo.browserName,
+      "browserName": webBrowserInfo.browserName.toString(),
       "language": webBrowserInfo.language,
       "platform": webBrowserInfo.platform,
       "product": webBrowserInfo.product,
@@ -652,8 +716,10 @@ class BaseHelper {
 
   static Future<void> fillFirebaseCMToken() async {
     if (firebaseCMToken != null) return;
+
     firebaseCMToken = await FirebaseMessaging.instance.getToken();
-    LogHelper.info("Firebase CM token: " + firebaseCMToken!);
+
+    //LogHelper.info("Firebase CM token: " + firebaseCMToken!);
 
     //ios?
     //String? token2 = await FirebaseMessaging.instance.getAPNSToken();
@@ -765,7 +831,7 @@ class BaseHelper {
       },
       onError: (OnLinkErrorException e) async {
         LogHelper.error(
-            await tr("Method içinde hata: ") + "firebaseDynamicLinkControl",
+            tr("Method içinde hata: ") + "firebaseDynamicLinkControl",
             e.toString());
       },
     );
@@ -775,7 +841,8 @@ class BaseHelper {
       PendingDynamicLinkData? data) async {
     if (data == null) return;
 
-    String path = data.link.path + "?" + data.link.query;
+    String path =
+        data.link.path + (data.link.query == "" ? "" : "?" + data.link.query);
     navigate(path);
   }
 
@@ -802,5 +869,4 @@ class BaseHelper {
   }
 }
 
-var trW = BaseHelper.getTranslatedTextWidget;
-var tr = BaseHelper.getTranslatedTextAsync;
+var tr = BaseHelper.translate;

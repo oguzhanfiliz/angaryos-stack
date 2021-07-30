@@ -12,15 +12,11 @@ dependencies:
   flutter:
     sdk: flutter 
 
-  flutter_localizations:
-    sdk: flutter 
-
   camera:
   path_provider:
   path:
 
-  google_fonts: ^2.1.0
-  cupertino_icons: ^1.0.2 
+  google_fonts: ^2.1.0 
   provider: ^5.0.0
   flutter_svg: ^0.22.0 
   http: ^0.13.3
@@ -33,7 +29,6 @@ dependencies:
   file_picker: ^3.0.3 
   nfc_manager: ^3.1.0 
   flutter_nfc_reader: ^0.1.0
-  sweetalert: ^0.0.1
   fluttertoast: ^8.0.7
   trust_fall: ^1.0.4 
   device_info_plus: ^2.0.1 
@@ -76,3 +71,10 @@ flutter:
   assets:
     - assets/images/
     - assets/localization/
+    - assets/fonts/
+
+fonts:
+    - family: Open Sans
+      fonts:
+        - asset: assets/fonts/OpenSans-Regular.ttf
+          weight: 400

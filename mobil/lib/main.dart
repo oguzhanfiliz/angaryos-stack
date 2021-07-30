@@ -11,7 +11,9 @@ import 'package:angaryos/helper/SessionHelper.dart';
 import 'package:angaryos/helper/BaseHelper.dart';
 
 void generalOperations() async {
-  HttpOverrides.global = new AngaryosHttpOverrides();
+  SessionHelper.fillUserFromLocal();
+  if (SessionHelper.disableSslCheck)
+    HttpOverrides.global = new AngaryosHttpOverrides();
   WidgetsFlutterBinding.ensureInitialized();
 }
 

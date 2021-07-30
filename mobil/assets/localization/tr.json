@@ -18,5 +18,26 @@
     "Http get içinde json parse edilemedi": "Http get içinde json parse edilemedi",
     "httpGetJsonA için geçersiz cevap": "httpGetJsonA için geçersiz cevap",
     "Sunucudan bir hata mesajı döndü": "Sunucudan bir hata mesajı döndü",
-    "Cihazınızda kamera yok!": "Cihazınızda kamera yok!"
+    "Cihazınızda kamera yok!": "Cihazınızda kamera yok!",
+
+    "Anasayfa": "Anasayfa",
+    "İletişim": "İletişim",
+    "Duyuru": "Duyuru",
+    "Giriş": "Giriş",
+    "Çıkış Yap": "Çıkış Yap",
+    "Profil": "Profil",
+
+    "Kısayollar": "Kısayollar",
+    "Kısayolları Düzenle": "Kısayolları Düzenle",
+
+    "Email yada telefon": "Email yada TC",
+    "Şifre": "Şifre",
+    "Şifremi Unuttum": "Şifremi Unuttum",
+    "Giriş Yap": "Giriş Yap",
+    "Yeni misin? Üye Ol!": "Yeni misin? Üye Ol!",
+
+    "Tamam": "Tamam",
+    "Evet": "Evet",
+    "Hayır": "Hayır",
+    "İptal": "İptal"
 }

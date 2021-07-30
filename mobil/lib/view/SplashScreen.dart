@@ -23,11 +23,9 @@ class Splash extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Center(
-        child: Icon(
-          Icons.local_drink,
-          size: MediaQuery.of(context).size.width * 0.785,
-        ),
-      ),
+          child: Image.asset(BaseHelper.logoPath,
+              fit: BoxFit.contain,
+              width: MediaQuery.of(context).size.width * 0.785)),
     );
   }
 }

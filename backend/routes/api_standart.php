@@ -32,7 +32,7 @@ Route::group(['prefix' => '{token}'], function ()
     Route::any('getLoggedInUserInfo', 'AuthController@getLoggedInUserInfo');
     Route::post('getUserToken/{user_id}', 'AuthController@getUserToken');
     
-    Route::post('logOut', 'AuthController@LogOut');
+    Route::any('logOut', 'AuthController@LogOut');
     
     Route::post('assignAuth', 'AuthController@assignAuth');
     
