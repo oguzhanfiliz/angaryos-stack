@@ -5,14 +5,7 @@ use \App\User;
 
 Route::bind('token', function ($token) 
 {
-    if($token == 'public')
-    {
-        $user = new User();
-        $user = $user->find(PUBLIC_USER_ID);
-    }
-    else
-        $user = helper('get_user_from_token', $token);
-    
+    $user = helper('get_user_from_token', $token);    
     if($user == NULL) abort(helper('response_error', 'fail.token'));
 
     Auth::login($user);

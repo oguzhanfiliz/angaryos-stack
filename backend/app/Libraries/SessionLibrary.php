@@ -10,10 +10,10 @@ class SessionLibrary
 {
     public function loginAndGetToken($email, $password) 
     {
-        $user = User::where('email', $email)->first();
+        $user = User::where('state', TRUE)->where('email', $email)->first();
         if($user == NULL)
         {
-            $user = User::where('tc', $email)->first();
+            $user = User::where('state', TRUE)->where('tc', $email)->first();
             if($user == NULL) return FALSE;
         }
         

@@ -168,3 +168,19 @@ function tt(...$o)
     echo json_encode($o);
     exit(0);
 }
+
+function get_base_record()
+{
+    $n = \Carbon\Carbon::now();
+    $user = \Auth::user();
+    $userId = $user ? $user->id : ROBOT_USER_ID;
+
+    return 
+    [
+        'state' => TRUE,
+        'created_at' => $n,
+        'updated_at' => $n,
+        'own_id' => $userId,
+        'user_id' => $userId
+    ];
+}

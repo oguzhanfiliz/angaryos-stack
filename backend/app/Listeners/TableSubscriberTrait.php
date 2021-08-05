@@ -131,10 +131,16 @@ trait TableSubscriberTrait
         foreach($standartColumns as $columnName)
             $params->model->groupBy($params->table_name.'.'.$columnName);
 
-        foreach($params->columns as $column)
-            if(!isset($column->select_raw))
-                if(!strstr(strtolower(get_attr_from_cache('column_db_types', 'id', $column->column_db_type_id, 'name')), 'json'))
-                    $params->model->groupBy($params->table_name.'.'.$column->name);
+        $exts = ['json', 'jsonb'];
+        foreach($params->columns as $column) 
+        {            
+            if(isset($column->select_raw)) continue;
+
+            $dbTypeName = get_attr_from_cache('column_db_types', 'id', $column->column_db_type_id, 'name');
+            if(in_array($dbTypeName, $exts)) continue;
+            
+            $params->model->groupBy($params->table_name.'.'.$column->name);
+        }
         
         return $params;
     }
