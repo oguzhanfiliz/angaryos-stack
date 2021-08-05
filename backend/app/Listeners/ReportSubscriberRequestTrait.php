@@ -60,6 +60,7 @@ trait ReportSubscriberRequestTrait
             'overrideColumnSort' => $overrideColumnSort,
             'activeSheet' => $activeSheet,
             'gridData' => @$gridData,
+            'htmlData' => @$htmlData,
             'report' => @$report
         ];
     }
@@ -175,6 +176,7 @@ trait ReportSubscriberRequestTrait
             case 'json':
             case 'jsonb':
             case 'multiselect':
+            case 'multiselect:static':
             case 'multiselectdragdrop':
                 foreach($json as $item) $return .=  $item->display .', ';
                 $return = substr($return, 0, -2);    
@@ -227,7 +229,7 @@ trait ReportSubscriberRequestTrait
             if(in_array($dbTypeName, $exts)) continue;
             
             $params->model->groupBy($params->table_name.'.'.$column->name);
-        }
+        }            
         
         return $params;
     }

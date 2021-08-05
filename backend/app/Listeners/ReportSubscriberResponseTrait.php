@@ -20,6 +20,12 @@ trait ReportSubscriberResponseTrait
         'max' => 'En çok'
     ];
 
+    private function loadPdfLibrary()
+    {
+        require('/var/www/vendor/maatwebsite/pdf/src/Autoloader.php');
+        \Dompdf\Autoloader::register();
+    }
+
 
 
     /****    Record Common Function    ****/
@@ -34,7 +40,10 @@ trait ReportSubscriberResponseTrait
         else $fnc .= 'CustomFile';
 
         $fnc .= ucfirst($data['type']).'Data';
-        $fnc .= ucfirst($data['params']->report_format);
+
+        $ext = $data['params']->report_format;
+        if(@$data['params']->orj_report_format == 'pdf') $ext = 'pdf';
+        $fnc .= ucfirst($ext);
 
         $this->InsertDownloadedReportRecord($data);
         
@@ -49,6 +58,45 @@ trait ReportSubscriberResponseTrait
     private function responseRecordReportCustomFileGridDataXlsx($data)
     {
         return $this->responseRecordReportCustomFileStandartDataXlsx($data, 'Xlsx');
+    }
+
+    private function responseRecordReportStandartFileHtmlToPdfDataPdf($data)
+    {
+        $tempPath = '/var/www/public/temps/';
+        $disk = env('FILESYSTEM_DRIVER', 'uploads');
+
+        $this->loadPdfLibrary();
+
+        $options = new \Dompdf\Options();
+        $options->setIsRemoteEnabled(true);
+        $dompdf = new \Dompdf\Dompdf($options);
+
+        $dompdf->loadHtml($data['htmlData']['html']);
+        
+        if(isset($data['htmlData']['direction']) && $data['htmlData']['direction'] === FALSE)
+            $dompdf->setPaper('A4', 'landscape');
+
+        $dompdf->setPaper('A4');
+        $dompdf->render();
+        $output = $dompdf->output();
+        file_put_contents($tempPath.$data['storePath'], $output);
+
+
+        if(!Storage::disk($disk)->put($data['storePath'], Storage::disk('temps')->get($data['storePath'])))
+            custom_abort('file.ftp.write.error:'.$data['storePath'].'->'.$data['storePath']);
+
+        $conn_id = ftp_connect(env('FILE_HOST', 'ftp.url'));
+        $login_result = ftp_login($conn_id, env('FILE_USER', 'user'), env('FILE_PASSWORD', 'password'));
+
+        $fullPath = '';
+        foreach(explode('/', $data['storePath']) as $path)
+        {
+            $fullPath .= $path;
+            @ftp_chmod($conn_id, 0777, env('FILE_ROOT', '/').$fullPath);
+            $fullPath .= '/';
+        }
+            
+        header("Location: ".env('APP_URL').'uploads/'.$data['storePath']);       
     }
 
     public function responseRecordReportCustomFileStandartDataXlsx($data, $customType = 'Xlsx')
@@ -84,7 +132,7 @@ trait ReportSubscriberResponseTrait
         foreach(explode('/', $data['storePath']) as $path)
         {
             $fullPath .= $path;
-            ftp_chmod($conn_id, 0777, env('FILE_ROOT', '/').$fullPath);
+            @ftp_chmod($conn_id, 0777, env('FILE_ROOT', '/').$fullPath);
             $fullPath .= '/';
         }
             
@@ -102,6 +150,13 @@ trait ReportSubscriberResponseTrait
     private function InjectDataInCustomRecordReportGrid($data, $file, $spreadsheet)
     {
         $this->InjectDataInCustomTableReportGrid($data, $file, $spreadsheet);
+    }
+
+    public function responseRecordReportStandartFileStandartDataPdf($data)
+    {
+        $this->loadPdfLibrary();
+        $this->SaveStandartDownloadedReport($data);
+        return Excel::download(new ExcelStandartTableCollectionLibrary($data), $data['tableDisplayName'].'.pdf', \Maatwebsite\Excel\Excel::DOMPDF);
     }
 
 
@@ -189,6 +244,7 @@ trait ReportSubscriberResponseTrait
                 $temp[count($temp)-1] = $ext;
                 $data['storePath'] = implode('.', $temp);
 
+                $data['params']->orj_report_format = $data['params']->report_format;
                 $data['params']->report_format = $ext;
             }
         }
@@ -349,6 +405,7 @@ trait ReportSubscriberResponseTrait
     
     public function responseTableReportStandartFileStandartDataPdf($data)
     {
+        $this->loadPdfLibrary();        
         $this->SaveStandartDownloadedReport($data);
         return Excel::download(new ExcelStandartTableCollectionLibrary($data), $data['tableDisplayName'].'.pdf', \Maatwebsite\Excel\Excel::DOMPDF);
     }
