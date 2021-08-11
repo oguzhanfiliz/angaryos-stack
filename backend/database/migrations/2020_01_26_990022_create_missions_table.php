@@ -20,6 +20,7 @@ class CreateMissionsTable extends Migration
             $table->string('cron')->nullable();
             $table->text('php_code')->nullable();
             $table->text('description')->nullable();
+            $table->timestamp('last_worked_at')->nullable();
             
             $table->boolean('state')->nullable();
             $table->integer('own_id');

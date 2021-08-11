@@ -150,6 +150,8 @@ class AuthController extends Controller
             custom_abort('no.auth');
         
         $requestUser = User::find($requestUserId);
+        if(!$requestUser) custom_abort('user.is.passive');
+        
         $token = helper('create_user_token', $requestUser);
         
         send_log('info', 'Response For Get User Token', [$token]);

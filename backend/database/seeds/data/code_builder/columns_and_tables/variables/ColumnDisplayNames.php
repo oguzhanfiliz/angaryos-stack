@@ -158,6 +158,7 @@ $column_name_display_name_map =
     'start_time' => 'Başlama Zamanı',
     'end_time' => 'Bitiş Zamanı',
     'phone' => 'Telefon',
+    'last_worked_at' => 'Son Çalışma Zamanı'
 ];
 
 

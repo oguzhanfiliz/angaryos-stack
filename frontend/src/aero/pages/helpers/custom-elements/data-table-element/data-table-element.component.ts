@@ -655,6 +655,15 @@ export class DataTableElementComponent
         
         var guiType = this.data['columns'][columnName]['gui_type_name'];
         
+        if(guiType.indexOf("select") > -1)
+        {
+            window.location.href = BaseHelper.baseUrl+"dashboard";
+            setTimeout(() => {
+                window.location.href = BaseHelper.baseUrl + "table/"+this.tableName+"/";
+            }, 50);
+            return;
+        }
+        
         var to = null;
         if(typeof event['enterKey'] != "undefined") to = 10;
         else

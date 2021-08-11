@@ -22,7 +22,7 @@ class DashboardLibrary
             foreach($tableNames as $tableName)
                 if(!in_array($tableName, $except))
                     if(!strstr($tableName, '_archive'))
-                        $sum += DB::table($tableName)->count();
+                        $sum += DB::table(trim($tableName, '"'))->count();
                 
             return $sum;
         });

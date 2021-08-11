@@ -184,3 +184,25 @@ function get_base_record()
         'user_id' => $userId
     ];
 }
+
+function run_periodic($start, $end, $period, $stepCallback, $params = NULL)
+{
+    if(is_string($start)) $start = new \Carbon\Carbon($start);
+    if(is_string($end)) $end = new \Carbon\Carbon($end);
+    if($end == NULL) $end = new \Carbon\Carbon();
+
+    if($params == NULL) $params = []; 
+    if(!is_array($params)) $params = ['params' => $params];
+    
+    $params['start'] = new \Carbon\Carbon($start->toDateTimeString());
+    $params['end'] = $end;
+   
+    while($start < $end)
+    {
+        $params['current'] = $start;
+        $stepCallback($params != NULL ? $params : NULL);         
+        $start->addSeconds($period);
+    }
+
+    return $start;
+}
