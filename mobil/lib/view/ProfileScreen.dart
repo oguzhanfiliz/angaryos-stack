@@ -30,19 +30,24 @@ class _ProfilePageState extends State<ProfilePage> {
     return Container(
       child: Column(
         children: [
-          ElevatedButton.icon(
-              onPressed: () async {
-                if (await SessionHelper.logout())
-                  BaseHelper.navigate("login", context);
-                else
-                  BaseHelper.messageBox(
-                      context,
-                      "Bir hata oluştu! Lütfen daha sonra tekrar deneyin",
-                      "",
-                      "error");
-              },
-              icon: Icon(Icons.add),
-              label: Text(tr("Çıkış Yap")))
+          SizedBox(
+            height: 20,
+          ),
+          Center(
+            child: ElevatedButton.icon(
+                onPressed: () async {
+                  if (await SessionHelper.logout())
+                    BaseHelper.navigate("login", context);
+                  else
+                    BaseHelper.messageBox(
+                        context,
+                        "Bir hata oluştu! Lütfen daha sonra tekrar deneyin",
+                        "",
+                        "error");
+                },
+                icon: Icon(Icons.add),
+                label: Text(tr("Çıkış Yap"))),
+          )
         ],
       ),
     );

@@ -170,7 +170,8 @@ class _LoginPageState extends State<LoginPage> {
                     });
                   },
                   icon: Icon(loading ? Icons.autorenew : Icons.login),
-                  label: Text(loading ? tr("Bekleyin...") : tr("Giriş Yap"))),
+                  label:
+                      Text(loading ? tr("Bekleyin") + "..." : tr("Giriş Yap"))),
             ),
             SizedBox(
               height: 130,

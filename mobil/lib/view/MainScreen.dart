@@ -26,41 +26,74 @@ class _MainPageState extends State<MainPage> {
   @override
   void initState() {
     super.initState();
+    fillNews();
   }
 
   List<dynamic>? news = null;
 
+  fillNewsFromLocal() async {
+    try {
+      var temp = await BaseHelper.readFromLocal("news");
+      if (temp == null) return false;
+
+      setState(() {
+        news = temp;
+      });
+
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
+
   fillNewsFromPipe() {
-    var temp = BaseHelper.readFromPipe("news");
-    if (temp == null) return false;
+    try {
+      var temp = BaseHelper.readFromPipe("news");
+      if (temp == null) return false;
 
-    setState(() {
-      news = temp;
-    });
+      setState(() {
+        news = temp;
+      });
 
-    return true;
+      return true;
+    } catch (e) {
+      return false;
+    }
   }
 
   fillNewsFromServer() async {
-    String url = SessionHelper.getListPageUrl("public_contents", true, true);
-    var rt = await SessionHelper.httpGetJsonA(url);
-    setState(() {
-      news = rt["records"];
-    });
+    try {
+      String url = SessionHelper.getListPageUrl("public_contents", true, true);
+      var rt = await SessionHelper.httpGetJsonA(url);
+      setState(() {
+        news = rt["records"];
+      });
 
-    BaseHelper.writeToPipe("news", rt["records"]);
+      BaseHelper.writeToLocal("news", rt["records"], 1000 * 60 * 60);
+      BaseHelper.writeToPipe("news", rt["records"]);
+    } catch (e) {}
   }
 
   fillNews() async {
-    //if (news != null) return;
-    //if (fillNewsFromPipe()) return;
-    //fillNewsFromServer();
+    if (news != null) return;
+    if (fillNewsFromPipe()) return;
+    if (await fillNewsFromLocal()) return;
+    fillNewsFromServer();
   }
 
   @override
   Widget build(BuildContext context) {
-    fillNews();
-
-    return Text("data");
+    return Container(
+      child: Column(
+        children: [
+          SizedBox(
+            height: 20,
+          ),
+          Center(
+            child: Text(tr("Bu Sayfa Yapım Aşamasında")),
+          )
+        ],
+      ),
+    );
   }
 }

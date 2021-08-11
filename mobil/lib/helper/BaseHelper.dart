@@ -43,8 +43,8 @@ class BaseHelper {
   static String logoUrl25 =
       baseUrl + "assets/themes/aero/assets/images/logo25x25.png";
   static String logoUrl100 =
-      baseUrl + "assets/themes/aero/assets/images/logo100x100.png";
-  static String logoPath = "assets/images/logo.png";
+      baseUrl + "assets/themes/aero/assets/images/logo100x100mobile.png";
+  static String logoPath = "assets/images/logomobile.png";
 
   static var availableLanguages = ["tr", "en", "ar"];
   static String defaultLanguage = "tr";
@@ -267,7 +267,7 @@ class BaseHelper {
 
     if (timeOut > 0)
       obj["startTime"] =
-          DateFormat("yyyy-MM-dd hh:mm:ss").format(DateTime.now());
+          DateFormat("yyyy-MM-dd HH:mm:ss").format(DateTime.now());
 
     String jsonStr = objectToJsonStr(obj);
 
@@ -281,7 +281,7 @@ class BaseHelper {
     if (obj["timeOut"] < 0) return true;
 
     DateTime startTime =
-        new DateFormat("yyyy-MM-dd hh:mm:ss").parse(obj["startTime"]);
+        new DateFormat("yyyy-MM-dd HH:mm:ss").parse(obj["startTime"]);
     DateTime now = DateTime.now();
 
     int interval = now.difference(startTime).inMilliseconds;
