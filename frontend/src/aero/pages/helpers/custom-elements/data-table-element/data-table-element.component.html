@@ -34,6 +34,23 @@
                 <tr>
                     <td>
                         <div 
+                            *ngIf="iconVisibility['liveDataMode']"
+                            class="checkbox" >
+                            
+                            <input 
+                                (click)="toggleLiveDataMode()" 
+                                id="liveDataMode" 
+                                type="checkbox" 
+                                [checked]="params['liveDataMode']">
+                                
+                            <label  
+                                for="liveDataMode" 
+                                style="margin: 1 0; padding: 0 27 0 0; margin-top: -5;">                                    
+                            </label>
+                        </div>
+                    </td>
+                    <td>
+                        <div 
                             *ngIf="iconVisibility['editMode']"
                             class="checkbox" >
                             
@@ -291,6 +308,7 @@
                                             *ngFor="let record of data['records']; let i = index"
                                             role="row" (contextmenu)="selectRecord($event, record, i)"
                                             (dblclick)="editOrShow(record)"
+                                            [id]="'record-'+record['id']"
                                             [class]="record['recordClass']"> 
                                             <td>                                                
                                                 <div 
@@ -405,7 +423,8 @@
                                             </td>
                                             <td 
                                                 *ngFor="let columnName of params['columnNames']" 
-                                                [class]="record['tdClases'][columnName]">
+                                                [class]="record['tdClases'][columnName]"
+                                                [id]="'record-'+record['id']+'-column-'+columnName">
                                                 
                                                 <table class="light-table-force">
                                                     <tr>

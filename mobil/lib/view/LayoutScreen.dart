@@ -133,30 +133,30 @@ class _LayoutPageState extends State<LayoutPage> {
           constraints: BoxConstraints(maxWidth: 250),
           child: SideMenu(),
         ),
-        body: Container(
-          color: bgColor,
-          child: SafeArea(
-            right: false,
-            child: Column(
-              children: [
-                if (ResponsiveHelper.isMobile(context))
-                  IconButton(
-                    icon: Icon(
-                      Icons.menu,
-                      color: textWhite,
+        body: SingleChildScrollView(
+          child: Container(
+            color: bgColor,
+            child: SafeArea(
+              right: false,
+              child: Column(
+                children: [
+                  if (ResponsiveHelper.isMobile(context))
+                    IconButton(
+                      icon: Icon(
+                        Icons.menu,
+                        color: textWhite,
+                      ),
+                      onPressed: () {
+                        _scaffoldKey.currentState!.openDrawer();
+                      },
                     ),
-                    onPressed: () {
-                      _scaffoldKey.currentState!.openDrawer();
-                    },
-                  ),
-                SingleChildScrollView(
-                  child: Container(
+                  Container(
                       width: MediaQuery.of(context).size.width,
                       //height: MediaQuery.of(context).size.height,
                       alignment: Alignment.topLeft,
                       child: widget.pageWidget),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ));

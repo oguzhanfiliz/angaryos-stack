@@ -1,5 +1,6 @@
 import 'package:angaryos/helper/BaseHelper.dart';
 import 'package:angaryos/helper/LogHelper.dart';
+import 'package:angaryos/helper/MenuHelper.dart';
 import 'package:angaryos/helper/ResponsiveHelper.dart';
 import 'package:angaryos/helper/SessionHelper.dart';
 import 'package:angaryos/helper/ThemeHelper.dart';
@@ -95,6 +96,7 @@ class _LoginPageState extends State<LoginPage> {
       return;
     }
 
+    MenuHelper.bottomMenuData = [];
     BaseHelper.navigate("profile", context);
   }
 
@@ -106,7 +108,16 @@ class _LoginPageState extends State<LoginPage> {
         child: Column(
           children: <Widget>[
             SizedBox(
-              height: 150,
+              height: 60,
+            ),
+            Center(
+              child: Image.network(
+                BaseHelper.logoUrl100,
+                width: 100,
+              ),
+            ),
+            SizedBox(
+              height: 50,
             ),
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 15),

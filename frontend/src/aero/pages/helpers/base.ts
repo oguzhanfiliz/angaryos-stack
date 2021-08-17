@@ -31,6 +31,10 @@ export abstract class BaseHelper
   
   public static isMobileDevice = (/android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini/i.test(navigator.userAgent.toLowerCase()));
 
+  public static liveDataModeIntervalIds = [];
+  
+  
+  
   public static preLoad()
   {
     this.fillUserData();
@@ -121,6 +125,14 @@ export abstract class BaseHelper
         (j ? i.substr(0, j) + thouSep : "") +
         i.substr(j).replace(/(\decSep{3})(?=\decSep)/g, "$1" + thouSep) +
         (decPlaces ? decSep + Math.abs(number - parseInt(i)).toFixed(decPlaces).slice(2) : "");
+  }
+  
+  public static clearLiveDataModeIntervals()
+  {
+    for(var i = 0; i < this.liveDataModeIntervalIds.length; i++)
+      clearInterval(this.liveDataModeIntervalIds[i]);
+
+    this.liveDataModeIntervalIds = [];
   }
 
 

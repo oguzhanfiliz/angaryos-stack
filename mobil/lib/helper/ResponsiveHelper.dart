@@ -39,6 +39,23 @@ class ResponsiveHelper extends StatelessWidget {
     }
   }
 
+  static int getItemCountForOneLine(BuildContext context,
+      [int? mobileWidth, int? tabletWidth, int? desktopWidth]) {
+    mobileWidth ??= 380;
+    tabletWidth ??= 500;
+    desktopWidth ??= 600;
+
+    int wd = MediaQuery.of(context).size.width.toInt();
+
+    if (isMobile(context)) {
+      return wd ~/ mobileWidth;
+    } else if (isTablet(context)) {
+      return wd ~/ tabletWidth;
+    } else {
+      return wd ~/ desktopWidth;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     if (isDesktop(context))

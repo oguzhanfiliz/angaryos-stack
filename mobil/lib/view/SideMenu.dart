@@ -117,18 +117,24 @@ class _SideMenuState extends State<SideMenu> {
       SizedBox(
         height: 20,
       ),
-      Divider(
+      SizedBox(
         height: 1,
-        color: dividerLight,
+        child: Container(
+          width: double.infinity,
+          color: Colors.white54,
+        ),
       )
     ];
 
     if (ResponsiveHelper.isDesktop(context)) {
       menuData += getBottomMenu();
       menuData += [
-        Divider(
+        SizedBox(
           height: 1,
-          color: dividerLight,
+          child: Container(
+            width: double.infinity,
+            color: Colors.white54,
+          ),
         )
       ];
     }
@@ -150,19 +156,18 @@ class _SideMenuState extends State<SideMenu> {
                 labelText: tr('Filtrele'),
               )),
         ),
-        Divider(
-          height: 1,
-          color: dividerLight,
-        )
       ];
 
       menuData += await getSideMenu(searchedText);
     }
 
     menuData += [
-      Divider(
+      SizedBox(
         height: 1,
-        color: dividerLight,
+        child: Container(
+          width: double.infinity,
+          color: Colors.white54,
+        ),
       ),
       ListTile(
         title: Row(

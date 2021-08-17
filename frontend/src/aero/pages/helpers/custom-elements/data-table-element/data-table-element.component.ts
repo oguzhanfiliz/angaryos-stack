@@ -1,5 +1,5 @@
 import { ActivatedRoute} from '@angular/router';
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, Input, Output, OnDestroy } from '@angular/core';
 
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 
@@ -20,7 +20,7 @@ declare var $: any;
     styleUrls: ['./data-table-element.component.scss'],
     templateUrl: './data-table-element.component.html'
 })
-export class DataTableElementComponent
+export class DataTableElementComponent implements OnDestroy 
 {
     @Input() baseUrl: string;
     @Input() tableName: string = "";
@@ -49,6 +49,8 @@ export class DataTableElementComponent
     iconVisibility = null;
     recordOperations = null;
     fullBaseUrl = "";
+    
+    marked = [];
 
     constructor(
         public route: ActivatedRoute,
@@ -77,6 +79,11 @@ export class DataTableElementComponent
         this.themeOperations();
     }
 
+    ngOnDestroy()
+    {
+        BaseHelper.clearLiveDataModeIntervals();
+    }
+
     preLoadInterval()
     {
         return BaseHelper.doInterval(
@@ -92,6 +99,19 @@ export class DataTableElementComponent
         this.fillParamsFromLocal();
         
         this.dataReload(); 
+        this.liveDataModeOperations(); 
+    }
+    
+    liveDataModeOperations()
+    {  
+        BaseHelper.clearLiveDataModeIntervals();
+        if(!this.params.liveDataMode) return;
+        
+        var temp = setInterval(() => 
+        {
+            this.dataReload();
+        }, 1000 * 15);
+        BaseHelper.liveDataModeIntervalIds.push(temp);
     }
     
     fillDefaultVariables()
@@ -114,6 +134,7 @@ export class DataTableElementComponent
         this.iconVisibility['deleted'] = !this.lightTable && !this.archiveTable && this.can('deleted');
         this.iconVisibility['create'] = !this.lightTable && !this.archiveTable && this.can('create');
         this.iconVisibility['editMode'] = !this.lightTable && !this.archiveTable;
+        this.iconVisibility['liveDataMode'] = !this.lightTable && !this.archiveTable;
         this.iconVisibility['recodOperations'] = !this.lightTable && !this.archiveTable;
         this.iconVisibility['selectAsUpTable'] = this.can('selectAsUpTable') && !this.archiveTable;
         this.iconVisibility['authWizard'] = this.can('authWizard') && !this.archiveTable
@@ -143,6 +164,7 @@ export class DataTableElementComponent
             sorts: {},
             filters: {},
             editMode: false,
+            liveDataMode: false,
             columnNames: []
         };
     }
@@ -229,6 +251,8 @@ export class DataTableElementComponent
     
     dataLoaded(data)
     {
+        this.liveDataModeControl(data);
+        
         this.data = this.fillDataAdditionalVariables(data);
         
         this.iconVisibility['selectAsUpTable'] = this.can('selectAsUpTable') && !this.archiveTable;
@@ -238,6 +262,65 @@ export class DataTableElementComponent
         this.themeOperations();
             
         this.dataChanged.emit(data);
+    }
+    
+    liveDataModeControl(data)
+    {
+        if(!this.params.liveDataMode) return;
+        if(!this.data['loaded']) return;
+        
+        var columnNames = Object.keys(data['columns']);
+        for(var i = 0; i < data['records'].length; i++)
+        {
+            var newRecord = data['records'][i];
+            var finded = false;
+            
+            for(var j = 0; j < this.data['records'].length; j++)
+            {
+                var oldRecord = this.data['records'][j];
+                
+                if(oldRecord["id"] == newRecord["id"])
+                {
+                    for(var k = 0; k < columnNames.length; k++)
+                    {
+                        var cn = columnNames[k];
+                        
+                        if(newRecord[cn] != oldRecord[cn])
+                        {
+                            this.markNewData(newRecord["id"], cn);
+                        }
+                    }
+                    
+                    finded = true;
+                    break;
+                }
+            }
+            
+            if(!finded) this.markNewData(newRecord["id"]);
+        }
+    }
+    
+    ringTone()
+    {
+        BaseHelper.doInterval(
+            'ringTone', 
+            (th) => 
+            {
+                var audio = new Audio(BaseHelper.backendBaseUrl+"assets/message.wav");
+                audio.play();
+            }, 
+            this, 
+            300);
+    }
+    
+    markNewData(id, columnName = "***")
+    {
+        this.ringTone();
+        
+        var selector = '#record-'+id;
+        if(columnName != "***") selector += '-column-'+columnName;
+        
+        setTimeout(() => $(selector).css('background-color', '#ffb6c1'), 500);
     }
     
     fillDataAdditionalVariables(data)
@@ -585,6 +668,15 @@ export class DataTableElementComponent
         this.saveParamsToLocal();
 
         this.messageHelper.toastMessage("Düzenleme modu " + (this.params.editMode ? "aktif" : "pasif"));
+    }
+    
+    toggleLiveDataMode()
+    {
+        this.params.liveDataMode = !this.params.liveDataMode;
+        this.saveParamsToLocal();
+
+        this.messageHelper.toastMessage("Canlı veri modu " + (this.params.liveDataMode ? "aktif" : "pasif"));
+        this.liveDataModeOperations();
     }
     
     dropColumn(event: CdkDragDrop<string[]>) 

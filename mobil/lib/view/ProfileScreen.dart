@@ -1,4 +1,5 @@
 import 'package:angaryos/helper/BaseHelper.dart';
+import 'package:angaryos/helper/MenuHelper.dart';
 import 'package:angaryos/helper/SessionHelper.dart';
 import 'package:angaryos/view/LayoutScreen.dart';
 import 'package:flutter/material.dart';
@@ -36,9 +37,10 @@ class _ProfilePageState extends State<ProfilePage> {
           Center(
             child: ElevatedButton.icon(
                 onPressed: () async {
-                  if (await SessionHelper.logout())
+                  if (await SessionHelper.logout()) {
+                    MenuHelper.bottomMenuData = [];
                     BaseHelper.navigate("login", context);
-                  else
+                  } else
                     BaseHelper.messageBox(
                         context,
                         "Bir hata oluştu! Lütfen daha sonra tekrar deneyin",
