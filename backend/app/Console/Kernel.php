@@ -49,6 +49,8 @@ class Kernel extends ConsoleKernel
                 {
                     try 
                     {
+                        \DB::table('missions')->where('id', $mission->id)->update(['last_worked_at' => \Carbon\Carbon::now()]);
+                        
                         send_log('info', 'Mission schedule start...', $mission);
                         eval(helper('clear_php_code', $mission->php_code)); 
                         send_log('info', 'Mission schedule complate', $mission); 
