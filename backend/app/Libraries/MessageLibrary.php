@@ -31,52 +31,22 @@ class MessageLibrary
         return $connection;
     }
 
-    private static function runSshCommandAsSudo($connection, $command, $config)
-    {
-        //NET_SSH2_READ_SIMPLE 1
-        
-        $connection->setTimeout(1);
-        if(!$config['no_wait_for_sudo']) $connection->read('/.*@.*[$|#]/', /*NET_SSH2_READ_REGEX*/2);
-        else  $connection->read();
-
-        $connection->write($command."\n");
-
-        if(!$config['no_wait_for_sudo'])
-        {
-            $output = $connection->read('/.*@.*[$|#]|.*[pP]assword.*/', /*NET_SSH2_READ_REGEX*/2);
-            
-            if (preg_match('/.*[pP]assword.*/', $output)) 
-            {
-                $connection->write($config['password']."\n");
-                $output = $connection->read('/.*@.*[$|#]/', /*NET_SSH2_READ_REGEX*/2);
-            }
-            else if(strstr($output, $config['user_name'].'@')) 
-            {
-                $output = str_replace([ " \r ", " \r", "\r ", "\r"], '', $output);
-                $output = str_replace($command, '', $output);
-            }
-            else throw new \Exception('command.not.run.as.sudo:'.json_encode($output));
-        }
-        else 
-        {
-            $output = $connection->read('/.*@.*[$|#]/', /*NET_SSH2_READ_REGEX*/2);
-            $output = str_replace([ " \r ", " \r", "\r ", "\r"], '', $output);
-            $output = str_replace($command, '', $output);
-        }
-        
-        return $output;
-    }
-
     private static function clearSshOutput($output, $config)
     {
-        $output = str_replace([ " \r ", " \r", "\r ", "\r"], '', $output);
+        $output = str_replace([ " \r ", " \r", "\r ", "\r", "\e"], '', $output);
         $output = trim($output, ' ');
+             
+        $output = trim($output, '[?20041');    
+        $output = trim($output, '[?2004l');
+
+
         $arr = [];
         foreach(explode("\n", $output) as $line)
         {
             $line = trim($line, "\r");
             if(strlen($line) == 0) continue;
             if(strstr($line, $config['user_name'].'@')) continue;
+            if(strstr($line, ' password for ')) continue;
             array_push($arr, $line);
         }
 
@@ -89,28 +59,32 @@ class MessageLibrary
         else return $output;
     }
 
-    public static function sendCommandWithSsh($config, $command, $clearAndParseOutput = TRUE, $timeOut = 5)
+    public static function sendCommandWithSsh($config, $command)
     {
         if(!isset($config['port'])) $config['port'] = 22;
+        if(!isset($config['clear_and_parse_output'])) $config['clear_and_parse_output'] = TRUE;
+        if(!isset($config['time_out'])) $config['time_out'] = 5;
 
         $connection = self::getSshConnectionObject($config['host'], $config['user_name'], $config['password'], $config['port']);
         if(!$connection) throw new \Exception('ssh.server.connection.error');
         
-        $connection->setTimeout($timeOut);
+        $connection->setTimeout($config['time_out']);
 
+        $sudo = FALSE;
         if(substr(strtolower(trim($command)), 0, 5) == 'sudo ')
-            $output = self::runSshCommandAsSudo($connection, $command, $config);
-        else 
         {
-            if(!isset($config['call_back_function']))
-                $output = $connection->exec($command);
-            else
-                $output = $connection->exec($command, $config['call_back_function']);
-        }
+            $sudo = TRUE;
+            $command = str_replace('sudo ', 'echo '.$config['password'].'|sudo -S ', $command);
+        }   
+
+        if(!isset($config['callback_function']))
+            $output = $connection->exec($command);
+        else
+            $output = $connection->exec($command, $config['callback_function']);
 
         self::$lastSshResponse = $output;
         
-        if($clearAndParseOutput) $output = self::clearSshOutput($output, $config);
+        if($config['clear_and_parse_output']) $output = self::clearSshOutput($output, $config);
 
         return $output;
     }
