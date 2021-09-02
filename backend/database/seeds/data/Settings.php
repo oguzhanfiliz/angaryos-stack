@@ -22,7 +22,7 @@ $settings['DATA_ENTEGRATOR_STATES'] = '{}';
 
 $settings['DEBUG_USER_IDS'] = '[1]';
 
-$settings['En son duyuru'] = '2021-05-23 10:30:00';
+$settings['ANNOUNCEMENT_CONTROL_TIME'] = '2021-05-23 10:30:00';
 
 
 $temp = $this->get_base_record();

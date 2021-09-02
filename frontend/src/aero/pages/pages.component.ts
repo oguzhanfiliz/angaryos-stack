@@ -56,8 +56,29 @@ export class PagesComponent
 
     this.eSignServerOperations();
     this.announcementOperations();
+    this.pageRefreshOperations();
 
     BaseHelper.writeToPipe('basePageComponent', this);
+  }
+  
+  async pageRefreshOperations()
+  {
+    $('html').mousemove(function( event ) 
+    {
+        BaseHelper.pageRefreshCounter = 600;//60 * 10
+    });
+
+    setInterval(function()
+    { 
+        BaseHelper.pageRefreshCounter -= 5;                
+        if(BaseHelper.pageRefreshCounter > 0) return;
+           
+        var u = window.location.href;            
+        if(u.indexOf('create') > -1 || u.indexOf('edit') > -1)
+            return;
+
+        window.location.reload(); 
+    }, 5000);
   }
   
   async announcementOperations()

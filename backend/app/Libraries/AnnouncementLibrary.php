@@ -12,12 +12,12 @@ class AnnouncementLibrary
 
         DB::beginTransaction();
         
-        $ayar = 'En son duyuru';
-        $temp = DB::table('settings')->where('name', $ayar)->first();
+        $setting = 'ANNOUNCEMENT_CONTROL_TIME';
+        $temp = DB::table('settings')->where('name', $setting)->first();
      
         if(!$temp)
         {
-            \Log::alert('"'.$ayar.'" ayarı bulunamadı!');
+            \Log::alert('"'.$setting.'" ayarı bulunamadı!');
             return FALSE;
         }
 

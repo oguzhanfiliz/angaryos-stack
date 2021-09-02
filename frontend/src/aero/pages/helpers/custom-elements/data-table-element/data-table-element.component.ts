@@ -109,7 +109,7 @@ export class DataTableElementComponent implements OnDestroy
         
         var temp = setInterval(() => 
         {
-            this.dataReload();
+            this.dataReload(true);
         }, 1000 * 15);
         BaseHelper.liveDataModeIntervalIds.push(temp);
     }
@@ -237,7 +237,7 @@ export class DataTableElementComponent implements OnDestroy
                 timeout);
     }
     
-    dataReload()
+    dataReload(liveDataIntervalTrigger = false)
     {
         var url = this.sessionHelper.getBackendUrlWithToken()+this.baseUrl;
         var temp = 
@@ -246,12 +246,12 @@ export class DataTableElementComponent implements OnDestroy
         };
         
         this.sessionHelper.doHttpRequest("POST", url, temp)
-        .then((data) => this.dataLoaded(data));
+        .then((data) => this.dataLoaded(data, liveDataIntervalTrigger));
     }
     
-    dataLoaded(data)
+    dataLoaded(data, liveDataIntervalTrigger)
     {
-        this.liveDataModeControl(data);
+        if(liveDataIntervalTrigger) this.liveDataModeControl(data);
         
         this.data = this.fillDataAdditionalVariables(data);
         

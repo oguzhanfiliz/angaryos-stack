@@ -33,6 +33,8 @@ export abstract class BaseHelper
 
   public static liveDataModeIntervalIds = [];
   
+  public static pageRefreshCounter = 600;//60 * 10
+  
   
   
   public static preLoad()
