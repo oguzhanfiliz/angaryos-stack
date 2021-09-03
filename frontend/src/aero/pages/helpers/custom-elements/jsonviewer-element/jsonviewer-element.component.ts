@@ -64,6 +64,8 @@ export class JsonViewerElementComponent
     
     openInNewPage()
     {
+        console.log(this.value);
+        
         var left = (screen.width/2)-(640/2);
         var top = (screen.height/2)-(640/2);
         var newWin = open('url','Detay Görüntüleyici','height=640,width=640, top='+top+', left='+left);

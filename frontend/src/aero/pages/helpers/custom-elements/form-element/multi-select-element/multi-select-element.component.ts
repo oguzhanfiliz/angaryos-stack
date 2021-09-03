@@ -49,7 +49,9 @@ export class MultiSelectElementComponent
 
     ngAfterViewInit()
     {         
-        if(this.upFormId.length > 0) this.baseElementSelector = '[ng-reflect-id="'+this.upFormId+'"] ';
+        if(this.upFormId.length > 0) 
+            //this.baseElementSelector = '[ng-reflect-id="'+this.upFormId+'"] ';
+            this.baseElementSelector = '#'+this.upFormId+'inFormModal ';
 
         //this.elementOperationsInterval();
         var e = $(this.baseElementSelector+' select[name="'+this.name+'"]');
@@ -128,9 +130,7 @@ export class MultiSelectElementComponent
     }
     
     elementOperations()
-    {      
-        //$('multi-select-element[ng-reflect-name="'+this.name+'"] .select2-container--default').remove();
-        
+    {              
         $.getScript('assets/ext_modules/select2/select2.min.js', () => 
         {
             switch(this.type)
@@ -145,100 +145,13 @@ export class MultiSelectElementComponent
         });        
     }
     
-    /*addSelect2Static()
-    {
-        var url = this.sessionHelper.getBackendUrlWithToken()+this.baseUrl;
-        url += "/getSelectColumnData/"+this.columnName+"?search=***&page=1&limit=500";
-        
-        if(!this.createForm && this.record != null) url += '&editRecordId='+this.record['id'];
-                    
-        if(this.upColumnName.length > 0) 
-        {
-            url += '&upColumnName='+this.upColumnName;
-            url += '&upColumnData='+$('#'+this.upColumnName).val();
-            
-            var temp = BaseHelper.getAllFormsData(this.baseElementSelector);
-            url += '&currentFormData='+BaseHelper.objectToJsonStr(temp);
-        }
-        
-        var th = this;
-        
-        $.ajax(
-        {
-            url : url,
-            type : "POST",
-            data : {},
-            success : (data) =>
-            {
-                if(typeof data['results'] == 'undefined')
-                {
-                    this.messageHelper.sweetAlert("Klonlama yapıldı ama yeni kayıt bilgisi alınırken beklenmedik bir cevap geldi!", "Hata", "warning");
-                }
-                else
-                {
-                    var element = $(this.baseElementSelector+' [name="'+this.name+'"]');
-                    var key = "user:"+BaseHelper.loggedInUserInfo.user.id+"."+this.baseUrl+".data";
-            
-                    for(var i = 0; i < data['results'].length; i++)
-                    {
-                        var item = data['results'][i];
-                        
-                        if(this.val.includes(item['id'])) continue;
-                        
-                        var tempKey = key + ".selectQueryElementDataCache."+this.name+"."+item['id'];
-                        BaseHelper.writeToLocal(tempKey, item['text']);
-                        
-                        this.val.push(item['id']);
-                    }
-                    
-                    element.select2(
-                    {
-                        allowClear: true,
-                        placeholder: th.placeholder,
-                        templateSelection: function (data, container) 
-                        {
-                            $(data.element).attr('item-source', data.id);
-                            return data.text;
-                        }
-                    })
-                    .on('select2:select', (event) => th.selected(event))
-                    .on('select2:unselect', (event) => th.unselected(event));
-                    
-                    this.addStyle();
-                    
-                    setTimeout(() => 
-                    {
-                        $(this.baseElementSelector+' [name="'+this.name+'"]').val(this.selectedVal);
-                        $(this.baseElementSelector+' [name="'+this.name+'"]').trigger('change');
-                    }, 200)
-                }
-            },
-            error : (e) =>
-            {
-                this.messageHelper.toastMessage("Bir hata oluştu", "warning");
-            }
-        });
-        
-        $(document).on('click', this.baseElementSelector+' [ng-reflect-name="'+this.name+'"] .select2-selection__choice', function(e) 
-        {
-            var elementId = 'multi-select-element[ng-reflect-name="'+th.name+'"]';
-
-            $(elementId+' .select2-selection__choice')
-            .each((i, opt) => $(opt).removeClass('selected-option'));
-
-            $(e.target).addClass('selected-option');
-
-            $(elementId+" select").select2('close');
-        });
-    }*/
-
     addSelect2Static()
     {
         var url = this.sessionHelper.getBackendUrlWithToken()+this.baseUrl;
         url += "/getSelectColumnData/"+this.columnName+"?search=***&page=1&limit=500";
         
         if(!this.createForm) url += '&editRecordId='+this.record['id'];
-                    
+        
         if(this.upColumnName.length > 0) 
         {
             url += '&upColumnName='+this.upColumnName;
@@ -259,7 +172,7 @@ export class MultiSelectElementComponent
             {
                 if(typeof data['results'] == 'undefined')
                 {
-                    this.messageHelper.sweetAlert("Klonlama yapıldı ama yeni kayıt bilgisi alınırken beklenmedik bir cevap geldi!", "Hata", "warning");
+                    this.messageHelper.sweetAlert("Sunucudan 'multi-select' için data getirilirken hata oluştu", "Hata", "warning");
                 }
                 else
                 {
@@ -279,6 +192,11 @@ export class MultiSelectElementComponent
                     {
                         allowClear: true,
                         placeholder: $(this.baseElementSelector+' [name="'+this.name+'"] span').html(),
+                        templateSelection: function (data, container) 
+                        {
+                            $(data.element).attr('item-source', data.id);
+                            return data.text;
+                        }
                     })
                     .on('select2:select', (event) => 
                     {
@@ -291,6 +209,18 @@ export class MultiSelectElementComponent
                         this.changed.emit(event);
                     })
                     .on('select2:unselect', (event) => this.changed.emit(event));
+                           
+                    $(document).on('click', th.baseElementSelector+' #'+th.name+'-group .select2-selection__choice', function(e) 
+                    {
+                        var elementId = th.baseElementSelector+' #'+th.name+'-group multi-select-element ';
+
+                        $(elementId+' .select2-selection__choice')
+                        .each((i, opt) => $(opt).removeClass('selected-option'));
+
+                        $(e.target).addClass('selected-option');
+
+                        $(elementId+" select").select2('close');
+                    });
                 }
             },
             error : (e) =>
@@ -362,10 +292,10 @@ export class MultiSelectElementComponent
 
         this.addStyle();
 
-        var th = this;
-        $(document).on('click', this.baseElementSelector+' [ng-reflect-name="'+this.name+'"] .select2-selection__choice', function(e) 
+        var th = this;         
+        $(document).on('click', th.baseElementSelector+' #'+th.name+'-group .select2-selection__choice', function(e) 
         {
-            var elementId = 'multi-select-element[ng-reflect-name="'+th.name+'"]';
+            var elementId = '#'+th.name+'-group multi-select-element ';
 
             $(elementId+' .select2-selection__choice')
             .each((i, opt) => $(opt).removeClass('selected-option'));

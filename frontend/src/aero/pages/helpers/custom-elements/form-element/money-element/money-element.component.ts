@@ -54,7 +54,8 @@ export class MoneyElementComponent
     {
         var upId = this.upFormId;
         if(upId.length > 0)
-            upId = '[ng-reflect-id="'+upId+'"] ';
+            //upId = '[ng-reflect-id="'+upId+'"] ';
+            upId = '#'+upId+'inFormModal ';
 
         var temp = $(upId + ' #'+this.name+"-display").val();
         temp = temp.trim();

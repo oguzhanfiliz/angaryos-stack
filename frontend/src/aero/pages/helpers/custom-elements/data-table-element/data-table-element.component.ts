@@ -752,7 +752,7 @@ export class DataTableElementComponent implements OnDestroy
             window.location.href = BaseHelper.baseUrl+"dashboard";
             setTimeout(() => {
                 window.location.href = BaseHelper.baseUrl + "table/"+this.tableName+"/";
-            }, 50);
+            }, 100);
             return;
         }
         

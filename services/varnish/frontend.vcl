@@ -191,13 +191,13 @@ sub vcl_fini
 backend frontend1
 {
     .host = "frontend";
-    .port = "4200";
+    .port = "80";
 }
 
 backend frontend2
 {
     .host = "frontend";
-    .port = "4200";
+    .port = "80";
 }
 
 sub frontend_sunucusu_nesnesi
@@ -222,17 +222,11 @@ sub onbelleklenebilirlik_kontrolu
     if(
         req.url ~ "^/assets/"
         ||
-        req.url ~ "^/vendor.js"
+        req.url ~ "^/default.js"
         ||
-        req.url ~ "^/runtime.js"
+        req.url ~ "^/main-es"
         ||
-        req.url ~ "^/polyfills.js"
-        ||
-        req.url ~ "^/styles.js"
-        ||
-        req.url ~ "^/main.js"
-        ||
-        req.url ~ "^/scripts.js"
+        req.url ~ "^/scripts."
     )
     {
         return(hash);

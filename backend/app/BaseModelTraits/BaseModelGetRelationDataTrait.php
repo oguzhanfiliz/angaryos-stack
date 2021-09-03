@@ -115,18 +115,16 @@ trait BaseModelGetRelationDataTrait
             $temp[$key]->tableName = $table;
             $temp[$key]->recordId = $temp[$key]->id;
             
-            $key = (int)array_search($value->id, $params->data_array);
+            $key = (int)array_search($value->{$source}, $params->data_array);
             $sorted[$key] = $value;
         }
         
-        $temp = [];
-        foreach($sorted as $s)
-            array_push ($temp, $s);
+        ksort($sorted);
         
         if($params->column->column_db_type_id == $params->relation->column_db_type_id) 
-            $temp = @$temp[0];
+            $sorted = @$sorted[0];
         
-        $params->record->{$params->column->name . '__relation_data'} = $temp;
+        $params->record->{$params->column->name . '__relation_data'} = $sorted;
     }
 
     public function fillRelationDataForTableIdAndColumnNames($params)

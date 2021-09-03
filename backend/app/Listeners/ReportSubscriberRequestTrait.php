@@ -112,6 +112,7 @@ trait ReportSubscriberRequestTrait
             'activeSheet' => $activeSheet,
             'overrideColumnSort' => $overrideColumnSort,
             'gridData' => @$gridData,
+            'htmlData' => @$htmlData,
             'report' => @$report
         ];
     }

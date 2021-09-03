@@ -147,7 +147,7 @@ $column_name_display_name_map =
     
     'title' => 'Başlık',
     'announcement' => 'Duyuru',
-    'type' => 'tip',
+    'type' => 'Tip',
     'all_users' => 'Tüm Kullanıcılar',
     'department_ids' => 'Müdürlükler',
     'user_ids' => 'Kullanıcılar',

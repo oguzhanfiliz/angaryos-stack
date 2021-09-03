@@ -31,6 +31,7 @@ export class FormElementComponent
     @Input() createForm: boolean = false;
     
     record = null;
+    baseType = "";
     
     
     @Output() changed = new EventEmitter();
@@ -39,6 +40,8 @@ export class FormElementComponent
     {
         if(typeof this.recordJson != "undefined" && this.recordJson != "")
             this.record = BaseHelper.jsonStrToObject(this.recordJson);
+            
+        this.baseType = this.type.split(':')[0];
     }
 
     handleChanged(event)

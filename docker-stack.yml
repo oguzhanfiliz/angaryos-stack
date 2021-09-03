@@ -64,11 +64,9 @@ services:
     #######       FRONTEND       #######
     
     frontend: 
-        image: karapazar/angular-serve:0.19
-        #image: karapazar/angular-serve-light:0.4
+        image: karapazar/angular-serve-light:0.4
         volumes:
-            - ./frontend:/usr/src/app 
-            #- ./frontend/dist/light/:/usr/share/nginx/html
+            - ./frontend/dist/light/:/usr/share/nginx/html
             - '/etc/localtime:/etc/localtime:ro'
         networks:
             - frontend-nw
@@ -77,11 +75,21 @@ services:
             replicas: 1
             labels:
                 traefik.frontend.rule: "PathPrefix:/"
-                traefik.port: "4200"
-                #traefik.port: "80"
+                traefik.port: "80"
                 traefik.enable: "true"
                 traefik.backend: "frontend"
                 traefik.docker.network: "angaryos_frontend-nw"
+    
+    frontendBuilder: 
+        image: karapazar/angular-serve:0.19
+        volumes:
+            - ./frontend:/usr/src/app 
+            - '/etc/localtime:/etc/localtime:ro'
+        networks:
+            - frontend-nw
+        deploy:
+            mode: replicated
+            replicas: 0
                 
     varnishFrontend:
         image: million12/varnish
@@ -93,13 +101,15 @@ services:
             replicas: 1
             labels:
                 traefik.varnishFrontendAssets.frontend.rule: "PathPrefix:/assets"
-                traefik.varnishFrontendVendor.frontend.rule: "PathPrefix:/vendor.js"
-                traefik.varnishFrontendManifest.frontend.rule: "PathPrefix:/manifes.json"
-                traefik.varnishFrontendRuntime.frontend.rule: "PathPrefix:/runtime.js"
-                traefik.varnishFrontendPolyfills.frontend.rule: "PathPrefix:/polyfills.js"
-                traefik.varnishFrontendStyles.frontend.rule: "PathPrefix:/styles.js"
-                traefik.varnishFrontendMain.frontend.rule: "PathPrefix:/main.js"
-                traefik.varnishFrontendScripts.frontend.rule: "PathPrefix:/scripts.js"
+                traefik.varnishFrontendMain.frontend.rule: "PathPrefix:/main-es"
+                traefik.varnishFrontendDefault.frontend.rule: "PathPrefix:/default.js"
+                traefik.varnishFrontendScripts.frontend.rule: "PathPrefix:/scripts."
+                
+                #traefik.varnishFrontendVendor.frontend.rule: "PathPrefix:/vendor.js"
+                #traefik.varnishFrontendManifest.frontend.rule: "PathPrefix:/manifes.json"
+                #traefik.varnishFrontendRuntime.frontend.rule: "PathPrefix:/runtime."
+                #traefik.varnishFrontendPolyfills.frontend.rule: "PathPrefix:/polyfills.js"
+                #traefik.varnishFrontendStyles.frontend.rule: "PathPrefix:/styles.js"
                 
                 traefik.port: "80"
                 traefik.enable: "true"

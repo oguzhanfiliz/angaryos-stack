@@ -380,6 +380,8 @@ export class SessionHelper
 
     public toSeo(str) 
     {
+      if(typeof str == "undefined" || str == null) str = "";
+      
       str = str.replace(/ /g, "_");
       str = str.replace(/</g, "");
       str = str.replace(/>/g, "");

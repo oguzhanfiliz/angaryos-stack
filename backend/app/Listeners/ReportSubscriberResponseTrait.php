@@ -24,6 +24,8 @@ trait ReportSubscriberResponseTrait
     {
         require('/var/www/vendor/maatwebsite/pdf/src/Autoloader.php');
         \Dompdf\Autoloader::register();
+        
+        require('/var/www/vendor/php-font-lib-master/src/FontLib/Autoloader.php');
     }
 
 
@@ -41,6 +43,8 @@ trait ReportSubscriberResponseTrait
 
         $fnc .= ucfirst($data['type']).'Data';
 
+        if($data['type'] == 'htmlToPdf') $data['params']->report_format = 'pdf';
+        
         $ext = $data['params']->report_format;
         if(@$data['params']->orj_report_format == 'pdf') $ext = 'pdf';
         $fnc .= ucfirst($ext);
@@ -79,6 +83,8 @@ trait ReportSubscriberResponseTrait
         $dompdf->setPaper('A4');
         $dompdf->render();
         $output = $dompdf->output();
+        
+        @mkdir($tempPath.$data['storePath'].'/../', 0777, TRUE);
         file_put_contents($tempPath.$data['storePath'], $output);
 
 
@@ -172,7 +178,11 @@ trait ReportSubscriberResponseTrait
         else $fnc .= 'CustomFile';
 
         $fnc .= ucfirst($data['type']).'Data';
-        $fnc .= ucfirst($data['params']->report_format);
+        
+        if($data['type'] == 'htmlToPdf') $data['params']->report_format = 'pdf';
+        $ext = $data['params']->report_format;
+        if(@$data['params']->orj_report_format == 'pdf') $ext = 'pdf';
+        $fnc .= ucfirst($ext);
 
         $this->InsertDownloadedReportRecord($data);
         
@@ -227,6 +237,8 @@ trait ReportSubscriberResponseTrait
         $data['tableDisplayName'] .= ' '. date("d-m-Y H:i:s");
         
         $uId = @\Auth::user()->id;
+        
+        if($data['type'] == 'htmlToPdf') $data['params']->report_format = 'pdf';
         
         $data['storePath'] = date("Y/m/d/").$uId.'_'.helper('seo', $data['tableDisplayName']).'.'.$data['params']->report_format;
         $data['storage'] = env('FILESYSTEM_DRIVER', 'uploads');
@@ -408,5 +420,46 @@ trait ReportSubscriberResponseTrait
         $this->loadPdfLibrary();        
         $this->SaveStandartDownloadedReport($data);
         return Excel::download(new ExcelStandartTableCollectionLibrary($data), $data['tableDisplayName'].'.pdf', \Maatwebsite\Excel\Excel::DOMPDF);
+    }
+
+    private function responseTableReportStandartFileHtmlToPdfDataPdf($data)
+    {
+        $tempPath = '/var/www/public/temps/';
+        $disk = env('FILESYSTEM_DRIVER', 'uploads');
+
+        $this->loadPdfLibrary();
+
+        $options = new \Dompdf\Options();
+        $options->setIsRemoteEnabled(true);
+        $dompdf = new \Dompdf\Dompdf($options);
+
+        $dompdf->loadHtml($data['htmlData']['html']);
+        
+        if(isset($data['htmlData']['direction']) && $data['htmlData']['direction'] === FALSE)
+            $dompdf->setPaper('A4', 'landscape');
+
+        $dompdf->setPaper('A4');
+        $dompdf->render();
+        $output = $dompdf->output();
+        
+        @mkdir($tempPath.$data['storePath'].'/../', 0777, TRUE);
+        file_put_contents($tempPath.$data['storePath'], $output);
+
+
+        if(!Storage::disk($disk)->put($data['storePath'], Storage::disk('temps')->get($data['storePath'])))
+            custom_abort('file.ftp.write.error:'.$data['storePath'].'->'.$data['storePath']);
+
+        $conn_id = ftp_connect(env('FILE_HOST', 'ftp.url'));
+        $login_result = ftp_login($conn_id, env('FILE_USER', 'user'), env('FILE_PASSWORD', 'password'));
+
+        $fullPath = '';
+        foreach(explode('/', $data['storePath']) as $path)
+        {
+            $fullPath .= $path;
+            @ftp_chmod($conn_id, 0777, env('FILE_ROOT', '/').$fullPath);
+            $fullPath .= '/';
+        }
+            
+        header("Location: ".env('APP_URL').'uploads/'.$data['storePath']);       
     }
 }

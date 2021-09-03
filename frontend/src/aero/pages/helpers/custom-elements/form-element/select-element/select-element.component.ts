@@ -45,7 +45,8 @@ export class SelectElementComponent
     ngAfterViewInit()
     {
         if(this.upFormId.length > 0)
-            this.baseElementSelector = '[ng-reflect-id="'+this.upFormId+'"] ';
+            //this.baseElementSelector = '[ng-reflect-id="'+this.upFormId+'"] ';
+            this.baseElementSelector = '#'+this.upFormId+'inFormModal ';
 
         this.elementOperations(); 
     }
@@ -130,10 +131,10 @@ export class SelectElementComponent
             type : "POST",
             data : {},
             success : (data) =>
-            {
+            {                
                 if(typeof data['results'] == 'undefined')
                 {
-                    this.messageHelper.sweetAlert("Klonlama yapıldı ama yeni kayıt bilgisi alınırken beklenmedik bir cevap geldi!", "Hata", "warning");
+                    this.messageHelper.sweetAlert("Sunucudan selectElement için data seti alınamadı!", "Hata", "warning");
                 }
                 else
                 {

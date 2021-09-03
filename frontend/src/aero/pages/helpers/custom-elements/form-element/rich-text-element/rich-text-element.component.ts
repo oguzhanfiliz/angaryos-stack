@@ -31,7 +31,9 @@ export class RichTextElementComponent
         this.value = filterXSS(this.value);
         
         var selector = " [name='"+this.name+"-rich-text']";
-        if(this.upFormId.length > 0) selector = '[ng-reflect-id="'+this.upFormId+'"] '+selector;
+        if(this.upFormId.length > 0) 
+            //selector = '[ng-reflect-id="'+this.upFormId+'"] '+selector;
+            selector = '#'+this.upFormId+'inFormModal '+selector;
         
         $.trumbowyg.svgPath = 'assets/ext_modules/trumbowyg/dist/ui/icons.svg';
         
@@ -50,12 +52,14 @@ export class RichTextElementComponent
                 var html = $(selector).html();
 
                 var elementSelector = '[name="'+th.name+'"]';
-                if(th.upFormId.length > 0) elementSelector = '[ng-reflect-id="'+th.upFormId+'"] '+elementSelector;
+                if(th.upFormId.length > 0) 
+                    //elementSelector = '[ng-reflect-id="'+th.upFormId+'"] '+elementSelector;
+                    elementSelector = '#'+th.upFormId+'inFormModal '+elementSelector;
 
                 $(elementSelector).val(html);
             }
 
-            return BaseHelper.doInterval('update'+selector+'RichTextElement', func, null, 500);
+            return BaseHelper.doInterval('update'+selector+'RichTextElement', func, null, 1000);
         });
     }
 }

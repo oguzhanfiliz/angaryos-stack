@@ -128,7 +128,7 @@ filterType="{{ filterType }}"
 upFormId="{{ upFormId }}"
 class="{{ class }}"></date-element>
 
-<boolean-element *ngIf="type.split(':')[0] == 'boolean'" 
+<boolean-element *ngIf="baseType == 'boolean'" 
 style="background-color: white;display: block;"
 (changed)="handleChanged($event)"
 value="{{ value }}"
@@ -141,7 +141,7 @@ showFilterTypesSelect="{{ showFilterTypesSelect }}"
 filterType="{{ filterType }}"
 class="{{ class }}"></boolean-element>
 
-<select-element *ngIf="type.split(':')[0] == 'select'" 
+<select-element *ngIf="baseType == 'select'" 
 (changed)="handleChanged($event)"
 upColumnName="{{ upColumnName }}"
 type="{{ type }}"
@@ -159,7 +159,7 @@ filterType="{{ filterType }}"
 recordJson="{{ recordJson }}"
 class="{{ class }}"></select-element>
 
-<multi-select-element *ngIf="type.split(':')[0] == 'multiselect'" 
+<multi-select-element *ngIf="baseType == 'multiselect'" 
 (changed)="handleChanged($event)"
 upColumnName="{{ upColumnName }}"
 upFormId="{{ upFormId }}"
@@ -178,7 +178,7 @@ filterType="{{ filterType }}"
 recordJson="{{ recordJson }}"
 class="{{ class }}"></multi-select-element>
 
-<multi-select-drag-drop-element *ngIf="type.split(':')[0] == 'multiselectdragdrop'" 
+<multi-select-drag-drop-element *ngIf="baseType == 'multiselectdragdrop'" 
 style="background-color: white;display: block;"
 (changed)="handleChanged($event)"
 upColumnName="{{ upColumnName }}"
@@ -229,7 +229,7 @@ placeholder="{{ placeholder }}"
 showFilterTypesSelect="{{ showFilterTypesSelect }}"
 filterType="{{ filterType }}"></map-element>
 
-<code-editor-element *ngIf="type.split(':')[0] == 'codeeditor'" 
+<code-editor-element *ngIf="baseType == 'codeeditor'" 
 style="background-color: white;display: block;"
 type="{{ type }}"
 value="{{ value }}"
@@ -238,7 +238,7 @@ defaultData="{{ defaultData }}"
 name="{{ name }}"
 class="{{ class }}"></code-editor-element>
 
-<money-element *ngIf="type.split(':')[0] == 'money'" 
+<money-element *ngIf="baseType == 'money'" 
 style="background-color: white;display: block;"
 (changed)="handleChanged($event)"
 type="{{ type }}"

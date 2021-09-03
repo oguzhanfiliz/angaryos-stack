@@ -63,7 +63,8 @@ export class MapElementComponent
     ngAfterViewInit()
     {
         if(this.upFormId.length > 0)
-            this.baseElementSelector = '[ng-reflect-id="'+this.upFormId+'"] ';
+            //this.baseElementSelector = '[ng-reflect-id="'+this.upFormId+'"] ';
+            this.baseElementSelector = '#'+this.upFormId+'inFormModal ';
             
         setTimeout(() =>
         {
@@ -339,7 +340,6 @@ export class MapElementComponent
         this.dataChanged.emit(this.geoJsonObject);
         
         this.features = this.getFeatures();
-        console.log(this.features);
     }
 
     emitChangedEvent()

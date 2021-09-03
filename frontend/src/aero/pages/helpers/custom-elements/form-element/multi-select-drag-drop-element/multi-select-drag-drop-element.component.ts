@@ -54,7 +54,8 @@ export class MultiSelectDragDropElementComponent
         setTimeout(() => 
         {
             if(this.upFormId.length > 0)
-                this.baseElementSelector = '[ng-reflect-id="'+this.upFormId+'"] ';
+                //this.baseElementSelector = '[ng-reflect-id="'+this.upFormId+'"] ';
+                this.baseElementSelector = '#'+this.upFormId+'inFormModal ';
                 
             if(this.type == "multiselectdragdrop:static") this.staticElement = true;
 
