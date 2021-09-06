@@ -7,4 +7,10 @@ do
    sed 's/192.168.10.185/'"$hostAdress"'/g' "$i" > ./temp.txt && mv temp.txt "$i"
 done
 
+
+
+second="\."
+hostAdressTemp=${hostAdress//./$second}
+grep -rl 192.168.10.185 ./frontend/dist/light/ | xargs sed -i 's/192\.168\.10\.185/'"$hostAdressTemp"'/g'
+
 echo 'served at https://'"$hostAdress"'/'

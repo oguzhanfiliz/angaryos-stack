@@ -1,5 +1,8 @@
 <?php
 
+header("Access-Control-Allow-Origin: *");
+header("Access-Control-Allow-Headers: *");
+
 Route::options('/{any}', '\App\Http\Controllers\GeneralController@serviceOk');
 
 Route::any('/', '\App\Http\Controllers\GeneralController@serviceOk');
