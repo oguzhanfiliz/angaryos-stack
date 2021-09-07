@@ -1,0 +1,77 @@
+<div class="authentication">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12 col-sm-12">
+                <div class="card auth_form row clearfix" style="padding: 30px;background-color: #ddd;">
+                    <div style="text-align: center;">
+                        <input 
+                            class="form-control" 
+                            type="text" 
+                            name="filter" 
+                            id="filter" 
+                            (change)="menuFilterChanged()"
+                            [(ngModel)]="filterString"
+                            style="background-color: white; max-width: 350px;margin: auto;margin-bottom: 15px"
+                            placeholder="Arama">
+                    </div>
+                    <div class="row clearfix" style="text-align: justify;">
+                        
+                        <div class="col-lg-2 col-md-4 col-6" 
+                            style="min-width: 200px !important;margin: auto;">
+                            <div class="card mcard_4 info-box-2">                        
+                                <div class="body" (click)="goToPage('dashboard')">
+
+                                    <div class="img">
+                                        <img src="{{ getDashboardImageUrl() }}">
+                                    </div>
+                                    <div class="user">
+                                        <h5 class="mt-3 mb-1" style="padding-top: 25px !important;">Göstergeler</h5>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        
+                        <div class="col-lg-2 col-md-4 col-6" 
+                            style="min-width: 200px !important;margin: auto;"
+                            *ngFor="let tableGroup of tableGroups; let i = index;">
+                            <div class="card mcard_4 info-box-2">                        
+                                <div class="body" (click)="openTableGroupList(i)">
+
+                                    <div 
+                                        class="table-group-list"
+                                        [id]="'table-group-list-'+i">
+
+                                        <a *ngFor="let tableId of tableGroup.table_ids" 
+                                        [hidden] = "getTableName(tableGroup.id, tableId) == null"
+                                        class="dropdown-item" (click)="linkClicked()"
+                                        href="{{ getTableUrl(tableGroup.id, tableId) }}">
+                                        
+                                        {{ getTableName(tableGroup.id, tableId) }}
+
+                                        </a>
+                                        
+                                        <a *ngFor="let additionalLink of additionalLinks" 
+                                        [hidden] = "additionalLink['table_group_id'] != tableGroup.id"
+                                        class="dropdown-item" (click)="additionalLinkClicked(additionalLink)">
+                                        
+                                        {{ additionalLink['name_basic'] }}
+
+                                        </a>
+                                    </div>
+
+                                    <div class="img">
+                                        <img src="{{ getTableGroupImageUrl(tableGroup) }}">
+                                    </div>
+                                    <div class="user">
+                                        <h5 class="mt-3 mb-1">{{  tableGroup['name_basic'] }}</h5>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

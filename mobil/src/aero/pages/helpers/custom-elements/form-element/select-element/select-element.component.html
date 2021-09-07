@@ -1,0 +1,26 @@
+<select
+        class="{{ class }} show-tick ms select-column-filter select-2"  
+        value="{{ val }}"
+        name="{{ name }}" 
+        id="{{ columnName }}">
+        <span>{{ placeholder }}</span>
+        <option></option>
+        <option *ngFor="let v of val"
+                value="{{ v }}">
+                
+                {{ getDisplayName(v) }}
+        </option>
+</select>
+
+<select *ngIf="showFilterTypesSelect"
+        id="{{ name }}_filter_type" name="{{ name }}_filter_type" style="margin-top: 10px;"
+        value="{{ filterType }}"
+        class="show-tick ms form-control">
+    
+        <option value="1">
+                En az biri
+        </option>
+        <option value="2">
+                Hepsi
+        </option>
+</select>

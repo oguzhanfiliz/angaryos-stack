@@ -64,7 +64,7 @@ services:
     #######       FRONTEND       #######
     
     frontend: 
-        image: karapazar/angular-serve-light:0.4
+        image: karapazar/angular-serve-light:0.74
         volumes:
             - ./frontend/dist/light/:/usr/share/nginx/html
             - '/etc/localtime:/etc/localtime:ro'
@@ -81,7 +81,7 @@ services:
                 traefik.docker.network: "angaryos_frontend-nw"
     
     frontendBuilder: 
-        image: karapazar/angular-serve:0.19
+        image: karapazar/angular-serve:0.74
         volumes:
             - ./frontend:/usr/src/app 
             - '/etc/localtime:/etc/localtime:ro'
@@ -211,7 +211,7 @@ services:
     #######       MOBIL       #######
 
     mobil: 
-        image: karapazar/ionic-serve:0.1
+        image: karapazar/ionic-serve:0.74
         volumes:
             - ./mobil:/usr/src/app 
             - '/etc/localtime:/etc/localtime:ro'

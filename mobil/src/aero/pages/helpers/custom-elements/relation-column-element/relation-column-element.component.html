@@ -1,0 +1,22 @@
+<div 
+    *ngIf="typeBase == 'select' && record[name] != null && record[name].length > 0" 
+    style="cursor: pointer;"
+    (click)="openRelationDataInfoPage($event)"> 
+    
+    {{ record[name] }}&nbsp;
+    <i style='font-size: 12;' class='zmdi zmdi-open-in-new'></i>
+</div>
+
+<div *ngIf="typeBase == 'multiselect' || typeBase == 'multiselectdragdrop'"> 
+    <span 
+        *ngFor="let item of items"
+        [attr.source]="item['display']"
+        style="cursor: pointer; margin-left:5px;"
+        (click)="openRelationDataInfoPage($event, item)"
+        class="badge badge-primary">
+
+        {{ item['display'] }}&nbsp; 
+        
+        <i  style='font-size: 12;' class='zmdi zmdi-open-in-new'></i>
+    </span>
+</div>

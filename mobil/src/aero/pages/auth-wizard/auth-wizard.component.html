@@ -1,0 +1,308 @@
+<section class="content">   
+    <div class="block-header">
+        <div class="row">
+            <div class="col-lg-7 col-md-6 col-sm-12">
+                <h4>Yetki Oluşturma Yardımcısı</h4>
+                <button class="btn btn-secondary btn-sm btn-icon mobile_menu" type="button"><i class="zmdi zmdi-sort-amount-desc"></i></button>
+            </div>
+            <div class="col-lg-5 col-md-6 col-sm-12">                
+                <button class="btn btn-sm btn-secondary btn-icon float-right right_icon_toggle_btn" type="button"><i class="zmdi zmdi-arrow-right"></i></button>
+            </div>
+        </div>
+    </div>
+    <div class="container-fluid">
+        <div class="form-group" id="name-group">
+            <table class="light-table">
+                <tbody>
+                    <tr>
+                        <td>Ad</td>
+                    </tr>
+                    <tr>
+                        <td colspan="2">
+                            <form-element 
+                                type="string" [name]="'name_basic'" 
+                                value="XXX Tablosu XXX İçin XXX Yetki Grubu" value-json="" 
+                                class="form-control" [columnName]="'name_basic'" 
+                                placeholder="Ad" 
+                                up-column-name="" up-form-id="" srid="">
+                            
+                            </form-element>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="form-group" id="description-group">
+            <table class="light-table">
+                <tbody>
+                    <tr>
+                        <td>Açıklama</td>
+                    </tr>
+                    <tr>
+                        <td colspan="2">
+                            <form-element
+                                type="text" [name]="'description'" 
+                                value="" value-json="" 
+                                class="form-control" [columnName]="'description'"
+                                placeholder="Açıklama" 
+                                up-column-name="" up-form-id="" srid="">
+                            
+                            </form-element>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        
+        <br>
+
+        <div class="form-group" id="auths-group">
+            <div cdkDropListGroup>  
+                <table class="light-table" width="100%">
+                    <tr>
+                        <td style="vertical-align: top;">
+                            
+                            <div class="box box-primary">
+                                
+                                <table class="light-table">
+                                    <tr>
+                                        <td colspan="3" style="text-align: center;">
+                                            <div id="stepper" class="row bs-wizard" style="border-bottom:0;margin:10 0;">
+                                                <div *ngFor="let type of types; let i = index" 
+                                                    [class]="'wd col-xs-1 bs-wizard-step ' + (i < currentListIndex ? 'complete' : (currentListIndex == i ? 'active' : 'disabled'))">
+
+                                                    <div class="progress"><div class="progress-bar"></div></div>
+                                                    <a class="bs-wizard-dot"></a>
+                                                </div>
+                                            </div> 
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td rowspan="2" style="text-align: left;">
+                                            <button (click)="prevList()" class="btn btn-primary btn-icon" style="height: 250px;" type="button">
+                                                <i class="zmdi zmdi-arrow-left"></i>
+                                            </button>
+                                        </td>
+                                        <td style="width:50%; padding: 15 30 30 30; font-size: 15;text-align: justify;" >
+                                            <h6>{{ types[currentListIndex]['title'] }}</h6>
+                                            <span [innerHTML]="types[currentListIndex]['description']"></span>
+                                        </td>
+                                        <td rowspan="2" style="text-align: right;">
+                                            <button (click)="nextList()" class="btn btn-primary btn-icon" style="height: 250px;" type="button">
+                                                <i class="zmdi zmdi-arrow-right"></i>
+                                            </button>
+                                        </td>
+                                    </tr><tr>
+                                        <td>
+                                            
+                                            <div 
+                                                *ngFor="let type of types; let i = index" 
+                                                id="{{ 'list'+i }}"
+                                                class="auth-list"
+                                                style="float: left;margin-bottom: 15px;width:100%;display: none;">
+
+                                                <table class="light-table">
+                                                    <tr class="tr-hover">
+                                                        <td>
+                                                            <a (click)="searchAuth(type['search'])">
+                                                                {{ type['display'] }}
+                                                            </a>
+                                                        </td><td align="right">
+                                                            <button  
+                                                                *ngIf="type['table'].length > 0"
+                                                                (click)="createAuth(type)" 
+                                                                class="btn btn-sm btn-primary float-right">
+                                                                
+                                                                Ekle
+                                                            </button>
+                                                        </td>
+                                                    </tr><tr>
+                                                        <td colspan="2">
+                                                            <div
+                                                            style="height: 90px;"
+                                                                cdkDropList
+                                                                [cdkDropListData]="auths[type['source']]"
+                                                                class="dragdrop-list"
+                                                                (cdkDropListDropped)="drop($event, type['source'])">
+                    
+                                                                <div
+                                                                    [attr.source]="item.source"                                                        
+                                                                    class="dragdrop-box" 
+                                                                    *ngFor="let item of auths[type['source']]" 
+                                                                    cdkDrag>
+                                                                    
+                                                                    {{ item.display }}                                                        
+                                                                </div>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                </table>
+                                            </div>
+
+
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>   
+
+                        </td>
+                        <td style="width: 35%; padding-left: 15px;vertical-align: top;">
+
+                            <div  class="box box-primary">
+                                <table class="light-table">
+                                    <tr>
+                                        <td>
+                                            <input style="font-size: 12px;margin: 0 0 10px 0;height: 30;background-color: white;"
+                                                class="form-control" 
+                                                placeholder="Yetki Arama" 
+                                                (input)="searchChanged($event)"
+                                                name="auth_search" 
+                                                id="auth_search" />
+                                        </td>
+                                    </tr><tr>
+                                        <td>
+                                            <div style="height: 258;"
+                                                cdkDropList
+                                                [cdkDropListData]="auths['search']"
+                                                class="dragdrop-list"
+                                                (cdkDropListDropped)="drop($event, 'search')">
+                
+                                                <div 
+                                                        [attr.source]="item.source"
+                                                        class="dragdrop-box" 
+                                                        *ngFor="let item of auths['search']" 
+                                                        cdkDrag>
+                                                        
+                                                        {{item.display}}
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
+
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>      
+        
+        <div class="box box-primary">
+            <h5>Yetki Atanacak</h5>
+            
+            <div class="form-group" id="all_user-group" style="margin: 20 0;">
+                <table class="light-table">
+                    <tbody>
+                        <tr>
+                            <td style="width: 200px;">
+                                Tüm kullanıcılara ata
+                                <input type="checkbox" name="all_user" id="all_user">
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="form-group" id="user_id-group" [hidden]="isAllUserChecked()">
+                <table class="light-table">
+                    <tbody>
+                        <tr>
+                            <td>Şu kullanıcılara ata</td>
+                        </tr>
+                        <tr>
+                            <td colspan="2">
+                                <form-element 
+                                    type="multiselect" [name]="'user_id'" 
+                                    value="" value-json="" 
+                                    baseUrl="tables/users"
+                                    class="form-control" [columnName]="'user_id'" 
+                                    placeholder="Kullanıcılar" 
+                                    up-column-name="" up-form-id="" srid="">
+                                
+                                </form-element>
+
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="form-group" id="department_id-group" [hidden]="isAllUserChecked()">
+                <table class="light-table">
+                    <tbody>
+                        <tr>
+                            <td>Müdürlüklerdeki tüm kullanıcılara ata</td>
+                        </tr>
+                        <tr>
+                            <td colspan="2">
+                                <form-element 
+                                    type="multiselect" [name]="'department_id'" 
+                                    value="" value-json="" 
+                                    baseUrl="tables/users"
+                                    class="form-control" [columnName]="'department_id'" 
+                                    placeholder="Müdürlükler" 
+                                    up-column-name="" up-form-id="" srid="">
+                                
+                                </form-element>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="form-group" id="auths-group" [hidden]="isAllUserChecked()">
+                <table class="light-table">
+                    <tbody>
+                        <tr>
+                            <td>Şu yetkiye sahip tüm kullanıcılara ata</td>
+                        </tr>
+                        <tr>
+                            <td colspan="2">
+                                <form-element 
+                                    type="multiselect" [name]="'auths'" 
+                                    value="" value-json="" 
+                                    baseUrl="tables/users"
+                                    class="form-control" [columnName]="'auths'" 
+                                    placeholder="Yetkiler" 
+                                    up-column-name="" up-form-id="" srid="">
+                                
+                                </form-element>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <button id="save-button" type="button" [class]="'btn btn-primary float-right btn-block ' + (loading ? 'disabled' : '')" (click)="save()">
+            Yetki Oluştur
+        </button>
+
+    </div>
+</section>
+
+<div class="modal fade" id="{{ inFormElementId }}inFormModal" role="dialog" [attr.aria-labelledby]="inFormTableName+'inFormModalLabel'" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-body" style="padding: 0px !important;">
+                <in-form-element  
+                    *ngIf="inFormTableName.length > 0"
+                    id="{{ inFormElementId }}" 
+                    (formSaved)="inFormSavedSuccess($event)"
+                    (formLoad)="formLoad($event)"
+                    (formChanged)="formChanged($event)"
+                    (inFormOpened)="inFormOpened($event)"
+                    inFormTableName="{{ inFormTableName }}"
+                    inFormColumnName="{{ inFormColumnName }}" 
+                    inFormRecordId="{{ inFormRecordId }}">
+                
+                </in-form-element>
+                <button class="btn btn-danger btn-block" 
+                    style="position: absolute; margin: -35 20 0 20; width: -webkit-fill-available;"
+                    (click)="closeModal(inFormElementId+'inFormModal')"
+                    type="button">İptal
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

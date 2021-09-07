@@ -1,0 +1,234 @@
+<section class="content">
+    <div class="container-fluid"  id="target-container-fluid">
+        <div class="block-header">
+            <div class="row">
+                <div class="col-lg-7 col-md-6 col-sm-12">
+                    <h2 *ngIf="dashboards.length > 0" >Göstergeler</h2>
+                    
+                    <button class="btn btn-sm btn-primary btn-icon mobile_menu" type="button"><i class="zmdi zmdi-sort-amount-desc"></i></button>
+                </div>
+                <div class="col-lg-5 col-md-6 col-sm-12">  
+                    
+                    <button class="btn btn-sm btn-primary btn-icon float-right right_icon_toggle_btn" type="button"><i class="zmdi zmdi-arrow-right"></i></button>
+                    
+                    <div 
+                        *ngIf="deletedDashboards.length > 0"
+                        class="d-inline-block float-right" 
+                        ngbDropdown 
+                        #deletedDashboardsDrop="ngbDropdown">
+
+                        <button
+                            (focus)="deletedDashboardsDrop.open()"
+                            ngbDropdownAnchor
+                            id="search-button"
+                            class="btn btn-sm float-right btn-primary btn-icon pull-right" 
+                            data-toggle="dropdown" role="button" aria-haspopup="true" 
+                            aria-expanded="false"> 
+
+                            <span class="ti-plus" data-toggle="tooltip" title="Gösterge Ekle"></span> 
+                        </button>
+
+                        <div 
+                            ngbDropdownMenu 
+                            aria-labelledby="dropdownManual">
+
+                            <button
+                                *ngFor="let dash of deletedDashboards; let i = index"
+                                (click)="addItem(i, dash)"
+                                class="dropdown-item"
+                                ngbDropdownItem>
+
+                                {{ dash }}
+                            </button>                    
+                        </div>
+                    </div>
+                    
+                    <button
+                        (click)="resetDashboards()"
+                        class="btn btn-sm float-right btn-primary btn-icon pull-right"> 
+
+                        <span class="ti-reload" data-toggle="tooltip" title="Göstergeleri sıfırla"></span> 
+                    </button>
+                    
+                </div>
+            </div>
+        </div>
+        
+        <h1 *ngIf="dashboards.length == 0" style="text-align: center;">
+            Hiçbir gösterge paneliniz yok
+        </h1>
+
+        <gridster [options]="options">
+            <gridster-item [item]="item" *ngFor="let item of dashboards">
+                <div class="button-holder">
+                    
+                    <div 
+                        *ngIf="item['class'] == 'RecordCount'" 
+                        class="row clearfix">
+                        
+                        <div class="card widget_2 big_icon data">
+                            <div class="body">
+                                <h6>{{ item['data']['table_display_name']  }}</h6>
+                                <h2> {{ item['data']['count']  }}<small class="info"> kayıt</small></h2>
+                                <small>Toplam kayıt sayısının %{{ item['data']['percent'] }} 'i</small>
+                                <div class="progress" style="margin-bottom: 7px;">
+                                    <div 
+                                        class="progress-bar l-blue" role="progressbar" 
+                                        [attr.aria-valuenow]="item['data']['percent']" 
+                                        aria-valuemin="0" aria-valuemax="100"  
+                                        [ngStyle]="{'width': (item['data']['percent'])+'px'}"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div 
+                        *ngIf="item['class'] == 'RefreshableNumber'" 
+                        style="cursor: pointer"
+                        (click)="fillDashboardsItemDataRefreshableNumber(item['dashboardId'], item['subClass'], item['item'])"
+                        class="row clearfix">
+                        
+                        <div class="card widget_2 big_icon traffic"> 
+                            <div class="body">
+                                <h6>{{ item['data']['display_name']  }}</h6>
+                                <h2> {{ item['data']['number']  }}<small class="info"> adet</small></h2>
+                            </div>
+                        </div>
+                        
+                    </div>
+                    
+                    <div 
+                        *ngIf="item['class'] == 'DataEntegratorStatus'" 
+                        style="cursor: pointer"
+                        (click)="fillDashboardsItemDataDataEntegratorStatus(item['dashboardId'], item['subClass'], item['item'])"
+                        class="row clearfix">
+                        
+                            <div class="card">
+                                <div class="body">
+                                    <h3 class="mt-0 mb-0">
+                                        {{ item['data']['table'] }}
+                                    </h3>
+                                    <p class="text-muted">
+                                        {{ item['data']['source'] }}
+                                    </p>
+                                    <div 
+                                        *ngIf="item['data']['status'] == 'success'" 
+                                        class="progress">
+
+                                        <div class="progress-bar l-green" 
+                                             role="progressbar" aria-valuenow="100" 
+                                             aria-valuemin="0" aria-valuemax="100" 
+                                             style="width: 100%;"></div>
+
+                                    </div>
+                                    <div 
+                                        *ngIf="item['data']['status'] == 'error'" 
+                                        class="progress">
+
+                                        <div class="progress-bar l-pink" 
+                                             role="progressbar" aria-valuenow="100" 
+                                             aria-valuemin="0" aria-valuemax="100" 
+                                             style="width: 100%;"></div>
+
+                                    </div>
+                                    <div 
+                                        *ngIf="item['data']['status'] == 'no.data'" 
+                                        class="progress">
+
+                                        <div class="progress-bar l-amber"
+                                             role="progressbar" aria-valuenow="100" 
+                                             aria-valuemin="0" aria-valuemax="100" 
+                                             style="width: 100%;"></div>
+
+                                    </div>
+                                    <div 
+                                        *ngIf="item['data']['status'] == 'continue'" 
+                                        class="progress">
+
+                                        <div class="progress-bar l-amber"
+                                             role="progressbar"
+                                             [attr.aria.valuenow]="item['data']['percent']" 
+                                             aria-valuemin="0" 
+                                             [attr.aria.valuemax]="item['data']['percent']" 
+                                             [style.width]="item['data']['percent']+'%'"></div>
+
+                                    </div>
+                                    
+                                    <div style="height: 6px !important"></div>
+
+                                    <small 
+                                        *ngIf="item['data']['status'] == 'success'">
+                                        Tamamlandı
+                                    </small>
+
+                                    <small 
+                                        *ngIf="item['data']['status'] == 'error'">
+                                        Hata oluştu
+                                    </small>
+
+                                    <small 
+                                        *ngIf="item['data']['status'] == 'no.data'">
+                                        Aktarım hiç başlamadı
+                                    </small>
+
+                                    <small
+                                        *ngIf="item['data']['status'] == 'continue'">
+
+                                        {{ item['data']['percent'] }}% -
+                                        {{ item['data']['direction'] }} 
+                                        (
+                                        {{ item['data']['count'] }} 
+                                        /
+                                        {{ item['data']['step'] }})
+                                    </small>
+                                </div>
+                            </div>
+                        
+                    </div>
+                    
+                    <div *ngIf="item['class'] == 'GraphicXY' || item['class'] == 'GraphicPie'">
+                        <h5 style="padding:5 0 0 10">{{ item['data']['title'] }}</h5>
+                        <div 
+                            id="{{ item['class']+'_'+item['subClass']+'_'+item['item'] }}" 
+                            class="c3_charts">
+                              
+                            Bekleyin
+                        </div>
+                    </div>
+                    
+                    <div *ngIf="item['class'] == 'ComboBoxList'" class="combobox-list">
+                        <h5 style="padding:5 0 0 10">{{ item['data']['title'] }}</h5>
+                        <div id="{{ item['class']+'_'+item['subClass']+'_'+item['item'] }}">
+                            <table class="table table-hover theme-color c_table">
+                                <tbody>
+                                    <tr *ngFor="let item of item['data']['data']" [innerHTML]="item['html']">
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <div style="width: 100%;padding: 0 5;">
+                                <select style="width: 100%;" class="select2" value="{{ item['data']['selectedValue'] }}">
+                                    <option 
+                                        *ngFor="let opt of item['data']['combobox']"
+                                        value="{{ opt['source'] }}">
+    
+                                        {{ opt['display'] }}
+                                    </option> 
+                                </select>                                 
+                            </div>                         
+                        </div>
+                    </div>
+
+                    <span 
+                        class="remove-dashboard-button"
+                        *ngIf="!item.hasContent" 
+                        (mousedown)="removeItem($event, item)"
+                        (touchstart)="removeItem($event, item)">
+                        <i class="zmdi zmdi-close"></i>
+                    </span>
+                </div>
+            </gridster-item>
+        </gridster>
+    </div>
+    
+    
+</section>

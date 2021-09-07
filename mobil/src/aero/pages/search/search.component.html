@@ -1,0 +1,68 @@
+<section class="content">
+    <div class="body_scroll">
+        <div class="block-header">
+            <div class="row">
+                <div class="col-lg-7 col-md-6 col-sm-12">
+                    <h2>Arama Sonuçları</h2>
+                    <button class="btn btn-primary btn-sm btn-icon mobile_menu" type="button"><i class="zmdi zmdi-sort-amount-desc"></i></button>
+                </div>
+                <div class="col-lg-5 col-md-6 col-sm-12">                
+                    <button class="btn btn-primary btn-sm btn-icon float-right right_icon_toggle_btn" type="button"><i class="zmdi zmdi-arrow-right"></i></button>
+                </div>
+            </div>
+        </div>
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="card">
+                        <div class="body">
+                            <div class="input-group">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text"><i class="zmdi zmdi-search"></i></span>
+                                </div>
+                                
+                                <input 
+                                    (change)="search()" 
+                                    name="searchInput" 
+                                    id="searchInput" 
+                                    type="text" 
+                                    value="{{ words }}"
+                                    class="form-control" 
+                                    placeholder="Arama...">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0 c_table search_page">
+                            <tbody *ngFor="let tableName of getTableNames()">
+                                <tr (click)="showInfoPage(tableName, record)" *ngFor="let record of getRecords(tableName); let recordIndex = index;">
+                                    <td style="cursor: pointer;" class="max_ellipsis">
+                                        <h5 class="title">
+                                            <a href="{{ getInfoPageURL(tableName, record) }}">
+                                                Tablo: {{ getTableDisplayName(tableName) }}, ID: {{ record.id }}
+                                            </a>
+                                        </h5>
+                                        <a class="link" href="{{ getInfoPageURL(tableName, record) }}">
+                                            {{ getInfoPageURL(tableName, record) }}
+                                        </a>
+                                        <span class="details" [innerHTML] = "getRecordSummary(tableName, recordIndex)"></span>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="col-md-12" *ngIf="getMaxPage() > 1">
+                    <ul class="pagination pagination-primary m-t-20">
+                        <li [class]="'page-item ' + (page == pageNum ? 'active' : '' )" *ngFor="let pageNum of getPageRange()">
+                            <a class="page-link" (click)="setPage(pageNum)">
+                                {{ pageNum }}
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

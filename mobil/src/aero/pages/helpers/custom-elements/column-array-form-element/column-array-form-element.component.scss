@@ -1,0 +1,78 @@
+form-element 
+{
+    padding: 0;
+    border: 0;
+    background-color: white;
+    margin: 5 0 10 0;
+
+    .select2-container, .select2, .select2-container--default
+    {
+        margin: 0px !important;
+    }
+}
+
+.tr-hover:hover
+{
+    background-color: #e0e0e0;
+}
+
+.tr-hover td
+{
+    padding: 0 4px !important;
+}
+
+.btn-sm
+{
+    padding: 3px;
+    font-size: 9;
+    border-radius: 2px;
+}
+
+
+
+.btn-close
+{
+  padding: 0;
+  margin: 1px;
+  width: 25px !important;
+  min-width: 25px !important;
+  height: 25px !important;
+  min-height: 25px !important;
+  position: absolute;
+  right: 5px;
+  top: 5px;
+  z-index: 9999;
+}
+
+@media only screen and (max-width: 640px) 
+{
+	.btn-close
+    {
+        position: absolute !important;
+        top: 2px;
+        right: 40px;
+        z-index: 9999;
+    }
+}
+
+
+.light-table
+{
+    width: 100%;
+    padding: 0;
+    margin: 0;
+    border: 0;
+
+    tr
+    {
+        padding: 0;
+        margin: 0;
+        border: 0;
+        td
+        {
+            padding: 0;
+            margin: 0;
+            border: 0;
+        }
+    }
+}
