@@ -35,11 +35,11 @@ import { SessionHelper } from './pages/helpers/session';
 import { GeneralHelper } from './pages/helpers/general';
 import { AeroThemeHelper } from './pages/helpers/aero.theme';
 
-////import { AngularFireMessagingModule } from '@angular/fire/messaging';
+//import { AngularFireMessagingModule } from '@angular/fire/messaging';
 //import { AngularFireDatabaseModule } from '@angular/fire/database';
 //import { AngularFireAuthModule } from '@angular/fire/auth';
 //import { //AngularFireModule.} from '@angular/fire';
-import { MessagingService } from './pages/helpers/messaging.service';
+//import { MessagingService } from './pages/helpers/messaging.service';
 import { environment } from '../environments/environment';
 import { AsyncPipe } from '../../node_modules/@angular/common';
 
@@ -76,7 +76,7 @@ import { AsyncPipe } from '../../node_modules/@angular/common';
     GeneralHelper,
     AeroThemeHelper,
     NgbDropdownConfig,
-    MessagingService,
+    //MessagingService,
     AsyncPipe
   ],
   bootstrap: 
