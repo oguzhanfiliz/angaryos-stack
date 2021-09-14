@@ -53,5 +53,3 @@ export const routeRules =
     { path: '', redirectTo: (window.innerWidth > 640 ? 'login' : 'mobile-home'), pathMatch: 'full' },
     { path: '**', redirectTo: (window.innerWidth > 640 ? 'login' : 'mobile-home') }
 ];
-
-console.log(routeRules);

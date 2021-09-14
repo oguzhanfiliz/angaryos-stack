@@ -43,11 +43,13 @@ export class GeneralHelper
     {
         if(BaseHelper.isBrowser) window.location.href = page;
         else window.open(page, '_system', 'location=yes');
+        return;
     }
     else if(newPage) 
     {
         if(page.indexOf('://') == -1) page = BaseHelper.backendBaseUrl + "#" + page;        
         window.open(page, '_system', 'location=yes');
+        return;
     }
     else
     {
