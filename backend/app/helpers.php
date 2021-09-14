@@ -152,6 +152,8 @@ function send_firebese_notify($title, $msg, $user)
     if(strlen(@$user->tokens) == 0) return;
     
     $tokens = json_decode($user->tokens);
+    if($tokens == NULL || !is_array($tokens)) return;
+    
     if(!is_array($tokens))
     {
         \Log::alert('token.is.not.array'.json_encode([$user->tokens, $user]));

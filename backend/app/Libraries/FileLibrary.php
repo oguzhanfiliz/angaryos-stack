@@ -29,9 +29,17 @@ class FileLibrary
 {
     public function imageOperations($image, $path) 
     {
-        $this->imageResizeWitoutStamp($image, 200, $path, 's_');
-        $this->imageResize($image, 600, $path, 'm_');
-        $this->imageResize($image, 1024, $path, 'b_');
+        try
+        {
+            $this->imageResizeWitoutStamp($image, 200, $path, 's_');
+            $this->imageResize($image, 600, $path, 'm_');
+            $this->imageResize($image, 1024, $path, 'b_');
+            return true;
+        }
+        catch (\Exception $th) 
+        {
+            return false;
+        }
     }
     
     public function imageResizeWitoutStamp($image, $size, $path, $prefix)
@@ -117,15 +125,17 @@ class FileLibrary
 
                 if($this->isImage($file))
                 {
-                    $this->imageOperations($temp[$i]['move'], $tempPath.$destinationPath); 
-                    
-                    Storage::disk($disk)->put($destinationPath.'/s_'.$fileName, Storage::disk('temps')->get($destinationPath.'/s_'.$fileName));
-                    Storage::disk($disk)->put($destinationPath.'/m_'.$fileName, Storage::disk('temps')->get($destinationPath.'/m_'.$fileName));
-                    Storage::disk($disk)->put($destinationPath.'/b_'.$fileName, Storage::disk('temps')->get($destinationPath.'/b_'.$fileName));
+                    $control = $this->imageOperations($temp[$i]['move'], $tempPath.$destinationPath);                     
+                    if($control)
+                    {
+                        Storage::disk($disk)->put($destinationPath.'/s_'.$fileName, Storage::disk('temps')->get($destinationPath.'/s_'.$fileName));
+                        Storage::disk($disk)->put($destinationPath.'/m_'.$fileName, Storage::disk('temps')->get($destinationPath.'/m_'.$fileName));
+                        Storage::disk($disk)->put($destinationPath.'/b_'.$fileName, Storage::disk('temps')->get($destinationPath.'/b_'.$fileName));
 
-                    @ftp_chmod($conn_id, 0777, env('FILE_ROOT', '/').$destinationPath.'s_'.$fileName);
-                    @ftp_chmod($conn_id, 0777, env('FILE_ROOT', '/').$destinationPath.'m_'.$fileName);
-                    @ftp_chmod($conn_id, 0777, env('FILE_ROOT', '/').$destinationPath.'b_'.$fileName);
+                        @ftp_chmod($conn_id, 0777, env('FILE_ROOT', '/').$destinationPath.'s_'.$fileName);
+                        @ftp_chmod($conn_id, 0777, env('FILE_ROOT', '/').$destinationPath.'m_'.$fileName);
+                        @ftp_chmod($conn_id, 0777, env('FILE_ROOT', '/').$destinationPath.'b_'.$fileName);
+                    }
                 }
 
                 ftp_close($conn_id);
@@ -216,15 +226,17 @@ class FileLibrary
                 ftp_chmod($conn_id, 0777, env('FILE_ROOT', '/').$destinationYear.'/'.$destinationMonth.'/'.$destinationDay.'/'.$fileName);
 
                 
-                $this->imageOperations($f, $tempPath.$destinationPath); 
-                    
-                Storage::disk($disk)->put($destinationPath.'/s_'.$fileName, Storage::disk('temps')->get($destinationPath.'/s_'.$fileName));
-                Storage::disk($disk)->put($destinationPath.'/m_'.$fileName, Storage::disk('temps')->get($destinationPath.'/m_'.$fileName));
-                Storage::disk($disk)->put($destinationPath.'/b_'.$fileName, Storage::disk('temps')->get($destinationPath.'/b_'.$fileName));
+                $control = $this->imageOperations($f, $tempPath.$destinationPath); 
+                if($control)
+                {
+                    Storage::disk($disk)->put($destinationPath.'/s_'.$fileName, Storage::disk('temps')->get($destinationPath.'/s_'.$fileName));
+                    Storage::disk($disk)->put($destinationPath.'/m_'.$fileName, Storage::disk('temps')->get($destinationPath.'/m_'.$fileName));
+                    Storage::disk($disk)->put($destinationPath.'/b_'.$fileName, Storage::disk('temps')->get($destinationPath.'/b_'.$fileName));
 
-                ftp_chmod($conn_id, 0777, env('FILE_ROOT', '/').$destinationPath.'s_'.$fileName);
-                ftp_chmod($conn_id, 0777, env('FILE_ROOT', '/').$destinationPath.'m_'.$fileName);
-                ftp_chmod($conn_id, 0777, env('FILE_ROOT', '/').$destinationPath.'b_'.$fileName);
+                    @ftp_chmod($conn_id, 0777, env('FILE_ROOT', '/').$destinationPath.'s_'.$fileName);
+                    @ftp_chmod($conn_id, 0777, env('FILE_ROOT', '/').$destinationPath.'m_'.$fileName);
+                    @ftp_chmod($conn_id, 0777, env('FILE_ROOT', '/').$destinationPath.'b_'.$fileName);
+                }
 
                 ftp_close($conn_id);
             }  

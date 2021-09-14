@@ -1,0 +1,32 @@
+input.column-filter
+{
+    padding: 5px !important;
+    margin: 5px !important;
+    border-color: #ccc !important;
+    font-size: 12px !important;
+    height: 25px !important;
+}
+
+body.theme-light input.column-filter
+{
+    background-color: white !important;
+}
+
+body.theme-dark input.column-filter
+{
+    background-color: #383838 !important;
+}
+
+.column-filter::-webkit-input-placeholder
+{
+    font-size: 12px !important;
+    padding: 2px 0 2px 5px;
+}
+
+.light-table, .light-table tr, .light-table td
+{
+    border: 0px !important;
+    padding: 0px !important;
+    margin: 0px !important;
+    width: 100% !important;
+}

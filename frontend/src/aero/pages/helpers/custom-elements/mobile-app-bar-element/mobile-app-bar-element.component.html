@@ -1,0 +1,21 @@
+<div *ngIf="isNative" style="height: 50">
+    <button 
+        style="position:absolute; right: 5px; top: 5px;z-index:99"
+        (click)="toggleLeftMenu()" 
+        class="btn btn-primary btn-sm btn-icon" 
+        id="leftMenuToggleButton"
+        type="button">
+
+        <i class="zmdi zmdi-menu"></i>
+    </button>
+
+    <button 
+        style="position:absolute; right: 40px; top: 5px;z-index:99"
+        (click)="goBackPage()" 
+        class="btn btn-secondary btn-sm btn-icon" 
+        id="baseBackButton"
+        type="button">
+
+        <i class="zmdi zmdi-chevron-left"></i>
+    </button>
+</div>

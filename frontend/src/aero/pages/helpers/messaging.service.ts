@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+/*import { Injectable } from '@angular/core';
 import { AngularFireMessaging } from '@angular/fire/messaging';
 import { BehaviorSubject } from 'rxjs'
 import { BaseHelper } from './base';
@@ -44,4 +44,4 @@ export class MessagingService
                 this.currentMessage.next(payload);
             })
     }
-}
+}*/

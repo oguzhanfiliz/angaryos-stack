@@ -1,4 +1,4 @@
-FROM karapazar/laravel-php-fpm:0.74
+FROM karapazar/laravel-php-fpm:0.75
 
 USER root
 CMD sudo php artisan queue:work

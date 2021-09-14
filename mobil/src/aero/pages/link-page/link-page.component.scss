@@ -1,0 +1,97 @@
+.widget_2
+{
+    background: #fff !important;
+}     
+
+.big_icon.storage::before{
+    content:"\f297"
+}
+.big_icon.documents::before{
+    content:"\f222"
+}
+.big_icon.images::before{
+    content:"\f17f"
+}
+.big_icon.media_w::before{
+    content:"\f3ab"
+}
+.big_icon.traffic::before{
+    content:"\f1e2"
+}
+.big_icon.sales::before{
+    content:"\f1cb"
+}
+.big_icon.email::before{
+    content:"\f15a"
+}
+.big_icon.domains::before{
+    content:"\f173"
+}
+
+.info-box-2
+{
+    -webkit-box-shadow: 0px 0px 10px 0px rgba(0,0,0,0);
+    -moz-box-shadow: 0px 0px 10px 0px rgba(0,0,0,0);
+    box-shadow: 0px 0px 10px 0px rgba(0,0,0,0);
+    border: 1px solid #ddd !important;
+    height: 160px !important;
+}
+
+.info-box-2:hover
+{
+    -webkit-box-shadow: 0px 0px 10px 0px rgba(0,0,0,0.25);
+    -moz-box-shadow: 0px 0px 10px 0px rgba(0,0,0,0.25);
+    box-shadow: 0px 0px 10px 0px rgba(0,0,0,0.25);
+    border: 1px solid #ddd;
+    cursor: pointer;
+}
+
+.mcard_4 .img img {
+    margin-right: -80px !important;
+    margin-top: -60px !important;
+    max-width: 140 !important;
+    max-height: 140 !important;
+}
+
+.mcard_4 .user {
+    margin-top: -20px !important;
+}
+
+.user h5
+{
+    font-size: 15 !important;
+    margin-top: -45 !important;
+    font-weight: bold !important;
+    text-shadow: 0px 0px 2px #ffffff !important;
+}
+
+.no-transition {
+    transition: none !important;
+}
+
+.table-group-list
+{
+    position: absolute;
+    background-color: white;
+    top: 4px !important;
+    left: 0px !important;
+    width: 100% !important;
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+    max-height: 145px !important;
+    -webkit-box-shadow: 0px 0px 10px 0px rgba(0,0,0,0);
+    -moz-box-shadow: 0px 0px 10px 0px rgba(0,0,0,0);
+    box-shadow: 0px 0px 10px 0px rgba(0,0,0,0);
+    border: 1px solid #ddd !important;
+}
+
+.table-group-list a
+{
+    font-size: 12px !important;
+    padding: 4px 10px !important;
+}
+
+.table-group-list a:hover
+{
+    background-color: #007bff;
+}

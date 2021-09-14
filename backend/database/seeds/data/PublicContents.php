@@ -14,18 +14,19 @@ $publicContents[0] =
 
 $temp = $this->get_base_record();
 
-foreach($publicContents as $array)
-{
-    $temp['name_basic'] = $array['name_basic'];
-    $temp['summary'] = $array['summary'];
-    $temp['content'] = $array['content'];
-    $temp['images'] = $array['images'];
-    $temp['state'] = TRUE;
-    $temp['own_id'] = 1;
-    $temp['user_id'] = 1;
-    $temp['created_at'] = $now;
-    $temp['updated_at'] = $now;
-    
-    $validations[$name] = new BaseModel('public_contents', $temp);
-    $validations[$name]->save();
-}
+for($i = 0; $i < 3; $i++)
+    foreach($publicContents as $array)
+    {
+        $temp['name_basic'] = $array['name_basic'];
+        $temp['summary'] = $array['summary'];
+        $temp['content'] = $array['content'];
+        $temp['images'] = $array['images'];
+        $temp['state'] = TRUE;
+        $temp['own_id'] = 1;
+        $temp['user_id'] = 1;
+        $temp['created_at'] = $now;
+        $temp['updated_at'] = $now;
+
+        $validations[$name] = new BaseModel('public_contents', $temp);
+        $validations[$name]->save();
+    }

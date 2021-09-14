@@ -1,0 +1,30 @@
+<div *ngIf="isNative" style="height: 60px;"></div>
+<div *ngIf="isNative" class="bottomMenu">
+    <nav class="nav">
+        <a 
+            [class]="'nav__link ' + (isActive('mobile-home') ? ' nav__link--active' : '')" 
+            (click)="navigate('/mobile-home')" >
+          <i class="zmdi zmdi-home"></i>
+          <span class="nav__text">Anasayfa</span>
+        </a>
+        <a 
+            [class]="'nav__link ' + (isActive('admin-home') ? ' nav__link--active' : '')"
+            (click)="navigate('dashboard')" >
+          <i class="zmdi zmdi-account-circle"></i>
+          <span class="nav__text">Panel</span>
+        </a>
+        <a 
+            [class]="'nav__link ' + (isActive('shortcuts') ? ' nav__link--active' : '')"            
+            (click)="openShortcutsModal()" >
+          <i class="zmdi zmdi-toys"></i>
+          <span class="nav__text">Kısayollarım</span>
+        </a>
+        <a 
+            [class]="'nav__link ' + (isActive('mobile-contact') ? ' nav__link--active' : '')"
+            (click)="navigate('/mobile-contact')" >
+            
+          <i class="zmdi zmdi-info-outline"></i>
+          <span class="nav__text">İletişim</span>
+        </a>
+    </nav>
+</div>

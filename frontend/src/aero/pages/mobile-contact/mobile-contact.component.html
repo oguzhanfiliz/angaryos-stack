@@ -1,0 +1,83 @@
+<section class="content" style="margin: 10px !important;">    
+    <div class="container body_scroll">
+        <div class="card">
+            <div class="row clearfix">
+                <div class="col-sm-12">
+                    <div class="card">
+                        <img [src]="baseUrl+'assets/img/map.png'" style="border: 2px solid white; margin-bottom: 12; margin-top: 5;">
+                            <br>
+                        <div class="table-responsive social_media_table">
+                            <table class="table table-hover c_table">
+                                <tbody>
+                                    <tr (click)="call()">
+                                        <td><span class="social_icon linkedin"><i style="margin-top: 10px" class="zmdi zmdi-smartphone"></i></span>
+                                        </td>
+                                        <td><span class="list-name">Telefon</span>
+                                            <span class="text-muted">+90 555 444 333 XX XX</span>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td><span class="social_icon linkedin"><i style="margin-top: 10px" class="zmdi zmdi-phone-forwarded"></i></span>
+                                        </td>
+                                        <td><span class="list-name">Fax</span>
+                                            <span class="text-muted">+90 274 444 333 XX XX</span>
+                                        </td>
+                                    </tr>
+                                    <tr (click)="mail()">
+                                        <td><span class="social_icon linkedin"><i style="margin-top: 10px" class="zmdi zmdi-email"></i></span>
+                                        </td>
+                                        <td><span class="list-name">E-Mail</span>
+                                            <span class="text-muted">iletisim@omersavas.com</span>
+                                        </td>
+                                    </tr>
+                                    <tr (click)="navigate('https://www.omersavas.com')">
+                                        <td><span class="social_icon linkedin"><i style="margin-top: 10px" class="zmdi zmdi-globe"></i></span>
+                                        </td>
+                                        <td><span class="list-name">Web</span>
+                                            <span class="text-muted">https://www.omersavas.com</span>
+                                        </td>
+                                    </tr>
+                                    <tr (click)="mapNavigate()">
+                                        <td><span class="social_icon linkedin"><i style="margin-top: 10px" class="zmdi zmdi-home"></i></span>
+                                        </td>
+                                        <td><span class="list-name">Adres</span>
+                                            <span class="text-muted">Xxxxx Mahallesi Yyyy Sokak <br> No:555/2 Kütahya/Merkez</span>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="2">
+                                            <table style="margin: auto;width: 100%; text-align: center;">
+                                                <tr>
+                                                    <td>
+                                                        <span class="social_icon2 linkedin" (click)="navigate('https://www.linkedin.com')">
+                                                            <i style="margin-top: 5px" class="zmdi zmdi-linkedin"></i>
+                                                        </span>
+                                                    </td><td>
+                                                        <span class="social_icon2 twitter-table" (click)="navigate('https://www.twitter.com')">
+                                                            <i style="margin-top: 5px" class="zmdi zmdi-twitter"></i>
+                                                        </span>
+                                                    </td><td>
+                                                        <span class="social_icon2 twitter-table" (click)="navigate('https://www.facebook.com')">
+                                                            <i style="margin-top: 5px" class="zmdi zmdi-facebook"></i>
+                                                        </span>
+                                                    </td><td>
+                                                        <span class="social_icon2 twitter-table" (click)="navigate('https://www.youtube.com')">
+                                                            <i style="margin-top: 5px" class="zmdi zmdi-youtube"></i>
+                                                        </span>
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                        </td>
+                                    </tr>
+                                    
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<mobile-bottom-menu-element></mobile-bottom-menu-element> 

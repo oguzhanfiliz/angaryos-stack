@@ -1,0 +1,99 @@
+<!doctype html>
+<html class="no-js " lang="en">
+    <head>
+        <base href="/">
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+        <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+
+        <link href="https://fonts.googleapis.com/css?family=PT+Mono" rel="stylesheet" />
+        <link href=" assets/ext_modules/jsonTreeViewer/libs/app/reset.css" rel="stylesheet" />
+        <link href=" assets/ext_modules/jsonTreeViewer/libs/app/app.css" rel="stylesheet" />
+        <link rel="stylesheet" href="assets/ext_modules/jsonTreeViewer/libs/jsonTree/jsonTree.css"/>
+        
+        
+        <link rel="stylesheet" href="https://openlayers.org/en/v6.1.1/css/ol.css" type="text/css">
+
+        <link rel="stylesheet" href="assets/themes/aero/assets/plugins/jvectormap/jquery-jvectormap-2.0.3.min.css"/>
+        <link rel="stylesheet" href="assets/themes/aero/assets/plugins/charts-c3/plugin.css"/>
+        
+        <link rel="stylesheet" href="assets/themes/aero/assets/plugins/morrisjs/morris.min.css" />
+        
+        <link rel="stylesheet" href="assets/ext_modules/trumbowyg/dist/ui/trumbowyg.min.css" />
+        
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/openlayers/openlayers.github.io@master/en/v6.2.1/css/ol.css"> 
+            
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css" />
+        
+        <link href="assets/themes/aero/assets/css/style.min.css" rel="stylesheet" type="text/css">
+
+        <link href="assets/ext_modules/flaticon/css/flaticon.css" rel="stylesheet" type="text/css">
+       
+            
+
+        <!--- FCM   -->
+        <link rel="manifest" href="./manifest.json">
+
+
+
+        <!-- Global site tag (gtag.js) - Google Analytics -->
+        <script async src="https://www.googletagmanager.com/gtag/js?id=G-ANALYTICS-CODE"></script>
+        <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'G-ANALYTICS-CODE');
+        </script>
+        
+        
+        <title>Angaryos!</title>
+    </head>
+
+    <aero-root></aero-root>
+
+    <script type='text/javascript'>
+        //Use only for developing time
+        var customAjaxListener = new Object();
+        customAjaxListener.tempOpen = XMLHttpRequest.prototype.open;
+        customAjaxListener.tempSend = XMLHttpRequest.prototype.send;
+        
+        XMLHttpRequest.prototype.open = function(a,b) 
+        {
+           if (!a) var a='';
+            if (!b) var b='';
+            customAjaxListener.tempOpen.apply(this, arguments);
+            customAjaxListener.method = a;  
+            customAjaxListener.url = b;
+            if (a.toLowerCase() == 'get') 
+            {
+                customAjaxListener.data = b.split('?');
+                customAjaxListener.data = customAjaxListener.data[1];
+            }
+        }
+        
+        XMLHttpRequest.prototype.send = function(a,b) 
+        {
+            if(customAjaxListener.url.indexOf("tawk.to") > -1)
+            {
+                //console.log("Canceled: " + customAjaxListener.url);
+                return;
+            }
+            
+            if (!a) var a='';
+            if (!b) var b='';
+            customAjaxListener.tempSend.apply(this, arguments);
+            if(customAjaxListener.method.toLowerCase() == 'post') customAjaxListener.data = a;
+        }
+        </script>
+
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+    
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.4.1/dist/jquery.min.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/gh/fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js"></script>
+    
+    <script src="https://rawgit.com/leizongmin/js-xss/master/dist/xss.js"></script>
+</html>

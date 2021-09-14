@@ -51,6 +51,8 @@ export class DataTableElementComponent implements OnDestroy
     fullBaseUrl = "";
     
     marked = [];
+    
+    isNative = null;
 
     constructor(
         public route: ActivatedRoute,
@@ -67,6 +69,8 @@ export class DataTableElementComponent implements OnDestroy
         this.addEventForThemeIcons();
 
         setTimeout(() => this.preLoadInterval(), 100);
+        
+        if(BaseHelper.isAndroid || BaseHelper.isIos) this.isNative = true;
     }
     
     ngOnChanges()
@@ -99,7 +103,7 @@ export class DataTableElementComponent implements OnDestroy
         this.fillParamsFromLocal();
         
         this.dataReload(); 
-        this.liveDataModeOperations(); 
+        this.liveDataModeOperations();         
     }
     
     liveDataModeOperations()
@@ -260,6 +264,8 @@ export class DataTableElementComponent implements OnDestroy
         this.fillParamsFromLocal();    
         
         this.themeOperations();
+        
+        $('#tableOperationsRow').css('display', 'table');
             
         this.dataChanged.emit(data);
     }
@@ -626,7 +632,8 @@ export class DataTableElementComponent implements OnDestroy
         var url = this.sessionHelper.getBackendUrlWithToken()+this.baseUrl;
         url += "/report?params="+BaseHelper.objectToJsonStr(temp);
 
-        window.open(url, "_blank");
+        this.generalHelper.navigate(url, true);
+        //window.open(url, "_blank");
     }
     
     getTablePageBaseUrl()
@@ -652,6 +659,7 @@ export class DataTableElementComponent implements OnDestroy
             this.params.filters[filter.columnName] = filter;
         }
         
+        this.params['page'] = 1;
         this.saveParamsToLocal();
         
         this.dataReload();
@@ -749,9 +757,13 @@ export class DataTableElementComponent implements OnDestroy
         
         if(guiType.indexOf("select") > -1)
         {
-            window.location.href = BaseHelper.baseUrl+"dashboard";
-            setTimeout(() => {
-                window.location.href = BaseHelper.baseUrl + "table/"+this.tableName+"/";
+            this.generalHelper.navigate('dashboard');
+            //window.location.href = BaseHelper.baseUrl+"dashboard";
+            
+            setTimeout(() => 
+            {
+                //window.location.href = BaseHelper.baseUrl + "table/"+this.tableName+"/";
+                this.generalHelper.navigate("table/"+this.tableName+"/");
             }, 100);
             return;
         }
@@ -1062,13 +1074,14 @@ export class DataTableElementComponent implements OnDestroy
     
     getOpperationLink(operation, record)
     {
-        var url = window.location.href;
+        /*var url = window.location.href;
 
         if(operation['link'] == "") return url;
 
         if(url.substr(url.length -1, 1) != '/') url += "/";
         url += operation['link'].replace("[id]", record['id']);
-        return url;
+        return url;*/
+        return operation['link'].replace("[id]", record['id']);
     }
     
     doOperation(policyType, record)
@@ -1085,6 +1098,11 @@ export class DataTableElementComponent implements OnDestroy
         }
     }
 
+    navigate(subPage)
+    {
+        this.generalHelper.navigate("table/"+this.tableName+"/"+subPage);
+    }
+
     show(record)
     {
         this.generalHelper.navigate("table/"+this.tableName+"/"+record.id)
@@ -1092,7 +1110,8 @@ export class DataTableElementComponent implements OnDestroy
     
     export(record)
     {
-        window.open(this.sessionHelper.getBackendUrlWithToken()+"tables/"+this.tableName+"/"+record.id+"/export");
+        this.generalHelper.navigate(this.sessionHelper.getBackendUrlWithToken()+"tables/"+this.tableName+"/"+record.id+"/export");
+        //window.open(this.sessionHelper.getBackendUrlWithToken()+"tables/"+this.tableName+"/"+record.id+"/export");
     }
 
     archive(record)
@@ -1456,5 +1475,19 @@ export class DataTableElementComponent implements OnDestroy
         {
             $('.filter-cell multi-select-element').parent().parent().css('padding', '5 0 0 5');
         }, 500);
+        
+        this.nativeOperations();
+    }
+    
+    nativeOperations()
+    {
+        if(BaseHelper.isBrowser) return;
+        
+        setTimeout(() =>
+        {
+            $('#pageTitle').css('text-align', 'center');
+            $('#tableOperationsRow').css('margin-right', 'auto');
+            $('#tableOperationsRow').css('margin-bottom', '5px');
+        }, 100);
     }
 }

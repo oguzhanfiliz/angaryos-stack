@@ -1,0 +1,42 @@
+<div class="modal-body">
+    <table class="light-table">
+        <tr>
+            <td>
+                <select id="data_fullness_state" name="data_fullness_state"
+                    value = "{{ getData('type') < 100 ? '' : getData('type').toString() }}"
+                    style="margin-bottom: 10px;"
+                    class="show-tick ms form-control"
+                    #dataFullnessState>
+                    
+                    <option value="">
+                        Tümü
+                    </option>
+                    <option value="100">
+                        Boş Olanlar
+                    </option>
+                    <option value="101">
+                        Boş Olmayanlar                                                                                        
+                    </option>
+                </select>
+            </td>
+        </tr><tr *ngIf="dataFullnessState.value == ''" style="min-height: 80; height:auto">
+            <form-element 
+                style="display: contents;"
+                name="{{ getData('columnName') }}_filter_detail"
+                columnName="{{ getData('columnName') }}"
+                class="form-control"
+                baseUrl="{{ baseUrl }}"
+                type="{{ getColumnGuiTypeForQuery(getData('guiType')) }}"
+                placeholder="{{ displayName }}"
+                showFilterTypesSelect="true"
+                filterType="{{ getData('type') }}"
+                value="{{ getData('filter') }}"
+                value2="{{ getData('filter2') }}">
+            </form-element>              
+        </tr>
+    </table>
+</div>
+<div class="modal-footer">
+    <button (click)="detailFilter()" type="button" class="btn btn-primary">Filtrele</button>
+    <button type="button" class="btn btn-danger" data-dismiss="modal">İptal</button>                
+</div>

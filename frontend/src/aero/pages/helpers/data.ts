@@ -330,46 +330,6 @@ export abstract class DataHelper
         }
         return data;
     }
-    
-    /*private static getRelationDataLink(record, columnName, guiType, data, relation)
-    {
-        if(relation == null) return "";
-        
-        var temp = window.location.href;
-        temp = temp.replace(BaseHelper.baseUrl, "");
-        var segments = temp.split('/');
-        
-        var url = BaseHelper.backendUrl + BaseHelper.token;
-        url += "/tables/"+segments[1]+"/"+record['id']+"/getRelationDataInfo/"+columnName;        
-        
-        var html = " <i type='relationDataInfo' info-url='"+url+"' style='font-size: 12;' class='zmdi zmdi-open-in-new'></i>";
-        
-        return html;
-    }
-
-    public static convertDataByGuiTypeMultiSelect(record, columnName, guiType, data, relation)
-    {
-        if(typeof data != "object")
-            data = BaseHelper.jsonStrToObject(data);
-
-        var html = "";        
-        var keys = Object.keys(data);
-        for(var i = 0; i < keys.length; i++)
-        {
-            var temp = data[keys[i]];
-            html += "<span source='"+temp["source"]+"' style='margin-left: 3px' class='badge badge-primary' innerHtmlTransformer>"+temp["display"]+"&nbsp;";
-            html += this.getRelationDataLink(record, columnName, guiType, data, relation);
-            html += "</span>";
-        }
-        
-        return html;
-    }
-    
-    public static convertDataByGuiTypeSelect(record, columnName, guiType, data, relation)
-    {
-        data = data + this.getRelationDataLink(record, columnName, guiType, data, relation);
-        return data;
-    }*/
 
     public static convertDataByGuiTypeJsonb(guiType, data)
     {
@@ -612,6 +572,7 @@ export abstract class DataHelper
     {
         var url = al['url'];
         
+        url = BaseHelper.replaceAll(url, '***baseUrl***', BaseHelper.backendBaseUrl);
         url = BaseHelper.replaceAll(url, '***token***', BaseHelper.token);
         if(url == null || url.length == 0) return "";
         

@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 
 import { BaseHelper } from './pages/helpers/base';
 import { GeneralHelper } from './pages/helpers/general';
-import { MessagingService } from './pages/helpers/messaging.service';
+//import { MessagingService } from './pages/helpers/messaging.service';
 
 @Component({
   selector: 'aero-root',
@@ -11,19 +11,25 @@ import { MessagingService } from './pages/helpers/messaging.service';
 export class AeroComponent 
 {
   constructor(
-      private generalHelper: GeneralHelper,
-      private messagingService: MessagingService
+      private generalHelper: GeneralHelper, 
+      //private messagingService: MessagingService
   )
   {
     BaseHelper.preLoad();
+    this.fillPlatformVariables();
     this.firebaseCloudMessageBegin();
     this.redirectToLoginIfLoggedOut()
+  }
+  
+  fillPlatformVariables()
+  {
+    this.generalHelper.fillPlatformVariables();
   }
 
   firebaseCloudMessageBegin()
   {
-    this.messagingService.requestPermission()
-    this.messagingService.receiveMessage()    
+    //this.messagingService.requestPermission()
+    //this.messagingService.receiveMessage()    
   }
   
   redirectToLoginIfLoggedOut()

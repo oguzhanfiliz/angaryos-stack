@@ -1,9 +1,11 @@
 <?php
 
-header("Access-Control-Allow-Origin: *");
-header("Access-Control-Allow-Headers: *");
+header('Access-Control-Allow-Origin: *');
+header("Access-Control-Allow-Headers: X-API-KEY, Origin, X-Requested-With, Content-Type, Accept, Access-Control-Request-Method, Authorization");
+header("Access-Control-Allow-Methods: GET, POST, OPTIONS, PUT, DELETE");
+if (@$_SERVER['REQUEST_METHOD'] == "OPTIONS") die();
 
-Route::options('/{any}', '\App\Http\Controllers\GeneralController@serviceOk');
+//Route::options('/{any}', '\App\Http\Controllers\GeneralController@serviceOk');
 
 Route::any('/', '\App\Http\Controllers\GeneralController@serviceOk');
 Route::post('/initializeDb', '\App\Http\Controllers\GeneralController@initializeDb');
@@ -60,12 +62,12 @@ Route::group(['prefix' => '{token}'], function ()
     Route::post('tables/{table_name}/deleted', 'TableController@deleted');
     Route::post('tables/{table_name}/create', 'TableController@create');
     
-    Route::options('tables/{table_name}/store', '\App\Http\Controllers\GeneralController@serviceOk');
+    //Route::options('tables/{table_name}/store', '\App\Http\Controllers\GeneralController@serviceOk');
     Route::any('tables/{table_name}/store', 'TableController@store');    
     
     Route::post('tables/{table_name}/{id}/edit', 'TableController@edit');
     
-    Route::options('tables/{table_name}/{id}/update', '\App\Http\Controllers\GeneralController@serviceOk');
+    //Route::options('tables/{table_name}/{id}/update', '\App\Http\Controllers\GeneralController@serviceOk');
     Route::any('tables/{table_name}/{id}/update', 'TableController@update');
     
     Route::post('tables/{table_name}/{id}/delete', 'TableController@destroy');

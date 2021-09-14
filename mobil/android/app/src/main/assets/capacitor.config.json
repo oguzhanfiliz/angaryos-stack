@@ -1,0 +1,6 @@
+{
+	"appId": "com.omersavas.angaryos.mobil",
+	"appName": "angaryos-mobil",
+	"webDir": "www",
+	"bundledWebRuntime": false
+}

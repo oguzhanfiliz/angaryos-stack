@@ -1,0 +1,71 @@
+<select multiple style="display: none; visibility: hidden"
+        name="{{ name }}" 
+        id="{{ columnName }}">
+</select>
+<div cdkDropListGroup>
+        <div class="dragdrop-container">
+                <table class="light-table">
+                        <tr>
+                                <td>
+                                        <input style="font-size: 12px;margin: 0 0 10px 0;height: 30;"
+                                                class="form-control" 
+                                                placeholder="Arama" 
+                                                *ngIf="!staticElement"
+                                                (input)="searchChanged($event)"
+                                                name="{{ name }}_search" 
+                                                id="{{ name }}_search" />
+                                </td>
+                        </tr><tr *ngIf="list.length > 0">
+                                <td>
+                                        <button (click)="selectAll()"  class="btn btn-sm btn-primary float-right">Tümünü Seç</button>
+                                </td>
+                        </tr><tr>
+                                <td>
+                                        <div
+                                                cdkDropList
+                                                [cdkDropListData]="list"
+                                                class="dragdrop-list"
+                                                (cdkDropListDropped)="drop($event)">
+
+                                                <div 
+                                                        [attr.source]="item.source"
+                                                        class="dragdrop-box" 
+                                                        *ngFor="let item of list" 
+                                                        cdkDrag>
+                                                        
+                                                        {{item.display}}
+                                                </div>
+                                        </div>
+                                </td>
+                        </tr>
+                </table>
+        </div>
+
+        <div class="dragdrop-container">
+                <table class="light-table">
+                        <tr *ngIf="val.length > 0">
+                                <td>
+                                        <button  (click)="unSelectAll()" class="btn btn-sm btn-primary float-right">Tümünü Kaldır</button>
+                                </td>
+                        </tr><tr>
+                                <td>
+                                        <div
+                                                cdkDropList
+                                                [cdkDropListData]="val"
+                                                class="dragdrop-list selected-list"
+                                                (cdkDropListDropped)="drop($event)">
+
+                                                <div
+                                                        [attr.source]="item.source"                                                        
+                                                        class="dragdrop-box" 
+                                                        *ngFor="let item of val" 
+                                                        cdkDrag>
+                                                        
+                                                        {{ item.display }}                                                        
+                                                </div>
+                                        </div>
+                                </td>
+                        </tr>
+                </table>
+        </div>
+</div>

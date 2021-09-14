@@ -35,6 +35,10 @@ export abstract class BaseHelper
   
   public static pageRefreshCounter = 600;//60 * 10
   
+  public static isAndroid = null;
+  public static isIos = null;
+  public static isBrowser = null;
+  
   
   
   public static preLoad()
@@ -69,20 +73,33 @@ export abstract class BaseHelper
 
   public static doInterval(id, func, params, duration = 1000)
   {
-    return new Promise(resolve => 
+    return new Promise(async (resolve) => 
     {
       id = "intervalId"+id;
 
       if(typeof this.pipe[id] != "undefined") 
         clearInterval(this.pipe[id]);
 
-      this.pipe[id] = setInterval(() =>
+      this.pipe[id] = setInterval(async () =>
       {
         clearInterval(this.pipe[id]);
         delete this.pipe[id];
-
-        resolve(func(params));
+        
+        if(typeof this.pipe[id+"ReturnData"] == "undefined" || this.pipe[id+"ReturnData"] == null)
+            this.pipe[id+"ReturnData"] = await func(params);
+                
+        resolve(this.pipe[id+"ReturnData"]);
       }, duration);
+
+      while(true)
+      { 
+        if((typeof this.pipe[id] == "undefined" || this.pipe[id] == null) && typeof this.pipe[id+"ReturnData"] != "undefined")
+        {
+          resolve(this.pipe[id+"ReturnData"]);
+          break;
+        }
+        await BaseHelper.sleep(100);
+      }
     });
   }
 

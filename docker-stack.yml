@@ -64,7 +64,7 @@ services:
     #######       FRONTEND       #######
     
     frontend: 
-        image: karapazar/angular-serve-light:0.74
+        image: karapazar/angular-serve-light:0.75
         volumes:
             - ./frontend/dist/light/:/usr/share/nginx/html
             - '/etc/localtime:/etc/localtime:ro'
@@ -81,7 +81,7 @@ services:
                 traefik.docker.network: "angaryos_frontend-nw"
     
     frontendBuilder: 
-        image: karapazar/angular-serve:0.74
+        image: karapazar/angular-serve:0.75
         volumes:
             - ./frontend:/usr/src/app 
             - '/etc/localtime:/etc/localtime:ro'
@@ -90,6 +90,12 @@ services:
         deploy:
             mode: replicated
             replicas: 0
+            labels:
+                traefik.frontend.rule: "PathPrefix:/"
+                traefik.port: "4200"
+                traefik.enable: "true"
+                traefik.backend: "frontend"
+                traefik.docker.network: "angaryos_frontend-nw"
                 
     varnishFrontend:
         image: million12/varnish
@@ -98,19 +104,12 @@ services:
             - CACHE_SIZE=128m
         deploy:
             mode: replicated
-            replicas: 1
+            replicas: 0
             labels:
                 traefik.varnishFrontendAssets.frontend.rule: "PathPrefix:/assets"
                 traefik.varnishFrontendMain.frontend.rule: "PathPrefix:/main-es"
                 traefik.varnishFrontendDefault.frontend.rule: "PathPrefix:/default.js"
-                traefik.varnishFrontendScripts.frontend.rule: "PathPrefix:/scripts."
-                
-                #traefik.varnishFrontendVendor.frontend.rule: "PathPrefix:/vendor.js"
-                #traefik.varnishFrontendManifest.frontend.rule: "PathPrefix:/manifes.json"
-                #traefik.varnishFrontendRuntime.frontend.rule: "PathPrefix:/runtime."
-                #traefik.varnishFrontendPolyfills.frontend.rule: "PathPrefix:/polyfills.js"
-                #traefik.varnishFrontendStyles.frontend.rule: "PathPrefix:/styles.js"
-                
+                traefik.varnishFrontendScripts.frontend.rule: "PathPrefix:/scripts."                
                 traefik.port: "80"
                 traefik.enable: "true"
                 traefik.backend: "varnish"
@@ -125,7 +124,7 @@ services:
     #######       BACKEND       #######
  
     laravel:
-        image: karapazar/laravel-php-fpm:0.72
+        image: karapazar/laravel-php-fpm:0.75
         volumes:
             - ./backend:/var/www 
             - ./backend/php.ini:/usr/local/etc/php/conf.d/local.ini
@@ -144,7 +143,7 @@ services:
             - mq-nw
 
     laravelcron:
-        image: karapazar/laravel-cron:0.72
+        image: karapazar/laravel-cron:0.75
         volumes:
             - ./backend:/var/www 
             - ./backend/php.ini:/usr/local/etc/php/conf.d/local.ini
@@ -163,7 +162,7 @@ services:
             - mq-nw
             
     laraveljobs:
-        image: karapazar/laravel-jobs:0.72
+        image: karapazar/laravel-jobs:0.75
         volumes:
             - ./backend:/var/www 
             - ./backend/php.ini:/usr/local/etc/php/conf.d/local.ini
@@ -211,7 +210,7 @@ services:
     #######       MOBIL       #######
 
     mobil: 
-        image: karapazar/ionic-serve:0.74
+        image: karapazar/ionic-serve:0.75
         volumes:
             - ./mobil:/usr/src/app 
             - '/etc/localtime:/etc/localtime:ro'
@@ -263,7 +262,7 @@ services:
             - '/etc/localtime:/etc/localtime:ro'
         ports:
             - "9005:21"
-            - "64000-64005:64000-64005"
+            #- "64000-64005:64000-64005"
         networks:
             - backend-nw
         deploy:

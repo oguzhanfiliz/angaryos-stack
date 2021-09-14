@@ -1,0 +1,60 @@
+<section class="content mobile-home" style="margin: 10px !important;">    
+    <div class="container body_scroll">
+        <div class="card">
+            
+            <div class="container" *ngIf="item != null">
+                <div class="row">
+                    <div class="col-lg-6 col-md-12">
+                        <div class="card">
+                            <div class="blogitem mb-5">
+                                <div class="blogitem-image">
+                                    <a>
+                                        <img 
+                                            style="border: 2px solid white;"
+                                            [src]="item['images'][0]['mUrl']" 
+                                            alt="blog image">
+                                            
+                                    </a>
+                                    <span class="blogitem-date">{{ item['created_at'] }}</span>
+                                </div>
+                                <div class="blogitem-content">
+                                    <div class="blogitem-header">
+                                        <div class="blogitem-meta">
+                                            <span><i class="zmdi zmdi-account"></i>Yazan: <a> {{ item['user_id'] }}</a></span>
+                                        </div>
+                                        <div class="blogitem-share">
+                                            <ul class="list-unstyled mb-0">
+                                                <li><a (click)="navigate('https://www.facebook.com')"><i class="zmdi zmdi-facebook-box"></i></a></li>
+                                                <li><a (click)="navigate('https://www.instagram.com')"><i class="zmdi zmdi-instagram"></i></a></li>
+                                                <li><a (click)="navigate('https://www.twitter.com')"><i class="zmdi zmdi-twitter-box"></i></a></li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                    <h5><a>{{ item['name_basic'] }}</a></h5>
+                                    <p style="color: #888" [innerHtml]="item['summary']"></p>
+                                    <br>
+                                    <p [innerHtml]="item['content']"></p>
+                                    <div class="attachment">
+                                            <a class="w200" *ngFor="let image of item['images'];">
+                                               <img 
+                                                    [src]="image['mUrl']"
+                                                    alt="" class="img-fluid img-thumbnail">
+                                            </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div> 
+                </div>
+            </div>
+
+            <div *ngIf="item == null">
+                <br><br>
+                <h3 style="text-align: center;">Bekleyin...</h3>
+            </div>
+            
+        </div>
+    </div>
+</section>
+
+<mobile-bottom-menu-element></mobile-bottom-menu-element> 

@@ -4,6 +4,7 @@
 
 rm -rf ./src/
 cp -rf ./../frontend/src/ ./src/
+chmod 777 -R ./src/
 
 mv src/index.aero.html src/index.html
 
@@ -35,11 +36,19 @@ sed -i 's/private messagingService: MessagingService/\/\/private messagingServic
 
 
 
-
-
-
-
-
 ionic build
+
+
+
+#./www/styles.css
+cat ./www/styles.css ./../frontend/src/styles.css > ./www/temp.css
+rm ./www/styles.css
+mv ./www/temp.css ./www/styles.css
+
+
+#./www/index.html
+rm ./www/index.html
+cp ./index.utf8.html ./www/index.html
+ 
 #npx cap sync android
 #npx cap open android

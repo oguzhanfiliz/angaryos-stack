@@ -24,10 +24,12 @@ import { PublicMapComponent } from './pages/public-map/public-map.component';
 import { FullScreenMapElementComponent } from './pages/helpers/custom-elements/fullscreen-map-element/fullscreen-map-element.component';
 
 import { LoginComponent } from './pages/login/login.component';
-import { LinkPageComponent } from './pages/link-page/link-page.component';
 
 import { FormComponent } from './pages/form/form.component';
 import { ColumnArrayFormElementComponent } from './pages/helpers/custom-elements/column-array-form-element/column-array-form-element.component';
+
+import { MobileBottomMenuElementComponent } from './pages/helpers/custom-elements/mobile-bottom-menu-element/mobile-bottom-menu-element.component';
+import { MobileAppBarElementComponent } from './pages/helpers/custom-elements/mobile-app-bar-element/mobile-app-bar-element.component';
 
 import { GuiTriggerHelper } from './pages/helpers/gui-trigger';
 import { MessageHelper } from './pages/helpers/message';
@@ -35,19 +37,20 @@ import { SessionHelper } from './pages/helpers/session';
 import { GeneralHelper } from './pages/helpers/general';
 import { AeroThemeHelper } from './pages/helpers/aero.theme';
 
-import { AngularFireMessagingModule } from '@angular/fire/messaging';
-import { AngularFireDatabaseModule } from '@angular/fire/database';
-import { AngularFireAuthModule } from '@angular/fire/auth';
-import { AngularFireModule } from '@angular/fire';
-import { MessagingService } from './pages/helpers/messaging.service';
+//import { AngularFireMessagingModule } from '@angular/fire/messaging';
+//import { AngularFireDatabaseModule } from '@angular/fire/database';
+//import { AngularFireAuthModule } from '@angular/fire/auth';
+//import { AngularFireModule } from '@angular/fire';
+//import { MessagingService } from './pages/helpers/messaging.service';
 import { environment } from '../environments/environment';
 import { AsyncPipe } from '../../node_modules/@angular/common';
+
+import { HTTP as HttpClientNative } from '@ionic-native/http/ngx'; 
 
 @NgModule({
   declarations: 
   [
     AeroComponent,
-    LinkPageComponent,
     LoginComponent,
     MapComponent,
     PublicMapComponent,
@@ -63,10 +66,10 @@ import { AsyncPipe } from '../../node_modules/@angular/common';
     DragDropModule,
     PagesModule,
     NgbModule,
-    AngularFireDatabaseModule,
-    AngularFireAuthModule,
-    AngularFireMessagingModule,
-    AngularFireModule.initializeApp(environment.firebase),
+    //AngularFireDatabaseModule,
+    //AngularFireAuthModule,
+    //AngularFireMessagingModule,
+    //AngularFireModule.initializeApp(environment.firebase),
   ],
   providers: 
   [
@@ -76,8 +79,9 @@ import { AsyncPipe } from '../../node_modules/@angular/common';
     GeneralHelper,
     AeroThemeHelper,
     NgbDropdownConfig,
-    MessagingService,
-    AsyncPipe
+    //MessagingService,
+    AsyncPipe,
+    HttpClientNative
   ],
   bootstrap: 
   [
@@ -86,7 +90,9 @@ import { AsyncPipe } from '../../node_modules/@angular/common';
   entryComponents: 
   [
     ColumnArrayFormElementComponent,
-    FullScreenMapElementComponent
+    FullScreenMapElementComponent,
+    MobileBottomMenuElementComponent,
+    MobileAppBarElementComponent
   ],
 })
 export class AeroModule 
