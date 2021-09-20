@@ -45,6 +45,8 @@ export class RedirectComponent
     getRelationDataId(val)
     {
         var url = this.sessionHelper.getBackendUrlWithToken();
+        if(url.length == 0) return;
+        
         url += "tables/"+val["tableName"]+"/"+val["recordId"]+"/getRelationDataId/"+val["columnName"];
         console.log(url);
     }

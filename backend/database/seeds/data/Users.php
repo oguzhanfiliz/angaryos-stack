@@ -229,7 +229,7 @@ $announcementAuth->save();
 
 
 $publicContentsAuth = $this->get_base_record();
-$publicContentsAuth['name_basic'] = 'Serbest İçerik Genel Personel Yetkisi';
+$publicContentsAuth['name_basic'] = 'Serbest İçerik Tablosu Serbest Kullanıcı Yetkisi';
 $publicContentsAuth['auths'] = 
 [
     'tables:public_contents:option:0',
@@ -242,12 +242,38 @@ $publicContentsAuth->fillVariables();
 $publicContentsAuth->save();
 
 
+$registerRequestAuth = $this->get_base_record();
+$registerRequestAuth['name_basic'] = 'Üyelik İstekleri Tablosu Serbest Kullanıcı Yetkisi';
+$registerRequestAuth['auths'] = 
+[
+    'tables:register_requests:creates:0'
+];
+
+$registerRequestAuth = new BaseModel('auth_groups', $registerRequestAuth);
+$registerRequestAuth->fillVariables();
+$registerRequestAuth->save();
+
+
+$feedbackAuth = $this->get_base_record();
+$feedbackAuth['name_basic'] = 'Geri Bildirimler Tablosu Serbest Kullanıcı Yetkisi';
+$feedbackAuth['auths'] = 
+[
+    'tables:feedbacks:creates:0'
+];
+
+$feedbackAuth = new BaseModel('auth_groups', $feedbackAuth);
+$feedbackAuth->fillVariables();
+$feedbackAuth->save();
+
+
 $publicAuth = $this->get_base_record();
-$publicAuth['name_basic'] = 'Serbest İçerik Tablosu Serbest Kullanıcı Yetkisi';
+$publicAuth['name_basic'] = 'Serbest Kullanıcı Yetkisi';
 $publicAuth['auths'] = 
 [
     $publicContentsAuth->id,
+    $registerRequestAuth->id,
     $announcementAuth->id,
+    $feedbackAuth->id,
     $eSignAuth->id,
     'missions:'.$missions['reset_password_request']->id.':0:0',
     'missions:'.$missions['reset_password']->id.':0:0'

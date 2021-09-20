@@ -1,7 +1,6 @@
 import { BaseHelper } from './base';
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { HTTP as HttpClientNative } from '@ionic-native/http/ngx'; 
 
 import { MessageHelper } from './message';
 import { GeneralHelper } from './general';
@@ -19,7 +18,6 @@ export class SessionHelper
     
     constructor(
       private httpClient: HttpClient,
-      private httpClientNative: HttpClientNative,
       private messageHelper: MessageHelper,
       private generalHelper: GeneralHelper) 
     {
@@ -28,11 +26,6 @@ export class SessionHelper
 
     private preLoad()
     {
-      if(BaseHelper.isIos || BaseHelper.isAndroid)
-      {
-        this.httpClientNative.setServerTrustMode('nocheck');
-      }
-      
       if(BaseHelper.backendServiceControl == null)
         this.backendServiceControl();
     }
@@ -61,24 +54,8 @@ export class SessionHelper
 
       return BaseHelper.backendUrl + BaseHelper.token + "/";
     }
-
-    private getHttpObjectNative(type:string, url:string, data:object)
-    {
-      if(typeof data == "undefined" || data == null) data = {};
-        
-      switch (type) 
-      {
-        case "GET": 
-          url = this.dataInjectionInUrl(url, data);
-          return this.httpClientNative.get(url, {}, {});
-        case "POST": return this.httpClientNative.post(url, data, {});
-        case "PUT": 
-        case "DELETE": 
-            return null;
-      }
-    }
     
-    private getHttpObjectBrowser(type:string, url:string, data:object)
+    private getHttpObject(type:string, url:string, data:object)
     {
       switch (type) 
       {
@@ -213,91 +190,9 @@ export class SessionHelper
       
       return new Promise((resolve, reject) =>
       {
-        if(BaseHelper.isBrowser || true)
-            return this.doHttpRequestBrowser(type, url, data, resolve, reject);
-        else if(BaseHelper.isAndroid || BaseHelper.isIos)  
-            return this.doHttpRequestNative(type, url, data, resolve, reject);
-        else
-        {
-            this.generalHelper.stopLoading();
-            reject("uncorrect.platform.for.doHttpRequest");            
-        }
-      });
-    }
-    
-    public async doHttpRequestNative(type: string, url: string, data: object, resolve, reject)
-    {
-        var temp = this.getHttpObjectNative(type, url, data);        
-        if(temp == null)
-        {
-            this.generalHelper.stopLoading();
-            reject("uncorrect.http.method.for.doHttpRequestNative"); 
-            return;           
-        }
-              
-        var th = this;  
-        temp.then(data => 
-        {
-            console.log(data);//silme!
-            
-            this.generalHelper.stopLoading();
-            
-            var response = null;
-            try
-            {
-                response = BaseHelper.jsonStrToObject(data.data);
-            }
-            catch(err)
-            {
-                response = {"data": data.data};
-            }
-                
-            resolve(response["data"]);
-
-        })
-        .catch(error => 
-        {
-            console.log(error);//silme!
-            
-            var message = null, response = null;
-            if(typeof error == "string")
-            {
-                if(error.indexOf('cordova_not_available') > -1)
-                {
-                    return th.doHttpRequestBrowser(type, url, data, resolve, reject);
-                }
-                else
-                {
-                    message = error;
-                    response = {};
-                }
-            }
-            else
-            {
-                response = {};
-                try
-                {                    
-                    response = BaseHelper.jsonStrToObject(error.error);
-                    message = "server.response."+error.status;
-                }
-                catch (err) 
-                {
-                    message = error.error;
-                    if(typeof message == "undefined" && typeof error.message != "undefined") message = error.message;
-                    
-                    response = {};
-                }
-            }
-            
-            th.doHttpRequestError(url, resolve, reject, message, response);
-        });
-    }
-
-    public async doHttpRequestBrowser(type: string, url: string, data: object, resolve, reject)
-    {
         var th = this;
         
-        this.getHttpObjectBrowser(type, url, data)
+        this.getHttpObject(type, url, data)
         .subscribe( 
         response => 
         {
@@ -308,8 +203,9 @@ export class SessionHelper
         {
           th.doHttpRequestError(url, resolve, reject, error.message, error.error);
         });
+      });
     }
-    
+        
     public doHttpRequestError(url, resolve, reject, message, response)
     {
         this.generalHelper.stopLoading();
@@ -350,7 +246,7 @@ export class SessionHelper
         password: password,
         clientInfo: 
         {
-          type: 'browser',
+          type: BaseHelper.isBrowser ? 'browser' : 'ionic-mobile',
           agent: navigator.userAgent,
           firebaseToken: BaseHelper.firebaseToken
         }
@@ -359,7 +255,10 @@ export class SessionHelper
 
     public userImitation(user)
     {
-        var url = this.getBackendUrlWithToken()+"getUserToken/"+user.id;
+        var url = this.getBackendUrlWithToken();
+        if(url.length == 0) return;
+        
+        url += "getUserToken/"+user.id;
         
         this.generalHelper.startLoading();
 
@@ -401,7 +300,10 @@ export class SessionHelper
 
     public logoutForImitationUser()
     {
-      var url = this.getBackendUrlWithToken() + "logOut";
+      var url = this.getBackendUrlWithToken();
+      if(url.length == 0) return;
+
+      url +=  "logOut";
 
       return this.doHttpRequest("POST", url, null) 
       .then((data) =>  
@@ -426,13 +328,17 @@ export class SessionHelper
 
     public logout()
     {
-      var url = this.getBackendUrlWithToken() + "logOut";
+      var url = this.getBackendUrlWithToken();
+      if(url.length == 0) return;
+        
+      url +=  "logOut";
 
       return this.doHttpRequest("POST", url, null) 
       .then((data) =>  
       {
         BaseHelper.clearUserData()
         this.generalHelper.navigate('/login');
+        window.location.reload();
       })
     }
 
@@ -453,7 +359,10 @@ export class SessionHelper
 
     public tokenControl()
     {
-      return this.doHttpRequest("POST", this.getBackendUrlWithToken(), null);  
+      var url = this.getBackendUrlWithToken();
+      if(url.length == 0) return;
+      
+      return this.doHttpRequest("POST", url, null);  
     }
 
     public mapAuthControl()
@@ -567,7 +476,10 @@ export class SessionHelper
 
     async eSignCancel(sign)
     {
-      var url = this.getBackendUrlWithToken()+"tables/e_signs/"+sign["id"]+"/update";
+      var url = this.getBackendUrlWithToken();
+      if(url.length == 0) return;
+        
+      url += "tables/e_signs/"+sign["id"]+"/update";
 
       var setId = BaseHelper.loggedInUserInfo.auths['tables']['e_signs']["edits"][0];
       

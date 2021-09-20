@@ -16,6 +16,7 @@ declare var $: any;
 export class MobileBottomMenuElementComponent
 {
     isNative = null;
+    showShortcut = false;
   
     constructor(
         private messageHelper: MessageHelper,
@@ -23,32 +24,32 @@ export class MobileBottomMenuElementComponent
         private generalHelper: GeneralHelper,
     ) 
     {    
-        if(BaseHelper.isIos || BaseHelper.isAndroid) this.isNative = true;  
+        if(BaseHelper.isIos || BaseHelper.isAndroid) this.isNative = true; 
+        if(BaseHelper.loggedInUserInfo != null) this.showShortcut = true; 
     }
     
     isActive(link)
     {
+        var url = window.location.href;
+        
         switch(link)
         {
             case 'mobile-home':
-                return window.location.href.indexOf('mobile-home') > -1;
+                return url.indexOf('mobile-home') > -1;
             case 'admin-home':
-                return window.location.href.indexOf('#/'+BaseHelper.angaryosUrlPath) > -1 || window.location.href.indexOf('#/login') > -1;
+                return url.indexOf('#/'+BaseHelper.angaryosUrlPath) > -1 || url.indexOf('#/login') > -1;
             case 'shortcuts':
-                return false;
+                return url.indexOf('shortcuts') > -1;
             case 'mobile-contact':
-                return window.location.href.indexOf('mobile-contact') > -1;
+                return url.indexOf('mobile-contact') > -1;
             default: return false;
         }
     }
     
     navigate(page)
     {
+        if(page == 'dashboard') BaseHelper.pipe["mobile-button-clicked"] = true;
+        
         this.generalHelper.navigate(page);
-    }
-    
-    openShortcutsModal()
-    {
-        this.messageHelper.sweetAlert("Malesef bu özellik şuan aktif değil!", "Kısayollarım", "info");
     }
 }

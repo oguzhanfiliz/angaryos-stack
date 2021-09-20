@@ -103,7 +103,10 @@ export class DataEntegratorComponent
 
     fillColumns()
     {
-        var url = this.sessionHelper.getBackendUrlWithToken()+"tables/"+this.tableName+"/create";
+        var url = this.sessionHelper.getBackendUrlWithToken();
+        if(url.length == 0) return;
+        
+        url += "tables/"+this.tableName+"/create";
 
         this.sessionHelper.doHttpRequest("POST", url, {'params': BaseHelper.objectToJsonStr({column_set_id: 0})})
         .then((data) => 
@@ -179,7 +182,10 @@ export class DataEntegratorComponent
             }
         };
 
-        var url = this.sessionHelper.getBackendUrlWithToken()+"tables/data_source_remote_columns";
+        var url = this.sessionHelper.getBackendUrlWithToken();
+        if(url.length == 0) return;
+        
+        url += "tables/data_source_remote_columns";
 
         this.sessionHelper.doHttpRequest("POST", url, {'params': BaseHelper.objectToJsonStr(params)})
         .then((data) => 
@@ -264,7 +270,10 @@ export class DataEntegratorComponent
 
     async addRemoteColumn(columnFormData)
     {
-        var url = this.sessionHelper.getBackendUrlWithToken()+"tables/data_source_col_relations/store";
+        var url = this.sessionHelper.getBackendUrlWithToken();
+        if(url.length == 0) return;
+        
+        url += "tables/data_source_col_relations/store";
         
         var id = 0;
         await this.sessionHelper.doHttpRequest("POST", url, columnFormData) 
@@ -353,7 +362,10 @@ export class DataEntegratorComponent
             column_set_id: 0
         }
 
-        var url = this.sessionHelper.getBackendUrlWithToken()+"tables/data_source_tbl_relations/store";
+        var url = this.sessionHelper.getBackendUrlWithToken();
+        if(url.length == 0) return;
+        
+        url += "tables/data_source_tbl_relations/store";
         
         this.sessionHelper.doHttpRequest("POST", url, table) 
         .then((data) => 

@@ -26,6 +26,7 @@ import { LPPDComponent } from './lppd/lppd.component';
 import { MobileHomeComponent } from './mobile-home/mobile-home.component';
 import { MobileHomeDetailComponent } from './mobile-home-detail/mobile-home-detail.component';
 import { MobileContactComponent } from './mobile-contact/mobile-contact.component';
+import { ShortcutsComponent } from './shortcuts/shortcuts.component';
 import { NotFoundComponent } from './not-found/not-found.component';
 import { ListComponent } from './list/list.component';
 import { SearchComponent } from './search/search.component';
@@ -98,6 +99,7 @@ import { MobileAppBarElementComponent } from './helpers/custom-elements/mobile-a
     MobileHomeComponent,
     MobileHomeDetailComponent,
     MobileContactComponent,
+    ShortcutsComponent,
 
     FormElementComponent,
     TextElementComponent,
@@ -232,13 +234,15 @@ export class PagesModule
     'geo-preview-element': GeoPreviewElementComponent,
     
     'in-form-element': FormComponent,
-    'in-show-element': ShowComponent
+    'in-show-element': ShowComponent,
+    
+    'shortcuts': ShortcutsComponent,
+    
+    'mobile-app-bar-element': MobileAppBarElementComponent,
+    'mobile-bottom-menu-element': MobileBottomMenuElementComponent
   };
 
-  constructor(private injector: Injector) 
-  {
-    
-  }
+  constructor(private injector: Injector) { }
 
   ngDoBootstrap()
   {

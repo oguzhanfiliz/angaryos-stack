@@ -339,7 +339,10 @@ export class ColumnArrayFormElementComponent
         var tableName = this.columnArray['columns'][columnName]['relation']['table_name'];
         var recordId = this.getSelectedOptionValue(columnName);
         
-        var url = this.sessionHelper.getBackendUrlWithToken()+"tables/"+tableName+"/"+recordId+"/clone";
+        var url = this.sessionHelper.getBackendUrlWithToken();
+        if(url.length == 0) return;
+        
+        url += "tables/"+tableName+"/"+recordId+"/clone";
         
         this.sessionHelper.doHttpRequest("POST", url)
         .then((data) => this.cloneRelationRecordResponsed(data, tableName, columnName, recordId));
@@ -383,7 +386,10 @@ export class ColumnArrayFormElementComponent
     
     cloneSuccess(params)
     {
-        var url = this.sessionHelper.getBackendUrlWithToken()+"tables/"+this.tableName;
+        var url = this.sessionHelper.getBackendUrlWithToken();
+        if(url.length == 0) return;
+        
+        url += "tables/"+this.tableName;
         url += "/getSelectColumnData/"+params['columnName']+"?search="+params['data']['id']+"&page=1&limit=500";
         url += "&editRecordId="+params['recordId'];
         

@@ -30,6 +30,11 @@ a span.zmdi, a span.ti, a i.ti, a i.zmdi
     color: #666 !important; 
 }
 
+a.imitation-user-logout-button  i.zmdi
+{
+    color: red !important;
+} 
+
 input::placeholder, .select2-selection__placeholder, textarea::placeholder
 {
     color:#ccc !important;

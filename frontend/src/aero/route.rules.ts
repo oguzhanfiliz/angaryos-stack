@@ -1,10 +1,10 @@
 import { LoginComponent } from './pages/login/login.component';
-//import { LinkPageComponent } from './pages/link-page/link-page.component';
 import { PrivacyPoliticaComponent } from './pages/privacy-politica/privacy-politica.component'; 
 import { LPPDComponent } from './pages/lppd/lppd.component';  
 import { MobileHomeComponent } from './pages/mobile-home/mobile-home.component';  
 import { MobileHomeDetailComponent } from './pages/mobile-home-detail/mobile-home-detail.component';  
-import { MobileContactComponent } from './pages/mobile-contact/mobile-contact.component';  
+import { MobileContactComponent } from './pages/mobile-contact/mobile-contact.component'; 
+import { ShortcutsComponent } from './pages/shortcuts/shortcuts.component';  
 import { PagesModule } from './pages/pages.module';
 
 import { MapComponent } from './pages/map/map.component';
@@ -37,6 +37,10 @@ export const routeRules =
     {
         path: 'mobile-contact',
         component: MobileContactComponent
+    },
+    {
+        path: 'shortcuts',
+        component: ShortcutsComponent
     },
     {
         path: 'map',

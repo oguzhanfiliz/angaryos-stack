@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateRegisterRequestsTable extends Migration
+class CreateFeedbacksTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,15 +13,13 @@ class CreateRegisterRequestsTable extends Migration
      */
     public function up()
     {
-        Schema::create('register_requests', function (Blueprint $table) {
+        Schema::create('feedbacks', function (Blueprint $table) {
             $table->bigIncrements('id');
             
-            $table->string('tc')->nullable();
-            $table->string('name_basic')->nullable();
-            $table->string('surname')->nullable();
-            $table->string('email_basic')->unique()->nullable();
-            $table->string('password')->nullable();
-            $table->jsonb('detail')->nullable();
+            $table->string('name_surname')->nullable();
+            $table->string('phone')->nullable();
+            $table->string('email_basic')->nullable();
+            $table->string('description')->nullable();
             
             
             $table->boolean('state')->nullable();
@@ -38,6 +36,6 @@ class CreateRegisterRequestsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('public_contents');
+        Schema::dropIfExists('feedbacks');
     }
 }

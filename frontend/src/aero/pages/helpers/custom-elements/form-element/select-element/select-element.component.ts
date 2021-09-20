@@ -109,7 +109,10 @@ export class SelectElementComponent
     
     addSelect2Static()
     {
-        var url = this.sessionHelper.getBackendUrlWithToken()+this.baseUrl;
+        var url = this.sessionHelper.getBackendUrlWithToken();
+        if(url.length == 0) return;
+        
+        url += this.baseUrl;
         url += "/getSelectColumnData/"+this.columnName+"?search=***&page=1&limit=500";
         
         if(!this.createForm) url += '&editRecordId='+this.record['id'];

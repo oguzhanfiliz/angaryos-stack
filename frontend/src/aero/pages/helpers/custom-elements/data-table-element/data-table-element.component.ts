@@ -1,9 +1,8 @@
 import { ActivatedRoute} from '@angular/router';
 import { Component, EventEmitter, Input, Output, OnDestroy } from '@angular/core';
-
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
-
 import {CdkDragDrop, moveItemInArray} from '@angular/cdk/drag-drop';
+import { NativeAudio } from '@ionic-native/native-audio/ngx';
 
 import { BaseHelper } from './../../base';
 import { DataHelper } from './../../data';
@@ -60,7 +59,8 @@ export class DataTableElementComponent implements OnDestroy
         public sessionHelper: SessionHelper,
         public generalHelper: GeneralHelper,
         public aeroThemeHelper: AeroThemeHelper,
-        private sanitizer:DomSanitizer
+        private sanitizer:DomSanitizer,
+        private nativeAudio: NativeAudio
     ) 
     {
         this.objectId = Math.random();
@@ -243,7 +243,10 @@ export class DataTableElementComponent implements OnDestroy
     
     dataReload(liveDataIntervalTrigger = false)
     {
-        var url = this.sessionHelper.getBackendUrlWithToken()+this.baseUrl;
+        var url = this.sessionHelper.getBackendUrlWithToken();
+        if(url.length == 0) return;
+        
+        url += this.baseUrl;
         var temp = 
         {
             'params': BaseHelper.objectToJsonStr(this.params)
@@ -312,8 +315,35 @@ export class DataTableElementComponent implements OnDestroy
             'ringTone', 
             (th) => 
             {
-                var audio = new Audio(BaseHelper.backendBaseUrl+"assets/message.wav");
-                audio.play();
+                if(BaseHelper.isBrowser)
+                {
+                    var audio = new Audio(BaseHelper.backendBaseUrl+"assets/message.wav");
+                    audio.play();
+                }
+                else
+                {
+                    th.nativeAudio.preloadSimple('uniqueId1',"/assets/message.wav").then(() =>
+                    {
+                        console.log("preload ok ring");
+                        
+                        th.nativeAudio.play('uniqueId1')
+                        .then(
+                        () =>
+                        {
+                            console.log("play ok ring"); 
+                        },
+                        (e) =>
+                        {
+                            console.log("play err ring");
+                            console.log(e);
+                        });
+                    }, 
+                    (e) =>
+                    {
+                        console.log("preload err ring");
+                        console.log(e);
+                    });
+                }
             }, 
             this, 
             300);
@@ -629,7 +659,10 @@ export class DataTableElementComponent implements OnDestroy
         if(report != null) temp['report_id'] = report['id'];
         else temp['report_id'] = 0;
         
-        var url = this.sessionHelper.getBackendUrlWithToken()+this.baseUrl;
+        var url = this.sessionHelper.getBackendUrlWithToken();
+        if(url.length == 0) return;
+        
+        url += this.baseUrl;
         url += "/report?params="+BaseHelper.objectToJsonStr(temp);
 
         this.generalHelper.navigate(url, true);
@@ -1054,7 +1087,10 @@ export class DataTableElementComponent implements OnDestroy
 
     restoreRecord(record)
     {
-        var url = this.sessionHelper.getBackendUrlWithToken()+"tables/"+this.tableName+"/"+record.id+"/restore";
+        var url = this.sessionHelper.getBackendUrlWithToken();
+        if(url.length == 0) return;
+        
+        url += "tables/"+this.tableName+"/"+record.id+"/restore";
         
         this.sessionHelper.doHttpRequest("POST", url)
         .then((data) => this.restoreSuccess(data));
@@ -1110,7 +1146,10 @@ export class DataTableElementComponent implements OnDestroy
     
     export(record)
     {
-        this.generalHelper.navigate(this.sessionHelper.getBackendUrlWithToken()+"tables/"+this.tableName+"/"+record.id+"/export");
+        var url = this.sessionHelper.getBackendUrlWithToken();
+        if(url.length == 0) return;
+        
+        this.generalHelper.navigate(url+"tables/"+this.tableName+"/"+record.id+"/export");
         //window.open(this.sessionHelper.getBackendUrlWithToken()+"tables/"+this.tableName+"/"+record.id+"/export");
     }
 
@@ -1165,7 +1204,10 @@ export class DataTableElementComponent implements OnDestroy
 
     cloneConfirmed(record)
     {
-        var url = this.sessionHelper.getBackendUrlWithToken()+"tables/"+this.tableName+"/"+record.id+"/clone";
+        var url = this.sessionHelper.getBackendUrlWithToken();
+        if(url.length == 0) return;
+        
+        url += "tables/"+this.tableName+"/"+record.id+"/clone";
         
         this.sessionHelper.doHttpRequest("POST", url)
         .then((data) => this.cloneSuccess(data));
@@ -1252,7 +1294,10 @@ export class DataTableElementComponent implements OnDestroy
 
     deleteRecord(record)
     {
-        var url = this.sessionHelper.getBackendUrlWithToken()+"tables/"+this.tableName+"/"+record.id+"/delete";
+        var url = this.sessionHelper.getBackendUrlWithToken();
+        if(url.length == 0) return;
+        
+        url += "tables/"+this.tableName+"/"+record.id+"/delete";
         
         this.sessionHelper.doHttpRequest("POST", url)
         .then((data) => 
@@ -1417,7 +1462,10 @@ export class DataTableElementComponent implements OnDestroy
     
     missionTrigger(record, data)
     {
-        var url = this.sessionHelper.getBackendUrlWithToken()+"missions/"+record['id']+"?"+data;
+        var url = this.sessionHelper.getBackendUrlWithToken();
+        if(url.length == 0) return;
+        
+        url += "missions/"+record['id']+"?"+data;
         
         this.sessionHelper.doHttpRequest("POST", url)
         .then((data) => 

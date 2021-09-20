@@ -27,7 +27,7 @@ export class PagesComponent
   appName = "";
   profilePictureUrl = ""
   userEditUrl = ""
-  //searchIntervalId = -1;
+  isBrowser = null;
 
   eSigns = [];
   isESignUserTrue = false;
@@ -58,7 +58,9 @@ export class PagesComponent
     this.announcementOperations();
     this.pageRefreshOperations();
 
-    BaseHelper.writeToPipe('basePageComponent', this);
+    this.generalHelper.saveLastPage(window.location.href);
+    BaseHelper.writeToPipe('basePageComponent', this);    
+    this.isBrowser = BaseHelper.isBrowser;
   }
   
   async pageRefreshOperations()
@@ -85,7 +87,12 @@ export class PagesComponent
   {
     if(typeof BaseHelper.loggedInUserInfo == "undefined" || BaseHelper.loggedInUserInfo == null) return;
     
-    var url = this.sessionHelper.getBackendUrlWithToken()+"tables/announcements";
+    await BaseHelper.sleep(1000 * 10);
+    
+    var url = this.sessionHelper.getBackendUrlWithToken();
+    if(url.length == 0) return;
+        
+    url += "tables/announcements";
 
     var params = 
     {
@@ -334,7 +341,12 @@ export class PagesComponent
   {
     if(typeof BaseHelper.loggedInUserInfo == "undefined" || BaseHelper.loggedInUserInfo == null) return;
     
-    var url = this.sessionHelper.getBackendUrlWithToken()+"tables/e_signs";
+    await BaseHelper.sleep(1000 * 10);
+    
+    var url = this.sessionHelper.getBackendUrlWithToken();
+    if(url.length == 0) return;
+        
+    url += "tables/e_signs";
 
     var params = 
     {
@@ -492,7 +504,10 @@ export class PagesComponent
   
   openBackendLogs()
   {
-    this.generalHelper.navigate(this.sessionHelper.getBackendUrlWithToken()+"logs", true);
+    var url = this.sessionHelper.getBackendUrlWithToken();
+    if(url.length == 0) return;
+        
+    this.generalHelper.navigate(url+"logs", true);
     //window.open(this.sessionHelper.getBackendUrlWithToken()+"logs");
   }
   
@@ -504,7 +519,10 @@ export class PagesComponent
   
   importRecord()
   {
-    var url = this.sessionHelper.getBackendUrlWithToken()+"importRecord";
+    var url = this.sessionHelper.getBackendUrlWithToken();
+    if(url.length == 0) return;
+        
+    url += "importRecord";
 
     var params = new FormData();
     var files = $('#importRecordFile')[0].files;
@@ -642,6 +660,18 @@ export class PagesComponent
   
   navigate(page, newPage = false)
   {
+    if(page.indexOf('dashboard') > -1 || BaseHelper.loggedInUserInfo != null)
+    {
+      var key = 'user:'+BaseHelper.loggedInUserInfo['user']["id"]+".lastPage"; 
+      BaseHelper.removeFromLocal(key);
+      console.log("yonlendirme sil");
+    }
+    
     this.generalHelper.navigate(page, newPage);
+  }
+  
+  openShotcutsModal()
+  {
+    $('#browserShortcutsModal').modal('show')
   }
 } 

@@ -159,7 +159,10 @@ export class FormComponent
             
     dataReload()
     {
-        var url = this.sessionHelper.getBackendUrlWithToken()+"tables/"+this.tableName+"/";
+        var url = this.sessionHelper.getBackendUrlWithToken();
+        if(url.length == 0) return;        
+        url += "tables/"+this.tableName+"/";
+        
         if(this.recordId == 0) url += "create";
         else url += this.recordId + "/edit";
 
@@ -280,7 +283,10 @@ export class FormComponent
     
     save()
     {
-        var url = this.sessionHelper.getBackendUrlWithToken()+"tables/"+this.tableName+"/";
+        var url = this.sessionHelper.getBackendUrlWithToken();
+        if(url.length == 0) return;        
+        url += "tables/"+this.tableName+"/";
+        
         if(this.recordId == 0) url += "store";
         else url += this.recordId + "/update";
 

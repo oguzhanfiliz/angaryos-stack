@@ -15,15 +15,10 @@ export class AeroComponent
       //private messagingService: MessagingService
   )
   {
-    BaseHelper.preLoad();
-    this.fillPlatformVariables();
-    this.firebaseCloudMessageBegin();
-    this.redirectToLoginIfLoggedOut()
-  }
-  
-  fillPlatformVariables()
-  {
     this.generalHelper.fillPlatformVariables();
+    BaseHelper.preLoad();
+    this.firebaseCloudMessageBegin();
+    if(this.redirectToLoginIfLoggedOut()) return;
   }
 
   firebaseCloudMessageBegin()
@@ -34,7 +29,7 @@ export class AeroComponent
   
   redirectToLoginIfLoggedOut()
   {
-    if(BaseHelper.token.length > 0) return;
+    if(BaseHelper.token.length > 0) return false;
       
     var ext = ['lppd', 'privacy-politica'];
     for(var i = 0; i < ext.length; i++)
@@ -43,6 +38,9 @@ export class AeroComponent
         if(control > -1) return;
     }
         
-    this.generalHelper.navigate('/login');
+    var path = window.innerWidth > 640 ? '/login' : '/mobile-home';
+    this.generalHelper.navigate(path);
+    
+    return true;
   }
 } 

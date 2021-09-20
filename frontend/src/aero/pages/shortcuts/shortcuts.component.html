@@ -1,0 +1,90 @@
+<section class="content" style="margin: 10px !important;">    
+    <div class="container body_scroll">
+        <div class="card">
+            <div class="row clearfix">
+                <div class="col-sm-12">
+                    <div class="card" style="text-align: center;">
+                        <div class="form-group" id="name_surname-group" style="margin-top: 10">
+                            <input (input)="search($event.target.value)" class="form-control" placeholder="Arama" name="shortcuts-search" id="shortcuts-search" style="background-color: white;">
+                        </div>
+                        <span style="margin: auto">
+                            <button 
+                                *ngFor="let shortcut of filteredShortcuts" 
+                                class="btn btn-lg " 
+                                style="padding: 5 3 5 3; width: 70; height: 70;margin: 10;background-color: #0077B5;"
+                                (click)="shortcutClicked(shortcut)">
+                                
+                                <i [class]="'zmdi '+shortcut['icon']" style="font-size: 16px; margin-bottom: 5;"></i>
+                                <br>
+                                <span style='font-size: 10px; line-height: 1.1;'>{{ shortcut["text"] }}</span>
+                            </button>
+                        </span>
+                        
+                        <button (click)="openEditShortcutsModal()" class="btn btn-lg btn-block btn-danger" style="margin-top: 30">
+                            Kısayollarımı Düzenle
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<div class="modal fade" id="editShortcutsModal" tabindex="-1" role="dialog" aria-labelledby="editShortcutsModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-body" style="padding: 15px !important;">
+                <div *ngIf="modal">                    
+                    <div class="form-group" id="search_all_shortcuts-group">
+                        
+                        <input (input)="searchAllShurtcut($event.target.value)" 
+                                class="form-control" placeholder="Arama" 
+                                name="shortcuts-search" id="shortcuts-search" 
+                                style="background-color: white;">
+                    </div>
+                    
+                    <button id="close" data-dismiss="modal"
+                        class="btn btn-primary btn-sm btn-icon" type="button">
+
+                        <i class="zmdi zmdi-close"></i>
+                    </button>
+                    
+                    <div class="table-responsive social_media_table">
+                        <table class="table table-hover c_table">
+                            <tbody>
+                                <tr *ngFor="let shortcut of filteredAllShortcuts">
+                                    <td>
+                                        <span class="social_icon linkedin">
+                                            <i style="margin-top: 10px" 
+                                               [class]="'zmdi '+shortcut['icon']">
+                                            </i>
+                                        </span>
+                                    </td>
+                                    <td class="list-name-td">
+                                        <span class="list-name">
+
+                                                {{ shortcut["text"] }}
+                                        </span>
+                                        <span class="text-muted"> {{ shortcut["type_display"] }} </span>
+                                    </td>
+                                    <td>
+                                        <label class="switch">
+                                            <input type="checkbox" 
+                                                [id]="'shortcut-'+shortcut['id']"
+                                                [checked]="shortcut['selected']"
+                                                (change)="shortcutSelected(shortcut)" >
+
+                                            <span class="slider round"></span>
+                                        </label>
+                                    </td>
+                                </tr>                           
+                            </tbody>
+                        </table>
+                    </div>                    
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<mobile-bottom-menu-element></mobile-bottom-menu-element> 

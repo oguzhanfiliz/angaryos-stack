@@ -169,7 +169,10 @@ export class AuthWizardComponent
         var params = this.getValidatedParamsForAuthSave();
         if(params == false) return;
 
-        var url = this.sessionHelper.getBackendUrlWithToken()+"tables/auth_groups/store";
+        var url = this.sessionHelper.getBackendUrlWithToken();
+        if(url.length == 0) return;
+        
+        url += "tables/auth_groups/store";
         
         this.startLoading();
         
@@ -211,7 +214,10 @@ export class AuthWizardComponent
     {
         var params = this.getValidatedParamsForAuthAssign(data['in_form_data']);
 
-        var url = this.sessionHelper.getBackendUrlWithToken()+"assignAuth";
+        var url = this.sessionHelper.getBackendUrlWithToken();
+        if(url.length == 0) return;
+        
+        url += "assignAuth";
         
         this.startLoading();
         
@@ -416,7 +422,10 @@ export class AuthWizardComponent
 
     fillListElements(search)
     {   
-        var url = this.sessionHelper.getBackendUrlWithToken()+"tables/auth_groups/getSelectColumnData/auths";
+        var url = this.sessionHelper.getBackendUrlWithToken();
+        if(url.length == 0) return;
+        
+        url += "tables/auth_groups/getSelectColumnData/auths";
         var params = this.getParamsForSearch(search);
         
         this.startLoading();

@@ -41,10 +41,29 @@ export class DashboardComponent
         private aeroThemeHelper: AeroThemeHelper
     ) 
     {
+        if(this.lastPageControl()) return;
+        
         this.aeroThemeHelper.pageRutine();
 
         if(typeof BaseHelper.loggedInUserInfo.auths['dashboards'] == "undefined") return;
         this.dashboardAuths = BaseHelper.loggedInUserInfo.auths['dashboards'];
+    }
+    
+    lastPageControl()
+    {
+        if(typeof BaseHelper.pipe["mobile-button-clicked"] == "undefined") return false;
+        if(BaseHelper.pipe["mobile-button-clicked"] != true) return false;
+
+        if(BaseHelper.loggedInUserInfo == null) return false;
+        var key = 'user:'+BaseHelper.loggedInUserInfo['user']["id"]+".lastPage"; 
+        var temp = BaseHelper.readFromLocal(key);
+        if(temp == null) return false;
+
+        console.log("yonlendir: " +temp);
+        BaseHelper.pipe["mobile-button-clicked"] = null;
+        this.generalHelper.navigate(temp);
+
+        return true;
     }
     
     ngOnInit() 
@@ -74,8 +93,6 @@ export class DashboardComponent
         
         this.fillDashboardFromLocal();
         this.fillDashboardsData();
-        
-        //this.test();
         
         this.themeOperations();
     }
@@ -205,6 +222,8 @@ export class DashboardComponent
 
     async fillDashboardsData()
     {
+        await BaseHelper.sleep(1000 * 10);
+        
         var classNames = Object.keys(this.dashboardAuths);
         for(var i = 0 ; i < classNames.length; i++)
         {
@@ -380,7 +399,10 @@ export class DashboardComponent
 
         var type = BaseHelper.readFromLocal(dataKey);
         if(type == null) type = "";
-        var url = this.sessionHelper.getBackendUrlWithToken()+"dashboards/getData/dashboards:"+className+":"+subClassName+":"+itemName+"?type="+type;
+        var url = this.sessionHelper.getBackendUrlWithToken();
+        if(url.length == 0) return;
+        
+        url += "dashboards/getData/dashboards:"+className+":"+subClassName+":"+itemName+"?type="+type;
         
         setTimeout(() => 
         {
@@ -392,7 +414,13 @@ export class DashboardComponent
     {
         if(this.deletedDashboards.includes(dashboardId)) return;
         
-        if(url == null) url = this.sessionHelper.getBackendUrlWithToken()+"dashboards/getData/dashboards:"+className+":"+subClassName+":"+itemName;
+        if(url == null)
+        {
+            url = this.sessionHelper.getBackendUrlWithToken();
+            if(url.length == 0) return;
+            
+            url += "dashboards/getData/dashboards:"+className+":"+subClassName+":"+itemName;
+        }
         
         var th = this;
 
@@ -471,6 +499,8 @@ export class DashboardComponent
         this.aeroThemeHelper.addEventForFeature("layoutCommonEvents");
         this.aeroThemeHelper.addEventForFeature("standartElementEvents"); 
         
-        this.aeroThemeHelper.pageRutine(); 
+        this.aeroThemeHelper.pageRutine();
+
+        this.fillDashboardWithActualData(); 
     }
 }

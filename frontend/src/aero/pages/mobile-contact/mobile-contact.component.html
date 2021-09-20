@@ -69,7 +69,11 @@
                                             </table>
                                         </td>
                                     </tr>
-                                    
+                                    <tr>
+                                        <td colspan="2">
+                                            <button (click)="openFeedBackModal()" class="btn btn-lg btn-primary btn-block">Geri Bildirim Gönder</button>
+                                        </td>
+                                    </tr>                                    
                                 </tbody>
                             </table>
                         </div>
@@ -79,5 +83,46 @@
         </div>
     </div>
 </section>
+
+<div class="modal fade" id="feedBackModal" tabindex="-1" role="dialog" aria-labelledby="feedBackModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-body" style="padding: 15px !important;">
+                <h3>Geri Bildirim Gönder</h3>
+                <table class="light-table" style="width: 100%">
+                    <tr>
+                        <td>
+                            <div class="form-group" id="name_surname-group">
+                                <input class="form-control" placeholder="Ad Soyad" name="name_surname" id="name_surname">
+                            </div>
+                        </td>
+                    </tr><tr>
+                        <td>
+                            <div class="form-group" id="phone-group">
+                                <input type="number" class="form-control" placeholder="Telefon" name="phone" id="phone">
+                            </div>
+                        </td>
+                    </tr><tr>
+                        <td>
+                            <div class="form-group" id="email_basic-group">
+                                <input class="form-control" placeholder="E-Mail" name="email_basic" id="email_basic">
+                            </div>
+                        </td>
+                    </tr><tr>
+                        <td>
+                            <div class="form-group" id="description-group">
+                                <textarea class="form-control" name="description" id="description"></textarea>
+                            </div>
+                        </td>
+                    </tr><tr>
+                        <td>
+                            <button id="sendFeedbackButton" (click)="sendFeedback()" class="btn btn-block btn-primary">Gönder</button>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
 
 <mobile-bottom-menu-element></mobile-bottom-menu-element> 

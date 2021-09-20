@@ -64,8 +64,10 @@ export class SearchComponent
 
     async searchOnAllTables(words)
     {
-        await this.sessionHelper.getLoggedInUserInfo()
-        .then(async (info) =>
+        var temp = this.sessionHelper.getLoggedInUserInfo();
+        if(temp == null) return;
+        
+        await temp.then(async (info) =>
         {
             if(typeof info["auths"] == "undefined") return;
             if(typeof info["auths"]["tables"] == "undefined") return;
@@ -102,7 +104,10 @@ export class SearchComponent
 
     async searchOnTable(tableName, table)
     {
-        var url = this.sessionHelper.getBackendUrlWithToken()+"search/"+tableName+"/"+encodeURI(this.words);
+        var url = this.sessionHelper.getBackendUrlWithToken();
+        if(url.length == 0) return;
+        
+        url += "search/"+tableName+"/"+encodeURI(this.words);
         
         var th = this;
 

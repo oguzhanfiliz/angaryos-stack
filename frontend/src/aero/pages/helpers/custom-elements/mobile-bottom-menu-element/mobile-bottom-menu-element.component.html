@@ -14,8 +14,9 @@
           <span class="nav__text">Panel</span>
         </a>
         <a 
+            *ngIf="showShortcut"
             [class]="'nav__link ' + (isActive('shortcuts') ? ' nav__link--active' : '')"            
-            (click)="openShortcutsModal()" >
+            (click)="navigate('/shortcuts')" >
           <i class="zmdi zmdi-toys"></i>
           <span class="nav__text">Kısayollarım</span>
         </a>

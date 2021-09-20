@@ -9,6 +9,8 @@ import { GeneralHelper } from './../helpers/general';
 import { MessageHelper } from './../helpers/message';
 import { AeroThemeHelper } from './../helpers/aero.theme';
 
+declare var $: any;
+
 @Component(
 {
     selector: 'mobile-home',
@@ -27,6 +29,12 @@ export class MobileHomeComponent
         private messageHelper: MessageHelper
         )
     {
+        if(BaseHelper.isBrowser) 
+        {
+            this.generalHelper.navigate('/login');
+            return;
+        }
+        
         this.fillNews();
     }
     
@@ -41,6 +49,8 @@ export class MobileHomeComponent
     
     fillNewsFromPipe()
     {
+        console.log("pipe");
+        
         if(typeof BaseHelper.pipe['newsForMobileHome'] == "undefined") return false;
         
         this.news = BaseHelper.pipe['newsForMobileHome'];
@@ -49,6 +59,8 @@ export class MobileHomeComponent
     
     fillNewsFromLocal()
     {
+        console.log("local");
+        
         var temp = BaseHelper.readFromLocal("newsForMobileHome");
         if(temp == null) return false;
         
@@ -60,6 +72,8 @@ export class MobileHomeComponent
     
     fillNewsFromServer()
     {
+        console.log("server");
+        
         setTimeout(() =>
         {
             var params = {
@@ -68,7 +82,7 @@ export class MobileHomeComponent
                 "column_array_id":"0",
                 "column_array_id_query":"0",
                 "sorts": {
-                    "id": true
+                    "id": false
                 },
                 "filters":{}
             };
@@ -80,7 +94,7 @@ export class MobileHomeComponent
             {
                 this.news = this.formatNews(data['records']);
                 
-                BaseHelper.writeToLocal("newsForMobileHome", this.news, 1000*60*3);
+                BaseHelper.writeToLocal("newsForMobileHome", this.news, 1000*60*60);
                 BaseHelper.pipe['newsForMobileHome'] = this.news;
                 
                 this.aeroThemeHelper.pageRutine();

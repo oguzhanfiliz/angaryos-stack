@@ -574,6 +574,10 @@ export abstract class DataHelper
         
         url = BaseHelper.replaceAll(url, '***baseUrl***', BaseHelper.backendBaseUrl);
         url = BaseHelper.replaceAll(url, '***token***', BaseHelper.token);
+        
+        url = url.replaceAll('//', '/');
+        url = url.replaceAll(':/', '://');
+        
         if(url == null || url.length == 0) return "";
         
         var user = BaseHelper.loggedInUserInfo['user'];

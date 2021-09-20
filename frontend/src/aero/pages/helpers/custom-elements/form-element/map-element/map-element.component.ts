@@ -97,7 +97,10 @@ export class MapElementComponent
     
     uploadKmz()
     {
-        var url = this.sessionHelper.getBackendUrlWithToken()+"translateKmzOrKmlToJson";
+        var url = this.sessionHelper.getBackendUrlWithToken();
+        if(url.length == 0) return;
+        
+        url += "translateKmzOrKmlToJson";
         
         var params = new FormData();
         params.append("file", $('#kmzFile')[0].files[0]);

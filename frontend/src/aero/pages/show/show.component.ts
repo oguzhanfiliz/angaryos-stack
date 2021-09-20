@@ -129,7 +129,10 @@ export class ShowComponent
 
     dataReload()
     {
-        var url = this.sessionHelper.getBackendUrlWithToken()+"tables/"+this.tableName+"/"+this.recordId;
+        var url = this.sessionHelper.getBackendUrlWithToken();
+        if(url.length == 0) return;
+        
+        url += "tables/"+this.tableName+"/"+this.recordId;
         var params = this.getParamsForShow();
         var data = {'params': BaseHelper.objectToJsonStr(params)};
         

@@ -26,19 +26,28 @@ export class MapComponent
         )
     {
         BaseHelper.preLoad();
-        if(BaseHelper.token.length == 0) this.generalHelper.navigate('/login');
+        
+        if(BaseHelper.loggedInUserInfo == null) 
+        {
+            this.generalHelper.navigate('/login');
+            return
+        }
 
         this.loggedInUserToken = BaseHelper.token;
 
         this.aeroThemeHelper.addEventForFeature('standartElementEvents');
 
-        sessionHelper.getLoggedInUserInfo().then((loggedInUserInfo) =>
+        var temp = sessionHelper.getLoggedInUserInfo();
+        if(temp != null) 
         {
-            this.loggedInUserInfoJson = BaseHelper.objectToJsonStr(loggedInUserInfo);
-            
-            if(!this.sessionHelper.mapAuthControl())
-                this.generalHelper.navigate('/map');
-        });
+            temp.then((loggedInUserInfo) =>
+            {
+                this.loggedInUserInfoJson = BaseHelper.objectToJsonStr(loggedInUserInfo);
+
+                if(!this.sessionHelper.mapAuthControl())
+                    this.generalHelper.navigate('/map');
+            });
+        }
         
         this.aeroThemeHelper.pageRutine();
     }

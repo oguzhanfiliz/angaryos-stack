@@ -293,6 +293,7 @@ $column_validations['select_updated_at'] = NULL;
 $column_validations['only_fromdatasource_for_excel_type'] = NULL;
 $column_validations['required_for:table1,table2'] = NULL;
 $column_validations['required_for:custom_layers'] = NULL;
+$column_validations['required_for:feedbacks'] = NULL;
 
 $temp = $this->get_base_record();
 

@@ -22,7 +22,7 @@
         <!-- Right Icon menu Sidebar -->
         <div class="navbar-right">
             <ul class="navbar-nav">
-                <li>
+                <li  *ngIf="false">
                     <a style="padding: 10px !important; margin-bottom: 10px !important;" href="#search" class="main_search" title="Search...">
                         <i class="zmdi zmdi-search"></i>
                     </a>
@@ -73,30 +73,15 @@
                     </ul>
                 </li>
                 
-                <li class="dropdown" id="shortcuts">
+                <li class="dropdown" id="shortcuts" *ngIf="isBrowser">
                     <a style="padding: 10px !important; margin-bottom: 10px !important;" 
-                        class="dropdown-toggle" 
-                        title="Kısayollar" data-toggle="dropdown" role="button">
+                       (click)="openShotcutsModal()"
+                        title="Kısayollar"  role="button">
                         
                         <i class="zmdi zmdi-apps"></i>
                     </a>
-                    <ul class="dropdown-menu slideUp2">
-                        <li class="header">Kısayollar</li>
-                        <li class="body">
-                            <ul class="menu app_sortcut list-unstyled">
-                                <!--<li>
-                                    <a>
-                                        <div class="icon-circle mb-2 bg-blue">
-                                            <i class="zmdi zmdi-account"></i>
-                                        </div>
-                                        <p style="font-size: 11px" class="mb-0">Yetki<br>Yenile</p>
-                                    </a>
-                                </li>-->
-                            </ul>
-                        </li>
-                    </ul>
                 </li>
-                <li>
+                <li  *ngIf="false">
                     <a style="padding: 10px !important; margin-bottom: 10px !important;"  class="js-right-sidebar" title="Setting">
                         <i class="zmdi zmdi-settings zmdi-hc-spin"></i>
                     </a>
@@ -236,3 +221,18 @@
             <span class="ti ti-pencil-alt"></span>
         </button>
 </body>
+
+
+<div *ngIf="isBrowser"
+    class="modal fade" id="browserShortcutsModal"
+    tabindex="-1" role="dialog" 
+    aria-labelledby="browserShortcutsModalLabel" aria-hidden="true">
+    
+    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-body" style="padding: 15px !important;">
+                <shortcuts> </shortcuts>
+            </div>
+        </div>
+    </div>
+</div>

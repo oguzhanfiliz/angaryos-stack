@@ -854,7 +854,10 @@ export class FullScreenMapElementComponent
             "sender": "fullscreenMapElement"
         };
         
-        var url = this.sessionHelper.getBackendUrlWithToken()+"tables/"+tableName;
+        var url = this.sessionHelper.getBackendUrlWithToken();
+        if(url.length == 0) return;
+        
+        url += "tables/"+tableName;
         
         return new Promise(async (resolve) =>
         {
@@ -1408,7 +1411,10 @@ export class FullScreenMapElementComponent
 
     uploadKmz()
     {
-        var url = this.sessionHelper.getBackendUrlWithToken()+"translateKmzOrKmlToJson";
+        var url = this.sessionHelper.getBackendUrlWithToken();
+        if(url.length == 0) return;
+        
+        url += "translateKmzOrKmlToJson";
         
         var params = new FormData();
         params.append("file", $('#kmzFile')[0].files[0]);
@@ -1771,7 +1777,10 @@ export class FullScreenMapElementComponent
 
             var temp = BaseHelper.readFromLocal(key);
         
-            var url = this.sessionHelper.getBackendUrlWithToken()+"getSubTables/"+temp['tableName']+"/"+typeName;
+            var url = this.sessionHelper.getBackendUrlWithToken();
+            if(url.length == 0) return;
+
+            url += "getSubTables/"+temp['tableName']+"/"+typeName;
             
             this.generalHelper.startLoading();
             this.sessionHelper.doHttpRequest("POST", url)
@@ -1843,7 +1852,10 @@ export class FullScreenMapElementComponent
     
     fillTableIdColumn()
     {
-        var url = this.sessionHelper.getBackendUrlWithToken()+"tables/"+this.inFormTargetData['subTable']['tableName']+"/";
+        var url = this.sessionHelper.getBackendUrlWithToken();
+        if(url.length == 0) return;
+        
+        url += "tables/"+this.inFormTargetData['subTable']['tableName']+"/";
         url += "getSelectColumnData/table_id?search=" + this.inFormTargetData['baseTable']['tableName'];
         
         $.ajax(
@@ -1898,6 +1910,8 @@ export class FullScreenMapElementComponent
         var dataTransferSelects = this.getDataTransferSelects(data);
         
         var url = this.sessionHelper.getBackendUrlWithToken();
+        if(url.length == 0) return;
+        
         url += "tables/"+this.inFormTargetData['subTable']['tableName']+"/store";
 
         var errorWhenFirstRecordStore = false;

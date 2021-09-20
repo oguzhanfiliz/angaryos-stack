@@ -27,6 +27,12 @@ export class MobileHomeDetailComponent
         private messageHelper: MessageHelper
         )
     {
+        if(BaseHelper.isBrowser) 
+        {
+            this.generalHelper.navigate('/login');
+            return;
+        }
+        
         var th = this;
         route.params.subscribe(val => 
         {
@@ -49,7 +55,7 @@ export class MobileHomeDetailComponent
             "column_array_id": "0",
             "column_array_id_query": "0",
             "sorts": {},
-            "filters":{"id": {"type":1, "guiType": "numeric", "filter": "1", "columnName": "id"}}
+            "filters":{"id": {"type":1, "guiType": "numeric", "filter":id, "columnName": "id"}}
         };
 
         var url = BaseHelper.backendUrl+"public/tables/public_contents";
@@ -97,7 +103,7 @@ export class MobileHomeDetailComponent
             
             formatted.push(item);
         }
-        console.log(formatted[0]);
+        
         return formatted;
     }
     

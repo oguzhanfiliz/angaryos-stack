@@ -789,6 +789,7 @@ export abstract class MapHelper
 
     setInterval(() => 
     {
+      if(window.location.href.indexOf('/map') == -1) return;
       vectorSource.refresh();
     }, 
     tableAuth["period"] * 1000);

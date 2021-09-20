@@ -1,4 +1,4 @@
-import {Component} from '@angular/core';
+import {Component, OnDestroy} from '@angular/core';
 
 import { BaseHelper } from './../helpers/base';
 import { DataHelper } from './../helpers/data';
@@ -14,7 +14,7 @@ declare var $: any;
   styleUrls: ['./link-page.component.scss'],
   templateUrl: './link-page.component.html',
 })
-export class LinkPageComponent
+export class LinkPageComponent implements OnDestroy
 {
   firstPage = true;
   filterString = "";
@@ -59,6 +59,13 @@ export class LinkPageComponent
     
     this.aeroThemeHelper.loadPageScripts();
     this.openTableGroupList(999);
+    
+    $('#leftsidebar').css('visibility', 'hidden');
+  }
+  
+  ngOnDestroy()
+  {
+    $('#leftsidebar').css('visibility', 'visible');
   }
 
   menuFilterChanged()

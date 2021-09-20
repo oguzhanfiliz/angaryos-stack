@@ -213,7 +213,10 @@ export class MultiSelectDragDropElementComponent
 
     fillListElements(search)
     {   
-        var url = this.sessionHelper.getBackendUrlWithToken()+this.baseUrl+"/getSelectColumnData/"+this.columnName;
+        var url = this.sessionHelper.getBackendUrlWithToken();
+        if(url.length == 0) return;
+        
+        url += this.baseUrl+"/getSelectColumnData/"+this.columnName;
         var params = this.getParamsForSearch(search);
         
         if(!this.createForm) params['editRecordId'] = this.record['id'];

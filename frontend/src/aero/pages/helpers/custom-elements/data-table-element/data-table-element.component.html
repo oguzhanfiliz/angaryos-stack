@@ -158,7 +158,9 @@
                             id="delete-button" 
                             class="btn btn-sm float-right btn-primary btn-icon pull-right" 
                             data-toggle2="tooltip" title="Silinmiş Kayıtlar" 
-                            (click)="navigate('deleted')"><span class="ti ti-trash"></span>
+                            (click)="navigate('deleted')">
+                            
+                            <span class="ti ti-trash"></span>
                         </a>
                     </td>
                     <td>
@@ -559,7 +561,7 @@
                                                     style="width: 60px; height: 26px; padding: 0 5px; margin: 7px;background-color: white;" 
                                                     value="{{ params['limit'] }}"
                                                     (change)="limitUpdated($event.target.value)" >
-                                                <option value="{{ p }}" *ngFor="let p of [1, 2, 3, 5, 10, 15, 25, 100]">
+                                                <option value="{{ p }}" *ngFor="let p of [1, 2, 3, 5, 10, 15, 25, 50, 100]">
                                                     {{ p }}
                                                 </option>
                                             </select> 

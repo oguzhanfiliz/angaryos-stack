@@ -45,7 +45,9 @@ import { AeroThemeHelper } from './pages/helpers/aero.theme';
 import { environment } from '../environments/environment';
 import { AsyncPipe } from '../../node_modules/@angular/common';
 
-import { HTTP as HttpClientNative } from '@ionic-native/http/ngx'; 
+import { NativeAudio } from '@ionic-native/native-audio/ngx';
+
+//import { HTTP as HttpClientNative } from '@ionic-native/http/ngx'; 
 
 @NgModule({
   declarations: 
@@ -54,7 +56,7 @@ import { HTTP as HttpClientNative } from '@ionic-native/http/ngx';
     LoginComponent,
     MapComponent,
     PublicMapComponent,
-    FullScreenMapElementComponent
+    FullScreenMapElementComponent,
   ],
   imports: 
   [
@@ -81,7 +83,8 @@ import { HTTP as HttpClientNative } from '@ionic-native/http/ngx';
     NgbDropdownConfig,
     //MessagingService,
     AsyncPipe,
-    HttpClientNative
+    //HttpClientNative
+    NativeAudio
   ],
   bootstrap: 
   [
