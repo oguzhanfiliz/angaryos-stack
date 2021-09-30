@@ -39,7 +39,7 @@ export class DataEntegratorComponent
     {
         this.aeroThemeHelper.addEventForFeature("standartElementEvents"); 
         this.aeroThemeHelper.addEventForFeature("layoutCommonEvents"); 
-        $.getScript('assets/ext_modules/select2/select2.min.js');
+        BaseHelper.getScript('assets/ext_modules/select2/select2.min.js');
 
         var th = this;
         setTimeout(() => {
@@ -375,7 +375,7 @@ export class DataEntegratorComponent
             else if(data['message'] == 'error')
                 this.messageHelper.sweetAlert("Bir hata oluştu:" + BaseHelper.objectToJsonStr(data['errors']), "Hata", "warning");
             else if(data['message'] == 'success')
-                this.messageHelper.sweetAlert("Veri aktarma görevi başarı ile oluştutuldu!", "Başarı", "success");
+                this.messageHelper.sweetAlert("Veri aktarma görevi başarı ile oluşturuldu!", "Başarı", "success");
             else
                 this.messageHelper.sweetAlert("Beklenmedik cevap geldi!", "Hata", "warning");
         });

@@ -48,32 +48,33 @@ export class MobileHomeComponent
     }
     
     fillNewsFromPipe()
-    {
-        console.log("pipe");
-        
+    {        
         if(typeof BaseHelper.pipe['newsForMobileHome'] == "undefined") return false;
         
         this.news = BaseHelper.pipe['newsForMobileHome'];
+        setTimeout(() =>
+        {
+            this.aeroThemeHelper.pageRutine();
+        }, 500);
         return true;
     }
     
     fillNewsFromLocal()
-    {
-        console.log("local");
-        
+    {        
         var temp = BaseHelper.readFromLocal("newsForMobileHome");
         if(temp == null) return false;
         
         this.news = temp;
         BaseHelper.pipe['newsForMobileHome'] = this.news;
-                
+        setTimeout(() =>
+        {
+            this.aeroThemeHelper.pageRutine();
+        }, 500);
         return true;
     }
     
     fillNewsFromServer()
-    {
-        console.log("server");
-        
+    {        
         setTimeout(() =>
         {
             var params = {
@@ -97,7 +98,10 @@ export class MobileHomeComponent
                 BaseHelper.writeToLocal("newsForMobileHome", this.news, 1000*60*60);
                 BaseHelper.pipe['newsForMobileHome'] = this.news;
                 
-                this.aeroThemeHelper.pageRutine();
+                setTimeout(() =>
+                {
+                    this.aeroThemeHelper.pageRutine();
+                }, 500);
             })
             .catch((e) =>
             {

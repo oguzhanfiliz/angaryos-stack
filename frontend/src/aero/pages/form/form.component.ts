@@ -420,7 +420,6 @@ export class FormComponent
     {
         var id = '[name="'+columnName+'"]';
         if(this.id.length > 0)
-            //id = '[ng-reflect-id="'+this.id+'"] ' + id;
             id = '#'+this.id+'inFormModal ' + id;
             
         if(columnName == "name") id += ":last-child";

@@ -8,6 +8,8 @@ import { GeneralHelper } from './general';
 import Swal from 'sweetalert2'
 import 'sweetalert2/dist/sweetalert2.min.css'
 
+declare var cordova: any;
+
 @Injectable()
 export class SessionHelper
 {     
@@ -240,14 +242,41 @@ export class SessionHelper
 
     public login(email:string, password:string)
     {
+      var cType = null;
+      var agent = null;
+
+      if(BaseHelper.isBrowser)
+      {
+        if(typeof cordova == "undefined")
+        {
+          cType = "mobileBrowser"
+          agent = navigator.userAgent;
+        }
+        else
+        {
+          cType = "browser"
+          agent = navigator.userAgent;
+        }
+      }
+      else if(BaseHelper.isAndroid || BaseHelper.isIos)
+      {
+        cType = BaseHelper.isAndroid ? 'android' : 'ios';
+        agent = this.generalHelper.getDeviceInfo();
+      }
+      else
+      {
+        cType = "tanimsiz"
+        agent = 'tanimsiz';
+      }
+      
       return this.doHttpRequest("POST", BaseHelper.backendUrl+"login", 
       {
         email: email, 
         password: password,
         clientInfo: 
         {
-          type: BaseHelper.isBrowser ? 'browser' : 'ionic-mobile',
-          agent: navigator.userAgent,
+          type: cType,
+          agent: agent,
           firebaseToken: BaseHelper.firebaseToken
         }
       });

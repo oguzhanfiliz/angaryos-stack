@@ -49,7 +49,7 @@ export class ColumnArrayFormElementComponent
     ) 
     { 
         this.fillDefaultVariables();
-        $.getScript('assets/ext_modules/select2/select2.min.js');
+        BaseHelper.getScript('assets/ext_modules/select2/select2.min.js');
     }
     
     ngOnChanges()
@@ -255,8 +255,6 @@ export class ColumnArrayFormElementComponent
     getSelectedOptionValueMultiSelectDragDrop(elementId, columnName)
     {
         var modalId = elementId.replace('[name="'+columnName+'"]', '');
-
-        //var selectedId = modalId + ' [ng-reflect-name="'+columnName+'"] .selected-list .selected-option';
         var selectedId = modalId + ' #'+columnName+'-group .selected-list .selected-option';
         
         var selected = $(selectedId);
@@ -273,13 +271,11 @@ export class ColumnArrayFormElementComponent
         else if(val.length == 1) return parseInt(val[0]);
         else
         {
-            //var selected = $(modalId+" [ng-reflect-name='"+columnName+"'] .selected-option");
             var selected = $(modalId+" #"+columnName+'-group .selected-option');
             
             if(selected.length != 1) return 0;
 
             var count = -1;
-            //var all = $(modalId+" [ng-reflect-name='"+columnName+"'] .select2-selection__choice");
             var all = $(modalId+" #"+columnName+"-group .select2-selection__choice");
             
             for(var i = 0; i < all.length; i++)

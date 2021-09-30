@@ -45,7 +45,6 @@ export class SelectElementComponent
     ngAfterViewInit()
     {
         if(this.upFormId.length > 0)
-            //this.baseElementSelector = '[ng-reflect-id="'+this.upFormId+'"] ';
             this.baseElementSelector = '#'+this.upFormId+'inFormModal ';
 
         this.elementOperations(); 
@@ -86,7 +85,7 @@ export class SelectElementComponent
 
     elementOperations()
     {      
-        $.getScript('assets/ext_modules/select2/select2.min.js', async () => 
+        BaseHelper.getScript('assets/ext_modules/select2/select2.min.js', async () => 
         {
             switch(this.type)
             {

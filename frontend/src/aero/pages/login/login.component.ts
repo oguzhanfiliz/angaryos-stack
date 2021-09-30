@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 import { Component, TemplateRef } from '@angular/core';
 import { Router } from '@angular/router';
 
@@ -11,6 +13,8 @@ import Swal from 'sweetalert2';
 import 'sweetalert2/dist/sweetalert2.min.css';
  
 declare var $: any;
+declare var cordova: any;
+declare var IRoot: any;
 
 @Component(
 {
@@ -52,6 +56,12 @@ export class LoginComponent
         setTimeout(() => this.cookieControl(), 2000);
         
         if(BaseHelper.isAndroid || BaseHelper.isIos) this.isNative = true;
+    }
+    
+    ngAfterViewInit()
+    {
+        $('#email').css('height', '32px');
+        $('#password').css('height', '32px'); 
     }
     
     forgetPassword()
@@ -111,6 +121,31 @@ export class LoginComponent
 
     validate()
     {
+        if(!BaseHelper.isBrowser)
+        {
+            var info = this.generalHelper.getDeviceInfo();
+            if(info['isVirtual'])
+            {
+                //this.messageHelper.toastMessage("Bu uygulama sanal cihazla kullanılamaz!", "warning");
+                //return false;
+            }
+        }
+
+        if(typeof cordova != "undefined")
+        {
+            IRoot.isRooted( (data) => 
+            {
+                if (data && data === true) 
+                {
+                    //this.messageHelper.toastMessage("Bu uygulama root yapılmış cihazla kullanılamaz!", "warning");
+                    //return false;
+                }
+            }, (data) => 
+            {
+                console.log('rooted device detection failed case ' +  data);
+            });
+        }
+        
         if(this.user.password.length < 4)
         {
             this.messageHelper.toastMessage("Şifre en az 4 karakter olmalı", "warning");

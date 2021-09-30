@@ -37,7 +37,7 @@ export class DateTimeElementComponent
 
     elementOperations()
     {      
-        $.getScript('assets/themes/aero/assets/plugins/jquery-inputmask/jquery.inputmask.bundle.js', 
+        BaseHelper.getScript('assets/themes/aero/assets/plugins/jquery-inputmask/jquery.inputmask.bundle.js', 
             () => this.addInputMask());        
     }
 

@@ -65,38 +65,38 @@ export class AeroThemeHelper
       
       setTimeout(async () => 
       {
-        await $.getScript('https://cdnjs.cloudflare.com/ajax/libs/jQuery-slimScroll/1.3.8/jquery.slimscroll.min.js');
+        await BaseHelper.getScript('https://cdnjs.cloudflare.com/ajax/libs/jQuery-slimScroll/1.3.8/jquery.slimscroll.min.js');
         
-        $.getScript('assets/themes/aero/assets/bundles/libscripts.bundle.js', function()
+        BaseHelper.getScript('assets/themes/aero/assets/bundles/libscripts.bundle.js', function()
         {
-          $.getScript('assets/themes/aero/assets/bundles/vendorscripts.bundle.js', function()
+          BaseHelper.getScript('assets/themes/aero/assets/bundles/vendorscripts.bundle.js', function()
           {
-            $.getScript('assets/themes/aero/assets/bundles/mainscripts.bundle.js');
-            $.getScript('assets/themes/aero/assets/plugins/jquery-inputmask/jquery.inputmask.bundle.js');
+            BaseHelper.getScript('assets/themes/aero/assets/bundles/mainscripts.bundle.js');
+            BaseHelper.getScript('assets/themes/aero/assets/plugins/jquery-inputmask/jquery.inputmask.bundle.js');
 
             
-            $.getScript('assets/themes/aero/assets/bundles/jvectormap.bundle.js');
-            $.getScript('assets/themes/aero/assets/bundles/sparkline.bundle.js');
-            $.getScript('assets/themes/aero/assets/bundles/c3.bundle.js');
+            BaseHelper.getScript('assets/themes/aero/assets/bundles/jvectormap.bundle.js');
+            BaseHelper.getScript('assets/themes/aero/assets/bundles/sparkline.bundle.js');
+            BaseHelper.getScript('assets/themes/aero/assets/bundles/c3.bundle.js');
 
-            $.getScript('assets/themes/aero/assets/plugins/jquery-validation/jquery.validate.js');
-            $.getScript('assets/themes/aero/assets/plugins/jquery-steps/jquery.steps.js');
+            BaseHelper.getScript('assets/themes/aero/assets/plugins/jquery-validation/jquery.validate.js');
+            BaseHelper.getScript('assets/themes/aero/assets/plugins/jquery-steps/jquery.steps.js');
           });     
 
-          $.getScript('assets/ext_modules/ace-builds/src-min/ace.js', function()
+          BaseHelper.getScript('assets/ext_modules/ace-builds/src-min/ace.js', function()
           {
-            $.getScript('assets/ext_modules/ace-builds/src-min/mode-php.js');
-            $.getScript('assets/ext_modules/ace-builds/src-min/mode-sql.js');
-            $.getScript('assets/ext_modules/ace-builds/src-min/mode-javascript.js');
-            $.getScript('assets/ext_modules/ace-builds/src-min/theme-twilight.js');
-            $.getScript('assets/ext_modules/ace-builds/src-min/theme-github.js');
+            BaseHelper.getScript('assets/ext_modules/ace-builds/src-min/mode-php.js');
+            BaseHelper.getScript('assets/ext_modules/ace-builds/src-min/mode-sql.js');
+            BaseHelper.getScript('assets/ext_modules/ace-builds/src-min/mode-javascript.js');
+            BaseHelper.getScript('assets/ext_modules/ace-builds/src-min/theme-twilight.js');
+            BaseHelper.getScript('assets/ext_modules/ace-builds/src-min/theme-github.js');
           });
         });
 
-        $.getScript('assets/ext_modules/select2/select2.min.js');
+        BaseHelper.getScript('assets/ext_modules/select2/select2.min.js');
         
-        $.getScript('assets/ext_modules/jsonTreeViewer/libs/jsonTree/jsonTree.js');
-        $.getScript('assets/ext_modules/slimscrool/jquery.slimscroll.min.js');
+        BaseHelper.getScript('assets/ext_modules/jsonTreeViewer/libs/jsonTree/jsonTree.js');
+        BaseHelper.getScript('assets/ext_modules/slimscrool/jquery.slimscroll.min.js');
       }, 10);
     }
 
@@ -108,9 +108,9 @@ export class AeroThemeHelper
       
       setTimeout(() => 
       {
-        $.getScript('assets/themes/aero/assets/bundles/libscripts.bundle.js', function()
+        BaseHelper.getScript('assets/themes/aero/assets/bundles/libscripts.bundle.js', function()
         {
-          $.getScript('assets/themes/aero/assets/bundles/vendorscripts.bundle.js');
+          BaseHelper.getScript('assets/themes/aero/assets/bundles/vendorscripts.bundle.js');
         });
       }, 10);
     }

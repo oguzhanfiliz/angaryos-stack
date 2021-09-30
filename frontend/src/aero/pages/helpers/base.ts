@@ -50,6 +50,20 @@ export abstract class BaseHelper
 
   /****    General Function    ****/
 
+  public static async getScript(url, callback = null)
+  {
+    await $.ajax({
+        type: "GET",
+        url: url,
+        success: () =>
+        {
+          if(callback != null) callback();
+        },
+        dataType: "script",
+        cache: true
+    });
+  }
+
   public static sleep(ms) 
   {
     return new Promise(resolve => setTimeout(resolve, ms));

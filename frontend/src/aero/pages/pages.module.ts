@@ -1,23 +1,14 @@
 import { Injector, NgModule } from '@angular/core';
 import { NgbModule, NgbDropdownConfig } from '@ng-bootstrap/ng-bootstrap';
-
 import { GridsterModule } from 'angular-gridster2';
-
 import { createCustomElement } from '@angular/elements';
-
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-
 import { DragDropModule } from '@angular/cdk/drag-drop';
-
 import { RouterModule } from '@angular/router';
-
 import { InnerHtmlTransformerDirective } from './helpers/inner.html.transformer';
-
 import { PagesRoutingModule } from './pages-routing.module';
-
 import { PagesComponent } from './pages.component';
-
 import { LinkPageComponent } from './link-page/link-page.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { RedirectComponent } from './redirect/redirect.component';
@@ -36,9 +27,6 @@ import { ShowComponent } from './show/show.component';
 import { FormComponent } from './form/form.component';
 import { AuthWizardComponent } from './auth-wizard/auth-wizard.component';
 import { DataEntegratorComponent } from './data-entegrator/data-entegrator.component';
-
-
-
 import { FormElementComponent } from './helpers/custom-elements/form-element/form-element.component';
 import { TextElementComponent } from './helpers/custom-elements/form-element/text-element/text-element.component';
 import { StringElementComponent } from './helpers/custom-elements/form-element/string-element/string-element.component';
@@ -54,27 +42,24 @@ import { DateTimeElementComponent } from './helpers/custom-elements/form-element
 import { DateElementComponent } from './helpers/custom-elements/form-element/date-element/date-element.component';
 import { TimeElementComponent } from './helpers/custom-elements/form-element/time-element/time-element.component';
 import { CodeEditorElementComponent } from './helpers/custom-elements/form-element/code-editor-element/code-editor-element.component';
-
 import { PhoneElementComponent } from './helpers/custom-elements/form-element/phone-element/phone-element.component';
 import { MoneyElementComponent } from './helpers/custom-elements/form-element/money-element/money-element.component';
 import { RichTextElementComponent } from './helpers/custom-elements/form-element/rich-text-element/rich-text-element.component';
-
 import { DataTableElementComponent } from './helpers/custom-elements/data-table-element/data-table-element.component';
 import { DetailFilterElementComponent } from './helpers/custom-elements/data-table-element/detail-filter-element/detail-filter-element.component';
 import { ColumnArrayElementComponent } from './helpers/custom-elements/column-array-element/column-array-element.component';
 import { ColumnArrayFormElementComponent } from './helpers/custom-elements/column-array-form-element/column-array-form-element.component';
-
 import { GeoPreviewElementComponent } from './helpers/custom-elements/geo-preview-element/geo-preview-element.component';
-
-
 import { JsonViewerElementComponent } from './helpers/custom-elements/jsonviewer-element/jsonviewer-element.component';
 import { RelationColumnElementComponent } from './helpers/custom-elements/relation-column-element/relation-column-element.component';
-
-
 import { BooleanFastChangeElementComponent } from './helpers/custom-elements/boolean-fastchange-element/boolean-fastchange-element.component';
-
 import { MobileBottomMenuElementComponent } from './helpers/custom-elements/mobile-bottom-menu-element/mobile-bottom-menu-element.component';
 import { MobileAppBarElementComponent } from './helpers/custom-elements/mobile-app-bar-element/mobile-app-bar-element.component';
+import { Camera } from '@ionic-native/camera/ngx'; 
+import { Geolocation } from '@ionic-native/geolocation/ngx';
+import { File } from '@ionic-native/file/ngx';
+import { Device } from '@ionic-native/device/ngx';
+import { NFC, Ndef } from '@ionic-native/nfc/ngx';
 
 @NgModule({
   declarations: 
@@ -147,7 +132,16 @@ import { MobileAppBarElementComponent } from './helpers/custom-elements/mobile-a
     NgbModule,
     GridsterModule 
   ],
-  providers: [ NgbDropdownConfig ],
+  providers: 
+  [ 
+    NgbDropdownConfig, 
+    Camera,
+    Geolocation,
+    File,
+    Device,
+    NFC,
+    Ndef
+  ], 
   bootstrap: [PagesComponent],
   entryComponents: 
   [

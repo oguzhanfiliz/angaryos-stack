@@ -11,7 +11,6 @@ function getFormElementVisibilityBaseKey(elementId)
 
     if(elementId.indexOf("ife-") > -1)
     {
-        //formElementVisibilityBaseKey += elementId.split("ng-reflect-id=\"")[1].split('"')[0];
         formElementVisibilityBaseKey += "ife-"+elementId.split("#ife-")[1].split('inFormModal')[0];
     }
 

@@ -70,6 +70,10 @@ export class MobileHomeDetailComponent
             }
             
             this.item = this.formatNews(data['records'])[0];
+            setTimeout(() =>
+            {
+                this.aeroThemeHelper.pageRutine();
+            }, 500);
         })
         .catch((e) =>
         {

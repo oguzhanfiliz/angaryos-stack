@@ -63,7 +63,6 @@ export class MapElementComponent
     ngAfterViewInit()
     {
         if(this.upFormId.length > 0)
-            //this.baseElementSelector = '[ng-reflect-id="'+this.upFormId+'"] ';
             this.baseElementSelector = '#'+this.upFormId+'inFormModal ';
             
         setTimeout(() =>

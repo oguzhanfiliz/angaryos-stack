@@ -1,6 +1,7 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 
 import { BaseHelper } from './../../../base';
+import { AeroThemeHelper } from './../../../aero.theme';
 
 declare var $: any;
 declare var filterXSS: any;
@@ -21,9 +22,12 @@ export class RichTextElementComponent
     @Input() placeholder: string;
     @Input() createForm: boolean = false; 
     
+    constructor( public aeroThemeHelper: AeroThemeHelper )
+    { }
+    
     ngAfterViewInit()
     {
-        $.getScript('assets/ext_modules/trumbowyg/dist/trumbowyg.min.js', () => this.setRichTextElement()); 
+        BaseHelper.getScript('assets/ext_modules/trumbowyg/dist/trumbowyg.min.js', () => this.setRichTextElement()); 
     }
     
     setRichTextElement()
@@ -32,7 +36,6 @@ export class RichTextElementComponent
         
         var selector = " [name='"+this.name+"-rich-text']";
         if(this.upFormId.length > 0) 
-            //selector = '[ng-reflect-id="'+this.upFormId+'"] '+selector;
             selector = '#'+this.upFormId+'inFormModal '+selector;
         
         $.trumbowyg.svgPath = 'assets/ext_modules/trumbowyg/dist/ui/icons.svg';
@@ -42,7 +45,8 @@ export class RichTextElementComponent
         setTimeout(() =>
         {
             $(selector).html(this.value);
-        }, 500);
+            this.aeroThemeHelper.pageRutine();
+        }, 750);
         
         var th = this;
         $('body').on('DOMSubtreeModified', selector, function()
@@ -53,7 +57,6 @@ export class RichTextElementComponent
 
                 var elementSelector = '[name="'+th.name+'"]';
                 if(th.upFormId.length > 0) 
-                    //elementSelector = '[ng-reflect-id="'+th.upFormId+'"] '+elementSelector;
                     elementSelector = '#'+th.upFormId+'inFormModal '+elementSelector;
 
                 $(elementSelector).val(html);

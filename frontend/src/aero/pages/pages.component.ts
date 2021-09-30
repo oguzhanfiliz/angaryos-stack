@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 import { Component } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser'
 import { CommonModule } from "@angular/common";
@@ -54,13 +56,15 @@ export class PagesComponent
     
     $(".page-loader-wrapper").fadeOut();
 
-    this.eSignServerOperations();
+    this.isBrowser = BaseHelper.isBrowser;
+
+    if(this.isBrowser) this.eSignServerOperations();
     this.announcementOperations();
     this.pageRefreshOperations();
 
     this.generalHelper.saveLastPage(window.location.href);
     BaseHelper.writeToPipe('basePageComponent', this);    
-    this.isBrowser = BaseHelper.isBrowser;
+    
   }
   
   async pageRefreshOperations()
@@ -452,10 +456,11 @@ export class PagesComponent
       
       this.aeroThemeHelper.updateBaseMenu();
       
-      setTimeout(() => 
-      {
-        this.eSignOperations();
-      }, 3000);
+      if(this.isBrowser) 
+        setTimeout(() => 
+        {
+          this.eSignOperations();
+        }, 3000);
     })
   }
 

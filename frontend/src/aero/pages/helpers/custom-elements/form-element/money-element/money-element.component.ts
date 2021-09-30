@@ -45,7 +45,7 @@ export class MoneyElementComponent
 
     elementOperations()
     {      
-        $.getScript('assets/themes/aero/assets/plugins/jquery-inputmask/jquery.inputmask.bundle.js', 
+        BaseHelper.getScript('assets/themes/aero/assets/plugins/jquery-inputmask/jquery.inputmask.bundle.js', 
             () => this.addInputMask());        
     }
 
@@ -54,7 +54,6 @@ export class MoneyElementComponent
     {
         var upId = this.upFormId;
         if(upId.length > 0)
-            //upId = '[ng-reflect-id="'+upId+'"] ';
             upId = '#'+upId+'inFormModal ';
 
         var temp = $(upId + ' #'+this.name+"-display").val();

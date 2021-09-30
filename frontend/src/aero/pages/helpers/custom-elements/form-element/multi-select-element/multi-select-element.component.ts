@@ -50,7 +50,6 @@ export class MultiSelectElementComponent
     ngAfterViewInit()
     {         
         if(this.upFormId.length > 0) 
-            //this.baseElementSelector = '[ng-reflect-id="'+this.upFormId+'"] ';
             this.baseElementSelector = '#'+this.upFormId+'inFormModal ';
 
         //this.elementOperationsInterval();
@@ -131,7 +130,7 @@ export class MultiSelectElementComponent
     
     elementOperations()
     {              
-        $.getScript('assets/ext_modules/select2/select2.min.js', () => 
+        BaseHelper.getScript('assets/ext_modules/select2/select2.min.js', () => 
         {
             switch(this.type)
             {

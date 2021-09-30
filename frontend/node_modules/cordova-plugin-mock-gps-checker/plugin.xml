@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugin xmlns="http://www.phonegap.com/ns/plugins/1.0"
+        id="cordova-plugin-mock-gps-checker"
+        version="1.0.0">
+
+  <name>MockGpsChecker</name>
+
+  <engines>
+	<engine name="cordova" version=">=3.0.0"/>
+  </engines>
+
+  <js-module src="www/mockgps.js" name="MockGpsChecker">
+	<clobbers target="window.plugins.mockgpschecker" />
+  </js-module>
+
+  <platform name="android">
+
+    <config-file target="res/xml/config.xml" parent="/*">
+		<feature name="MockGpsChecker">
+			<param name="android-package" value="com.sandata.MockGpsChecker"/>
+		</feature>
+    </config-file>
+
+    <!--
+    <framework src="com.google.android.gms:play-services-location:11.4.2" />
+    -->
+    <framework src="com.google.android.gms:play-services-location:9.8.0" />
+
+  	<config-file target="AndroidManifest.xml" parent="/*">
+      <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+      <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+  	</config-file>
+
+    <source-file src="src/android/com/sandata/MockGpsChecker.java" target-dir="src/com/sandata"/>
+
+  </platform>
+
+</plugin>

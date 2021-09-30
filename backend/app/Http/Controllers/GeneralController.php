@@ -16,6 +16,7 @@ class GeneralController extends Controller
     
     public function test($user)
     {
+        //dd(22, DB::select('alter system set checkpoint_completion_target to \'0.9\''));
         $data = 
         [
             'columns' => 

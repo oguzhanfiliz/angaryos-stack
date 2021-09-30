@@ -1110,13 +1110,6 @@ export class DataTableElementComponent implements OnDestroy
     
     getOpperationLink(operation, record)
     {
-        /*var url = window.location.href;
-
-        if(operation['link'] == "") return url;
-
-        if(url.substr(url.length -1, 1) != '/') url += "/";
-        url += operation['link'].replace("[id]", record['id']);
-        return url;*/
         return operation['link'].replace("[id]", record['id']);
     }
     

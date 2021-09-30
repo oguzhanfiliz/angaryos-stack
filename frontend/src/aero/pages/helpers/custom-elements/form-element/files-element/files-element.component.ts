@@ -3,6 +3,7 @@ import { BaseHelper } from './../../../base';
 import { DataHelper } from './../../../data';
 
 declare var $: any;
+declare var cordova: any;
 
 @Component(
 {
@@ -32,6 +33,11 @@ export class FilesElementComponent
 
     ngAfterViewInit()
     {
+        if(typeof cordova != "undefined")
+        {
+            $('files-element button.btn-danger').css('left', '10px');
+            $('files-element button.btn-danger').css('top', '95px');
+        }
     }
 
     ngOnChanges()
