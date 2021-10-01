@@ -7,6 +7,7 @@ import { DataHelper } from './../../../data';
 import { SessionHelper } from './../../../session';
 import { GeneralHelper } from './../../../general';
 import { MessageHelper } from './../../../message';
+import { AeroThemeHelper } from './../../../aero.theme';
 
 declare var $: any;
 
@@ -48,10 +49,11 @@ export class MultiSelectDragDropElementComponent
     constructor(
         private sessionHelper: SessionHelper,
         private generalHelper: GeneralHelper,
-        private messageHelper: MessageHelper
+        private messageHelper: MessageHelper,
+        private aeroThemeHelper: AeroThemeHelper
     ) 
     {
-        setTimeout(() => 
+        setTimeout(async () => 
         {
             if(this.upFormId.length > 0)
                 this.baseElementSelector = '#'+this.upFormId+'inFormModal ';
@@ -70,6 +72,8 @@ export class MultiSelectDragDropElementComponent
             
             if(this.staticElement) this.fillListElements("***");
 
+            await BaseHelper.sleep(500);
+            this.aeroThemeHelper.pageRutine();
         }, 100);
     }
 

@@ -40,6 +40,14 @@ export class ShowComponent
         setTimeout(() => route.params.subscribe(val => th.preLoadInterval(val)), 100);
     }
 
+    ngAfterViewInit() 
+    {    
+        if(!BaseHelper.isBrowser) 
+            setTimeout(() => {
+                $('section').css('margin', '0px');
+            }, 100);
+    }
+
     ngOnChanges()
     {
         this.preLoadInterval(); 

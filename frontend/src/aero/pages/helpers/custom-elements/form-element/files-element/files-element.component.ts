@@ -35,8 +35,10 @@ export class FilesElementComponent
     {
         if(typeof cordova != "undefined")
         {
-            $('files-element button.btn-danger').css('left', '10px');
-            $('files-element button.btn-danger').css('top', '95px');
+            setTimeout(() => {
+                $('files-element button.btn-danger').css('position', 'initial');
+                $('files-element button.btn-danger').css('margin-left', '-40px');
+            }, 500);
         }
     }
 

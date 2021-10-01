@@ -176,7 +176,6 @@ export class FormComponent
     dataLoaded(data)
     {
         this.data = this.fillDataAdditionalVariables(data);
-        this.aeroThemeHelper.pageRutine();  
         
         this.addEventForFeatures();
         setTimeout(() => 
@@ -184,7 +183,11 @@ export class FormComponent
             this.changeColumnVisibilityGuiTrigger();
             this.formLoad.emit(data);
             
-            setTimeout(() => this.triggerAllColumns(), 1000);
+            setTimeout(() =>
+            {
+                this.triggerAllColumns();
+                this.aeroThemeHelper.pageRutine();
+            }, 1000);
         }, 100); 
     }
     

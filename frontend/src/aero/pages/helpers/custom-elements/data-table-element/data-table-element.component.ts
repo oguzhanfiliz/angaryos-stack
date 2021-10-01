@@ -72,6 +72,14 @@ export class DataTableElementComponent implements OnDestroy
         
         if(BaseHelper.isAndroid || BaseHelper.isIos) this.isNative = true;
     }
+
+    ngAfterViewInit() 
+    {    
+        if(!BaseHelper.isBrowser) 
+            setTimeout(() => {
+                $('section').css('margin', '0px');
+            }, 100);
+    }
     
     ngOnChanges()
     {

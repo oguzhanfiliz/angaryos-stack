@@ -445,3 +445,10 @@ export abstract class BaseHelper
     return str;
   }
 }
+
+var _error = console.error;
+console.error = function() 
+{
+  console.log("error araya girdi");
+  return _error.apply(console, arguments);
+};

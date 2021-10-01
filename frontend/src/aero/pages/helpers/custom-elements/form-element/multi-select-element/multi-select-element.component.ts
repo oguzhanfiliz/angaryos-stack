@@ -3,6 +3,7 @@ import { BaseHelper } from './../../../base';
 import { DataHelper } from './../../../data';
 import { SessionHelper } from './../../../session';
 import { MessageHelper } from './../../../message';
+import { AeroThemeHelper } from './../../../aero.theme';
 
 declare var $: any;
 
@@ -44,7 +45,8 @@ export class MultiSelectElementComponent
     
     constructor(
         private messageHelper: MessageHelper,
-        private sessionHelper: SessionHelper
+        private sessionHelper: SessionHelper,
+        private aeroThemeHelper: AeroThemeHelper
     ) { }
 
     ngAfterViewInit()
@@ -235,6 +237,9 @@ export class MultiSelectElementComponent
                         this.elementOperations();
                     }
                 }
+
+                await BaseHelper.sleep(500);
+                this.aeroThemeHelper.pageRutine();
             },
             error : (e) =>
             {
@@ -305,6 +310,9 @@ export class MultiSelectElementComponent
             })
             .on('select2:select', (event) => th.selected(event))
             .on('select2:unselect', (event) => th.unselected(event));
+            
+            await BaseHelper.sleep(500);
+            this.aeroThemeHelper.pageRutine();
         }
         catch(err2)
         {

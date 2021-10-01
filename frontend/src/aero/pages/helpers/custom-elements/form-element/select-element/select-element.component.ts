@@ -2,6 +2,7 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { BaseHelper } from './../../../base';
 import { SessionHelper } from './../../../session';
 import { MessageHelper } from './../../../message';
+import { AeroThemeHelper } from './../../../aero.theme';
 
 declare var $: any;
 
@@ -38,7 +39,8 @@ export class SelectElementComponent
     
     constructor(
         private messageHelper: MessageHelper,
-        private sessionHelper: SessionHelper
+        private sessionHelper: SessionHelper,
+        private aeroThemeHelper: AeroThemeHelper
     ) 
     { }
 
@@ -179,6 +181,9 @@ export class SelectElementComponent
                         this.elementOperations();
                     }
                 }
+                    
+                await BaseHelper.sleep(500);
+                this.aeroThemeHelper.pageRutine();
             },
             error : (e) =>
             {
@@ -198,7 +203,7 @@ export class SelectElementComponent
         
         try 
         { 
-            $(this.baseElementSelector+' [name="'+this.name+'"]').select2(
+            await $(this.baseElementSelector+' [name="'+this.name+'"]').select2(
             {
                 ajax: 
                 {
@@ -249,6 +254,9 @@ export class SelectElementComponent
                 this.changed.emit(event);
             })
             .on('select2:unselect', (event) => this.changed.emit(event));
+            
+            await BaseHelper.sleep(500);
+            this.aeroThemeHelper.pageRutine();
         }
         catch(err2)
         {

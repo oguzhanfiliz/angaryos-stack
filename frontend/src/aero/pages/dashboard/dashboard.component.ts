@@ -59,11 +59,18 @@ export class DashboardComponent
         var temp = BaseHelper.readFromLocal(key);
         if(temp == null) return false;
 
-        console.log("yonlendir: " +temp);
         BaseHelper.pipe["mobile-button-clicked"] = null;
         this.generalHelper.navigate(temp);
 
         return true;
+    }
+
+    ngAfterViewInit() 
+    {    
+        if(!BaseHelper.isBrowser) 
+            setTimeout(() => {
+                $('section').css('margin', '0px');
+            }, 100);
     }
     
     ngOnInit() 

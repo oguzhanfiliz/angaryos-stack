@@ -104,6 +104,7 @@ export class GeneralHelper
         {   
             this.stopLoading("Kartı okutunuz...");
             resolve(tag);
+            this.nfc.cancelScan();
         },
         err => 
         {
@@ -124,6 +125,7 @@ export class GeneralHelper
             }
 
             reject(err);
+            this.nfc.cancelScan();
         }); 
     });
   }
@@ -308,8 +310,6 @@ export class GeneralHelper
     if(BaseHelper.loggedInUserInfo == null) return
     var key = 'user:'+BaseHelper.loggedInUserInfo['user']["id"]+".lastPage"; 
     BaseHelper.writeToLocal(key, page);
-
-    console.log("tut: " + page);
   }
 
   public navigate(page:string, newPage = false)

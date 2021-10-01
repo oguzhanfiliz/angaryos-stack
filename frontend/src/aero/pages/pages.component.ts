@@ -54,7 +54,15 @@ export class PagesComponent
     $('body').keydown((event) => this.keyEvent(event));
     $('body').keyup((event) => this.keyEvent(event));
     
-    $(".page-loader-wrapper").fadeOut();
+    var control = window.location.href.indexOf('#/'+BaseHelper.angaryosUrlPath+'/') > -1;
+    if(control)
+    {
+      setTimeout(() => 
+      {
+        $(".page-loader-wrapper").fadeOut(200);
+      }, 1000);
+    }
+    else $(".page-loader-wrapper").fadeOut();  
 
     this.isBrowser = BaseHelper.isBrowser;
 
@@ -669,7 +677,6 @@ export class PagesComponent
     {
       var key = 'user:'+BaseHelper.loggedInUserInfo['user']["id"]+".lastPage"; 
       BaseHelper.removeFromLocal(key);
-      console.log("yonlendirme sil");
     }
     
     this.generalHelper.navigate(page, newPage);
